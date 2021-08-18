@@ -61,9 +61,11 @@ class copyleaks_adminform extends moodleform {
 
         // Get all modules that support plagiarism plugin.
         $plagiarismmodules = array_keys(core_component::get_plugin_list('mod'));
+        $supportedmodules = array();
         foreach ($plagiarismmodules as $module) {
-            // For now we only support assignments. remove (&& $module == 'assign') when supporting others.
-            if (plugin_supports('mod', $module, FEATURE_PLAGIARISM) && $module == 'assign') {
+            // For now we only support assignments.
+            if (plugin_supports('mod', $module, FEATURE_PLAGIARISM)) {
+                array_push($supportedmodules, $module);
                 $mform->addElement(
                     'advcheckbox',
                     'plagiarism_copyleaks_mod_' . $module,

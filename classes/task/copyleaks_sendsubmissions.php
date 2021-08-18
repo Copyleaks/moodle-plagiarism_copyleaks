@@ -101,11 +101,6 @@ class copyleaks_sendsubmissions extends \core\task\scheduled_task {
                     continue;
                 }
 
-                // We only support assign module for now.
-                if ($coursemodule->modname !== 'assign') {
-                    continue;
-                }
-
                 $userid = $submission->userid;
 
                 // Set submitter if it was not set previously.
@@ -148,7 +143,16 @@ class copyleaks_sendsubmissions extends \core\task\scheduled_task {
                         . $coursemodule->instance . '.txt';
 
                     $submittedtextcontent = html_to_text($submittedtextcontent);
+                } else if ($submission->submissiontype == 'forum_post') {
+                    $forumpost = $DB->get_record_select('forum_posts', " userid = ? AND id = ? ", array($userid, $submission->itemid));
+                    if ($forumpost) {
+                        $filename = 'forumpost_' . $userid . "_" . $coursemodule->id . "_" . $coursemodule->instance . "_" . $submission->itemid . '.txt';
+                        $submittedtextcontent = html_to_text(strip_tags($forumpost->message));
+                    } else {
+                        $errormessage = 'Content not found for the submission.';
+                    }
                 } else {
+
                     $filestorage = get_file_storage();
                     $fileref = $filestorage->get_file_by_hash($submission->identifier);
 

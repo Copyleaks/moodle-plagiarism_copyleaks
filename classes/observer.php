@@ -31,6 +31,30 @@ require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/copyleaks_eventshand
  */
 class plagiarism_copyleaks_observer {
     /**
+     * course module deleted event handler.
+     * @param \core\event\course_module_deleted $event
+     */
+    public static function core_event_course_module_deleted(
+        \core\event\course_module_deleted $event
+    ) {
+        global $DB;
+        $data = $event->get_data();
+        $cmid = $data['contextinstanceid'];
+
+        // Delete Copyleaks module files.
+        $DB->delete_records(
+            'plagiarism_copyleaks_files',
+            array('cm' => $cmid)
+        );
+
+        // Delete Copyleaks module config.
+        $DB->delete_records(
+            'plagiarism_copyleaks_config',
+            array('cm' => $cmid)
+        );
+    }
+
+    /**
      * assign submission file upload event handler.
      * @param \assignsubmission_file\event\assessable_uploaded $event
      */
@@ -64,26 +88,40 @@ class plagiarism_copyleaks_observer {
     }
 
     /**
-     * course module deleted event handler.
-     * @param \core\event\course_module_deleted $event
+     * workshop module event handler.
+     * @param \mod_workshop\event\assessable_uploaded $event
      */
-    public static function core_event_course_module_deleted(
-        \core\event\course_module_deleted $event
+    public static function mod_workshop_event_assessable_uploaded(
+        \mod_workshop\event\assessable_uploaded $event
     ) {
-        global $DB;
-        $data = $event->get_data();
-        $cmid = $data['contextinstanceid'];
+    }
 
-        // Delete Copyleaks module files.
-        $DB->delete_records(
-            'plagiarism_copyleaks_files',
-            array('cm' => $cmid)
-        );
+    /**
+     * forum module event handler.
+     * @param \mod_forum\event\assessable_uploaded $event
+     */
+    public static function mod_forum_event_assessable_uploaded(
+        \mod_forum\event\assessable_uploaded $event
+    ) {
+        $eventhandler = new copyleaks_eventshandler('assessable_submitted', 'forum');
+        $eventhandler->handle_submissions($event->get_data());
+    }
 
-        // Delete Copyleaks module config.
-        $DB->delete_records(
-            'plagiarism_copyleaks_config',
-            array('cm' => $cmid)
-        );
+    /**
+     * quiz module event handler.
+     * @param \mod_quiz\event\attempt_submitted $event
+     */
+    public static function mod_quiz_event_attempt_submitted(
+        \mod_quiz\event\attempt_submitted $event
+    ) {
+    }
+
+    /**
+     * coursework module event handler.
+     * @param \mod_coursework\event\assessable_uploaded $event
+     */
+    public static function mod_coursework_event_assessable_uploaded(
+        \mod_coursework\event\assessable_uploaded $event
+    ) {
     }
 }

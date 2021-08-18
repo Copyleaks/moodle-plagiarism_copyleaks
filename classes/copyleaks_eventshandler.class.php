@@ -66,11 +66,6 @@ class copyleaks_eventshandler {
 
         $result = true;
 
-        // For now we only support assign module.
-        if ($this->modulename != 'assign') {
-            return true;
-        }
-
         $coursemodule = $this->get_coursemodule($data);
 
         // Stop event if the course module is not found.
@@ -88,6 +83,11 @@ class copyleaks_eventshandler {
             $coursemodule->modname,
             array('id' => $coursemodule->instance)
         );
+
+        // Support draft submission only for assignment module.
+        if ($coursemodule->modname != 'assign') {
+            $cmdata->submissiondrafts = 0;
+        }
 
         // Initialise module config.
         $clmoduleconfig = copyleaks_moduleconfig::get_module_config($coursemodule->id);
@@ -269,7 +269,7 @@ class copyleaks_eventshandler {
                 $authoruserid,
                 $submitteruserid,
                 $contentidentifier,
-                'text_content',
+                ($coursemodule->modname == 'forum') ? 'forum_post' : 'text_content',
                 $data['objectid'],
                 $cmdata
             );
@@ -286,6 +286,7 @@ class copyleaks_eventshandler {
      */
     private function queue_files($data, $coursemodule, $authoruserid, $submitteruserid, $cmdata) {
         $result = true;
+
         foreach ($data['other']['pathnamehashes'] as $pathnamehash) {
 
             $filestorage = get_file_storage();

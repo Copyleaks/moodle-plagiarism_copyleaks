@@ -153,7 +153,7 @@ class copyleaks_moduleconfig {
         $enablecheatdetection,
         $cmid = PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID,
         $enabled = true,
-        $draftssubmit = 0,
+        $draftssubmit = 0, // This always should be 0, because draft submission is only supported for assignment module.
         $reportgen = 0,
         $allowstudentaccess = 0
     ) {

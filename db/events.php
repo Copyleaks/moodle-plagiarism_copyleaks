@@ -25,6 +25,10 @@ defined('MOODLE_INTERNAL') || die();
 
 $observers = array(
     array(
+        'eventname' => '\core\event\course_module_deleted',
+        'callback'  => 'plagiarism_copyleaks_observer::core_event_course_module_deleted'
+    ),
+    array(
         'eventname' => '\assignsubmission_file\event\assessable_uploaded',
         'callback'  => 'plagiarism_copyleaks_observer::assignsubmission_file_event_assessable_uploaded'
     ),
@@ -37,7 +41,19 @@ $observers = array(
         'callback'  => 'plagiarism_copyleaks_observer::mod_assign_event_assessable_submitted'
     ),
     array(
-        'eventname' => '\core\event\course_module_deleted',
-        'callback'  => 'plagiarism_copyleaks_observer::core_event_course_module_deleted'
+        'eventname' => '\mod_workshop\event\assessable_uploaded',
+        'callback'  => 'plagiarism_copyleaks_observer::mod_workshop_event_assessable_uploaded'
+    ),
+    array(
+        'eventname' => '\mod_forum\event\assessable_uploaded',
+        'callback'  => 'plagiarism_copyleaks_observer::mod_forum_event_assessable_uploaded'
+    ),
+    array(
+        'eventname' => '\mod_quiz\event\attempt_submitted',
+        'callback' => 'plagiarism_copyleaks_observer::mod_quiz_event_attempt_submitted'
+    ),
+    array(
+        'eventname' => '\mod_coursework\event\assessable_uploaded',
+        'callback'  => 'plagiarism_copyleaks_observer::mod_coursework_event_assessable_uploaded'
     )
 );
