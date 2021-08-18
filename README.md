@@ -6,7 +6,7 @@ Administrators & Developers
 -----------------------------------------------
 Please be aware that the **Develop** branch should not be considered production ready, although it contains the latest fixes and features it may contain bugs. It should be avoided in favour of the **Master** branch which is the latest stable branch. If you want to create any pull request please make sure to do that on the **Develop** branch.
 
-If you any issue or suggesting, please feel free to open a ticket [here](/issues).
+If you any issue or suggesting, please feel free to open a ticket [here](../../issues).
 
 To see what has changed in recent versions of the plagiarism plugin, see the [CHANGELOG](/CHANGELOG.md).
 
