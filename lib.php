@@ -1,0 +1,374 @@
+<?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+/**
+ * Contains Plagiarism plugin specific functions called by Modules.
+ * @package   plagiarism_copyleaks
+ * @copyright 2021 Copyleaks
+ * @author    Bayan Abuawad <bayana@copyleaks.com>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+defined('MOODLE_INTERNAL') || die();
+
+// Get global class.
+global $CFG;
+require_once($CFG->dirroot . '/plagiarism/lib.php');
+
+// Get helper methods.
+require_once($CFG->dirroot . '/plagiarism/copyleaks/locallib.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/copyleaks_pluginconfig.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/copyleaks_moduleconfig.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/constants/copyleaks.constants.php');
+
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/copyleaks_assignmodule.class.php');
+
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/copyleaks_comms.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/exceptions/copyleaks_authexception.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/exceptions/copyleaks_exception.class.php');
+
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/copyleaks_submissiondisplay.class.php');
+/**
+ * Contains Plagiarism plugin specific functions called by Modules.
+ */
+class plagiarism_plugin_copyleaks extends plagiarism_plugin {
+    /**
+     * hook to allow plagiarism specific information to be displayed beside a submission
+     * @param array $linkarray contains all relevant information for the plugin to generate a link
+     * @return string displayed output
+     */
+    public function get_links($linkarray) {
+        return copyleaks_submissiondisplay::output($linkarray);
+    }
+
+    /**
+     * hook to save plagiarism specific settings on a module settings page
+     * @param stdClass $data form data
+     */
+    public function save_form_elements($data) {
+        // Check if plugin is configured and enabled.
+        if (empty($data->modulename) || !copyleaks_pluginconfig::is_plugin_configured('mod_' . $data->modulename)) {
+            return;
+        }
+
+        // Save settings to Copyleaks API.
+        try {
+            // Get copyleaks api course module settings.
+            $cl = new copyleaks_comms();
+            $copyleakssettings = $cl->get_course_module_settings($data->coursemodule);
+            if (isset($copyleakssettings)) {
+                // Map to copyleaks api model.
+                $clfilters = $copyleakssettings->filters;
+                $clexternalsources = $copyleakssettings->externalSources;
+                $clsearch = $copyleakssettings->search;
+                $clinternalsources = $copyleakssettings->internalSources;
+
+                $clfilters->references = $data->plagiarism_copyleaks_ignorereferences === '1';
+                $clfilters->quotes = $data->plagiarism_copyleaks_ignorequotes === '1';
+                $clfilters->titles = $data->plagiarism_copyleaks_ignoretitles === '1';
+                $clfilters->tableOfContent = $data->plagiarism_copyleaks_ignoreretableofcontents === '1';
+                $clfilters->code->comments = $data->plagiarism_copyleaks_ignoreresourcecodecomments === '1';
+                $clexternalsources->internet->enabled = $data->plagiarism_copyleaks_scaninternet === '1';
+                $clexternalsources->safeSearch = $data->plagiarism_copyleaks_enablesafesearch === '1';
+                $clsearch->cheatDetection = $data->plagiarism_copyleaks_enablecheatdetection === '1';
+
+                $scaninternaldatabase = $data->plagiarism_copyleaks_scaninternaldatabase === '1';
+                if (isset($clinternalsources) && isset($clinternalsources->databases)) {
+                    foreach ($clinternalsources->databases as $database) {
+                        if (isset($database) && $database->id == "INTERNAL_DATA_BASE") {
+                            $database->includeOthersScans = $scaninternaldatabase;
+                            $database->index = $scaninternaldatabase;
+                            $database->includeUserScans = $scaninternaldatabase;
+                            break;
+                        }
+                    }
+                }
+
+                // Save to Copyleaks API.
+                $cl->save_course_module_settings($data->coursemodule, $data->modulename, $data->name, $copyleakssettings);
+
+                copyleaks_moduleconfig::set_module_config(
+                    $data->plagiarism_copyleaks_ignorereferences,
+                    $data->plagiarism_copyleaks_ignorequotes,
+                    $data->plagiarism_copyleaks_ignoretitles,
+                    $data->plagiarism_copyleaks_ignoreretableofcontents,
+                    $data->plagiarism_copyleaks_ignoreresourcecodecomments,
+                    $data->plagiarism_copyleaks_scaninternet,
+                    $data->plagiarism_copyleaks_scaninternaldatabase,
+                    $data->plagiarism_copyleaks_enablesafesearch,
+                    $data->plagiarism_copyleaks_enablecheatdetection,
+                    $data->coursemodule,
+                    $data->plagiarism_copyleaks_enable,
+                    $data->plagiarism_copyleaks_draftsubmit,
+                    $data->plagiarism_copyleaks_reportgen,
+                    $data->plagiarism_copyleaks_allowstudentaccess
+                );
+            }
+        } catch (copyleaks_exception $ex) {
+            print_error('clfailtosavedata', 'plagiarism_copyleaks');
+        } catch (copyleaks_auth_exception $ex) {
+            print_error('clinvalidkeyorsecret', 'plagiarism_copyleaks');
+        }
+    }
+
+    /**
+     * If plugin is enabled then Show the Copyleaks settings form.
+     *
+     * TODO: This code needs to be moved for 4.3 as the method will be completely removed from core.
+     * See https://tracker.moodle.org/browse/MDL-67526
+     *
+     * @param object $mform
+     * @param stdClass $context
+     * @param string $modulename
+     */
+    public function get_form_elements_module($mform, $context, $modulename = "") {
+        global $DB;
+        // This is a bit of a hack and untidy way to ensure the form elements aren't displayed,
+        // twice. This won't be needed once this method goes away.
+        // TODO: Remove once this method goes away.
+        static $settingsdisplayed;
+        if ($settingsdisplayed) {
+            return;
+        }
+
+        if (has_capability('plagiarism/copyleaks:enable', $context)) {
+
+            // Return no form if the plugin isn't configured or not enabled.
+            if (empty($modulename) || !copyleaks_pluginconfig::is_plugin_configured($modulename)) {
+                return;
+            }
+
+            // Copyleaks Settings.
+            $mform->addElement(
+                'header',
+                'plagiarism_copyleaks_defaultsettings',
+                get_string('clscoursesettings', 'plagiarism_copyleaks')
+            );
+            $mform->setExpanded('plagiarism_copyleaks_defaultsettings');
+
+            // Database settings.
+            $mform->addElement(
+                'advcheckbox',
+                'plagiarism_copyleaks_enable',
+                get_string('clenable', 'plagiarism_copyleaks')
+            );
+
+            if ($mform->elementExists('submissiondrafts')) {
+                $mform->addElement(
+                    'advcheckbox',
+                    'plagiarism_copyleaks_draftsubmit',
+                    get_string("cldraftsubmit", "plagiarism_copyleaks")
+                );
+                $mform->addHelpButton(
+                    'plagiarism_copyleaks_draftsubmit',
+                    'cldraftsubmit',
+                    'plagiarism_copyleaks'
+                );
+                $mform->disabledIf(
+                    'plagiarism_copyleaks_draftsubmit',
+                    'submissiondrafts',
+                    'eq',
+                    0
+                );
+            }
+
+            $genoptions = array(
+                0 => get_string('clgenereportimmediately', 'plagiarism_copyleaks'),
+                1 => get_string('clgenereportonduedate', 'plagiarism_copyleaks')
+            );
+            $mform->addElement(
+                'select',
+                'plagiarism_copyleaks_reportgen',
+                get_string("clreportgenspeed", "plagiarism_copyleaks"),
+                $genoptions
+            );
+
+            $mform->addElement(
+                'advcheckbox',
+                'plagiarism_copyleaks_allowstudentaccess',
+                get_string('clallowstudentaccess', 'plagiarism_copyleaks')
+            );
+
+            // Copyleaks API settings.
+            $mform->addElement(
+                'advcheckbox',
+                'plagiarism_copyleaks_ignorereferences',
+                get_string('clignorereferences', 'plagiarism_copyleaks')
+            );
+            $mform->addElement(
+                'advcheckbox',
+                'plagiarism_copyleaks_ignorequotes',
+                get_string('clignorequotes', 'plagiarism_copyleaks')
+            );
+            $mform->addElement(
+                'advcheckbox',
+                'plagiarism_copyleaks_ignoretitles',
+                get_string('clignoretitles', 'plagiarism_copyleaks')
+            );
+            $mform->addElement(
+                'advcheckbox',
+                'plagiarism_copyleaks_ignoreretableofcontents',
+                get_string('clignoreretableofcontents', 'plagiarism_copyleaks')
+            );
+            $mform->addElement(
+                'advcheckbox',
+                'plagiarism_copyleaks_ignoreresourcecodecomments',
+                get_string('clignoreresourcecodecomments', 'plagiarism_copyleaks')
+            );
+            $mform->addElement(
+                'advcheckbox',
+                'plagiarism_copyleaks_scaninternet',
+                get_string('clscaninternet', 'plagiarism_copyleaks')
+            );
+            $mform->addElement(
+                'advcheckbox',
+                'plagiarism_copyleaks_scaninternaldatabase',
+                get_string('clscaninternaldatabase', 'plagiarism_copyleaks')
+            );
+            $mform->addElement(
+                'advcheckbox',
+                'plagiarism_copyleaks_enablesafesearch',
+                get_string('clenablesafesearch', 'plagiarism_copyleaks')
+            );
+            $mform->addElement(
+                'advcheckbox',
+                'plagiarism_copyleaks_enablecheatdetection',
+                get_string('clenablecheatdetection', 'plagiarism_copyleaks')
+            );
+
+            $cmid = optional_param('update', null, PARAM_INT);
+            $savedvalues = $DB->get_records_menu('plagiarism_copyleaks_config', array('cm' => $cmid), '', 'name,value');
+            if (count($savedvalues) > 0) {
+                $mform->setDefault('plagiarism_copyleaks_enable', $savedvalues['plagiarism_copyleaks_enable']);
+
+                $draftsubmit = isset($savedvalues['plagiarism_copyleaks_draftsubmit']) ?
+                    $savedvalues['plagiarism_copyleaks_draftsubmit'] : 0;
+
+                $mform->setDefault('plagiarism_copyleaks_draftsubmit', $draftsubmit);
+                if (isset($savedvalues['plagiarism_copyleaks_reportgen'])) {
+                    $mform->setDefault('plagiarism_copyleaks_reportgen', $savedvalues['plagiarism_copyleaks_reportgen']);
+                }
+                if (isset($savedvalues['plagiarism_copyleaks_allowstudentaccess'])) {
+                    $mform->setDefault(
+                        'plagiarism_copyleaks_allowstudentaccess',
+                        $savedvalues['plagiarism_copyleaks_allowstudentaccess']
+                    );
+                }
+            } else {
+                $mform->setDefault('plagiarism_copyleaks_enable', true);
+                $mform->setDefault('plagiarism_copyleaks_draftsubmit', 0);
+                $mform->setDefault('plagiarism_copyleaks_reportgen', 0);
+                $mform->setDefault('plagiarism_copyleaks_allowstudentaccess', 0);
+            }
+
+            $cmconfig = copyleaks_moduleconfig::get_module_config($cmid);
+            $mform->setDefault(
+                "plagiarism_copyleaks_ignorereferences",
+                $cmconfig["plagiarism_copyleaks_ignorereferences"]
+            );
+            $mform->setDefault(
+                "plagiarism_copyleaks_ignorequotes",
+                $cmconfig["plagiarism_copyleaks_ignorequotes"]
+            );
+            $mform->setDefault(
+                "plagiarism_copyleaks_ignoretitles",
+                $cmconfig["plagiarism_copyleaks_ignoretitles"]
+            );
+            $mform->setDefault(
+                "plagiarism_copyleaks_ignoreretableofcontents",
+                $cmconfig["plagiarism_copyleaks_ignoreretableofcontents"]
+            );
+            $mform->setDefault(
+                "plagiarism_copyleaks_ignoreresourcecodecomments",
+                $cmconfig["plagiarism_copyleaks_ignoreresourcecodecomments"]
+            );
+            $mform->setDefault(
+                "plagiarism_copyleaks_scaninternet",
+                $cmconfig["plagiarism_copyleaks_scaninternet"]
+            );
+            $mform->setDefault(
+                "plagiarism_copyleaks_scaninternaldatabase",
+                $cmconfig["plagiarism_copyleaks_scaninternaldatabase"]
+            );
+            $mform->setDefault(
+                "plagiarism_copyleaks_enablesafesearch",
+                $cmconfig["plagiarism_copyleaks_enablesafesearch"]
+            );
+            $mform->setDefault(
+                "plagiarism_copyleaks_enablecheatdetection",
+                $cmconfig["plagiarism_copyleaks_enablecheatdetection"]
+            );
+
+            $settingsdisplayed = true;
+        }
+    }
+
+    /**
+     * hook to allow a disclosure to be printed notifying users what will happen with their submission
+     * @param int $cmid - course module id
+     * @return string
+     */
+    public function print_disclosure($cmid) {
+        global $DB;
+
+        // Get course module.
+        $cm = get_coursemodule_from_id('', $cmid);
+
+        // Get course module copyleaks settings.
+        $clmodulesettings = $DB->get_records_menu(
+            'plagiarism_copyleaks_config',
+            array('cm' => $cmid),
+            '',
+            'name,value'
+        );
+
+        // Check if Copyleaks plugin is enabled for this module.
+        $moduleclenabled = copyleaks_pluginconfig::is_plugin_configured('mod_' . $cm->modname);
+        if (empty($clmodulesettings['plagiarism_copyleaks_enable']) || empty($moduleclenabled)) {
+            return true;
+        }
+
+        $config = copyleaks_pluginconfig::admin_config();
+
+        if (isset($config->plagiarism_copyleaks_studentdisclosure)) {
+            $clstudentdisclosure = $config->plagiarism_copyleaks_studentdisclosure;
+        } else {
+            $clstudentdisclosure = get_string('clstudentdisclosuredefault', 'plagiarism_copyleaks');
+        }
+
+        $formatoptions = new stdClass;
+        $formatoptions->noclean = true;
+        $contents = format_text($clstudentdisclosure, FORMAT_MOODLE, array("noclean" => true));
+        $output = html_writer::tag('div', $contents, array('class' => 'copyleaks-student-disclosure'));
+
+        return $output;
+    }
+
+    /**
+     * hook to allow status of submitted files to be updated - called on grading/report pages.
+     * @param object $course - full Course object
+     * @param object $cm - full cm object
+     */
+    public function update_status($course, $cm) {
+        // Called at top of submissions/grading pages - allows printing of admin style links or updating status.
+    }
+
+    /**
+     * called by admin/cron.php
+     * @deprecated
+     */
+    public function cron() {
+    }
+}
