@@ -119,15 +119,4 @@ class plagiarism_copyleaks_observer {
         // Coming soon.
         return true;
     }
-
-    /**
-     * coursework module event handler.
-     * @param \mod_coursework\event\assessable_uploaded $event
-     */
-    public static function mod_coursework_event_assessable_uploaded(
-        \mod_coursework\event\assessable_uploaded $event
-    ) {
-        // Coming soon.
-        return true;
-    }
 }
