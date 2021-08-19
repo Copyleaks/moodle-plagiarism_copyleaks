@@ -94,6 +94,8 @@ class plagiarism_copyleaks_observer {
     public static function mod_workshop_event_assessable_uploaded(
         \mod_workshop\event\assessable_uploaded $event
     ) {
+        // Coming soon.
+        return true;
     }
 
     /**
@@ -114,6 +116,8 @@ class plagiarism_copyleaks_observer {
     public static function mod_quiz_event_attempt_submitted(
         \mod_quiz\event\attempt_submitted $event
     ) {
+        // Coming soon.
+        return true;
     }
 
     /**
@@ -123,5 +127,7 @@ class plagiarism_copyleaks_observer {
     public static function mod_coursework_event_assessable_uploaded(
         \mod_coursework\event\assessable_uploaded $event
     ) {
+        // Coming soon.
+        return true;
     }
 }

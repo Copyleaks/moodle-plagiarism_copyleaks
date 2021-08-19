@@ -144,9 +144,18 @@ class copyleaks_sendsubmissions extends \core\task\scheduled_task {
 
                     $submittedtextcontent = html_to_text($submittedtextcontent);
                 } else if ($submission->submissiontype == 'forum_post') {
-                    $forumpost = $DB->get_record_select('forum_posts', " userid = ? AND id = ? ", array($userid, $submission->itemid));
+                    $forumpost = $DB->get_record_select(
+                        'forum_posts',
+                        " userid = ? AND id = ? ",
+                        array($userid, $submission->itemid)
+                    );
                     if ($forumpost) {
-                        $filename = 'forumpost_' . $userid . "_" . $coursemodule->id . "_" . $coursemodule->instance . "_" . $submission->itemid . '.txt';
+                        $filename = 'forumpost_'
+                            . $userid . "_"
+                            . $coursemodule->id . "_"
+                            . $coursemodule->instance . "_"
+                            . $submission->itemid . '.txt';
+
                         $submittedtextcontent = html_to_text(strip_tags($forumpost->message));
                     } else {
                         $errormessage = 'Content not found for the submission.';

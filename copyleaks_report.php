@@ -90,19 +90,14 @@ if (empty($clmoduleenabled) || empty($modulesettings['plagiarism_copyleaks_enabl
         $moduledata = $DB->get_record($cm->modname, array('id' => $cm->instance));
 
         $owners = array($userid);
-        switch ($cm->modname) {
-            case "assign":
-                if ($moduledata->teamsubmission) {
-                    require_once($CFG->dirroot . '/mod/assign/locallib.php');
-                    $assignment = new assign($context, $cm, null);
-                    if ($group = $assignment->get_submission_group($userid)) {
-                        $users = groups_get_members($group->id);
-                        $owners = array_keys($users);
-                    }
-                }
-                break;
-            default:
-                break;
+
+        if ($cm->modname == 'assign' && $moduledata->teamsubmission) {
+            require_once($CFG->dirroot . '/mod/assign/locallib.php');
+            $assignment = new assign($context, $cm, null);
+            if ($group = $assignment->get_submission_group($userid)) {
+                $users = groups_get_members($group->id);
+                $owners = array_keys($users);
+            }
         }
 
         // Proceed to displaying the report.
