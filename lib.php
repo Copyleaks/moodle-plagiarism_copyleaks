@@ -112,7 +112,7 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
                     $data->coursemodule,
                     $data->plagiarism_copyleaks_enable,
                     isset($data->plagiarism_copyleaks_draftsubmit) ? $data->plagiarism_copyleaks_draftsubmit : 0,
-                    $data->plagiarism_copyleaks_reportgen,
+                    isset($data->plagiarism_copyleaks_reportgen) ? $data->plagiarism_copyleaks_reportgen : 0,
                     $data->plagiarism_copyleaks_allowstudentaccess
                 );
             }
@@ -165,6 +165,7 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
                 get_string('clenable', 'plagiarism_copyleaks')
             );
 
+            // Add draft submission properties only if exists.
             if ($mform->elementExists('submissiondrafts')) {
                 $mform->addElement(
                     'advcheckbox',
@@ -184,16 +185,19 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
                 );
             }
 
-            $genoptions = array(
-                0 => get_string('clgenereportimmediately', 'plagiarism_copyleaks'),
-                1 => get_string('clgenereportonduedate', 'plagiarism_copyleaks')
-            );
-            $mform->addElement(
-                'select',
-                'plagiarism_copyleaks_reportgen',
-                get_string("clreportgenspeed", "plagiarism_copyleaks"),
-                $genoptions
-            );
+            // Add due date properties only if exists.
+            if ($mform->elementExists('duedate')) {
+                $genoptions = array(
+                    0 => get_string('clgenereportimmediately', 'plagiarism_copyleaks'),
+                    1 => get_string('clgenereportonduedate', 'plagiarism_copyleaks')
+                );
+                $mform->addElement(
+                    'select',
+                    'plagiarism_copyleaks_reportgen',
+                    get_string("clreportgenspeed", "plagiarism_copyleaks"),
+                    $genoptions
+                );
+            }
 
             $mform->addElement(
                 'advcheckbox',

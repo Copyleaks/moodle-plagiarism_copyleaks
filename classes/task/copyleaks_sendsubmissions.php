@@ -117,25 +117,35 @@ class copyleaks_sendsubmissions extends \core\task\scheduled_task {
                 // Handle submission data according to the submission type.
                 if ($submission->submissiontype == 'text_content') {
                     $moduledata = $DB->get_record($coursemodule->modname, array('id' => $coursemodule->instance));
+                    if ($coursemodule->modname == 'workshop') {
+                        $workshopsubmission = $DB->get_record(
+                            'workshop_submissions',
+                            array('id' => $submission->itemid),
+                            'content'
+                        );
+                        $submittedtextcontent = $workshopsubmission->content;
+                    } else if ($coursemodule->modname == 'assign') {
+                        $submissionref = $DB->get_record(
+                            'assign_submission',
+                            array(
+                                'id' => $submission->itemid,
+                                'userid' => ($moduledata->teamsubmission) ? 0 : $submission->userid,
+                                'assignment' => $coursemodule->instance
+                            ),
+                            'id'
+                        );
 
-                    $submissionref = $DB->get_record(
-                        'assign_submission',
-                        array(
-                            'id' => $submission->itemid,
-                            'userid' => ($moduledata->teamsubmission) ? 0 : $submission->userid,
-                            'assignment' => $coursemodule->instance
-                        ),
-                        'id'
-                    );
-
-                    $txtsubmissionref = $DB->get_record(
-                        'assignsubmission_onlinetext',
-                        array(
-                            'submission' => $submissionref->id
-                        ),
-                        'onlinetext'
-                    );
-                    $submittedtextcontent = $txtsubmissionref->onlinetext;
+                        $txtsubmissionref = $DB->get_record(
+                            'assignsubmission_onlinetext',
+                            array(
+                                'submission' => $submissionref->id
+                            ),
+                            'onlinetext'
+                        );
+                        $submittedtextcontent = $txtsubmissionref->onlinetext;
+                    } else {
+                        $errormessage = 'Content not found for the submission.';
+                    }
 
                     $filename = 'online_text_'
                         . $userid . "_"

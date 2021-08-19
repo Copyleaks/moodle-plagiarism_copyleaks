@@ -257,6 +257,16 @@ class copyleaks_eventshandler {
      * @param object $cmdata
      */
     private function queue_text_content($data, $coursemodule, $authoruserid, $submitteruserid, $cmdata) {
+        global $DB;
+
+        if ($coursemodule->modname == 'workshop' && !isset($data['other']['content'])) {
+            $workshopsubmissions = $DB->get_record(
+                'workshop_submissions',
+                array('id' => $data['objectid'])
+            );
+            $data['other']['content'] = $workshopsubmissions->content;
+        }
+
         $contentidentifier = sha1($data['other']['content']);
 
         // Check if the text content has already been submitted.

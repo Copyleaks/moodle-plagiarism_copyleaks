@@ -94,8 +94,8 @@ class plagiarism_copyleaks_observer {
     public static function mod_workshop_event_assessable_uploaded(
         \mod_workshop\event\assessable_uploaded $event
     ) {
-        // Coming soon.
-        return true;
+        $eventhandler = new copyleaks_eventshandler('assessable_submitted', 'workshop');
+        $eventhandler->handle_submissions($event->get_data());
     }
 
     /**
