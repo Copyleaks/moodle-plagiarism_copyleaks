@@ -10,9 +10,14 @@ If you any issue or suggesting, please feel free to open a ticket [here](../../i
 
 To see what has changed in recent versions of the plagiarism plugin, see the [CHANGELOG](/CHANGELOG.md).
 
+Supported Modules
+----------------------------------
+- Assignment
+- Forum
+- Workshop
+
 Installation
 ----------------------------------
 - Firstly make sure that you are using Moodle 3.5 or higher.
-- For now the Plagiarism Plugin can only be used within the Assignment module.
 - In order for the plugin to work, you will need to have the Moodle cron job running as suggested in [here](https://docs.moodle.org/37/en/Cron).
 - For extended documentation on how to set up and use the plugin please check [our guides](https://lti.copyleaks.com/guides/moodle/plagiarism-plugin).
