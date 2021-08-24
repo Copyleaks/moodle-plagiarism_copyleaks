@@ -47,9 +47,5 @@ $observers = array(
     array(
         'eventname' => '\mod_forum\event\assessable_uploaded',
         'callback'  => 'plagiarism_copyleaks_observer::mod_forum_event_assessable_uploaded'
-    ),
-    array(
-        'eventname' => '\mod_quiz\event\attempt_submitted',
-        'callback' => 'plagiarism_copyleaks_observer::mod_quiz_event_attempt_submitted'
     )
 );
