@@ -191,7 +191,7 @@ class copyleaks_moduleconfig {
                 if (!isset($saveddefaultvalue[$f])) {
                     $savedfield->config_hash = $savedfield->cm . "_" . $savedfield->name;
                     if (!$DB->insert_record('plagiarism_copyleaks_config', $savedfield)) {
-                        print_error('clinserterror', 'plagiarism_copyleaks');
+                        throw new moodle_exception(get_string('clinserterror', 'plagiarism_copyleaks'));
                     }
                 } else {
                     $savedfield->id = $DB->get_field(
@@ -203,7 +203,7 @@ class copyleaks_moduleconfig {
                         ))
                     );
                     if (!$DB->update_record('plagiarism_copyleaks_config', $savedfield)) {
-                        print_error('clupdateerror', 'plagiarism_copyleaks');
+                        throw new moodle_exception(get_string('clupdateerror', 'plagiarism_copyleaks'));
                     }
                 }
             }

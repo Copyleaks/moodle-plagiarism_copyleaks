@@ -117,9 +117,9 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
                 );
             }
         } catch (copyleaks_exception $ex) {
-            print_error('clfailtosavedata', 'plagiarism_copyleaks');
+            throw new moodle_exception(get_string('clfailtosavedata', 'plagiarism_copyleaks'));
         } catch (copyleaks_auth_exception $ex) {
-            print_error('clinvalidkeyorsecret', 'plagiarism_copyleaks');
+            throw new moodle_exception(get_string('clinvalidkeyorsecret', 'plagiarism_copyleaks'));
         }
     }
 
