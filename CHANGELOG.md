@@ -1,6 +1,11 @@
+### Date: 		2021-August-29
+### Release:	v2021082900
+-  Forums bug fix
+
 ### Date: 		2021-August-24
 ### Release:	v2021082400
 -  Moodle code checker fixes
+
 
 ### Date: 		2021-August-22
 ### Release:	v2021082200
