@@ -158,7 +158,7 @@ class copyleaks_submissiondisplay {
 
                 $author = $submittedfile->userid;
                 $submissionref['userid'] = $author;
-            } else {
+            } else if ($coursemodule->modname == "assign") {
                 $author = $submissionref['userid'];
                 if ($subitemid != 0) {
                     $author = copyleaks_assignmodule::get_author($subitemid);
