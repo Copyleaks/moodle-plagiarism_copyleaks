@@ -119,7 +119,7 @@ class copyleaks_updatereports extends \core\task\scheduled_task {
                                 $currentsubmission->externalid = $clscaninstance->scanId;
                                 if ($clscaninstance->status == 1) {
                                     $currentsubmission->statuscode = 'success';
-                                    $currentsubmission->similarityscore = $clscaninstance->plagiarismScore;
+                                    $currentsubmission->similarityscore = round($clscaninstance->plagiarismScore, 1);
                                     $currentsubmission->ischeatingdetected = $clscaninstance->isCheatingDetected;
                                     if (!$DB->update_record('plagiarism_copyleaks_files', $currentsubmission)) {
                                         \copyleaks_logs::add(
