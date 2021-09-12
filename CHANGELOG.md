@@ -1,10 +1,6 @@
-### Date: 		2021-September-03
-### Release:	v2021090300
--  bug fixes
-
-### Date: 		2021-August-29
-### Release:	v2021082900
--  Forums bug fix
+### Date: 		2021-September-12
+### Release:	v2021091200
+-  Bug Fixes
 
 ### Date: 		2021-August-24
 ### Release:	v2021082400
