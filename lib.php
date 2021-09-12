@@ -40,6 +40,7 @@ require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/exceptions/copyleaks
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/exceptions/copyleaks_exception.class.php');
 
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/copyleaks_submissiondisplay.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/copyleaks_logs.class.php');
 /**
  * Contains Plagiarism plugin specific functions called by Modules.
  */
@@ -117,7 +118,9 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
                 );
             }
         } catch (copyleaks_exception $ex) {
-            throw new moodle_exception(get_string('clfailtosavedata', 'plagiarism_copyleaks'));
+            $errormessage = get_string('clfailtosavedata', 'plagiarism_copyleaks');
+            copyleaks_logs::add($errormessage . ': ' . $ex->getMessage(), 'API_ERROR');
+            throw new moodle_exception($errormessage);
         } catch (copyleaks_auth_exception $ex) {
             throw new moodle_exception(get_string('clinvalidkeyorsecret', 'plagiarism_copyleaks'));
         }

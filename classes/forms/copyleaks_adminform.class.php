@@ -35,6 +35,7 @@ require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/exceptions/copyleaks
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/exceptions/copyleaks_exception.class.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/exceptions/copyleaks_ratelimitexception.class.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/exceptions/copyleaks_undermaintenanceexception.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/copyleaks_logs.class.php');
 /**
  * Copyleaks admin setup form
  */
@@ -387,10 +388,12 @@ class copyleaks_adminform extends moodleform {
                     get_string('clinvalidkeyorsecret', 'plagiarism_copyleaks')
                 );
             } else {
+                $errormessage = get_string('clfailtosavedata', 'plagiarism_copyleaks');
                 $mform->setElementError(
                     'plagiarism_copyleaks_enablecheatdetection',
-                    get_string('clfailtosavedata', 'plagiarism_copyleaks')
+                    $errormessage
                 );
+                copyleaks_logs::add($errormessage . ': ' . $ex->getMessage(), 'API_ERROR');
             }
         } catch (copyleaks_auth_exception $ex) {
             $mform->setElementError(
@@ -418,10 +421,12 @@ class copyleaks_adminform extends moodleform {
                     get_string('clinvalidkeyorsecret', 'plagiarism_copyleaks')
                 );
             } else {
+                $errormessage = get_string('clfailtosavedata', 'plagiarism_copyleaks');
                 $mform->setElementError(
                     'plagiarism_copyleaks_enablecheatdetection',
-                    get_string('clfailtosavedata', 'plagiarism_copyleaks')
+                    $errormessage
                 );
+                copyleaks_logs::add($errormessage . ': ' . $ex->getMessage(), 'API_ERROR');
             }
             return false;
         } catch (copyleaks_auth_exception $ex) {
