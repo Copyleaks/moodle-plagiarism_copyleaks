@@ -329,7 +329,7 @@ class copyleaks_submissiondisplay {
                             $pendingstring = '&nbsp;<span class="cl-text-gray">'
                                 . $clplagiarised . ':&nbsp;</span>';
 
-                            $pendingwrapper = '<span title="Scheduled for plagiarism scan">'
+                            $pendingwrapper = '<span title="Scheduled for plagiarism scan at ' . date("F j, Y, g:i a", $submittedfile->scheduledscandate) . '">'
                                 . $pendingstring . '</span>';
 
                             $output = html_writer::tag(
@@ -343,7 +343,7 @@ class copyleaks_submissiondisplay {
                                     . $pendingwrapper
                                     . $OUTPUT->pix_icon(
                                         'copyleaks-scheduled',
-                                        'Scheduled for plagiarism scan',
+                                        'Scheduled for plagiarism scan at ' . date("F j, Y, g:i a", $submittedfile->scheduledscandate),
                                         'plagiarism_copyleaks',
                                         array('class' => 'icon_size')
                                     ),
