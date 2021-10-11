@@ -229,7 +229,7 @@ class copyleaks_submissiondisplay {
                                 . '<span></span>'
                                 . $results["score"] . '%</span>';
 
-                            $similaritywrapper = '<a class="cl-text-gray" title="'
+                            $similaritywrapper = '<a class="copyleaks-text-gray" title="'
                                 . get_string('clopenreport', 'plagiarism_copyleaks') . '" href="'
                                 . $results['reporturl'] . '" target="_blank">';
 
@@ -255,7 +255,7 @@ class copyleaks_submissiondisplay {
                                     get_string('clcheatingdetected', 'plagiarism_copyleaks'),
                                     'plagiarism_copyleaks',
                                     array('class' => 'icon_size')
-                                ) . '<a class="cl-text-warn" title="'
+                                ) . '<a class="copyleaks-text-warn" title="'
                                     . get_string('clcheatingdetected', 'plagiarism_copyleaks')
                                     . '" href="'
                                     . $results['reporturl'] . '" target="_blank">Cheating detected</a>';
@@ -271,7 +271,7 @@ class copyleaks_submissiondisplay {
                             if ($isinstructor) {
 
                                 $clplagiarised = get_string('clplagiarised', 'plagiarism_copyleaks');
-                                $errorstring = '&nbsp;<span class="cl-text-gray">'
+                                $errorstring = '&nbsp;<span class="copyleaks-text-gray">'
                                     . $clplagiarised . ':&nbsp;</span>&nbsp;<span class="strong">Failed</span>&nbsp;';
 
                                 $errorwrapper = '<span title="'
@@ -299,7 +299,7 @@ class copyleaks_submissiondisplay {
                         case 'pending':
                             $clplagiarised = get_string('clplagiarised', 'plagiarism_copyleaks');
 
-                            $pendingstring = '&nbsp;<span class="cl-text-gray">'
+                            $pendingstring = '&nbsp;<span class="copyleaks-text-gray">'
                                 . $clplagiarised . ':&nbsp;</span>';
 
                             $pendingwrapper = '<span title="Scanning for plagiarism...">'
@@ -326,7 +326,7 @@ class copyleaks_submissiondisplay {
                         case 'queued':
                             $clplagiarised = get_string('clplagiarised', 'plagiarism_copyleaks');
 
-                            $pendingstring = '&nbsp;<span class="cl-text-gray">'
+                            $pendingstring = '&nbsp;<span class="copyleaks-text-gray">'
                                 . $clplagiarised . ':&nbsp;</span>';
 
                             $pendingwrapper = '<span title="Scheduled for plagiarism scan at ' . date("F j, Y, g:i a", $submittedfile->scheduledscandate) . '">'

@@ -24,7 +24,6 @@
 namespace plagiarism_copyleaks\task;
 
 defined('MOODLE_INTERNAL') || die();
-
 require_once($CFG->dirroot . '/plagiarism/copyleaks/constants/copyleaks.constants.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/copyleaks_logs.class.php');
 
