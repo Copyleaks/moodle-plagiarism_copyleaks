@@ -28,7 +28,6 @@ global $CFG;
 require_once($CFG->dirroot . '/plagiarism/lib.php');
 
 // Get helper methods.
-require_once($CFG->dirroot . '/plagiarism/copyleaks/locallib.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/copyleaks_pluginconfig.class.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/copyleaks_moduleconfig.class.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/constants/copyleaks.constants.php');

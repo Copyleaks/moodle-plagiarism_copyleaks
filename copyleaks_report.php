@@ -37,6 +37,7 @@ $viewmode = optional_param('view', 'course', PARAM_TEXT);
 // Get instance modules.
 $cm = get_coursemodule_from_id($modulename, $cmid, 0, false, MUST_EXIST);
 $course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
+
 // Request login.
 require_login($course, true, $cm);
 
@@ -81,11 +82,11 @@ $clmoduleenabled = copyleaks_pluginconfig::is_plugin_configured('mod_' . $cm->mo
 
 // Check if copyleaks plugin is disabled.
 if (empty($clmoduleenabled) || empty($modulesettings['plagiarism_copyleaks_enable'])) {
-    echo html_writer::div('Copyleaks plugin is disabled for this module.', null, array('style' => $errormessagestyle));
+    echo html_writer::div(get_string('cldisabledformodule', 'plagiarism_copyleaks'), null, array('style' => $errormessagestyle));
 } else {
     // Incase students not allowed to see the plagiairsm score.
     if (!$isinstructor && empty($modulesettings['plagiarism_copyleaks_allowstudentaccess'])) {
-        echo html_writer::div('You dont have access to this page.', null, array('style' => $errormessagestyle));
+        echo html_writer::div(get_string('clnopageaccess', 'plagiarism_copyleaks'), null, array('style' => $errormessagestyle));
     } else {
         $moduledata = $DB->get_record($cm->modname, array('id' => $cm->instance));
 
@@ -166,7 +167,7 @@ if (empty($clmoduleenabled) || empty($modulesettings['plagiarism_copyleaks_enabl
                 )
             );
         } else {
-            echo html_writer::div('You dont have access to this page.', null, array('style' => $errormessagestyle));
+            echo html_writer::div(get_string('clnopageaccess', 'plagiarism_copyleaks'), null, array('style' => $errormessagestyle));
         }
     }
 }

@@ -68,5 +68,10 @@ $string['clapisubmissionerror'] = 'Copyleaks has returned an error while trying 
 $string['clcheatingdetected'] = 'Cheating detected, Open report to learn more';
 $string['clreportpagetitle'] = 'Copyleaks Report';
 $string['clopenfullscreen'] = 'Open in full screen';
-
 $string['cllogsheading'] = 'Logs';
+$string['clpoweredbycopyleaks'] = 'Powered by Copyleaks';
+$string['clplagiarisefailed'] = 'Failed';
+$string['clplagiarisescanning'] = 'Scanning for plagiarism...';
+$string['clplagiarisequeued'] = 'Scheduled for plagiarism scan at {$a}';
+$string['cldisabledformodule'] = 'Copyleaks plugin is disabled for this module.';
+$string['clnopageaccess'] = 'You dont have access to this page.';

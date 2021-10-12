@@ -24,7 +24,6 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/plagiarism/copyleaks/lib.php');
-require_once($CFG->dirroot . '/plagiarism/copyleaks/locallib.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/copyleaks_httpclient.class.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/copyleaks_pluginconfig.class.php');
 /**

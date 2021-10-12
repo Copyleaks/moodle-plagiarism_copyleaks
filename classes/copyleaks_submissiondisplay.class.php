@@ -23,7 +23,6 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot . '/plagiarism/copyleaks/locallib.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/copyleaks_pluginconfig.class.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/constants/copyleaks.constants.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/copyleaks_assignmodule.class.php');
@@ -207,15 +206,16 @@ class copyleaks_submissiondisplay {
                 }
 
                 if ($submittedfile) {
+                    $clpoweredbycopyleakstxt = get_string('clpoweredbycopyleaks', 'plagiarism_copyleaks');
                     switch ($submittedfile->statuscode) {
                         case 'success':
 
                             if ($submittedfile->similarityscore <= 40) {
-                                $rank = "low";
+                                $htmlclassrank = "low";
                             } else if ($submittedfile->similarityscore <= 80) {
-                                $rank = "middle";
+                                $htmlclassrank = "middle";
                             } else {
-                                $rank = "high";
+                                $htmlclassrank = "high";
                             }
 
                             $results["score"] = $submittedfile->similarityscore;
@@ -225,7 +225,7 @@ class copyleaks_submissiondisplay {
                                 "?cmid=$submittedfile->cm&userid=$submittedfile->userid" .
                                 "&identifier=$submittedfile->identifier&modulename=$coursemodule->modname";
 
-                            $similaritystring = '&nbsp;<span class="' . $rank . '">'
+                            $similaritystring = '&nbsp;<span class="' . $htmlclassrank . '">'
                                 . '<span></span>'
                                 . $results["score"] . '%</span>';
 
@@ -238,7 +238,7 @@ class copyleaks_submissiondisplay {
 
                             $divcontent = $OUTPUT->pix_icon(
                                 'copyleaks-logo',
-                                'Powered by Copyleaks',
+                                $clpoweredbycopyleakstxt,
                                 'plagiarism_copyleaks',
                                 array('class' => 'icon_size')
                             ) . $similaritywrapper;
@@ -272,7 +272,9 @@ class copyleaks_submissiondisplay {
 
                                 $clplagiarised = get_string('clplagiarised', 'plagiarism_copyleaks');
                                 $errorstring = '&nbsp;<span class="copyleaks-text-gray">'
-                                    . $clplagiarised . ':&nbsp;</span>&nbsp;<span class="strong">Failed</span>&nbsp;';
+                                    . $clplagiarised . ':&nbsp;</span>&nbsp;<span class="strong">'
+                                    . get_string('clplagiarisefailed', 'plagiarism_copyleaks')
+                                    . '</span>&nbsp;';
 
                                 $errorwrapper = '<span title="'
                                     . $submittedfile->errormsg . '">' . $errorstring . '</span>';
@@ -281,7 +283,7 @@ class copyleaks_submissiondisplay {
                                     'div',
                                     $OUTPUT->pix_icon(
                                         'copyleaks-logo',
-                                        'Powered by Copyleaks',
+                                        $clpoweredbycopyleakstxt,
                                         'plagiarism_copyleaks',
                                         array('class' => 'icon_size')
                                     )
@@ -302,21 +304,21 @@ class copyleaks_submissiondisplay {
                             $pendingstring = '&nbsp;<span class="copyleaks-text-gray">'
                                 . $clplagiarised . ':&nbsp;</span>';
 
-                            $pendingwrapper = '<span title="Scanning for plagiarism...">'
+                            $pendingwrapper = '<span title="' . get_string('clplagiarisescanning', 'plagiarism_copyleaks') . '">'
                                 . $pendingstring . '</span>';
 
                             $output = html_writer::tag(
                                 'div',
                                 $OUTPUT->pix_icon(
                                     'copyleaks-logo',
-                                    'Powered by Copyleaks',
+                                    $clpoweredbycopyleakstxt,
                                     'plagiarism_copyleaks',
                                     array('class' => 'icon_size')
                                 )
                                     . $pendingwrapper
                                     . $OUTPUT->pix_icon(
                                         'copyleaks-loading',
-                                        'Scanning for plagiarism...',
+                                        get_string('clplagiarisescanning', 'plagiarism_copyleaks'),
                                         'plagiarism_copyleaks',
                                         array('class' => 'icon_size')
                                     ),
@@ -326,24 +328,25 @@ class copyleaks_submissiondisplay {
                         case 'queued':
                             $clplagiarised = get_string('clplagiarised', 'plagiarism_copyleaks');
 
-                            $pendingstring = '&nbsp;<span class="copyleaks-text-gray">'
+                            $queuedstring = '&nbsp;<span class="copyleaks-text-gray">'
                                 . $clplagiarised . ':&nbsp;</span>';
 
-                            $pendingwrapper = '<span title="Scheduled for plagiarism scan at ' . date("F j, Y, g:i a", $submittedfile->scheduledscandate) . '">'
-                                . $pendingstring . '</span>';
+                            $queuedtxt = get_string('clplagiarisequeued', 'plagiarism_copyleaks', date("F j, Y, g:i a", $submittedfile->scheduledscandate));
+
+                            $queuedwrapper = '<span title="' . $queuedtxt . '">' . $queuedstring . '</span>';
 
                             $output = html_writer::tag(
                                 'div',
                                 $OUTPUT->pix_icon(
                                     'copyleaks-logo',
-                                    'Powered by Copyleaks',
+                                    $clpoweredbycopyleakstxt,
                                     'plagiarism_copyleaks',
                                     array('class' => 'icon_size')
                                 )
-                                    . $pendingwrapper
+                                    . $queuedwrapper
                                     . $OUTPUT->pix_icon(
                                         'copyleaks-scheduled',
-                                        'Scheduled for plagiarism scan at ' . date("F j, Y, g:i a", $submittedfile->scheduledscandate),
+                                        $queuedtxt,
                                         'plagiarism_copyleaks',
                                         array('class' => 'icon_size')
                                     ),
