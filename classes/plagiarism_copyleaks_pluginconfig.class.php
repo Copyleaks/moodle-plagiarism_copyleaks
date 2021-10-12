@@ -26,7 +26,7 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * plugin configurations helpers methods
  */
-class copyleaks_pluginconfig {
+class plagiarism_copyleaks_pluginconfig {
     /**
      * Check module configuration settings for the copyleaks plagiarism plugin
      * @param string $modulename

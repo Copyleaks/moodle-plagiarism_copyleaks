@@ -25,12 +25,12 @@ namespace plagiarism_copyleaks\task;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/copyleaks_logs.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_logs.class.php');
 
 /**
  * Copyleaks Plagiarism Plugin - Handle plagiairsm check similarity score update
  */
-class copyleaks_updatereports extends \core\task\scheduled_task {
+class plagiarism_copyleaks_updatereports extends \core\task\scheduled_task {
     /**
      * get scheduler name, this will be shown to admins on schedulers dashboard
      */
@@ -43,7 +43,7 @@ class copyleaks_updatereports extends \core\task\scheduled_task {
      */
     public function execute() {
         global $CFG;
-        require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/copyleaks_comms.class.php');
+        require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_comms.class.php');
         $this->update_reports();
     }
 
@@ -86,7 +86,7 @@ class copyleaks_updatereports extends \core\task\scheduled_task {
                     $clsubmission->statuscode = 'error';
                     $clsubmission->errormsg = 'course module (cm) wasnt found for this record';
                     if (!$DB->update_record('plagiarism_copyleaks_files', $clsubmission)) {
-                        \copyleaks_logs::add(
+                        \plagiarism_copyleaks_logs::add(
                             "Update record failed (CM: " . $cm->id . ", User: " . $clsubmission->userid . ") - ",
                             "UPDATE_RECORD_FAILED"
                         );
@@ -97,11 +97,11 @@ class copyleaks_updatereports extends \core\task\scheduled_task {
             if (count($submissionsinstances) > 0) {
                 try {
 
-                    if (!\copyleaks_comms::test_copyleaks_connection('scheduler_task')) {
+                    if (!\plagiarism_copyleaks_comms::test_copyleaks_connection('scheduler_task')) {
                         return;
                     }
 
-                    $copyleakscomms = new \copyleaks_comms();
+                    $copyleakscomms = new \plagiarism_copyleaks_comms();
                     $scaninstances = $copyleakscomms->get_plagiarism_scans_instances($submissionsinstances);
                     if (count($scaninstances) > 0) {
                         foreach ($scaninstances as $clscaninstance) {
@@ -122,7 +122,7 @@ class copyleaks_updatereports extends \core\task\scheduled_task {
                                     $currentsubmission->similarityscore = round($clscaninstance->plagiarismScore, 1);
                                     $currentsubmission->ischeatingdetected = $clscaninstance->isCheatingDetected;
                                     if (!$DB->update_record('plagiarism_copyleaks_files', $currentsubmission)) {
-                                        \copyleaks_logs::add(
+                                        \plagiarism_copyleaks_logs::add(
                                             "Update record failed (CM: " . $cm->id . ", User: "
                                                 . $currentsubmission->userid . ") - ",
                                             "UPDATE_RECORD_FAILED"
@@ -132,7 +132,7 @@ class copyleaks_updatereports extends \core\task\scheduled_task {
                                     $currentsubmission->statuscode = 'error';
                                     $currentsubmission->errormsg = $clscaninstance->errorMessage;
                                     if (!$DB->update_record('plagiarism_copyleaks_files', $currentsubmission)) {
-                                        \copyleaks_logs::add(
+                                        \plagiarism_copyleaks_logs::add(
                                             "Update record failed (CM: " . $cm->id . ", User: "
                                                 . $currentsubmission->userid . ") - ",
                                             "UPDATE_RECORD_FAILED"
@@ -140,7 +140,7 @@ class copyleaks_updatereports extends \core\task\scheduled_task {
                                     }
                                 }
                             } else {
-                                \copyleaks_logs::add(
+                                \plagiarism_copyleaks_logs::add(
                                     "Submission not found for Copyleaks API scan instances with the identifier: "
                                         . $clscaninstance->identitfier,
                                     "SUBMISSION_NOT_FOUND"
@@ -149,7 +149,7 @@ class copyleaks_updatereports extends \core\task\scheduled_task {
                         }
                     }
                 } catch (\Exception $e) {
-                    \copyleaks_logs::add(
+                    \plagiarism_copyleaks_logs::add(
                         "Update reports failed - " . $e->getMessage(),
                         "API_ERROR"
                     );

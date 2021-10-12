@@ -28,18 +28,18 @@ global $CFG;
 require_once($CFG->dirroot . '/plagiarism/lib.php');
 
 // Get helper methods.
-require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/copyleaks_pluginconfig.class.php');
-require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/copyleaks_moduleconfig.class.php');
-require_once($CFG->dirroot . '/plagiarism/copyleaks/constants/copyleaks.constants.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_pluginconfig.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_moduleconfig.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/constants/plagiarism_copyleaks.constants.php');
 
-require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/copyleaks_assignmodule.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_assignmodule.class.php');
 
-require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/copyleaks_comms.class.php');
-require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/exceptions/copyleaks_authexception.class.php');
-require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/exceptions/copyleaks_exception.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_comms.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/exceptions/plagiarism_copyleaks_authexception.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/exceptions/plagiarism_copyleaks_exception.class.php');
 
-require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/copyleaks_submissiondisplay.class.php');
-require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/copyleaks_logs.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_submissiondisplay.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_logs.class.php');
 /**
  * Contains Plagiarism plugin specific functions called by Modules.
  */
@@ -50,7 +50,7 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
      * @return string displayed output
      */
     public function get_links($linkarray) {
-        return copyleaks_submissiondisplay::output($linkarray);
+        return plagiarism_copyleaks_submissiondisplay::output($linkarray);
     }
 
     /**
@@ -59,14 +59,14 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
      */
     public function save_form_elements($data) {
         // Check if plugin is configured and enabled.
-        if (empty($data->modulename) || !copyleaks_pluginconfig::is_plugin_configured('mod_' . $data->modulename)) {
+        if (empty($data->modulename) || !plagiarism_copyleaks_pluginconfig::is_plugin_configured('mod_' . $data->modulename)) {
             return;
         }
 
         // Save settings to Copyleaks API.
         try {
             // Get copyleaks api course module settings.
-            $cl = new copyleaks_comms();
+            $cl = new plagiarism_copyleaks_comms();
             $copyleakssettings = $cl->get_course_module_settings($data->coursemodule);
             if (isset($copyleakssettings)) {
                 // Map to copyleaks api model.
@@ -99,7 +99,7 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
                 // Save to Copyleaks API.
                 $cl->save_course_module_settings($data->coursemodule, $data->modulename, $data->name, $copyleakssettings);
 
-                copyleaks_moduleconfig::set_module_config(
+                plagiarism_copyleaks_moduleconfig::set_module_config(
                     $data->plagiarism_copyleaks_ignorereferences,
                     $data->plagiarism_copyleaks_ignorequotes,
                     $data->plagiarism_copyleaks_ignoretitles,
@@ -116,11 +116,11 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
                     $data->plagiarism_copyleaks_allowstudentaccess
                 );
             }
-        } catch (copyleaks_exception $ex) {
+        } catch (plagiarism_copyleaks_exception $ex) {
             $errormessage = get_string('clfailtosavedata', 'plagiarism_copyleaks');
-            copyleaks_logs::add($errormessage . ': ' . $ex->getMessage(), 'API_ERROR');
+            plagiarism_copyleaks_logs::add($errormessage . ': ' . $ex->getMessage(), 'API_ERROR');
             throw new moodle_exception($errormessage);
-        } catch (copyleaks_auth_exception $ex) {
+        } catch (plagiarism_copyleaks_auth_exception $ex) {
             throw new moodle_exception(get_string('clinvalidkeyorsecret', 'plagiarism_copyleaks'));
         }
     }
@@ -148,7 +148,7 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
         if (has_capability('plagiarism/copyleaks:enable', $context)) {
 
             // Return no form if the plugin isn't configured or not enabled.
-            if (empty($modulename) || !copyleaks_pluginconfig::is_plugin_configured($modulename)) {
+            if (empty($modulename) || !plagiarism_copyleaks_pluginconfig::is_plugin_configured($modulename)) {
                 return;
             }
 
@@ -279,7 +279,7 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
                 $mform->setDefault('plagiarism_copyleaks_allowstudentaccess', 0);
             }
 
-            $cmconfig = copyleaks_moduleconfig::get_module_config($cmid);
+            $cmconfig = plagiarism_copyleaks_moduleconfig::get_module_config($cmid);
             $mform->setDefault(
                 "plagiarism_copyleaks_ignorereferences",
                 $cmconfig["plagiarism_copyleaks_ignorereferences"]
@@ -341,12 +341,12 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
         );
 
         // Check if Copyleaks plugin is enabled for this module.
-        $moduleclenabled = copyleaks_pluginconfig::is_plugin_configured('mod_' . $cm->modname);
+        $moduleclenabled = plagiarism_copyleaks_pluginconfig::is_plugin_configured('mod_' . $cm->modname);
         if (empty($clmodulesettings['plagiarism_copyleaks_enable']) || empty($moduleclenabled)) {
             return true;
         }
 
-        $config = copyleaks_pluginconfig::admin_config();
+        $config = plagiarism_copyleaks_pluginconfig::admin_config();
 
         if (isset($config->plagiarism_copyleaks_studentdisclosure)) {
             $clstudentdisclosure = $config->plagiarism_copyleaks_studentdisclosure;

@@ -25,8 +25,8 @@ require(dirname(dirname(__FILE__)) . '/../config.php');
 require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir . '/plagiarismlib.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/lib.php');
-require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/forms/copyleaks_adminform.class.php');
-require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/copyleaks_logs.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/forms/plagiarism_copyleaks_adminform.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_logs.class.php');
 
 require_login();
 
@@ -39,7 +39,7 @@ require_capability('moodle/site:config', $context, $USER->id, true, "nopermissio
 $qpselectedtabid = optional_param('tab', "copyleaksconfiguration", PARAM_ALPHA);
 $qpdate = optional_param('date', null, PARAM_ALPHANUMEXT);
 
-$copyleakssetupform = new copyleaks_adminform();
+$copyleakssetupform = new plagiarism_copyleaks_adminform();
 $plagiarismplugin = new plagiarism_plugin_copyleaks();
 
 if ($copyleakssetupform->is_cancelled()) {
@@ -66,13 +66,13 @@ $pagetabs[] = new tabobject(
 switch ($qpselectedtabid) {
     case 'copyleakslogs':
         if (!is_null($qpdate)) {
-            copyleaks_logs::displaylogs($qpdate);
+            plagiarism_copyleaks_logs::displaylogs($qpdate);
         } else {
             echo $OUTPUT->header();
             $pagetabs[1]->selected = true;
             echo $OUTPUT->tabtree($pagetabs);
             echo $OUTPUT->heading(get_string('cllogsheading', 'plagiarism_copyleaks'));
-            copyleaks_logs::displaylogs();
+            plagiarism_copyleaks_logs::displaylogs();
         }
         break;
     default:

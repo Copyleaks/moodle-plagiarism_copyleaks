@@ -24,7 +24,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 /** Copyleaks assign module helper */
-class copyleaks_assignmodule {
+class plagiarism_copyleaks_assignmodule {
     /**
      * check if current module user is instructor
      * @param mixed $context

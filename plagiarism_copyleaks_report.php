@@ -23,9 +23,9 @@
 
 require(dirname(dirname(__FILE__)) . '/../config.php');
 
-require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/copyleaks_comms.class.php');
-require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/copyleaks_pluginconfig.class.php');
-require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/copyleaks_assignmodule.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_comms.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_pluginconfig.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_assignmodule.class.php');
 
 // Get url params.
 $cmid = required_param('cmid', PARAM_INT);
@@ -47,7 +47,7 @@ $PAGE->set_course($course);
 $PAGE->set_cm($cm);
 $PAGE->set_pagelayout('incourse');
 $PAGE->add_body_class('cl-report-page');
-$PAGE->set_url('/moodle/plagiarism/copyleaks/copyleaks_report.php', array(
+$PAGE->set_url('/moodle/plagiarism/copyleaks/plagiarism_copyleaks_report.php', array(
     'cmid' => $cmid,
     'userid' => $userid,
     'identifier' => $identifier,
@@ -74,11 +74,11 @@ if ($viewmode == 'course') {
 // Copyleaks course settings.
 $modulesettings = $DB->get_records_menu('plagiarism_copyleaks_config', array('cm' => $cmid), '', 'name,value');
 
-$isinstructor = copyleaks_assignmodule::is_instructor($context);
+$isinstructor = plagiarism_copyleaks_assignmodule::is_instructor($context);
 
 $errormessagestyle = 'color:red; display:flex; width:100%; justify-content:center;';
 
-$clmoduleenabled = copyleaks_pluginconfig::is_plugin_configured('mod_' . $cm->modname);
+$clmoduleenabled = plagiarism_copyleaks_pluginconfig::is_plugin_configured('mod_' . $cm->modname);
 
 // Check if copyleaks plugin is disabled.
 if (empty($clmoduleenabled) || empty($modulesettings['plagiarism_copyleaks_enable'])) {
@@ -105,7 +105,7 @@ if (empty($clmoduleenabled) || empty($modulesettings['plagiarism_copyleaks_enabl
         if ($isinstructor || in_array($USER->id, $owners)) {
 
             // Get admin config.
-            $config = copyleaks_pluginconfig::admin_config();
+            $config = plagiarism_copyleaks_pluginconfig::admin_config();
 
             // Get submission db ref.
             $plagiarismfiles = $DB->get_record(
@@ -135,14 +135,14 @@ if (empty($clmoduleenabled) || empty($modulesettings['plagiarism_copyleaks_enabl
 
             if ($viewmode == 'course') {
                 echo html_writer::link(
-                    "$CFG->wwwroot/plagiarism/copyleaks/copyleaks_report.php" .
+                    "$CFG->wwwroot/plagiarism/copyleaks/plagiarism_copyleaks_report.php" .
                         "?cmid=$cmid&userid=$userid&identifier=$identifier&modulename=$modulename&view=fullscreen",
                     get_string('clopenfullscreen', 'plagiarism_copyleaks'),
                     array('title' => get_string('clopenfullscreen', 'plagiarism_copyleaks'))
                 );
             }
 
-            $cl = new copyleaks_comms();
+            $cl = new plagiarism_copyleaks_comms();
             $scanaccesstoken = $cl->request_access_for_report($plagiarismfiles->externalid);
 
             echo html_writer::tag(

@@ -23,11 +23,11 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/copyleaks_pluginconfig.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_pluginconfig.class.php');
 /**
  * admins logs helper for Copyleaks plugin
  */
-class copyleaks_logs {
+class plagiarism_copyleaks_logs {
     /**
      * add log message
      * @param string $errormessage the error message

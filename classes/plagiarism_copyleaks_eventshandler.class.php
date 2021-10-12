@@ -25,19 +25,19 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/copyleaks_pluginconfig.class.php');
-require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/copyleaks_moduleconfig.class.php');
-require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/copyleaks_submissions.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_pluginconfig.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_moduleconfig.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_submissions.class.php');
 
-require_once($CFG->dirroot . '/plagiarism/copyleaks/constants/copyleaks.constants.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/constants/plagiarism_copyleaks.constants.php');
 
-require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/copyleaks_assignmodule.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_assignmodule.class.php');
 
-require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/copyleaks_logs.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_logs.class.php');
 /**
  * handle observer events
  */
-class copyleaks_eventshandler {
+class plagiarism_copyleaks_eventshandler {
     /** @var string moodle event type */
     public $eventtype;
     /** @var string module name*/
@@ -74,7 +74,7 @@ class copyleaks_eventshandler {
         }
 
         // Check if module is enabled for this event.
-        if (!copyleaks_moduleconfig::is_module_enabled($coursemodule->modname, $coursemodule->id)) {
+        if (!plagiarism_copyleaks_moduleconfig::is_module_enabled($coursemodule->modname, $coursemodule->id)) {
             return true;
         }
 
@@ -90,14 +90,14 @@ class copyleaks_eventshandler {
         }
 
         // Initialise module config.
-        $clmoduleconfig = copyleaks_moduleconfig::get_module_config($coursemodule->id);
+        $clmoduleconfig = plagiarism_copyleaks_moduleconfig::get_module_config($coursemodule->id);
 
         // Incase of module with default settings, update copyleaks api to use default settings.
         if (isset($clmoduleconfig['cmid']) && $clmoduleconfig['cmid'] == PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID) {
-            $cl = new copyleaks_comms();
+            $cl = new plagiarism_copyleaks_comms();
             try {
                 $cl->save_course_module_settings($coursemodule->id, $coursemodule->modname, $coursemodule->name);
-                copyleaks_moduleconfig::set_module_config(
+                plagiarism_copyleaks_moduleconfig::set_module_config(
                     $clmoduleconfig["plagiarism_copyleaks_ignorereferences"],
                     $clmoduleconfig["plagiarism_copyleaks_ignorequotes"],
                     $clmoduleconfig["plagiarism_copyleaks_ignoretitles"],
@@ -110,7 +110,7 @@ class copyleaks_eventshandler {
                     $coursemodule->id
                 );
             } catch (Exception $e) {
-                copyleaks_logs::add(
+                plagiarism_copyleaks_logs::add(
                     "incase of module with default settings, update Copyleaks api to use default settings failed - "
                         . $e->getMessage(),
                     "API_ERROR"
@@ -270,7 +270,7 @@ class copyleaks_eventshandler {
         $contentidentifier = sha1($data['other']['content']);
 
         // Check if the text content has already been submitted.
-        $files = copyleaks_submissions::successful_submission_instances($coursemodule->id, $authoruserid, $contentidentifier);
+        $files = plagiarism_copyleaks_submissions::successful_submission_instances($coursemodule->id, $authoruserid, $contentidentifier);
         if (count($files) > 0) {
             return true;
         } else {
@@ -306,14 +306,14 @@ class copyleaks_eventshandler {
                 try {
                     $fileref->get_content();
                 } catch (Exception $e) {
-                    \copyleaks_logs::add(
+                    \plagiarism_copyleaks_logs::add(
                         'Fail to get file content, pathnamehash: ' . $pathnamehash,
                         'FILE_CONTENT_NOT_FOUND'
                     );
                     continue;
                 }
             } else {
-                \copyleaks_logs::add(
+                \plagiarism_copyleaks_logs::add(
                     'Fail to get file: ' . $pathnamehash,
                     'FILE_NOT_FOUND'
                 );
@@ -382,7 +382,7 @@ class copyleaks_eventshandler {
             // Submission already exists, do not queue it again.
             return true;
         } else {
-            $submissionid = copyleaks_submissions::create($coursemodule, $authoruserid, $identifier, $subtype);
+            $submissionid = plagiarism_copyleaks_submissions::create($coursemodule, $authoruserid, $identifier, $subtype);
         }
 
         // Check if file type is supported by Copyleaks.
@@ -423,7 +423,7 @@ class copyleaks_eventshandler {
 
         // If we have error message, then we don't need to send it to Copyleaks.
         $submitstatus = $errormessage == null ? 'queued' : 'error';
-        return copyleaks_submissions::save(
+        return plagiarism_copyleaks_submissions::save(
             $coursemodule,
             $authoruserid,
             $submissionid,

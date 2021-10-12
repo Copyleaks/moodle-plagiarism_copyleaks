@@ -24,12 +24,12 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/plagiarism/copyleaks/lib.php');
-require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/copyleaks_httpclient.class.php');
-require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/copyleaks_pluginconfig.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_httpclient.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_pluginconfig.class.php');
 /**
  * Used for communications between Moodle and Copyleaks
  */
-class copyleaks_comms {
+class plagiarism_copyleaks_comms {
     /** @var stdClass Copyleaks plugin configurations */
     private $config;
 
@@ -43,7 +43,7 @@ class copyleaks_comms {
      * class constructor
      */
     public function __construct() {
-        $this->config = copyleaks_pluginconfig::admin_config();
+        $this->config = plagiarism_copyleaks_pluginconfig::admin_config();
         if (isset($this->config->plagiarism_copyleaks_secret) && isset($this->config->plagiarism_copyleaks_key)) {
             $this->secret = $this->config->plagiarism_copyleaks_secret;
             $this->key = $this->config->plagiarism_copyleaks_key;
@@ -55,7 +55,7 @@ class copyleaks_comms {
      */
     public function get_plugin_default_settings() {
         if (isset($this->key) && isset($this->secret)) {
-            $result = copyleaks_http_client::execute(
+            $result = plagiarism_copyleaks_http_client::execute(
                 'GET',
                 $this->copyleaks_api_url() . "/api/moodle/plugin/" . $this->key . "/scan-settings",
                 true
@@ -70,7 +70,7 @@ class copyleaks_comms {
      */
     public function save_plugin_default_settings($settings) {
         if (isset($this->key) && isset($this->secret)) {
-            copyleaks_http_client::execute(
+            plagiarism_copyleaks_http_client::execute(
                 'POST',
                 $this->copyleaks_api_url() . "/api/moodle/plugin/" . $this->key . "/scan-settings",
                 true,
@@ -86,7 +86,7 @@ class copyleaks_comms {
      */
     public function get_course_module_settings(string $cmid) {
         if (isset($this->key) && isset($this->secret)) {
-            $result = copyleaks_http_client::execute(
+            $result = plagiarism_copyleaks_http_client::execute(
                 'GET',
                 $this->copyleaks_api_url() . "/api/moodle/plugin/" . $this->key . "/course/module/" . $cmid . "/scan-settings",
                 true
@@ -109,7 +109,7 @@ class copyleaks_comms {
                 'courseModuleName' => $cmname,
                 'scanProperties' => $settings,
             ];
-            $result = copyleaks_http_client::execute(
+            $result = plagiarism_copyleaks_http_client::execute(
                 'POST',
                 $this->copyleaks_api_url() . "/api/moodle/plugin/" . $this->key . "/course/module/" . $cmid . "/scan-settings",
                 true,
@@ -154,7 +154,7 @@ class copyleaks_comms {
                 $paramsmerge['file'] = '@' . $filepath;
             }
 
-            $result = copyleaks_http_client::execute(
+            $result = plagiarism_copyleaks_http_client::execute(
                 'POST',
                 $this->copyleaks_api_url() . "/api/moodle/plugin/" . $this->key . "/task/submit-for-scan",
                 true,
@@ -178,7 +178,7 @@ class copyleaks_comms {
                 'instances' => $submissionsinstances,
             ];
 
-            $result = copyleaks_http_client::execute(
+            $result = plagiarism_copyleaks_http_client::execute(
                 'POST',
                 $this->copyleaks_api_url() . "/api/moodle/plugin/" . $this->key . "/task/scan-instances",
                 true,
@@ -196,7 +196,7 @@ class copyleaks_comms {
      */
     public function request_access_for_report(string $scanid) {
         if (isset($this->key) && isset($this->secret)) {
-            $result = copyleaks_http_client::execute(
+            $result = plagiarism_copyleaks_http_client::execute(
                 'POST',
                 $this->copyleaks_api_url() . "/api/moodle/" . $this->key . "/report/" . $scanid . "/request-access",
                 true
@@ -231,7 +231,7 @@ class copyleaks_comms {
     public static function login_to_copyleaks($apiurl = null, $key = null, $secret = null, $force = false) {
         if (!isset($secret) || !isset($key) || !isset($apiurl)) {
             // If key and secret was not passed, try to read them from admin config.
-            $config = copyleaks_pluginconfig::admin_config();
+            $config = plagiarism_copyleaks_pluginconfig::admin_config();
             if (
                 isset($config->plagiarism_copyleaks_secret) &&
                 isset($config->plagiarism_copyleaks_key) &&
@@ -249,7 +249,7 @@ class copyleaks_comms {
 
         if (!$force) {
             // If not force ,try to get them from cache.
-            $config = copyleaks_pluginconfig::admin_config();
+            $config = plagiarism_copyleaks_pluginconfig::admin_config();
             if (isset($config->plagiarism_copyleaks_jwttoken)) {
                 $result = $config->plagiarism_copyleaks_jwttoken;
             }
@@ -261,7 +261,7 @@ class copyleaks_comms {
                 'secret' => $secret
             ];
 
-            $result = copyleaks_http_client::execute(
+            $result = plagiarism_copyleaks_http_client::execute(
                 'POST',
                 $apiurl . "/api/moodle/plugin/" . $key . "/login",
                 false,
@@ -284,7 +284,7 @@ class copyleaks_comms {
      * @return bool
      */
     public static function test_copyleaks_connection($context) {
-        $cl = new copyleaks_comms();
+        $cl = new plagiarism_copyleaks_comms();
         return $cl->test_connection($context);
     }
 
@@ -296,7 +296,7 @@ class copyleaks_comms {
     public function test_connection($context) {
         try {
             if (isset($this->key) && isset($this->secret)) {
-                copyleaks_http_client::execute(
+                plagiarism_copyleaks_http_client::execute(
                     'GET',
                     $this->copyleaks_api_url() . "/api/moodle/plugin/" . $this->key . "/test-connection",
                     true
@@ -307,7 +307,7 @@ class copyleaks_comms {
             }
         } catch (Exception $e) {
             if ($context == 'scheduler_task') {
-                copyleaks_logs::add(get_string('cltaskfailedconnecting', 'plagiarism_copyleaks'), 'API_ERROR');
+                plagiarism_copyleaks_logs::add(get_string('cltaskfailedconnecting', 'plagiarism_copyleaks'), 'API_ERROR');
             }
             return false;
         }

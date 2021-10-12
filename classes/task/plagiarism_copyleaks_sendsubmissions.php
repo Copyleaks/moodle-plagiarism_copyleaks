@@ -24,13 +24,13 @@
 namespace plagiarism_copyleaks\task;
 
 defined('MOODLE_INTERNAL') || die();
-require_once($CFG->dirroot . '/plagiarism/copyleaks/constants/copyleaks.constants.php');
-require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/copyleaks_logs.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/constants/plagiarism_copyleaks.constants.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_logs.class.php');
 
 /**
  * Copyleaks Plagiarism Plugin - Handle Queued Files
  */
-class copyleaks_sendsubmissions extends \core\task\scheduled_task {
+class plagiarism_copyleaks_sendsubmissions extends \core\task\scheduled_task {
 
     /**
      * Get scheduler name, this will be shown to admins on schedulers dashboard.
@@ -44,9 +44,9 @@ class copyleaks_sendsubmissions extends \core\task\scheduled_task {
      */
     public function execute() {
         global $CFG;
-        require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/copyleaks_submissions.class.php');
-        require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/copyleaks_comms.class.php');
-        require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/copyleaks_assignmodule.class.php');
+        require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_submissions.class.php');
+        require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_comms.class.php');
+        require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_assignmodule.class.php');
 
         $this->send_queued_submissions();
     }
@@ -75,7 +75,7 @@ class copyleaks_sendsubmissions extends \core\task\scheduled_task {
 
             $canloadmoredata = count($queuedsubmissions) == PLAGIARISM_COPYLEAKS_CRON_SUBMISSIONS_LIMIT;
 
-            if (count($queuedsubmissions) > 0 && !\copyleaks_comms::test_copyleaks_connection('scheduler_task')) {
+            if (count($queuedsubmissions) > 0 && !\plagiarism_copyleaks_comms::test_copyleaks_connection('scheduler_task')) {
                 return;
             }
 
@@ -86,7 +86,7 @@ class copyleaks_sendsubmissions extends \core\task\scheduled_task {
                     $subtype,
                     PLAGIARISM_COPYLEAKS_SUPPORTED_SUBMISSION_TYPES
                 )) {
-                    \copyleaks_submissions::mark_error(
+                    \plagiarism_copyleaks_submissions::mark_error(
                         $submission->id,
                         'Submission type is not supported.'
                     );
@@ -96,7 +96,7 @@ class copyleaks_sendsubmissions extends \core\task\scheduled_task {
                 // Check if course module exists.
                 $coursemodule = get_coursemodule_from_id('', $submission->cm);
                 if (empty($coursemodule)) {
-                    \copyleaks_submissions::mark_error($submission->id, "Course Module wasnt found for this record.");
+                    \plagiarism_copyleaks_submissions::mark_error($submission->id, "Course Module wasnt found for this record.");
                     continue;
                 }
 
@@ -109,7 +109,7 @@ class copyleaks_sendsubmissions extends \core\task\scheduled_task {
 
                 // Mark as error if user id is 0 (user id should never be 0).
                 if (empty($submission->userid)) {
-                    \copyleaks_submissions::mark_error($submission->id,  'User Id should never be 0.');
+                    \plagiarism_copyleaks_submissions::mark_error($submission->id,  'User Id should never be 0.');
                     continue;
                 }
 
@@ -191,7 +191,7 @@ class copyleaks_sendsubmissions extends \core\task\scheduled_task {
 
                 // If $errormessage is not empty, then there was an error.
                 if ($errormessage != 0) {
-                    \copyleaks_submissions::mark_error($submission->id,  $errormessage);
+                    \plagiarism_copyleaks_submissions::mark_error($submission->id,  $errormessage);
                     continue;
                 }
 
@@ -199,7 +199,7 @@ class copyleaks_sendsubmissions extends \core\task\scheduled_task {
                     // Read the submited work into a temp file for submitting.
                     $tempfilepath = $this->create_copyleaks_tempfile($coursemodule->id, $filename);
                 } catch (\Exception $e) {
-                    \copyleaks_submissions::mark_error($submission->id,  "Fail to create a tempfile.");
+                    \plagiarism_copyleaks_submissions::mark_error($submission->id,  "Fail to create a tempfile.");
                     continue;
                 }
 
@@ -208,7 +208,7 @@ class copyleaks_sendsubmissions extends \core\task\scheduled_task {
                 fclose($fileref);
 
                 try {
-                    $copyleakscomms = new \copyleaks_comms();
+                    $copyleakscomms = new \plagiarism_copyleaks_comms();
                     $copyleakscomms->submit_for_plagiarism_scan(
                         $tempfilepath,
                         $filename,
@@ -217,14 +217,14 @@ class copyleaks_sendsubmissions extends \core\task\scheduled_task {
                         $submission->identifier,
                         $submission->submissiontype
                     );
-                    \copyleaks_submissions::mark_pending($submission->id);
+                    \plagiarism_copyleaks_submissions::mark_pending($submission->id);
                 } catch (\Exception $e) {
                     $error = get_string(
                         'clapisubmissionerror',
                         'plagiarism_copyleaks'
                     ) . ' ' . $e->getMessage();
-                    \copyleaks_submissions::mark_error($submission->id,  $error);
-                    \copyleaks_logs::add($error, 'API_ERROR');
+                    \plagiarism_copyleaks_submissions::mark_error($submission->id,  $error);
+                    \plagiarism_copyleaks_logs::add($error, 'API_ERROR');
                 }
 
                 // After finished the scan proccess, delete the temp file (if it exists).

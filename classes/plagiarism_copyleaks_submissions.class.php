@@ -25,12 +25,12 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/copyleaks_logs.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_logs.class.php');
 
 /**
  * submissions helpers methods
  */
-class copyleaks_submissions {
+class plagiarism_copyleaks_submissions {
     /**
      * Initialise submission values
      * @param stdClass $cm
@@ -50,7 +50,7 @@ class copyleaks_submissions {
         $file->submissiontype = $submissiontype;
 
         if (!$fileid = $DB->insert_record('plagiarism_copyleaks_files', $file)) {
-            \copyleaks_logs::add(
+            \plagiarism_copyleaks_logs::add(
                 "failed to insert database record for cmid: " . $cm->id . ", userid: " . $userid,
                 "INSERT_RECORD_FAILED"
             );
@@ -108,7 +108,7 @@ class copyleaks_submissions {
 
         if ($fileid != 0) {
             if (!$DB->update_record('plagiarism_copyleaks_files', $file)) {
-                \copyleaks_logs::add(
+                \plagiarism_copyleaks_logs::add(
                     "failed to update database record for cmid: "
                         . $cm->id . ", userid: " . $userid,
                     "UPDATE_RECORD_FAILED"
@@ -116,7 +116,7 @@ class copyleaks_submissions {
             }
         } else {
             if (!$DB->insert_record('plagiarism_copyleaks_files', $file)) {
-                \copyleaks_logs::add(
+                \plagiarism_copyleaks_logs::add(
                     "failed to insert database record for cmid: "
                         . $cm->id . ", userid: " . $userid,
                     "INSERT_RECORD_FAILED"
@@ -145,12 +145,12 @@ class copyleaks_submissions {
         }
 
         if (!$DB->update_record('plagiarism_copyleaks_files', $file)) {
-            \copyleaks_logs::add(
+            \plagiarism_copyleaks_logs::add(
                 "failed to update database record for fileid: " . $fileid,
                 "UPDATE_RECORD_FAILED"
             );
         } else {
-            \copyleaks_logs::add($errormsg . " (fileid: " . $fileid . ") - ", "MARK_ERROR_SUBMISSION");
+            \plagiarism_copyleaks_logs::add($errormsg . " (fileid: " . $fileid . ") - ", "MARK_ERROR_SUBMISSION");
         }
 
         return true;
@@ -169,7 +169,7 @@ class copyleaks_submissions {
         $file->lastmodified = time();
 
         if (!$DB->update_record('plagiarism_copyleaks_files', $file)) {
-            \copyleaks_logs::add(
+            \plagiarism_copyleaks_logs::add(
                 "failed to update database record for fileid: " . $fileid,
                 "UPDATE_RECORD_FAILED"
             );

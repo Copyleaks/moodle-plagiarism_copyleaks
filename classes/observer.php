@@ -24,7 +24,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/plagiarism/copyleaks/lib.php');
-require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/copyleaks_eventshandler.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_eventshandler.class.php');
 
 /**
  * Moodle events handlers for Copyleaks plagiairsm plugin
@@ -61,7 +61,7 @@ class plagiarism_copyleaks_observer {
     public static function assignsubmission_file_event_assessable_uploaded(
         \assignsubmission_file\event\assessable_uploaded $event
     ) {
-        $eventhandler = new copyleaks_eventshandler('file_uploaded', 'assign');
+        $eventhandler = new plagiarism_copyleaks_eventshandler('file_uploaded', 'assign');
         $eventhandler->handle_submissions($event->get_data());
     }
 
@@ -72,7 +72,7 @@ class plagiarism_copyleaks_observer {
     public static function assignsubmission_onlinetext_event_assessable_uploaded(
         \assignsubmission_onlinetext\event\assessable_uploaded $event
     ) {
-        $eventhandler = new copyleaks_eventshandler('content_uploaded', 'assign');
+        $eventhandler = new plagiarism_copyleaks_eventshandler('content_uploaded', 'assign');
         $eventhandler->handle_submissions($event->get_data());
     }
 
@@ -83,7 +83,7 @@ class plagiarism_copyleaks_observer {
     public static function mod_assign_event_assessable_submitted(
         \mod_assign\event\assessable_submitted $event
     ) {
-        $eventhandler = new copyleaks_eventshandler('assessable_submitted', 'assign');
+        $eventhandler = new plagiarism_copyleaks_eventshandler('assessable_submitted', 'assign');
         $eventhandler->handle_submissions($event->get_data());
     }
 
@@ -94,7 +94,7 @@ class plagiarism_copyleaks_observer {
     public static function mod_workshop_event_assessable_uploaded(
         \mod_workshop\event\assessable_uploaded $event
     ) {
-        $eventhandler = new copyleaks_eventshandler('assessable_submitted', 'workshop');
+        $eventhandler = new plagiarism_copyleaks_eventshandler('assessable_submitted', 'workshop');
         $eventhandler->handle_submissions($event->get_data());
     }
 
@@ -105,7 +105,7 @@ class plagiarism_copyleaks_observer {
     public static function mod_forum_event_assessable_uploaded(
         \mod_forum\event\assessable_uploaded $event
     ) {
-        $eventhandler = new copyleaks_eventshandler('assessable_submitted', 'forum');
+        $eventhandler = new plagiarism_copyleaks_eventshandler('assessable_submitted', 'forum');
         $eventhandler->handle_submissions($event->get_data());
     }
 }

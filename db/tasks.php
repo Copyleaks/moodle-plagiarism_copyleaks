@@ -26,7 +26,7 @@ defined('MOODLE_INTERNAL') || die();
 
 $tasks = array(
     array(
-        'classname' => 'plagiarism_copyleaks\task\copyleaks_updatereports',
+        'classname' => 'plagiarism_copyleaks\task\plagiarism_copyleaks_updatereports',
         'blocking' => 0,
         'minute' => '*/1',
         'hour' => '*',
@@ -35,7 +35,7 @@ $tasks = array(
         'month' => '*'
     ),
     array(
-        'classname' => 'plagiarism_copyleaks\task\copyleaks_sendsubmissions',
+        'classname' => 'plagiarism_copyleaks\task\plagiarism_copyleaks_sendsubmissions',
         'blocking' => 0,
         'minute' => '*/1',
         'hour' => '*',

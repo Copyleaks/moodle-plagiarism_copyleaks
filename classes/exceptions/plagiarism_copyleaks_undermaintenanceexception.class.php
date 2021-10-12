@@ -14,19 +14,19 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 /**
- * Copyleaks auth exception
+ * Copyleaks under maintenance exception
  * @package   plagiarism_copyleaks
  * @copyright 2021 Copyleaks
  * @author    Bayan Abuawad <bayana@copyleaks.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-/** Copyleaks auth exception */
-class copyleaks_auth_exception extends Exception {
+/** Copyleaks under maintenance exception */
+class plagiarism_copyleaks_under_maintenance_exception extends Exception {
     /**
      * constructor
      */
     public function __construct() {
-        parent::__construct("UnAuthorized, make sure you are using the right key & secret.");
+        parent::__construct("Copyleaks plugin is under maintenance, to learn more please visit https://status.copyleaks.com");
     }
 }

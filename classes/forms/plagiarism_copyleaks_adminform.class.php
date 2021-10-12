@@ -28,18 +28,18 @@ global $CFG;
 require_once($CFG->dirroot . '/plagiarism/copyleaks/lib.php');
 require_once($CFG->dirroot . '/lib/formslib.php');
 
-require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/copyleaks_comms.class.php');
-require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/copyleaks_pluginconfig.class.php');
-require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/copyleaks_moduleconfig.class.php');
-require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/exceptions/copyleaks_authexception.class.php');
-require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/exceptions/copyleaks_exception.class.php');
-require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/exceptions/copyleaks_ratelimitexception.class.php');
-require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/exceptions/copyleaks_undermaintenanceexception.class.php');
-require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/copyleaks_logs.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_comms.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_pluginconfig.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_moduleconfig.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/exceptions/plagiarism_copyleaks_authexception.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/exceptions/plagiarism_copyleaks_exception.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/exceptions/plagiarism_copyleaks_ratelimitexception.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/exceptions/plagiarism_copyleaks_undermaintenanceexception.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_logs.class.php');
 /**
  * Copyleaks admin setup form
  */
-class copyleaks_adminform extends moodleform {
+class plagiarism_copyleaks_adminform extends moodleform {
     /** @var mixed copyleaks settings ref */
     public $copyleakssettings;
 
@@ -179,7 +179,7 @@ class copyleaks_adminform extends moodleform {
         $newconfigkey = $data["plagiarism_copyleaks_key"];
         $newapiurl = $data["plagiarism_copyleaks_apiurl"];
 
-        $config = copyleaks_pluginconfig::admin_config();
+        $config = plagiarism_copyleaks_pluginconfig::admin_config();
         if (
             isset($config->plagiarism_copyleaks_secret) &&
             isset($config->plagiarism_copyleaks_key) &&
@@ -191,7 +191,7 @@ class copyleaks_adminform extends moodleform {
 
             if ($secret != $newconfigsecret || $key != $newconfigkey || $apiurl != $newapiurl) {
                 try {
-                    $cljwttoken = copyleaks_comms::login_to_copyleaks($newapiurl, $newconfigkey, $newconfigsecret, true);
+                    $cljwttoken = plagiarism_copyleaks_comms::login_to_copyleaks($newapiurl, $newconfigkey, $newconfigsecret, true);
                     if (isset($cljwttoken)) {
                         return array();
                     } else {
@@ -199,7 +199,7 @@ class copyleaks_adminform extends moodleform {
                             "plagiarism_copyleaks_secret" => get_string('clinvalidkeyorsecret', 'plagiarism_copyleaks')
                         ];
                     }
-                } catch (copyleaks_exception $ex) {
+                } catch (plagiarism_copyleaks_exception $ex) {
                     switch ($ex->getCode()) {
                         case 404:
                             return (array)[
@@ -215,7 +215,7 @@ class copyleaks_adminform extends moodleform {
                             throw $ex;
                             break;
                     }
-                } catch (copyleaks_auth_exception $ex) {
+                } catch (plagiarism_copyleaks_auth_exception $ex) {
                     return (array)[
                         "plagiarism_copyleaks_secret" => get_string('clinvalidkeyorsecret', 'plagiarism_copyleaks')
                     ];
@@ -239,16 +239,16 @@ class copyleaks_adminform extends moodleform {
         $cache->delete('plagiarism_copyleaks');
 
         // Get moodle admin config.
-        $plagiarismsettings = (array) copyleaks_pluginconfig::admin_config();
+        $plagiarismsettings = (array) plagiarism_copyleaks_pluginconfig::admin_config();
 
         if (
             !isset($plagiarismsettings['plagiarism_copyleaks_apiurl']) ||
             empty($plagiarismsettings['plagiarism_copyleaks_apiurl'])
         ) {
-            $plagiarismsettings['plagiarism_copyleaks_apiurl'] = copyleaks_comms::copyleaks_api_url();
+            $plagiarismsettings['plagiarism_copyleaks_apiurl'] = plagiarism_copyleaks_comms::copyleaks_api_url();
         }
 
-        $cldbdefaultconfig = copyleaks_moduleconfig::get_modules_default_config();
+        $cldbdefaultconfig = plagiarism_copyleaks_moduleconfig::get_modules_default_config();
         if (count($cldbdefaultconfig) > 0) {
             $plagiarismsettings["plagiarism_copyleaks_ignorereferences"] =
                 $cldbdefaultconfig["plagiarism_copyleaks_ignorereferences"];
@@ -313,9 +313,9 @@ class copyleaks_adminform extends moodleform {
             set_config('copyleaks_use', $pluginenabled, 'plagiarism');
         }
 
-        $configproperties = copyleaks_pluginconfig::admin_config_properties();
+        $configproperties = plagiarism_copyleaks_pluginconfig::admin_config_properties();
         foreach ($configproperties as $property) {
-            copyleaks_pluginconfig::set_admin_config($data, $property);
+            plagiarism_copyleaks_pluginconfig::set_admin_config($data, $property);
         }
 
         if (!isset($this->copyleakssettings)) {
@@ -354,7 +354,7 @@ class copyleaks_adminform extends moodleform {
             $result = $this->save_plugin_default_settings();
 
             if ($result) {
-                copyleaks_moduleconfig::set_module_config(
+                plagiarism_copyleaks_moduleconfig::set_module_config(
                     $data->plagiarism_copyleaks_ignorereferences,
                     $data->plagiarism_copyleaks_ignorequotes,
                     $data->plagiarism_copyleaks_ignoretitles,
@@ -379,9 +379,9 @@ class copyleaks_adminform extends moodleform {
         try {
             $mform = &$this->_form;
             // Get copyleaks api global plugin settings.
-            $cl = new copyleaks_comms();
+            $cl = new plagiarism_copyleaks_comms();
             $this->copyleakssettings = $cl->get_plugin_default_settings();
-        } catch (copyleaks_exception $ex) {
+        } catch (plagiarism_copyleaks_exception $ex) {
             if ($ex->getCode() == 404) {
                 $mform->setElementError(
                     'plagiarism_copyleaks_secret',
@@ -393,9 +393,9 @@ class copyleaks_adminform extends moodleform {
                     'plagiarism_copyleaks_enablecheatdetection',
                     $errormessage
                 );
-                copyleaks_logs::add($errormessage . ': ' . $ex->getMessage(), 'API_ERROR');
+                plagiarism_copyleaks_logs::add($errormessage . ': ' . $ex->getMessage(), 'API_ERROR');
             }
-        } catch (copyleaks_auth_exception $ex) {
+        } catch (plagiarism_copyleaks_auth_exception $ex) {
             $mform->setElementError(
                 'plagiarism_copyleaks_secret',
                 get_string('clinvalidkeyorsecret', 'plagiarism_copyleaks')
@@ -410,11 +410,11 @@ class copyleaks_adminform extends moodleform {
         try {
             $mform = &$this->_form;
             // Get copyleaks api global plugin settings.
-            $cl = new copyleaks_comms();
+            $cl = new plagiarism_copyleaks_comms();
             $cl->save_plugin_default_settings(json_encode($this->copyleakssettings));
 
             return true;
-        } catch (copyleaks_exception $ex) {
+        } catch (plagiarism_copyleaks_exception $ex) {
             if ($ex->getCode() == 404) {
                 $mform->setElementError(
                     'plagiarism_copyleaks_secret',
@@ -426,10 +426,10 @@ class copyleaks_adminform extends moodleform {
                     'plagiarism_copyleaks_enablecheatdetection',
                     $errormessage
                 );
-                copyleaks_logs::add($errormessage . ': ' . $ex->getMessage(), 'API_ERROR');
+                plagiarism_copyleaks_logs::add($errormessage . ': ' . $ex->getMessage(), 'API_ERROR');
             }
             return false;
-        } catch (copyleaks_auth_exception $ex) {
+        } catch (plagiarism_copyleaks_auth_exception $ex) {
             $mform->setElementError(
                 'plagiarism_copyleaks_secret',
                 get_string('clinvalidkeyorsecret', 'plagiarism_copyleaks')

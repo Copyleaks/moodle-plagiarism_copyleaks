@@ -25,7 +25,7 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * module configurations helpers methods
  */
-class copyleaks_moduleconfig {
+class plagiarism_copyleaks_moduleconfig {
     /**
      * Get course module db properties
      * @return array Course Module DB Properties
@@ -219,7 +219,7 @@ class copyleaks_moduleconfig {
     public static function is_module_enabled($modulename, $cmid) {
         $plagiarismsettings = self::get_module_config($cmid);
 
-        $moduleclenabled = copyleaks_pluginconfig::is_plugin_configured('mod_' . $modulename);
+        $moduleclenabled = plagiarism_copyleaks_pluginconfig::is_plugin_configured('mod_' . $modulename);
         if (empty($plagiarismsettings['plagiarism_copyleaks_enable']) || empty($moduleclenabled)) {
             return false;
         }

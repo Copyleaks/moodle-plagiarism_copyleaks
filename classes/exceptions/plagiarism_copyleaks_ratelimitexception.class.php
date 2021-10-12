@@ -21,7 +21,7 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 /** Copyleaks rate limit exception */
-class copyleaks_rate_limit_exception extends Exception {
+class plagiarism_copyleaks_rate_limit_exception extends Exception {
     /**
      * constructor
      */

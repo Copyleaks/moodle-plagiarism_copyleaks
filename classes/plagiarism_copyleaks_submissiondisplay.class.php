@@ -23,14 +23,14 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/copyleaks_pluginconfig.class.php');
-require_once($CFG->dirroot . '/plagiarism/copyleaks/constants/copyleaks.constants.php');
-require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/copyleaks_assignmodule.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_pluginconfig.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/constants/plagiarism_copyleaks.constants.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_assignmodule.class.php');
 
 /**
  * submission display helpers methods
  */
-class copyleaks_submissiondisplay {
+class plagiarism_copyleaks_submissiondisplay {
     /**
      * build the displayed output for submission
      * @param array  $submissionref contains all relevant information for the plugin to generate a link
@@ -73,7 +73,7 @@ class copyleaks_submissiondisplay {
         // Get Copyleaks plugin admin config.
         static $adminconfig;
         if (empty($adminconfig)) {
-            $adminconfig = copyleaks_pluginconfig::admin_config();
+            $adminconfig = plagiarism_copyleaks_pluginconfig::admin_config();
         }
 
         // Is Copyleaks plugin enabled for this module type?
@@ -103,7 +103,7 @@ class copyleaks_submissiondisplay {
         // Check current user if instructor.
         static $isinstructor;
         if (empty($isinstructor)) {
-            $isinstructor = copyleaks_assignmodule::is_instructor($ctx);
+            $isinstructor = plagiarism_copyleaks_assignmodule::is_instructor($ctx);
         }
 
         // Incase of students, check if he is allowed to view the plagiairsm report progress & results.
@@ -160,7 +160,7 @@ class copyleaks_submissiondisplay {
             } else if ($coursemodule->modname == "assign") {
                 $author = $submissionref['userid'];
                 if ($subitemid != 0) {
-                    $author = copyleaks_assignmodule::get_author($subitemid);
+                    $author = plagiarism_copyleaks_assignmodule::get_author($subitemid);
                     $submissionref['userid'] = (!empty($author)) ? $author : $submissionref['userid'];
                 }
             }
@@ -221,7 +221,7 @@ class copyleaks_submissiondisplay {
                             $results["score"] = $submittedfile->similarityscore;
 
                             $results['reporturl'] =
-                                "$CFG->wwwroot/plagiarism/copyleaks/copyleaks_report.php" .
+                                "$CFG->wwwroot/plagiarism/copyleaks/plagiarism_copyleaks_report.php" .
                                 "?cmid=$submittedfile->cm&userid=$submittedfile->userid" .
                                 "&identifier=$submittedfile->identifier&modulename=$coursemodule->modname";
 

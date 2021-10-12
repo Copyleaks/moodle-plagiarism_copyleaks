@@ -24,14 +24,14 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/exceptions/copyleaks_authexception.class.php');
-require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/exceptions/copyleaks_exception.class.php');
-require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/exceptions/copyleaks_ratelimitexception.class.php');
-require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/exceptions/copyleaks_undermaintenanceexception.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/exceptions/plagiarism_copyleaks_authexception.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/exceptions/plagiarism_copyleaks_exception.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/exceptions/plagiarism_copyleaks_ratelimitexception.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/exceptions/plagiarism_copyleaks_undermaintenanceexception.class.php');
 /**
  * containes a generic method for AJAX calls
  */
-class copyleaks_http_client {
+class plagiarism_copyleaks_http_client {
     /**
      * Generic execute method for AJAX calls
      * @param string $verb - request verb
@@ -65,7 +65,7 @@ class copyleaks_http_client {
         ];
 
         if ($requireauth) {
-            $cljwttoken = copyleaks_comms::login_to_copyleaks();
+            $cljwttoken = plagiarism_copyleaks_comms::login_to_copyleaks();
             $authorization = "Authorization: Bearer $cljwttoken";
             $headers = array('Content-Type: ' . $contenttype, $authorization);
         }
@@ -100,18 +100,18 @@ class copyleaks_http_client {
         } else if (self::is_unauthorized_status_code($statuscode)) {
             if (!$isauthretry) {
                 // Try to get the jwt again from copyleaks (retry if unauthorized).
-                $cljwttoken = copyleaks_comms::login_to_copyleaks(null, null, null, true);
+                $cljwttoken = plagiarism_copyleaks_comms::login_to_copyleaks(null, null, null, true);
                 if (isset($cljwttoken)) {
                     return self::execute($verb, $url, $requireauth, $data, true);
                 }
             }
-            throw new copyleaks_auth_exception();
+            throw new plagiarism_copyleaks_auth_exception();
         } else if (self::is_under_maintenance_response($statuscode)) {
-            throw new copyleaks_under_maintenance_exception();
+            throw new plagiarism_copyleaks_under_maintenance_exception();
         } else if (self::is_rate_limit_response($statuscode)) {
-            throw new copyleaks_rate_limit_exception();
+            throw new plagiarism_copyleaks_rate_limit_exception();
         } else {
-            throw new copyleaks_exception($result, $statuscode);
+            throw new plagiarism_copyleaks_exception($result, $statuscode);
         }
     }
 
