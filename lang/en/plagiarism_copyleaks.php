@@ -75,3 +75,21 @@ $string['clplagiarisescanning'] = 'Scanning for plagiarism...';
 $string['clplagiarisequeued'] = 'Scheduled for plagiarism scan at {$a}';
 $string['cldisabledformodule'] = 'Copyleaks plugin is disabled for this module.';
 $string['clnopageaccess'] = 'You dont have access to this page.';
+
+$string['privacy:metadata:core_files'] = 'Copyleaks stores files that have been uploaded to Moodle to form a Copyleaks submission.';
+
+$string['privacy:metadata:plagiarism_copyleaks_files'] = 'Information that links a Moodle submission to a Copyleaks submission.';
+$string['privacy:metadata:plagiarism_copyleaks_files:userid'] = 'The ID of the user who is the owner of the submission.';
+$string['privacy:metadata:plagiarism_copyleaks_files:submitter'] = 'The ID of the user who has made the submission.';
+$string['privacy:metadata:plagiarism_copyleaks_files:similarityscore'] = 'The similarity score of the submission.';
+$string['privacy:metadata:plagiarism_copyleaks_files:lastmodified'] = 'A timestamp indicating when the user last modified their submission.';
+
+$string['privacy:metadata:plagiarism_copyleaks_client'] = 'In order to integrate with a Copyleaks, some user data needs to be exchanged with Copyleaks.';
+$string['privacy:metadata:plagiarism_copyleaks_client:module_id'] = 'The module id is sent to Copyleaks for identification purposes.';
+$string['privacy:metadata:plagiarism_copyleaks_client:module_name'] = 'The module name is sent to Copyleaks for identification purposes.';
+$string['privacy:metadata:plagiarism_copyleaks_client:module_type'] = 'The module type is sent to Copyleaks for identification purposes.';
+$string['privacy:metadata:plagiarism_copyleaks_client:module_creationtime'] = 'The module creation time is sent to Copyleaks for identification purposes.';
+$string['privacy:metadata:plagiarism_copyleaks_client:submittion_userId'] = 'The submission userId is sent to Copyleaks for identification purposes.';
+$string['privacy:metadata:plagiarism_copyleaks_client:submittion_name'] = 'The submission name is sent to Copyleaks for identification purposes.';
+$string['privacy:metadata:plagiarism_copyleaks_client:submittion_type'] = 'The submission type is sent to Copyleaks for identification purposes.';
+$string['privacy:metadata:plagiarism_copyleaks_client:submittion_content'] = 'The submission content is sent to Copyleaks for scan processing.';
