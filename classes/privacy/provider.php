@@ -32,6 +32,7 @@ use core_privacy\local\request\contextlist;
 use core_privacy\local\request\helper;
 use core_privacy\local\request\writer;
 
+/** Privacy Subsystem implementation for plagiarism_copyleaks. */
 class provider implements
   // This plugin does export personal user data.
   \core_privacy\local\metadata\provider,
