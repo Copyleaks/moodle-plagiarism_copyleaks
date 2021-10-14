@@ -63,8 +63,8 @@ class plagiarism_copyleaks_updatereports extends \core\task\scheduled_task {
 
             $submissions = $DB->get_records_select(
                 "plagiarism_copyleaks_files",
-                "statuscode = 'pending' AND lastmodified < $expectedfinishtime AND (similarityscore IS NULL)",
-                null,
+                "statuscode = ? AND lastmodified < ? AND (similarityscore IS NULL)",
+                array('pending', $expectedfinishtime),
                 '',
                 '*',
                 0,

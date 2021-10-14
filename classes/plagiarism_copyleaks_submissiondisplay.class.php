@@ -188,14 +188,23 @@ class plagiarism_copyleaks_submissiondisplay {
 
                 // If plagiarismfile is null, try to init it again.
                 if (is_null($submittedfile)) {
-                    $query = "cm = '" . $submissionref["cmid"] . "' AND identifier = '" . $subidentifier . "'";
+                    $query = "cm = ? AND identifier = ?";
+                    $queryparams = array($submissionref["cmid"], $subidentifier);
+
                     if (count($submissionusers) > 0) {
-                        $query .= " AND userid IN (" . implode(",", $submissionusers) . ")";
+                        $query .= " AND userid IN (";
+                        foreach ($submissionusers as $userid) {
+                            $query .= "?,";
+                            array_push($queryparams, $userid);
+                        }
+                        $query  = substr($query, 0, -1);
+                        $query .= ")";
                     }
+
                     $submittedfiles = $DB->get_records_select(
                         'plagiarism_copyleaks_files',
                         $query,
-                        array(),
+                        $queryparams,
                         '',
                         '*',
                         0,

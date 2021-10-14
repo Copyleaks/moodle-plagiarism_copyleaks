@@ -181,14 +181,16 @@ class plagiarism_copyleaks_eventshandler {
         }
 
         // Queue text content to be submitted to Copyleaks later by submission task.
-        if (!empty($data['other']['content'] &&
+        if (
+            !empty($data['other']['content']) &&
             in_array(
                 $data['eventtype'],
                 array(
                     "content_uploaded",
                     "assessable_submitted"
                 )
-            ))) {
+            )
+        ) {
             $result = $this->queue_text_content($data, $coursemodule, $authoruserid, $submitteruserid, $cmdata);
         }
 

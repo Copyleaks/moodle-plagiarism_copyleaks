@@ -65,8 +65,8 @@ class plagiarism_copyleaks_sendsubmissions extends \core\task\scheduled_task {
             $currentdate = strtotime("now");
             $queuedsubmissions = $DB->get_records_select(
                 "plagiarism_copyleaks_files",
-                "statuscode = 'queued' AND scheduledscandate < $currentdate",
-                null,
+                "statuscode = ? AND scheduledscandate < ?",
+                array('queued', $currentdate),
                 '',
                 '*',
                 0,
