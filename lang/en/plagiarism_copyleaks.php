@@ -66,6 +66,7 @@ $string['clgenereportonduedate'] = 'Generate reports on due date';
 $string['cltaskfailedconnecting'] = 'connection to Copyleaks can not be established.';
 $string['clapisubmissionerror'] = 'Copyleaks has returned an error while trying to send file for submission - ';
 $string['clcheatingdetected'] = 'Cheating detected, Open report to learn more';
+$string['clcheatingdetectedtxt'] = 'Cheating detected';
 $string['clreportpagetitle'] = 'Copyleaks report';
 $string['clopenfullscreen'] = 'Open in full screen';
 $string['cllogsheading'] = 'Logs';

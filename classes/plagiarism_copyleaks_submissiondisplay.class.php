@@ -258,7 +258,9 @@ class plagiarism_copyleaks_submissiondisplay {
                                 ) . '<a class="copyleaks-text-warn" title="'
                                     . get_string('clcheatingdetected', 'plagiarism_copyleaks')
                                     . '" href="'
-                                    . $results['reporturl'] . '" target="_blank">Cheating detected</a>';
+                                    . $results['reporturl'] . '" target="_blank">'
+                                    . get_string('clcheatingdetectedtxt', 'plagiarism_copyleaks')
+                                    . '</a>';
                                 $output .= html_writer::tag(
                                     'div',
                                     $cheatingdetectioncontent,
