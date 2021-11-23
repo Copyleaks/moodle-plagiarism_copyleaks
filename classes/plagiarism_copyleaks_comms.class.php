@@ -307,7 +307,8 @@ class plagiarism_copyleaks_comms {
             }
         } catch (Exception $e) {
             if ($context == 'scheduler_task') {
-                plagiarism_copyleaks_logs::add(get_string('cltaskfailedconnecting', 'plagiarism_copyleaks'), 'API_ERROR');
+                $errormsg = get_string('cltaskfailedconnecting', 'plagiarism_copyleaks', $e->getMessage());
+                plagiarism_copyleaks_logs::add($errormsg, 'API_ERROR');
             }
             return false;
         }
