@@ -32,12 +32,8 @@ require_once($CFG->dirroot . '/plagiarism/copyleaks/lib.php');
  */
 function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
     global $DB;
-
     $dbman = $DB->get_manager();
-    $result = true;
-
     if ($oldversion < 2021090901) {
-
         // Changing type of field similarityscore on table plagiarism_copyleaks_files to number.
         $table = new xmldb_table('plagiarism_copyleaks_files');
         $field = new xmldb_field('similarityscore', XMLDB_TYPE_NUMBER, '10', null, null, null, null, 'statuscode');
@@ -49,5 +45,5 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2021090901, 'plagiarism', 'copyleaks');
     }
 
-    return $result;
+    return true;
 }
