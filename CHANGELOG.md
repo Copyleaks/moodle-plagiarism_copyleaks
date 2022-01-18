@@ -1,3 +1,7 @@
+### Date: 		2022-January-18
+### Release:	v2022011800
+-  Copyleaks Plugin is now disabled by default for newly created modules
+
 ### Date: 		2021-August-22
 ### Release:	v2021082200
 -  Add support for Forums
