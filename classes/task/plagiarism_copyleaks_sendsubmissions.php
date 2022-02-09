@@ -219,12 +219,15 @@ class plagiarism_copyleaks_sendsubmissions extends \core\task\scheduled_task {
                     );
                     \plagiarism_copyleaks_submissions::mark_pending($submission->id);
                 } catch (\Exception $e) {
-                    $error = get_string(
-                        'clapisubmissionerror',
-                        'plagiarism_copyleaks'
-                    ) . ' ' . $e->getMessage();
-                    \plagiarism_copyleaks_submissions::mark_error($submission->id,  $error);
-                    \plagiarism_copyleaks_logs::add($error, 'API_ERROR');
+                    $errorcode = $e->getCode();
+                    if ($errorcode < 500 && $errorcode != 429) {
+                        $error = get_string(
+                            'clapisubmissionerror',
+                            'plagiarism_copyleaks'
+                        ) . ' ' . $e->getMessage();
+                        \plagiarism_copyleaks_submissions::mark_error($submission->id,  $error);
+                        \plagiarism_copyleaks_logs::add($error, 'API_ERROR');
+                    }
                 }
 
                 // After finished the scan proccess, delete the temp file (if it exists).

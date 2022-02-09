@@ -158,7 +158,6 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
                 'plagiarism_copyleaks_defaultsettings',
                 get_string('clscoursesettings', 'plagiarism_copyleaks')
             );
-            $mform->setExpanded('plagiarism_copyleaks_defaultsettings');
 
             // Database settings.
             $mform->addElement(

@@ -287,8 +287,7 @@ class plagiarism_copyleaks_submissiondisplay {
                                     . get_string('clplagiarisefailed', 'plagiarism_copyleaks')
                                     . '</span>&nbsp;';
 
-                                $errorwrapper = '<span title="'
-                                    . $submittedfile->errormsg . '">' . $errorstring . '</span>';
+                                $errorwrapper = '<span>' . $errorstring . '</span>';
 
                                 $output = html_writer::tag(
                                     'div',

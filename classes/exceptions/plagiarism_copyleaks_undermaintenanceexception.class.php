@@ -27,6 +27,6 @@ class plagiarism_copyleaks_under_maintenance_exception extends Exception {
      * constructor
      */
     public function __construct() {
-        parent::__construct("Copyleaks plugin is under maintenance, to learn more please visit https://status.copyleaks.com");
+        parent::__construct("Copyleaks plugin is under maintenance, to learn more please visit https://status.copyleaks.com", 503);
     }
 }

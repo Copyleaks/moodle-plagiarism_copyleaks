@@ -26,6 +26,6 @@ class plagiarism_copyleaks_rate_limit_exception extends Exception {
      * constructor
      */
     public function __construct() {
-        parent::__construct("Too many requests. Please wait before trying again.");
+        parent::__construct("Too many requests. Please wait before trying again.", 429);
     }
 }
