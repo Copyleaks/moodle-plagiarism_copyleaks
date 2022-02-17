@@ -80,6 +80,7 @@ class plagiarism_copyleaks_sendsubmissions extends \core\task\scheduled_task {
             }
 
             foreach ($queuedsubmissions as $submission) {
+                $errormessage = 0;
                 // Check if submission type is supported.
                 $subtype = $submission->submissiontype;
                 if (!in_array(
@@ -190,7 +191,7 @@ class plagiarism_copyleaks_sendsubmissions extends \core\task\scheduled_task {
                 }
 
                 // If $errormessage is not empty, then there was an error.
-                if ($errormessage != 0) {
+                if (isset($errormessage) && $errormessage != 0) {
                     \plagiarism_copyleaks_submissions::mark_error($submission->id,  $errormessage);
                     continue;
                 }
@@ -227,7 +228,7 @@ class plagiarism_copyleaks_sendsubmissions extends \core\task\scheduled_task {
                     if ($errorcode < 500 && $errorcode != 429) {
                         \plagiarism_copyleaks_submissions::mark_error($submission->id,  $error);
                     } else {
-                        \plagiarism_copyleaks_logs::add($error, 'API_ERROR');
+                        \plagiarism_copyleaks_logs::add($error, 'API_ERROR_RETRY_WILL_BE_DONE');
                     }
                 }
 
