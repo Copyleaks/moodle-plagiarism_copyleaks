@@ -220,12 +220,13 @@ class plagiarism_copyleaks_sendsubmissions extends \core\task\scheduled_task {
                     \plagiarism_copyleaks_submissions::mark_pending($submission->id);
                 } catch (\Exception $e) {
                     $errorcode = $e->getCode();
+                    $error = get_string(
+                        'clapisubmissionerror',
+                        'plagiarism_copyleaks'
+                    ) . ' ' . $e->getMessage();
                     if ($errorcode < 500 && $errorcode != 429) {
-                        $error = get_string(
-                            'clapisubmissionerror',
-                            'plagiarism_copyleaks'
-                        ) . ' ' . $e->getMessage();
                         \plagiarism_copyleaks_submissions::mark_error($submission->id,  $error);
+                    } else {
                         \plagiarism_copyleaks_logs::add($error, 'API_ERROR');
                     }
                 }
