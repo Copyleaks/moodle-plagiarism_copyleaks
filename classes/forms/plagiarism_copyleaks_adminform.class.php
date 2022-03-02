@@ -62,7 +62,7 @@ class plagiarism_copyleaks_adminform extends moodleform {
 
         // Get all modules that support plagiarism plugin.
         $plagiarismmodules = array_keys(core_component::get_plugin_list('mod'));
-        $supportedmodules = array('assign', 'forum', 'workshop');
+        $supportedmodules = array('assign', 'forum', 'workshop', 'quiz');
         foreach ($plagiarismmodules as $module) {
             // For now we only support assignments.
             if (in_array($module, $supportedmodules) && plugin_supports('mod', $module, FEATURE_PLAGIARISM)) {

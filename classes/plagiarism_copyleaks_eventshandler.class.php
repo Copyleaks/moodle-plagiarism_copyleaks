@@ -61,11 +61,9 @@ class plagiarism_copyleaks_eventshandler {
     public function handle_submissions($data) {
         global $DB;
 
-        $data['eventtype'] = $this->eventtype;
-        $data['other']['modulename'] = $this->modulename;
-
         $result = true;
 
+        // Get course module.
         $coursemodule = $this->get_coursemodule($data);
 
         // Stop event if the course module is not found.
@@ -128,7 +126,7 @@ class plagiarism_copyleaks_eventshandler {
 
         // Submit files only when students click the submit button (if enabled).
         if (
-            ($data['eventtype'] == 'file_uploaded' || $data['eventtype'] == 'content_uploaded') &&
+            ($this->eventtype == 'file_uploaded' || $this->eventtype == 'content_uploaded') &&
             $cmdata->submissiondrafts &&
             $clmoduleconfig["plagiarism_copyleaks_draftsubmit"] == 1
         ) {
@@ -139,7 +137,7 @@ class plagiarism_copyleaks_eventshandler {
         $authoruserid = $this->get_author_id($data, $coursemodule);
 
         // Handle submitted files and content in 'Submit files only when students click the submit button' mode.
-        if ($data['eventtype'] == "assessable_submitted" && $data['other']['modulename'] == 'assign') {
+        if ($this->eventtype == "assessable_submitted" && $this->modulename == 'assign') {
 
             $submissionref = $DB->get_record(
                 'assign_submission',
@@ -175,6 +173,11 @@ class plagiarism_copyleaks_eventshandler {
             }
         }
 
+        // Queue quizzes to be submitted to Copyleaks later by submission task.
+        if ($this->eventtype == 'quiz_submitted') {
+            $result = $this->queue_quizzes($data, $coursemodule, $authoruserid, $submitteruserid, $cmdata);
+        }
+
         // Queue files to be submitted to Copyleaks later by submission task.
         if (!empty($data['other']['pathnamehashes'])) {
             $result = $this->queue_files($data, $coursemodule, $authoruserid, $submitteruserid, $cmdata);
@@ -184,7 +187,7 @@ class plagiarism_copyleaks_eventshandler {
         if (
             !empty($data['other']['content']) &&
             in_array(
-                $data['eventtype'],
+                $this->eventtype,
                 array(
                     "content_uploaded",
                     "assessable_submitted"
@@ -198,15 +201,16 @@ class plagiarism_copyleaks_eventshandler {
     }
 
     /**
-     * get course module depanding on module name.
+     * get course module.
      * @param object $data
      * @return object course module (cm)
      */
     private function get_coursemodule($data) {
-        if ($data['other']['modulename'] == 'quiz') {
-            return get_coursemodule_from_instance($data['other']['modulename'], $data['other']['quizid']);
+        if ($this->modulename == 'quiz') {
+            // During quiz submission, we do have the quiz id.
+            return get_coursemodule_from_instance($this->modulename, $data['other']['quizid']);
         } else {
-            return get_coursemodule_from_id($data['other']['modulename'], $data['contextinstanceid']);
+            return get_coursemodule_from_id($this->modulename, $data['contextinstanceid']);
         }
     }
 
@@ -286,6 +290,57 @@ class plagiarism_copyleaks_eventshandler {
                 $cmdata
             );
         }
+    }
+
+    /**
+     * queue quizzes to be send to Copyleaks later by scan submission task.
+     * @param object $data
+     * @param object $coursemodule
+     * @param string $authoruserid
+     * @param string $submitteruserid
+     * @param object $cmdata
+     */
+    private function queue_quizzes($data, $coursemodule, $authoruserid, $submitteruserid, $cmdata) {
+        $result = true;
+
+        $attempt = quiz_attempt::create($data['objectid']);
+        foreach ($attempt->get_slots() as $slot) {
+            $qa = $attempt->get_question_attempt($slot);
+            if ($qa->get_question()->get_type_name() != 'essay') {
+                continue;
+            }
+            $data['other']['content'] = $qa->get_response_summary();
+
+            // Queue text to Copyleaks.
+            $identifier = sha1($data['other']['content']);
+            $result = $this->queue_submission_to_copyleaks(
+                $coursemodule,
+                $authoruserid,
+                $submitteruserid,
+                $identifier,
+                'quiz_answer',
+                $data['objectid'],
+                $cmdata
+            );
+
+            // Queue files to Copyleaks.
+            $context = context_module::instance($coursemodule->id);
+            $files = $qa->get_last_qt_files('attachments', $context->id);
+            foreach ($files as $file) {
+                $identifier = $file->get_pathnamehash();
+                $result = $this->queue_submission_to_copyleaks(
+                    $coursemodule,
+                    $authoruserid,
+                    $submitteruserid,
+                    $identifier,
+                    'file',
+                    $data['objectid'],
+                    $cmdata
+                );
+            }
+        }
+
+        return $result;
     }
 
     /**

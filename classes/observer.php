@@ -88,7 +88,7 @@ class plagiarism_copyleaks_observer {
     }
 
     /**
-     * workshop module event handler.
+     * workshop submission module event handler.
      * @param \mod_workshop\event\assessable_uploaded $event
      */
     public static function mod_workshop_event_assessable_uploaded(
@@ -99,7 +99,7 @@ class plagiarism_copyleaks_observer {
     }
 
     /**
-     * forum module event handler.
+     * forum submission module event handler.
      * @param \mod_forum\event\assessable_uploaded $event
      */
     public static function mod_forum_event_assessable_uploaded(
@@ -107,5 +107,17 @@ class plagiarism_copyleaks_observer {
     ) {
         $eventhandler = new plagiarism_copyleaks_eventshandler('assessable_submitted', 'forum');
         $eventhandler->handle_submissions($event->get_data());
+    }
+
+    /**
+     * quiz submission event handler.
+     * @param \mod_quiz\event\attempt_submitted $event
+     */
+    public static function quiz_submitted(
+        \mod_quiz\event\attempt_submitted $event
+    ) {
+        $eventdata = $event->get_data();
+        $plugin = new plagiarism_copyleaks_eventshandler('quiz_submitted', 'quiz');
+        $plugin->handle_submissions($eventdata);
     }
 }

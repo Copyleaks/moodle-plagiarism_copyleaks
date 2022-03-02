@@ -77,6 +77,7 @@ class plagiarism_copyleaks_pluginconfig {
             "plagiarism_copyleaks_mod_assign",
             "plagiarism_copyleaks_mod_forum",
             "plagiarism_copyleaks_mod_workshop",
+            "plagiarism_copyleaks_mod_quiz",
             'plagiarism_copyleaks_studentdisclosure'
         );
     }

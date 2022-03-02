@@ -377,3 +377,38 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
     public function cron() {
     }
 }
+
+/**
+ * Add the Copyleaks settings form to an add/edit activity page.
+ *
+ * @param moodleform_mod $formwrapper
+ * @param MoodleQuickForm $mform
+ * @return type
+ */
+function plagiarism_copyleaks_coursemodule_standard_elements($formwrapper, $mform) {
+    $copyleaksplugin = new plagiarism_plugin_copyleaks();
+
+    $course = $formwrapper->get_coursemodule();
+    $context = context_course::instance($course->id);
+    $modulename = $course->modulename;
+
+    $copyleaksplugin->get_form_elements_module(
+        $mform,
+        $context,
+        isset($modulename) ? 'mod_' . $modulename : ''
+    );
+}
+
+/**
+ * Handle saving data from the Copyleaks settings form.
+ *
+ * @param stdClass $data
+ * @param stdClass $course
+ */
+function plagiarism_copyleaks_coursemodule_edit_post_actions($data, $course) {
+    $copyleaksplugin = new plagiarism_plugin_copyleaks();
+
+    $copyleaksplugin->save_form_elements($data);
+
+    return $data;
+}
