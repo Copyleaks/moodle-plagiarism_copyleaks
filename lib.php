@@ -388,9 +388,9 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
 function plagiarism_copyleaks_coursemodule_standard_elements($formwrapper, $mform) {
     $copyleaksplugin = new plagiarism_plugin_copyleaks();
 
-    $course = $formwrapper->get_coursemodule();
+    $course = $formwrapper->get_course();
     $context = context_course::instance($course->id);
-    $modulename = $course->modulename;
+    $modulename = $formwrapper->get_current()->modulename;
 
     $copyleaksplugin->get_form_elements_module(
         $mform,
