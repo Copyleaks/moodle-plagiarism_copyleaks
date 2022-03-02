@@ -64,6 +64,10 @@ class plagiarism_copyleaks_logs {
 
         // Shown error message and code.
         $messageoutput = date('Y-m-d H:i:s O') . " - " . "(" . $code . ")" . " - " . $errormessage . "\r\n";
+        // Remove leading and trailing spaces.
+        $messageoutput = preg_replace('/^\s+|\s+$|\s+(?=\s)/', '', $messageoutput);
+        // Write to log file a max of 1000 chars.
+        $messageoutput = substr($messageoutput, 0, 1000);
 
         fwrite($newfileref, $messageoutput);
         fclose($newfileref);

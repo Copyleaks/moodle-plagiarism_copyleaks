@@ -80,6 +80,7 @@ class plagiarism_copyleaks_sendsubmissions extends \core\task\scheduled_task {
             }
 
             foreach ($queuedsubmissions as $submission) {
+                $errormessage = 0;
                 // Check if submission type is supported.
                 $subtype = $submission->submissiontype;
                 if (!in_array(
@@ -176,7 +177,6 @@ class plagiarism_copyleaks_sendsubmissions extends \core\task\scheduled_task {
 
                     if (!$fileref) {
                         $errormessage = 'File/Content not found for the submission.';
-                        continue 2;
                     }
 
                     $filename = $fileref->get_filename();
@@ -185,12 +185,11 @@ class plagiarism_copyleaks_sendsubmissions extends \core\task\scheduled_task {
                         $submittedtextcontent = $fileref->get_content();
                     } catch (\Exception $e) {
                         $errormessage = 'File/Content not found for the submission.';
-                        continue 2;
                     }
                 }
 
                 // If $errormessage is not empty, then there was an error.
-                if ($errormessage != 0) {
+                if (isset($errormessage) && $errormessage != 0) {
                     \plagiarism_copyleaks_submissions::mark_error($submission->id,  $errormessage);
                     continue;
                 }
@@ -220,13 +219,14 @@ class plagiarism_copyleaks_sendsubmissions extends \core\task\scheduled_task {
                     \plagiarism_copyleaks_submissions::mark_pending($submission->id);
                 } catch (\Exception $e) {
                     $errorcode = $e->getCode();
+                    $error = get_string(
+                        'clapisubmissionerror',
+                        'plagiarism_copyleaks'
+                    ) . ' ' . $e->getMessage();
                     if ($errorcode < 500 && $errorcode != 429) {
-                        $error = get_string(
-                            'clapisubmissionerror',
-                            'plagiarism_copyleaks'
-                        ) . ' ' . $e->getMessage();
                         \plagiarism_copyleaks_submissions::mark_error($submission->id,  $error);
-                        \plagiarism_copyleaks_logs::add($error, 'API_ERROR');
+                    } else {
+                        \plagiarism_copyleaks_logs::add($error, 'API_ERROR_RETRY_WILL_BE_DONE');
                     }
                 }
 
