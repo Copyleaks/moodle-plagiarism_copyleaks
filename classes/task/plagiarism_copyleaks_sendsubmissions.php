@@ -180,15 +180,10 @@ class plagiarism_copyleaks_sendsubmissions extends \core\task\scheduled_task {
                     } else {
                         try {
                             $filename = $fileref->get_filename();
+                            $submittedtextcontent = $fileref->get_content();
                         } catch (\Exception $e) {
                             $errormessage = 'File/Content not found for the submission.';
                         }
-                    }
-
-                    try {
-                        $submittedtextcontent = $fileref->get_content();
-                    } catch (\Exception $e) {
-                        $errormessage = 'File/Content not found for the submission.';
                     }
                 }
 
