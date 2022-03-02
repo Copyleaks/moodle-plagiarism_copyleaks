@@ -113,7 +113,7 @@ class plagiarism_copyleaks_observer {
      * quiz submission event handler.
      * @param \mod_quiz\event\attempt_submitted $event
      */
-    public static function quiz_submitted(
+    public static function mod_quiz_event_attempt_submitted(
         \mod_quiz\event\attempt_submitted $event
     ) {
         $eventdata = $event->get_data();

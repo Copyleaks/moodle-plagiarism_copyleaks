@@ -131,7 +131,7 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
      * TODO: This code needs to be moved for 4.3 as the method will be completely removed from core.
      * See https://tracker.moodle.org/browse/MDL-67526
      *
-     * @param object $mform
+     * @param MoodleQuickForm $mform
      * @param stdClass $context
      * @param string $modulename
      */
@@ -387,7 +387,9 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
  */
 function plagiarism_copyleaks_coursemodule_standard_elements($formwrapper, $mform) {
     $copyleaksplugin = new plagiarism_plugin_copyleaks();
-
+    /**
+     * @var mixed $course
+     */
     $course = $formwrapper->get_course();
     $context = context_course::instance($course->id);
     $modulename = $formwrapper->get_current()->modulename;
