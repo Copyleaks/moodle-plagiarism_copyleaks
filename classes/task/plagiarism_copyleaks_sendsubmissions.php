@@ -81,6 +81,7 @@ class plagiarism_copyleaks_sendsubmissions extends \core\task\scheduled_task {
 
             foreach ($queuedsubmissions as $submission) {
                 $errormessage = 0;
+                $submittedtextcontent = "";
                 // Check if submission type is supported.
                 $subtype = $submission->submissiontype;
                 if (!in_array(
@@ -170,8 +171,30 @@ class plagiarism_copyleaks_sendsubmissions extends \core\task\scheduled_task {
                     } else {
                         $errormessage = 'Content not found for the submission.';
                     }
-                } else {
+                } else if ($submission->submissiontype == 'quiz_answer') {
 
+                    require_once($CFG->dirroot . '/mod/quiz/locallib.php');
+                    $quizattempt = \quiz_attempt::create($submission->itemid);
+                    foreach ($quizattempt->get_slots() as $slot) {
+                        $questionattempt = $quizattempt->get_question_attempt($slot);
+                        if ($submission->identifier == sha1($questionattempt->get_response_summary())) {
+                            $submittedtextcontent = $questionattempt->get_response_summary();
+                            break;
+                        }
+                    }
+
+                    if (!empty($submittedtextcontent)) {
+                        $submittedtextcontent = strip_tags($submittedtextcontent);
+                        $filename = 'quizanswer_'
+                            . $userid . "_"
+                            . $coursemodule->id . "_"
+                            . $coursemodule->instance . "_"
+                            . $submission->itemid . '.txt';
+                    } else {
+                        $errormessage = 'Content not found for the submission.';
+                    }
+                } else {
+                    // In case $submission->submissiontype == 'file'.
                     $filestorage = get_file_storage();
                     $fileref = $filestorage->get_file_by_hash($submission->identifier);
 
