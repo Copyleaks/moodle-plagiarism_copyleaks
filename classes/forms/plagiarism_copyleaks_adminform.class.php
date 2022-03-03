@@ -299,23 +299,29 @@ class plagiarism_copyleaks_adminform extends moodleform {
     public function save(stdClass $data) {
         global $CFG;
 
-        // Check and set the config for the module (enabled/disabled).
-        set_config('plagiarism_copyleaks_mod_assign', $data->plagiarism_copyleaks_mod_assign, 'plagiarism_copyleaks');
-        // Check if plugin is enabled.
-        $pluginenabled = 0;
-        if ($data->plagiarism_copyleaks_mod_assign) {
-            $pluginenabled = 1;
-        }
-
-        // Is Copyleaks plugin enabled.
-        set_config('enabled', $pluginenabled, 'plagiarism_copyleaks');
-        if ($CFG->branch < 39) {
-            set_config('copyleaks_use', $pluginenabled, 'plagiarism');
-        }
-
+        // Save admin settings.                
         $configproperties = plagiarism_copyleaks_pluginconfig::admin_config_properties();
         foreach ($configproperties as $property) {
             plagiarism_copyleaks_pluginconfig::set_admin_config($data, $property);
+        }
+
+        // Check if plugin is enabled.
+        $plagiarismmodules = array_keys(core_component::get_plugin_list('mod'));
+        $pluginenabled = 0;
+        foreach ($plagiarismmodules as $module) {
+            if (plugin_supports('mod', $module, FEATURE_PLAGIARISM)) {
+                $property = "plagiarism_copyleaks_mod_" . $module;
+                $ismoduleenabled = (!empty($data->$property)) ? $data->$property : 0;
+                if ($ismoduleenabled) {
+                    $pluginenabled = 1;
+                }
+            }
+        }
+
+        // Set if Copyleaks plugin is enabled.
+        set_config('enabled', $pluginenabled, 'plagiarism_copyleaks');
+        if ($CFG->branch < 39) {
+            set_config('copyleaks_use', $pluginenabled, 'plagiarism');
         }
 
         if (!isset($this->copyleakssettings)) {
