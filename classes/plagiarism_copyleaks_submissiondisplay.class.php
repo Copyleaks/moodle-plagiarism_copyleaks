@@ -48,6 +48,18 @@ class plagiarism_copyleaks_submissiondisplay {
             }
         }
 
+        // If this is a quiz, retrieve the cmid
+        $quizcomponent = (!empty($submissionref['component'])) ? $submissionref['component'] : "";
+        if (empty($submissionref['cmid']) && !empty($submissionref['area']) && $quizcomponent == "qtype_essay") {
+            $quizquestions = question_engine::load_questions_usage_by_activity($submissionref['area']);
+
+            // Try to get cm using the questions owning context.
+            $context = $quizquestions->get_owning_context();
+            if ($context->contextlevel == CONTEXT_MODULE) {
+                $submissionref['cmid'] = $context->instanceid;
+            }
+        }
+
         $output = "";
 
         // Get the course module.
