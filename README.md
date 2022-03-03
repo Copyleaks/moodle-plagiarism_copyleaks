@@ -15,6 +15,8 @@ Supported Modules
 - Assignment
 - Forum
 - Workshop
+- Quiz[^1]
+[^1]: Quizzes are only supported in Moodle 3.11+ version, click [here](https://moodle.com/news/whats-new-in-moodle-311/?utm_source=youtube&utm_medium=platform&utm_campaign=name~Moodle311Release+cat~lms+mp~no+type~blog+date~17-05-21) for more information.
 
 Installation
 ----------------------------------
