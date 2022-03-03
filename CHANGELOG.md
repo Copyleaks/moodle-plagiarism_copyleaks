@@ -1,6 +1,6 @@
-### Date: 		2022-March-02
-### Release:	v2022030201
--  Bug fix
+### Date: 		2022-March-03
+### Release:	v2022030300
+-  Add support for Quiz
 
 ### Date: 		2022-February-09
 ### Release:	v2022020900
