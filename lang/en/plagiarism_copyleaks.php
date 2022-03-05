@@ -68,6 +68,7 @@ $string['clapisubmissionerror'] = 'Copyleaks has returned an error while trying 
 $string['clcheatingdetected'] = 'Cheating detected, Open report to learn more';
 $string['clcheatingdetectedtxt'] = 'Cheating detected';
 $string['clreportpagetitle'] = 'Copyleaks report';
+$string['clrepositoriespagetitle'] = 'Copyleaks repositories settings';
 $string['clopenfullscreen'] = 'Open in full screen';
 $string['cllogsheading'] = 'Logs';
 $string['clpoweredbycopyleaks'] = 'Powered by Copyleaks';
