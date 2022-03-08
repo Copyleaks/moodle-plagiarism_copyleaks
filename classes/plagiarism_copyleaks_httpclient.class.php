@@ -50,6 +50,12 @@ class plagiarism_copyleaks_http_client {
         $isauthretry = false,
         $contenttype = 'application/json'
     ) {
+
+        if (!class_exists('curl')) {
+            global $CFG;
+            require_once($CFG->libdir . '/filelib.php');
+        }
+
         $c = new curl(array('proxy' => true));
         $c->setopt(array());
         $c->setopt(
