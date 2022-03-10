@@ -49,10 +49,10 @@ if ($isadminview) {
     $PAGE->set_url('/moodle/plagiarism/copyleaks/plagiarism_copyleaks_repositories.php', array(
         'viewmode' => $viewmode
     ));
-    $pagetitle = get_string('clrepositoriespagetitle', 'plagiarism_copyleaks');
+    $pagetitle = get_string('cldefaultrepositoriespagetitle', 'plagiarism_copyleaks');
 } else {
     // Get instance modules.
-    $cm = get_coursemodule_from_id($modulename, $cmid, 0, false, MUST_EXIST);
+    $cm = get_coursemodule_from_id(str_replace("mod_", "", $modulename), $cmid, 0, false, MUST_EXIST);
     $course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
     // Request login.
     require_login($course, true, $cm);
@@ -67,7 +67,7 @@ if ($isadminview) {
         'modulename' => $modulename,
         'viewmode' => $viewmode
     ));
-    $pagetitle = $course->fullname . ' - ' . get_string('clrepositoriespagetitle', 'plagiarism_copyleaks');
+    $pagetitle = $course->fullname . ' - ' . $cm->name . ' - ' . get_string('clrepositoriespagetitle', 'plagiarism_copyleaks');
 }
 
 // Setup page meta data.
@@ -120,7 +120,29 @@ if ($isadminview) {
             // Incase students.
             echo html_writer::div(get_string('clnopageaccess', 'plagiarism_copyleaks'), null, array('style' => $errormessagestyle));
         } else {
-            echo html_writer::div("testing teaching view");
+            $cl = new plagiarism_copyleaks_comms();
+            $accesstoken = $cl->request_access_for_repositories($cmid);
+
+            echo html_writer::tag(
+                'iframe',
+                null,
+                array(
+                    'srcdoc' =>
+                    "<form target='_self'" .
+                        "method='POST'" .
+                        "style='display: none;'" .
+                        "action='$config->plagiarism_copyleaks_apiurl/api/moodle/$config->plagiarism_copyleaks_key/repositories/$cmid'>" .
+                        "<input name='token' value='$accesstoken'>" .
+                        "</form>" .
+                        "<script type='text/javascript'>" .
+                        "window.document.forms[0].submit();" .
+                        "</script>",
+                    'style' =>
+                    $viewmode == 'moodle' ?
+                        'width: 100%; height: calc(100vh - 450px); margin: 0px; padding: 0px; border: none;' :
+                        'width: 100%; height: 100%; margin: 0px; padding: 0px; border: none;'
+                )
+            );
         }
     }
 }

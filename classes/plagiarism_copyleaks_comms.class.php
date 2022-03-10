@@ -208,16 +208,22 @@ class plagiarism_copyleaks_comms {
 
     /**
      * request access for integration repositories
+     * @param string $cmid course module (optional)
      * @return string a JWT to access integration repositories only
      */
-    public function request_access_for_repositories() {
+    public function request_access_for_repositories(string $cmid = null) {
         if (isset($this->key) && isset($this->secret)) {
+
+            if (isset($cmid))
+                $url = $this->copyleaks_api_url() . "/api/moodle/" . $this->key . "/repositories/" . $cmid . "/request-access";
+            else
+                $url = $this->copyleaks_api_url() . "/api/moodle/" . $this->key . "/repositories/request-access";
+
             $result = plagiarism_copyleaks_http_client::execute(
                 'POST',
-                $this->copyleaks_api_url() . "/api/moodle/" . $this->key . "/repositories/request-access",
+                $url,
                 true
             );
-
             return $result->token;
         }
     }
