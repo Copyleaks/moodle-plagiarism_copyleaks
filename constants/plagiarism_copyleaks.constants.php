@@ -54,3 +54,4 @@ $copyleaksacceptedfiles = array(
     '.gif', '.png', '.bmp', '.jpg', '.jpeg'
 );
 define('PLAGIARISM_COPYLEAKS_ACCEPTED_FILES', $copyleaksacceptedfiles);
+define('DEFAULT_DATABASE_COPYLEAKSDB_ID', 'DEFAULT_DATABASE_COPYLEAKSDB_ID');

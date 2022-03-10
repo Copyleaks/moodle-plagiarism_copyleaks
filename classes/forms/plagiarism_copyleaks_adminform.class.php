@@ -36,6 +36,7 @@ require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/exceptions/plagiaris
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/exceptions/plagiarism_copyleaks_ratelimitexception.class.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/exceptions/plagiarism_copyleaks_undermaintenanceexception.class.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_logs.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/constants/plagiarism_copyleaks.constants.php');
 /**
  * Copyleaks admin setup form
  */
@@ -363,7 +364,7 @@ class plagiarism_copyleaks_adminform extends moodleform {
             $scaninternaldatabase = $data->plagiarism_copyleaks_scaninternaldatabase === '1';
             if (isset($clinternalsources) && isset($clinternalsources->databases)) {
                 foreach ($clinternalsources->databases as $database) {
-                    if (isset($database) && $database->id == "INTERNAL_DATA_BASE") {
+                    if (isset($database) && ($database->id == "INTERNAL_DATA_BASE" || $database->id == DEFAULT_DATABASE_COPYLEAKSDB_ID)) {
                         $database->includeOthersScans = $scaninternaldatabase;
                         $database->index = $scaninternaldatabase;
                         $database->includeUserScans = $scaninternaldatabase;
