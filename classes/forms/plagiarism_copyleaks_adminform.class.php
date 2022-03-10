@@ -47,6 +47,7 @@ class plagiarism_copyleaks_adminform extends moodleform {
      * Define the form
      * */
     public function definition() {
+        global $CFG;
         $mform = &$this->_form;
 
         // Plugin Configurations.
@@ -164,6 +165,18 @@ class plagiarism_copyleaks_adminform extends moodleform {
             'advcheckbox',
             'plagiarism_copyleaks_enablecheatdetection',
             get_string('clenablecheatdetection', 'plagiarism_copyleaks')
+        );
+        $mform->toHtml(
+            "<div class='form-group row  fitem'>" .
+                "<div class='col-md-3'></div>" .
+                "<div class='col-md-9'>" .
+                html_writer::link(
+                    "$CFG->wwwroot/plagiarism/copyleaks/plagiarism_copyleaks_repositories.php",
+                    get_string('cleditrepositories', 'plagiarism_copyleaks'),
+                    array('title' => get_string('cleditrepositories', 'plagiarism_copyleaks'))
+                )
+                . "</div>" .
+                "</div>"
         );
 
         $this->add_action_buttons();

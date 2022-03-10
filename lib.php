@@ -136,7 +136,7 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
      * @param string $modulename
      */
     public function get_form_elements_module($mform, $context, $modulename = "") {
-        global $DB;
+        global $DB, $CFG;
         // This is a bit of a hack and untidy way to ensure the form elements aren't displayed,
         // twice. This won't be needed once this method goes away.
         // TODO: Remove once this method goes away.
@@ -315,6 +315,21 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
                 "plagiarism_copyleaks_enablecheatdetection",
                 $cmconfig["plagiarism_copyleaks_enablecheatdetection"]
             );
+
+            if (isset($cmid) && isset($modulename)) {
+                $mform->toHtml(
+                    "<div class='form-group row  fitem'>" .
+                        "<div class='col-md-3'></div>" .
+                        "<div class='col-md-9'>" .
+                        html_writer::link(
+                            "$CFG->wwwroot/plagiarism/copyleaks/plagiarism_copyleaks_repositories.php?cmid=$cmid&modulename=$modulename",
+                            get_string('cleditrepositories', 'plagiarism_copyleaks'),
+                            array('title' => get_string('cleditrepositories', 'plagiarism_copyleaks'))
+                        )
+                        . "</div>" .
+                        "</div>"
+                );
+            }
 
             $settingsdisplayed = true;
         }

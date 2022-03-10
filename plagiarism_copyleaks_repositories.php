@@ -28,9 +28,9 @@ require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_assignmodule.class.php');
 
 // Get url params.
-$cmid = required_param('cmid', PARAM_INT);
-$modulename = required_param('modulename', PARAM_TEXT);
-$viewmode = optional_param('view', 'course', PARAM_TEXT);
+$cmid = optional_param('cmid', null, PARAM_INT);
+$modulename = optional_param('modulename', null, PARAM_TEXT);
+$viewmode = optional_param('view', 'moodle', PARAM_TEXT);
 
 $isadminview = false;
 if (!isset($cmid) || !isset($modulename)) {
@@ -38,6 +38,7 @@ if (!isset($cmid) || !isset($modulename)) {
 }
 
 if ($isadminview) {
+    require_once($CFG->libdir . '/adminlib.php');
     // Request login.
     require_login();
     admin_externalpage_setup('plagiarismcopyleaks');
@@ -66,7 +67,7 @@ if ($isadminview) {
         'modulename' => $modulename,
         'viewmode' => $viewmode
     ));
-    $pagetitle = get_string('clrepositoriespagetitle', 'plagiarism_copyleaks') . ' - ' . $course->fullname;
+    $pagetitle = $course->fullname . ' - ' . get_string('clrepositoriespagetitle', 'plagiarism_copyleaks');
 }
 
 // Setup page meta data.
@@ -74,13 +75,39 @@ $PAGE->add_body_class('cl-repositories-page');
 $PAGE->set_title($pagetitle);
 $PAGE->set_heading($pagetitle);
 
-if ($viewmode == 'course') {
+if ($viewmode == 'moodle') {
     echo $OUTPUT->header();
 }
 
+$config = plagiarism_copyleaks_pluginconfig::admin_config();
+
 if ($isadminview) {
+    // Admin repositories settings.
+    $cl = new plagiarism_copyleaks_comms();
+    $accesstoken = $cl->request_access_for_repositories();
+
+    echo html_writer::tag(
+        'iframe',
+        null,
+        array(
+            'srcdoc' =>
+            "<form target='_self'" .
+                "method='POST'" .
+                "style='display: none;'" .
+                "action='$config->plagiarism_copyleaks_apiurl/api/moodle/$config->plagiarism_copyleaks_key/repositories'>" .
+                "<input name='token' value='$accesstoken'>" .
+                "</form>" .
+                "<script type='text/javascript'>" .
+                "window.document.forms[0].submit();" .
+                "</script>",
+            'style' =>
+            $viewmode == 'moodle' ?
+                'width: 100%; height: calc(100vh - 450px); margin: 0px; padding: 0px; border: none;' :
+                'width: 100%; height: 100%; margin: 0px; padding: 0px; border: none;'
+        )
+    );
 } else {
-    // Copyleaks course settings.
+    // Copyleaks repositories course settings.
     $modulesettings = $DB->get_records_menu('plagiarism_copyleaks_config', array('cm' => $cmid), '', 'name,value');
     $isinstructor = plagiarism_copyleaks_assignmodule::is_instructor($context);
     $errormessagestyle = 'color:red; display:flex; width:100%; justify-content:center;';
@@ -89,97 +116,17 @@ if ($isadminview) {
     if (empty($clmoduleenabled) || empty($modulesettings['plagiarism_copyleaks_enable'])) {
         echo html_writer::div(get_string('cldisabledformodule', 'plagiarism_copyleaks'), null, array('style' => $errormessagestyle));
     } else {
-        // Incase students.
         if (!$isinstructor) {
+            // Incase students.
             echo html_writer::div(get_string('clnopageaccess', 'plagiarism_copyleaks'), null, array('style' => $errormessagestyle));
         } else {
-            $moduledata = $DB->get_record($cm->modname, array('id' => $cm->instance));
-
-            $owners = array($userid);
-
-            if ($cm->modname == 'assign' && $moduledata->teamsubmission) {
-                require_once($CFG->dirroot . '/mod/assign/locallib.php');
-                $assignment = new assign($context, $cm, null);
-                if ($group = $assignment->get_submission_group($userid)) {
-                    $users = groups_get_members($group->id);
-                    $owners = array_keys($users);
-                }
-            }
-
-            // Proceed to displaying the report.
-            if ($isinstructor || in_array($USER->id, $owners)) {
-
-                // Get admin config.
-                $config = plagiarism_copyleaks_pluginconfig::admin_config();
-
-                // Get submission db ref.
-                $plagiarismfiles = $DB->get_record(
-                    'plagiarism_copyleaks_files',
-                    array(
-                        'cm' => $cmid,
-                        'userid' => $userid,
-                        'identifier' => $identifier
-                    ),
-                    '*',
-                    MUST_EXIST
-                );
-
-                // Add Page style via javascript.
-                echo html_writer::script(
-                    "var css = document.createElement('style'); " .
-                        "css.type = 'text/css'; " .
-                        "styles = ' body.cl-report-page footer { display:none; }'; " .
-                        "styles += 'body.cl-report-page .m-t-2 { display:none; }'; " .
-                        "styles += ' body.cl-report-page #page-wrapper::after { min-height:unset; }'; " .
-                        "if (css.styleSheet) " .
-                        "css.styleSheet.cssText = styles; " .
-                        "else " .
-                        "css.appendChild(document.createTextNode(styles)); " .
-                        "document.getElementsByTagName('head')[0].appendChild(css); "
-                );
-
-                if ($viewmode == 'course') {
-                    echo html_writer::link(
-                        "$CFG->wwwroot/plagiarism/copyleaks/plagiarism_copyleaks_report.php" .
-                            "?cmid=$cmid&userid=$userid&identifier=$identifier&modulename=$modulename&view=fullscreen",
-                        get_string('clopenfullscreen', 'plagiarism_copyleaks'),
-                        array('title' => get_string('clopenfullscreen', 'plagiarism_copyleaks'))
-                    );
-                }
-
-                $cl = new plagiarism_copyleaks_comms();
-                $scanaccesstoken = $cl->request_access_for_report($plagiarismfiles->externalid);
-
-                echo html_writer::tag(
-                    'iframe',
-                    null,
-                    array(
-                        'srcdoc' =>
-                        "<form target='_self'" .
-                            "method='POST'" .
-                            "style='display: none;'" .
-                            "action='$config->plagiarism_copyleaks_apiurl/api/moodle/$config->plagiarism_copyleaks_key" .
-                            "/report/$plagiarismfiles->externalid'>" .
-                            "<input name='token' value='$scanaccesstoken'>" .
-                            "</form>" .
-                            "<script type='text/javascript'>" .
-                            "window.document.forms[0].submit();" .
-                            "</script>",
-                        'style' =>
-                        $viewmode == 'course' ?
-                            'width: 100%; height: calc(100vh - 87px); margin: 0px; padding: 0px; border: none;' :
-                            'width: 100%; height: 100%; margin: 0px; padding: 0px; border: none;'
-                    )
-                );
-            } else {
-                echo html_writer::div(get_string('clnopageaccess', 'plagiarism_copyleaks'), null, array('style' => $errormessagestyle));
-            }
+            echo html_writer::div("testing teaching view");
         }
     }
 }
 
 // Output footer.
-if ($viewmode == 'course') {
+if ($viewmode == 'moodle') {
     echo $OUTPUT->footer();
 }
 

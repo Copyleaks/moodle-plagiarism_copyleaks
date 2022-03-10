@@ -207,6 +207,22 @@ class plagiarism_copyleaks_comms {
     }
 
     /**
+     * request access for integration repositories
+     * @return string a JWT to access integration repositories only
+     */
+    public function request_access_for_repositories() {
+        if (isset($this->key) && isset($this->secret)) {
+            $result = plagiarism_copyleaks_http_client::execute(
+                'POST',
+                $this->copyleaks_api_url() . "/api/moodle/" . $this->key . "/repositories/request-access",
+                true
+            );
+
+            return $result->token;
+        }
+    }
+
+    /**
      * get copyleaks api url.
      * @return string api url if exists, otherwise return null
      */
