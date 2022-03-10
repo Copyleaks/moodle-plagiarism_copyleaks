@@ -317,17 +317,18 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
             );
 
             if (isset($cmid) && isset($modulename)) {
-                $mform->toHtml(
-                    // "<div class='row'>" .
-                    //     "<div class='col-md-3'></div>" .
-                    //     "<div class='col-md-9'>" .
-                    // html_writer::link(
-                    //     "$CFG->wwwroot/plagiarism/copyleaks/plagiarism_copyleaks_repositories.php?cmid=$cmid&modulename=$modulename",
-                    //     get_string('cleditrepositories', 'plagiarism_copyleaks'),
-                    //     array('title' => get_string('cleditrepositories', 'plagiarism_copyleaks'))
-                    // )
-                    //     . "</div>" .
-                    // "</div>"
+                $mform->addElement(
+                    'html',
+                    "<div class='form-group row'>" .
+                        "<div class='col-md-3'></div>" .
+                        "<div class='col-md-9'>" .
+                        html_writer::link(
+                            "$CFG->wwwroot/plagiarism/copyleaks/plagiarism_copyleaks_repositories.php?cmid=$cmid&modulename=$modulename",
+                            get_string('cleditrepositories', 'plagiarism_copyleaks'),
+                            array('title' => get_string('cleditrepositories', 'plagiarism_copyleaks'))
+                        )
+                        . "</div>" .
+                        "</div>"
                 );
             }
 

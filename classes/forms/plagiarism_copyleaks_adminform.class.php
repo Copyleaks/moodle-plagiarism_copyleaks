@@ -166,7 +166,9 @@ class plagiarism_copyleaks_adminform extends moodleform {
             'plagiarism_copyleaks_enablecheatdetection',
             get_string('clenablecheatdetection', 'plagiarism_copyleaks')
         );
-        $mform->toHtml(
+
+        $mform->addElement(
+            'html',
             "<div class='form-group row  fitem'>" .
                 "<div class='col-md-3'></div>" .
                 "<div class='col-md-9'>" .
