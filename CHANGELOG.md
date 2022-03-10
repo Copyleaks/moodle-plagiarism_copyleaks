@@ -1,4 +1,8 @@
 ### Date: 		2022-March-03
+### Release:	v2022031000
+-  Add support for Copyleaks repositories.
+
+### Date: 		2022-March-03
 ### Release:	v2022030300
 -  Add support for Quiz
 
