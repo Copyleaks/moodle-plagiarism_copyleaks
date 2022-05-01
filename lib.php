@@ -357,8 +357,8 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
 
         // Check if Copyleaks plugin is enabled for this module.
         $moduleclenabled = plagiarism_copyleaks_pluginconfig::is_plugin_configured('mod_' . $cm->modname);
-        if (empty($clmodulesettings['plagiarism_copyleaks_enable']) || empty($moduleclenabled)) {
-            return true;
+        if (empty($clmodulesettings['plagiarism_copyleaks_enable']) || empty($moduleclenabled)) {            
+            return "";
         }
 
         $config = plagiarism_copyleaks_pluginconfig::admin_config();
