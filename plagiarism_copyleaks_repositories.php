@@ -90,6 +90,7 @@ if ($isadminview) {
         'iframe',
         null,
         array(
+            'title' => 'Copyleaks admin repository settings',
             'srcdoc' =>
             "<form target='_self'" .
                 "method='POST'" .
@@ -127,6 +128,7 @@ if ($isadminview) {
                 'iframe',
                 null,
                 array(
+                    'title' => 'Copyleaks repository settings',
                     'srcdoc' =>
                     "<form target='_self'" .
                         "method='POST'" .

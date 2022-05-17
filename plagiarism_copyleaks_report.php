@@ -149,6 +149,7 @@ if (empty($clmoduleenabled) || empty($modulesettings['plagiarism_copyleaks_enabl
                 'iframe',
                 null,
                 array(
+                    'title' => 'Copyleaks Report',
                     'srcdoc' =>
                     "<form target='_self'" .
                         "method='POST'" .
