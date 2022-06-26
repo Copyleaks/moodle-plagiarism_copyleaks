@@ -1,3 +1,7 @@
+### Date: 		2022-June-12
+### Release:	v2022061201
+-  Support French.
+
 ### Date: 		2022-March-03
 ### Release:	v2022031001
 -  Add support for Copyleaks repositories.

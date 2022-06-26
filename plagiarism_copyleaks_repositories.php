@@ -85,7 +85,7 @@ if ($isadminview) {
     // Admin repositories settings.
     $cl = new plagiarism_copyleaks_comms();
     $accesstoken = $cl->request_access_for_repositories();
-
+    $lang= $cl->get_lang();
     echo html_writer::tag(
         'iframe',
         null,
@@ -97,6 +97,7 @@ if ($isadminview) {
                 "style='display: none;'" .
                 "action='$config->plagiarism_copyleaks_apiurl/api/moodle/$config->plagiarism_copyleaks_key/repositories'>" .
                 "<input name='token' value='$accesstoken'>" .
+                "<input name='lang' value='$lang'>" .
                 "</form>" .
                 "<script type='text/javascript'>" .
                 "window.document.forms[0].submit();" .
@@ -123,7 +124,7 @@ if ($isadminview) {
         } else {
             $cl = new plagiarism_copyleaks_comms();
             $accesstoken = $cl->request_access_for_repositories($cmid);
-
+            $lang= $cl->get_lang();
             echo html_writer::tag(
                 'iframe',
                 null,
@@ -135,6 +136,7 @@ if ($isadminview) {
                         "style='display: none;'" .
                         "action='$config->plagiarism_copyleaks_apiurl/api/moodle/$config->plagiarism_copyleaks_key/repositories/$cmid'>" .
                         "<input name='token' value='$accesstoken'>" .
+                        "<input name='lang' value='$lang'>" .
                         "</form>" .
                         "<script type='text/javascript'>" .
                         "window.document.forms[0].submit();" .

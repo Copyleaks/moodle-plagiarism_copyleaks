@@ -144,7 +144,7 @@ if (empty($clmoduleenabled) || empty($modulesettings['plagiarism_copyleaks_enabl
 
             $cl = new plagiarism_copyleaks_comms();
             $scanaccesstoken = $cl->request_access_for_report($plagiarismfiles->externalid);
-
+            $lang= $cl->get_lang();
             echo html_writer::tag(
                 'iframe',
                 null,
@@ -157,6 +157,7 @@ if (empty($clmoduleenabled) || empty($modulesettings['plagiarism_copyleaks_enabl
                         "action='$config->plagiarism_copyleaks_apiurl/api/moodle/$config->plagiarism_copyleaks_key" .
                         "/report/$plagiarismfiles->externalid'>" .
                         "<input name='token' value='$scanaccesstoken'>" .
+                        "<input name='lang' value='$lang'>" .
                         "</form>" .
                         "<script type='text/javascript'>" .
                         "window.document.forms[0].submit();" .

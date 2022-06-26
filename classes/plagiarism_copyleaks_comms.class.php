@@ -51,6 +51,37 @@ class plagiarism_copyleaks_comms {
     }
 
     /**
+     * Return the current lang code to use with Copyleaks
+     * @return string Supported Copyleaks lang code
+     */
+    public function get_lang() {
+        $defaultlangcode = 'en';
+        try {
+            $langcode = str_replace("_utf8", "", current_language());
+            $langarray = array(
+                'en' => $defaultlangcode,
+                'en_us' => $defaultlangcode,
+                'fr' => 'fr',
+                'fr_ca' => 'fr',
+                'es' => 'es',
+                'fr' => 'fr',
+                'pt' => 'pt',
+                'hi' => 'hi',
+                'zh' => 'zh',
+                'it' => 'it',
+                'ja' => 'ja',
+                'de' => 'de',
+                'tr' => 'tr',
+                'ru' => 'ru',
+                'ar' => 'ar'
+            );            
+            return (isset($langarray[$langcode])) ? $langarray[$langcode] : $defaultlangcode;
+        } catch (Exception $e) {
+            return $defaultlangcode;
+        }
+    }
+
+    /**
      * Get plugin default settings that are saved at Copyleaks API
      */
     public function get_plugin_default_settings() {
