@@ -1,6 +1,6 @@
 ### Date: 		2022-June-12
-### Release:	v2022061201
--  Support French.
+### Release:	v2022062600
+-  Add Translations for "es", "fr", "pt", "hi", "zh", "it", "ja", "de", "tr", "ru", "ar",
 
 ### Date: 		2022-March-03
 ### Release:	v2022031001
