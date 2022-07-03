@@ -23,3 +23,7 @@ Installation
 - Firstly make sure that you are using Moodle 3.5 or higher.
 - In order for the plugin to work, you will need to have the Moodle cron job running as suggested in [here](https://docs.moodle.org/37/en/Cron).
 - For extended documentation on how to set up and use the plugin please check [our guides](https://lti.copyleaks.com/guides/moodle/plagiarism-plugin).
+
+Accessibility
+----------------------------------
+The [VPAT report (PDF)](https://copyleaks.com/accessibility/) can be downloaded from Copyleaks Commitment to Accessibility page 
