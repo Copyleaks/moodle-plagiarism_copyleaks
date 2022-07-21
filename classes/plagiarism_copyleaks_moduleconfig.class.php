@@ -152,7 +152,7 @@ class plagiarism_copyleaks_moduleconfig {
         $enablesafesearch,
         $enablecheatdetection,
         $cmid = PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID,
-        $enabled = true,
+        $enabled = false,
         $draftssubmit = 0,
         $reportgen = 0,
         $allowstudentaccess = 0

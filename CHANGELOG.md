@@ -1,3 +1,7 @@
+### Date: 		2022-July-21
+### Release:	v2022072100
+-  Fix default copyleaks plugin settings (off)
+
 ### Date: 		2022-June-12
 ### Release:	v2022062600
 -  Add Translations for "es", "fr", "pt", "hi", "zh", "it", "ja", "de", "tr", "ru", "ar",
