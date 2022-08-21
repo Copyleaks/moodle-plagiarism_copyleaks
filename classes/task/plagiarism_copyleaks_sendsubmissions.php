@@ -79,8 +79,7 @@ class plagiarism_copyleaks_sendsubmissions extends \core\task\scheduled_task {
                 return;
             }
 
-            foreach ($queuedsubmissions as $submission) {
-                $errormessage = 0;
+            foreach ($queuedsubmissions as $submission) {                
                 $submittedtextcontent = "";
                 // Check if submission type is supported.
                 $subtype = $submission->submissiontype;
@@ -211,7 +210,7 @@ class plagiarism_copyleaks_sendsubmissions extends \core\task\scheduled_task {
                 }
 
                 // If $errormessage is not empty, then there was an error.
-                if (isset($errormessage) && $errormessage != 0) {
+                if (isset($errormessage)) {
                     \plagiarism_copyleaks_submissions::mark_error($submission->id,  $errormessage);
                     continue;
                 }
