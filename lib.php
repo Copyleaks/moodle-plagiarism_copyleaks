@@ -385,13 +385,6 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
     public function update_status($course, $cm) {
         // Called at top of submissions/grading pages - allows printing of admin style links or updating status.
     }
-
-    /**
-     * called by admin/cron.php
-     * @deprecated
-     */
-    public function cron() {
-    }
 }
 
 /**
