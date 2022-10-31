@@ -40,14 +40,16 @@ require_once($CFG->dirroot . '/plagiarism/copyleaks/constants/plagiarism_copylea
 /**
  * Copyleaks admin setup form
  */
-class plagiarism_copyleaks_adminform extends moodleform {
+class plagiarism_copyleaks_adminform extends moodleform
+{
     /** @var mixed copyleaks settings ref */
     public $copyleakssettings;
 
     /**
      * Define the form
      * */
-    public function definition() {
+    public function definition()
+    {
         global $CFG;
         $mform = &$this->_form;
 
@@ -164,6 +166,11 @@ class plagiarism_copyleaks_adminform extends moodleform {
         );
         $mform->addElement(
             'advcheckbox',
+            'plagiarism_copyleaks_checkforparaphrase',
+            get_string('clcheckforparaphrase', 'plagiarism_copyleaks')
+        );
+        $mform->addElement(
+            'advcheckbox',
             'plagiarism_copyleaks_enablecheatdetection',
             get_string('clenablecheatdetection', 'plagiarism_copyleaks')
         );
@@ -190,7 +197,8 @@ class plagiarism_copyleaks_adminform extends moodleform {
      * @param mixed $data
      * @param mixed $files
      */
-    public function validation($data, $files) {
+    public function validation($data, $files)
+    {
         $newconfigsecret = $data["plagiarism_copyleaks_secret"];
         $newconfigkey = $data["plagiarism_copyleaks_key"];
         $newapiurl = $data["plagiarism_copyleaks_apiurl"];
@@ -250,7 +258,8 @@ class plagiarism_copyleaks_adminform extends moodleform {
     /**
      * Init the form data form both DB and Copyleaks API
      */
-    public function init_form_data() {
+    public function init_form_data()
+    {
         $cache = cache::make('core', 'config');
         $cache->delete('plagiarism_copyleaks');
 
@@ -284,9 +293,12 @@ class plagiarism_copyleaks_adminform extends moodleform {
                 $cldbdefaultconfig["plagiarism_copyleaks_enablesafesearch"];
             $plagiarismsettings["plagiarism_copyleaks_enablecheatdetection"] =
                 $cldbdefaultconfig["plagiarism_copyleaks_enablecheatdetection"];
+            $plagiarismsettings["plagiarism_copyleaks_checkforparaphrase"] =
+                $cldbdefaultconfig["plagiarism_copyleaks_checkforparaphrase"];
         } else {
             $plagiarismsettings["plagiarism_copyleaks_scaninternet"] = true;
             $plagiarismsettings["plagiarism_copyleaks_scaninternaldatabase"] = true;
+            $plagiarismsettings["plagiarism_copyleaks_checkforparaphrase"] = true;
         }
 
         if (!isset($plagiarismsettings["plagiarism_copyleaks_studentdisclosure"])) {
@@ -300,7 +312,8 @@ class plagiarism_copyleaks_adminform extends moodleform {
     /**
      * Display the form to admins
      */
-    public function display() {
+    public function display()
+    {
         ob_start();
         parent::display();
         $form = ob_get_contents();
@@ -312,7 +325,8 @@ class plagiarism_copyleaks_adminform extends moodleform {
      * Save form data
      * @param stdClass $data
      */
-    public function save(stdClass $data) {
+    public function save(stdClass $data)
+    {
         global $CFG;
 
         // Save admin settings.                
@@ -351,6 +365,7 @@ class plagiarism_copyleaks_adminform extends moodleform {
             $clexternalsources = $copyleakssettings->externalSources;
             $clsearch = $copyleakssettings->search;
             $clinternalsources = $copyleakssettings->internalSources;
+            $matchtypes = $copyleakssettings->matchTypes;
 
             $clfilters->references = $data->plagiarism_copyleaks_ignorereferences === '1';
             $clfilters->quotes = $data->plagiarism_copyleaks_ignorequotes === '1';
@@ -360,6 +375,7 @@ class plagiarism_copyleaks_adminform extends moodleform {
             $clexternalsources->internet->enabled = $data->plagiarism_copyleaks_scaninternet === '1';
             $clexternalsources->safeSearch = $data->plagiarism_copyleaks_enablesafesearch === '1';
             $clsearch->cheatDetection = $data->plagiarism_copyleaks_enablecheatdetection === '1';
+            $matchtypes->minorChangedCheck = $data->plagiarism_copyleaks_checkforparaphrase === '1';
 
             $scaninternaldatabase = $data->plagiarism_copyleaks_scaninternaldatabase === '1';
             if (isset($clinternalsources) && isset($clinternalsources->databases)) {
@@ -385,7 +401,8 @@ class plagiarism_copyleaks_adminform extends moodleform {
                     $data->plagiarism_copyleaks_scaninternet,
                     $data->plagiarism_copyleaks_scaninternaldatabase,
                     $data->plagiarism_copyleaks_enablesafesearch,
-                    $data->plagiarism_copyleaks_enablecheatdetection
+                    $data->plagiarism_copyleaks_enablecheatdetection,
+                    $data->plagiarism_copyleaks_checkforparaphrase
                 );
             }
         }
@@ -397,7 +414,8 @@ class plagiarism_copyleaks_adminform extends moodleform {
     /**
      * get and init plugin default settings from Copyleaks API
      */
-    private function init_plugin_default_settings() {
+    private function init_plugin_default_settings()
+    {
         try {
             $mform = &$this->_form;
             // Get copyleaks api global plugin settings.
@@ -428,7 +446,8 @@ class plagiarism_copyleaks_adminform extends moodleform {
     /**
      * save plugin default settings to Copyleaks API
      */
-    private function save_plugin_default_settings() {
+    private function save_plugin_default_settings()
+    {
         try {
             $mform = &$this->_form;
             // Get copyleaks api global plugin settings.

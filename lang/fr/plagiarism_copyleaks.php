@@ -43,6 +43,7 @@ $string['cldraftsubmit_help'] = 'Cette option n\'est disponible que si "Demander
 $string['cleditrepositories'] = 'Edit repositories settings';
 $string['clenable'] = 'Activer Copyleaks';
 $string['clenablecheatdetection'] = 'Activer la détection de triche';
+$string['clcheckforparaphrase'] = 'Vérifier la paraphrase';
 $string['clenablemodulefor'] = 'Activer les fuites de copie pour {$a}';
 $string['clenablesafesearch'] = 'Activer la recherche sécurisée';
 $string['clfailtoloaddata'] = 'Échec du chargement des données Copyleaks';

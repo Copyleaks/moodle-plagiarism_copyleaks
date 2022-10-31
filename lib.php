@@ -43,13 +43,15 @@ require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks
 /**
  * Contains Plagiarism plugin specific functions called by Modules.
  */
-class plagiarism_plugin_copyleaks extends plagiarism_plugin {
+class plagiarism_plugin_copyleaks extends plagiarism_plugin
+{
     /**
      * hook to allow plagiarism specific information to be displayed beside a submission
      * @param array $linkarray contains all relevant information for the plugin to generate a link
      * @return string displayed output
      */
-    public function get_links($linkarray) {
+    public function get_links($linkarray)
+    {
         return plagiarism_copyleaks_submissiondisplay::output($linkarray);
     }
 
@@ -57,7 +59,8 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
      * hook to save plagiarism specific settings on a module settings page
      * @param stdClass $data form data
      */
-    public function save_form_elements($data) {
+    public function save_form_elements($data)
+    {
         // Check if plugin is configured and enabled.
         if (empty($data->modulename) || !plagiarism_copyleaks_pluginconfig::is_plugin_configured('mod_' . $data->modulename)) {
             return;
@@ -74,6 +77,7 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
                 $clexternalsources = $copyleakssettings->externalSources;
                 $clsearch = $copyleakssettings->search;
                 $clinternalsources = $copyleakssettings->internalSources;
+                $matchtypes = $copyleakssettings->matchTypes;
 
                 $clfilters->references = $data->plagiarism_copyleaks_ignorereferences === '1';
                 $clfilters->quotes = $data->plagiarism_copyleaks_ignorequotes === '1';
@@ -83,6 +87,7 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
                 $clexternalsources->internet->enabled = $data->plagiarism_copyleaks_scaninternet === '1';
                 $clexternalsources->safeSearch = $data->plagiarism_copyleaks_enablesafesearch === '1';
                 $clsearch->cheatDetection = $data->plagiarism_copyleaks_enablecheatdetection === '1';
+                $matchtypes->minorChangedCheck = $data->plagiarism_copyleaks_checkforparaphrase === '1';
 
                 $scaninternaldatabase = $data->plagiarism_copyleaks_scaninternaldatabase === '1';
                 if (isset($clinternalsources) && isset($clinternalsources->databases)) {
@@ -109,6 +114,7 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
                     $data->plagiarism_copyleaks_scaninternaldatabase,
                     $data->plagiarism_copyleaks_enablesafesearch,
                     $data->plagiarism_copyleaks_enablecheatdetection,
+                    $data->plagiarism_copyleaks_checkforparaphrase,
                     $data->coursemodule,
                     $data->plagiarism_copyleaks_enable,
                     isset($data->plagiarism_copyleaks_draftsubmit) ? $data->plagiarism_copyleaks_draftsubmit : 0,
@@ -135,7 +141,8 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
      * @param stdClass $context
      * @param string $modulename
      */
-    public function get_form_elements_module($mform, $context, $modulename = "") {
+    public function get_form_elements_module($mform, $context, $modulename = "")
+    {
         global $DB, $CFG;
         // This is a bit of a hack and untidy way to ensure the form elements aren't displayed,
         // twice. This won't be needed once this method goes away.
@@ -249,6 +256,11 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
             );
             $mform->addElement(
                 'advcheckbox',
+                'plagiarism_copyleaks_checkforparaphrase',
+                get_string('clcheckforparaphrase', 'plagiarism_copyleaks')
+            );
+            $mform->addElement(
+                'advcheckbox',
                 'plagiarism_copyleaks_enablecheatdetection',
                 get_string('clenablecheatdetection', 'plagiarism_copyleaks')
             );
@@ -315,6 +327,10 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
                 "plagiarism_copyleaks_enablecheatdetection",
                 $cmconfig["plagiarism_copyleaks_enablecheatdetection"]
             );
+            $mform->setDefault(
+                "plagiarism_copyleaks_checkforparaphrase",
+                $cmconfig["plagiarism_copyleaks_checkforparaphrase"]
+            );
 
             if (isset($cmid) && isset($modulename)) {
                 $mform->addElement(
@@ -341,7 +357,8 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
      * @param int $cmid - course module id
      * @return string
      */
-    public function print_disclosure($cmid) {
+    public function print_disclosure($cmid)
+    {
         global $DB;
 
         // Get course module.
@@ -357,7 +374,7 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
 
         // Check if Copyleaks plugin is enabled for this module.
         $moduleclenabled = plagiarism_copyleaks_pluginconfig::is_plugin_configured('mod_' . $cm->modname);
-        if (empty($clmodulesettings['plagiarism_copyleaks_enable']) || empty($moduleclenabled)) {            
+        if (empty($clmodulesettings['plagiarism_copyleaks_enable']) || empty($moduleclenabled)) {
             return "";
         }
 
@@ -382,7 +399,8 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
      * @param object $course - full Course object
      * @param object $cm - full cm object
      */
-    public function update_status($course, $cm) {
+    public function update_status($course, $cm)
+    {
         // Called at top of submissions/grading pages - allows printing of admin style links or updating status.
     }
 }
@@ -394,7 +412,8 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
  * @param MoodleQuickForm $mform
  * @return type
  */
-function plagiarism_copyleaks_coursemodule_standard_elements($formwrapper, $mform) {
+function plagiarism_copyleaks_coursemodule_standard_elements($formwrapper, $mform)
+{
     $copyleaksplugin = new plagiarism_plugin_copyleaks();
     /**
      * @var mixed $course
@@ -416,7 +435,8 @@ function plagiarism_copyleaks_coursemodule_standard_elements($formwrapper, $mfor
  * @param stdClass $data
  * @param stdClass $course
  */
-function plagiarism_copyleaks_coursemodule_edit_post_actions($data, $course) {
+function plagiarism_copyleaks_coursemodule_edit_post_actions($data, $course)
+{
     $copyleaksplugin = new plagiarism_plugin_copyleaks();
 
     $copyleaksplugin->save_form_elements($data);

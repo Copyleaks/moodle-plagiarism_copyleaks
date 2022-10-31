@@ -30,7 +30,8 @@ require_once($CFG->dirroot . '/plagiarism/copyleaks/lib.php');
  * @param int $oldversion
  * @return bool
  */
-function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
+function xmldb_plagiarism_copyleaks_upgrade($oldversion)
+{
     global $DB;
     $dbman = $DB->get_manager();
     if ($oldversion < 2021090901) {
@@ -76,6 +77,38 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
 
         upgrade_plugin_savepoint(true, 2022072100, 'plagiarism', 'copyleaks');
     }
-    
+
+    if ($oldversion < 2022103100) {
+        // Get saved db settings.
+        $saveddefaultvalue = $DB->get_records_menu('plagiarism_copyleaks_config', array('cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID), '', 'name,value');
+
+        // Update saved default copyleaks settings.
+        $fieldname = 'plagiarism_copyleaks_checkforparaphrase';
+        $savedfield = new stdClass();
+        $savedfield->cm = PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID;
+        $savedfield->name = $fieldname;
+        $savedfield->value = 1;
+        if (!isset($saveddefaultvalue[$fieldname])) {
+            $savedfield->config_hash = $savedfield->cm . "_" . $savedfield->name;
+            if (!$DB->insert_record('plagiarism_copyleaks_config', $savedfield)) {
+                throw new moodle_exception(get_string('clinserterror', 'plagiarism_copyleaks'));
+            }
+        } else {
+            $savedfield->id = $DB->get_field(
+                'plagiarism_copyleaks_config',
+                'id',
+                (array(
+                    'cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID,
+                    'name' => $fieldname
+                ))
+            );
+            if (!$DB->update_record('plagiarism_copyleaks_config', $savedfield)) {
+                throw new moodle_exception(get_string('clupdateerror', 'plagiarism_copyleaks'));
+            }
+        }
+
+        upgrade_plugin_savepoint(true, 2022103100, 'plagiarism', 'copyleaks');
+    }
+
     return true;
 }

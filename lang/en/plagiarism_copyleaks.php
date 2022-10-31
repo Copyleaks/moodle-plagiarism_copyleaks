@@ -47,6 +47,7 @@ $string['clscaninternet'] = 'Scan internet';
 $string['clscaninternaldatabase'] = 'Scan internal database';
 $string['clenablesafesearch'] = 'Enable safe search';
 $string['clenablecheatdetection'] = 'Enable cheat detection';
+$string['clcheckforparaphrase'] = 'Check for paraphrase text';
 $string['clallowstudentaccess'] = 'Allow students access to plagiarism reports';
 $string['clinvalidkeyorsecret'] = 'Invalid key or secret';
 $string['clfailtoloaddata'] = 'Fail to load Copyleaks data';

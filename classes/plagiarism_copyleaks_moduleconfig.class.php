@@ -25,12 +25,14 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * module configurations helpers methods
  */
-class plagiarism_copyleaks_moduleconfig {
+class plagiarism_copyleaks_moduleconfig
+{
     /**
      * Get course module db properties
      * @return array Course Module DB Properties
      */
-    public static function get_config_db_properties() {
+    public static function get_config_db_properties()
+    {
         return array(
             'plagiarism_copyleaks_enable',
             'plagiarism_copyleaks_draftsubmit',
@@ -45,6 +47,7 @@ class plagiarism_copyleaks_moduleconfig {
             'plagiarism_copyleaks_scaninternaldatabase',
             'plagiarism_copyleaks_enablesafesearch',
             'plagiarism_copyleaks_enablecheatdetection',
+            'plagiarism_copyleaks_checkforparaphrase'
         );
     }
 
@@ -53,7 +56,8 @@ class plagiarism_copyleaks_moduleconfig {
      * @param string $cmid course module id
      * @return array course module config, returns default config if not found
      */
-    public static function get_module_config($cmid) {
+    public static function get_module_config($cmid)
+    {
         global $DB;
         $result = $DB->get_records_menu(
             'plagiarism_copyleaks_config',
@@ -72,7 +76,8 @@ class plagiarism_copyleaks_moduleconfig {
             !isset($result['plagiarism_copyleaks_scaninternet']) ||
             !isset($result['plagiarism_copyleaks_scaninternaldatabase']) ||
             !isset($result['plagiarism_copyleaks_enablesafesearch']) ||
-            !isset($result['plagiarism_copyleaks_enablecheatdetection'])
+            !isset($result['plagiarism_copyleaks_enablecheatdetection']) ||
+            !isset($result['plagiarism_copyleaks_checkforparaphrase'])
         ) {
             $defaults = self::get_modules_default_config();
             $result['plagiarism_copyleaks_ignorereferences'] =
@@ -101,6 +106,9 @@ class plagiarism_copyleaks_moduleconfig {
 
             $result['plagiarism_copyleaks_enablecheatdetection'] =
                 $defaults['plagiarism_copyleaks_enablecheatdetection'];
+
+            $result['plagiarism_copyleaks_checkforparaphrase'] =
+                $defaults['plagiarism_copyleaks_checkforparaphrase'];
         }
 
         return $result;
@@ -110,7 +118,8 @@ class plagiarism_copyleaks_moduleconfig {
      * get course module default config
      * @return array course module config
      */
-    public static function get_modules_default_config() {
+    public static function get_modules_default_config()
+    {
         global $DB;
         $result = $DB->get_records_menu(
             'plagiarism_copyleaks_config',
@@ -135,6 +144,7 @@ class plagiarism_copyleaks_moduleconfig {
      * @param boolean $scaninternaldatabase
      * @param boolean $enablesafesearch
      * @param boolean $enablecheatdetection
+     * @param boolean $enableParaphrase
      * @param string $cmid (optional)
      * @param boolean $enabled (optional)
      * @param boolean $draftssubmit (optional)
@@ -151,6 +161,7 @@ class plagiarism_copyleaks_moduleconfig {
         $scaninternaldatabase,
         $enablesafesearch,
         $enablecheatdetection,
+        $enableParaphrase,
         $cmid = PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID,
         $enabled = false,
         $draftssubmit = 0,
@@ -173,6 +184,7 @@ class plagiarism_copyleaks_moduleconfig {
         $default['plagiarism_copyleaks_scaninternaldatabase'] = $scaninternaldatabase;
         $default['plagiarism_copyleaks_enablesafesearch'] = $enablesafesearch;
         $default['plagiarism_copyleaks_enablecheatdetection'] = $enablecheatdetection;
+        $default['plagiarism_copyleaks_checkforparaphrase'] = $enableParaphrase;
 
         // Db settings elements name.
         $clcmconfigfields = self::get_config_db_properties();
@@ -216,7 +228,8 @@ class plagiarism_copyleaks_moduleconfig {
      * @param string $cmid course module id
      * @return bool is Copyleaks plugin enabled
      */
-    public static function is_module_enabled($modulename, $cmid) {
+    public static function is_module_enabled($modulename, $cmid)
+    {
         $plagiarismsettings = self::get_module_config($cmid);
 
         $moduleclenabled = plagiarism_copyleaks_pluginconfig::is_plugin_configured('mod_' . $modulename);
