@@ -29,7 +29,8 @@ require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks
 /**
  * Used for communications between Moodle and Copyleaks
  */
-class plagiarism_copyleaks_comms {
+class plagiarism_copyleaks_comms
+{
     /** @var stdClass Copyleaks plugin configurations */
     private $config;
 
@@ -42,7 +43,8 @@ class plagiarism_copyleaks_comms {
     /**
      * class constructor
      */
-    public function __construct() {
+    public function __construct()
+    {
         $this->config = plagiarism_copyleaks_pluginconfig::admin_config();
         if (isset($this->config->plagiarism_copyleaks_secret) && isset($this->config->plagiarism_copyleaks_key)) {
             $this->secret = $this->config->plagiarism_copyleaks_secret;
@@ -54,7 +56,8 @@ class plagiarism_copyleaks_comms {
      * Return the current lang code to use with Copyleaks
      * @return string Supported Copyleaks lang code
      */
-    public function get_lang() {
+    public function get_lang()
+    {
         $defaultlangcode = 'en';
         try {
             $langcode = str_replace("_utf8", "", current_language());
@@ -74,7 +77,7 @@ class plagiarism_copyleaks_comms {
                 'tr' => 'tr',
                 'ru' => 'ru',
                 'ar' => 'ar'
-            );            
+            );
             return (isset($langarray[$langcode])) ? $langarray[$langcode] : $defaultlangcode;
         } catch (Exception $e) {
             return $defaultlangcode;
@@ -84,7 +87,8 @@ class plagiarism_copyleaks_comms {
     /**
      * Get plugin default settings that are saved at Copyleaks API
      */
-    public function get_plugin_default_settings() {
+    public function get_plugin_default_settings()
+    {
         if (isset($this->key) && isset($this->secret)) {
             $result = plagiarism_copyleaks_http_client::execute(
                 'GET',
@@ -99,7 +103,8 @@ class plagiarism_copyleaks_comms {
      * Save plugin default settings at Copyleaks API
      * @param any $settings Copyleaks settings
      */
-    public function save_plugin_default_settings($settings) {
+    public function save_plugin_default_settings($settings)
+    {
         if (isset($this->key) && isset($this->secret)) {
             plagiarism_copyleaks_http_client::execute(
                 'POST',
@@ -115,7 +120,8 @@ class plagiarism_copyleaks_comms {
      * @param string $cmid Course Module ID
      * @return any course module copyleaks settings
      */
-    public function get_course_module_settings(string $cmid) {
+    public function get_course_module_settings(string $cmid)
+    {
         if (isset($this->key) && isset($this->secret)) {
             $result = plagiarism_copyleaks_http_client::execute(
                 'GET',
@@ -133,7 +139,8 @@ class plagiarism_copyleaks_comms {
      * @param string $name course module name
      * @param any $settings Copyleaks settings
      */
-    public function save_course_module_settings(string $cmid, string $cmname, string $name, $settings = null) {
+    public function save_course_module_settings(string $cmid, string $cmname, string $name, $settings = null)
+    {
         if (isset($this->key) && isset($this->secret)) {
             $reqdata = (array)[
                 'name' => $name,
@@ -202,7 +209,8 @@ class plagiarism_copyleaks_comms {
      * @param array $submissionsinstances
      * @return array a list of Copyleaks scan instances for files
      */
-    public function get_plagiarism_scans_instances(array $submissionsinstances) {
+    public function get_plagiarism_scans_instances(array $submissionsinstances)
+    {
         if (isset($this->key) && isset($this->secret)) {
 
             $params = (array)[
@@ -225,7 +233,8 @@ class plagiarism_copyleaks_comms {
      * @param string $scanid Copyleaks report scan id
      * @return string a JWT to access student report only
      */
-    public function request_access_for_report(string $scanid) {
+    public function request_access_for_report(string $scanid)
+    {
         if (isset($this->key) && isset($this->secret)) {
             $result = plagiarism_copyleaks_http_client::execute(
                 'POST',
@@ -242,7 +251,8 @@ class plagiarism_copyleaks_comms {
      * @param string $cmid course module (optional)
      * @return string a JWT to access integration repositories only
      */
-    public function request_access_for_repositories(string $cmid = null) {
+    public function request_access_for_repositories(string $cmid = null)
+    {
         if (isset($this->key) && isset($this->secret)) {
 
             if (isset($cmid))
@@ -263,7 +273,8 @@ class plagiarism_copyleaks_comms {
      * get copyleaks api url.
      * @return string api url if exists, otherwise return null
      */
-    public static function copyleaks_api_url() {
+    public static function copyleaks_api_url()
+    {
         $apiurl = get_config('plagiarism_copyleaks', 'plagiarism_copyleaks_apiurl');
         if (isset($apiurl) && !empty($apiurl)) {
             return $apiurl;
@@ -281,7 +292,8 @@ class plagiarism_copyleaks_comms {
      * @param bool $force true to ignore db cached jwt token (optional)
      * @return string jwt access token for copyleaks api
      */
-    public static function login_to_copyleaks($apiurl = null, $key = null, $secret = null, $force = false) {
+    public static function login_to_copyleaks($apiurl = null, $key = null, $secret = null, $force = false)
+    {
         if (!isset($secret) || !isset($key) || !isset($apiurl)) {
             // If key and secret was not passed, try to read them from admin config.
             $config = plagiarism_copyleaks_pluginconfig::admin_config();
@@ -336,7 +348,8 @@ class plagiarism_copyleaks_comms {
      * @param string $context
      * @return bool
      */
-    public static function test_copyleaks_connection($context) {
+    public static function test_copyleaks_connection($context)
+    {
         $cl = new plagiarism_copyleaks_comms();
         return $cl->test_connection($context);
     }
@@ -346,7 +359,8 @@ class plagiarism_copyleaks_comms {
      * @param string $context
      * @return bool
      */
-    public function test_connection($context) {
+    public function test_connection($context)
+    {
         try {
             if (isset($this->key) && isset($this->secret)) {
                 plagiarism_copyleaks_http_client::execute(

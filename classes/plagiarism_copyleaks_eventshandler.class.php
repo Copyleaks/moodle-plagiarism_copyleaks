@@ -108,7 +108,8 @@ class plagiarism_copyleaks_eventshandler
                     $clmoduleconfig["plagiarism_copyleaks_scaninternaldatabase"],
                     $clmoduleconfig["plagiarism_copyleaks_enablesafesearch"],
                     $clmoduleconfig["plagiarism_copyleaks_enablecheatdetection"],
-                    $clmoduleconfig["'plagiarism_copyleaks_checkforparaphrase'"],
+                    $clmoduleconfig["plagiarism_copyleaks_checkforparaphrase"],
+                    $clmoduleconfig["plagiarism_copyleaks_disablestudentinternalaccess"],
                     $coursemodule->id
                 );
             } catch (Exception $e) {

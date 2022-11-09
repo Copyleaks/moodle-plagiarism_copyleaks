@@ -78,6 +78,7 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin
                 $clsearch = $copyleakssettings->search;
                 $clinternalsources = $copyleakssettings->internalSources;
                 $matchtypes = $copyleakssettings->matchTypes;
+                $config = $copyleakssettings->config;
 
                 $clfilters->references = $data->plagiarism_copyleaks_ignorereferences === '1';
                 $clfilters->quotes = $data->plagiarism_copyleaks_ignorequotes === '1';
@@ -88,6 +89,7 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin
                 $clexternalsources->safeSearch = $data->plagiarism_copyleaks_enablesafesearch === '1';
                 $clsearch->cheatDetection = $data->plagiarism_copyleaks_enablecheatdetection === '1';
                 $matchtypes->minorChangedCheck = $data->plagiarism_copyleaks_checkforparaphrase === '1';
+                $config->disableStudentInternalAccess = $data->plagiarism_copyleaks_disablestudentinternalaccess === '1';
 
                 $scaninternaldatabase = $data->plagiarism_copyleaks_scaninternaldatabase === '1';
                 if (isset($clinternalsources) && isset($clinternalsources->databases)) {
@@ -115,11 +117,12 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin
                     $data->plagiarism_copyleaks_enablesafesearch,
                     $data->plagiarism_copyleaks_enablecheatdetection,
                     $data->plagiarism_copyleaks_checkforparaphrase,
+                    $data->plagiarism_copyleaks_disablestudentinternalaccess,
                     $data->coursemodule,
                     $data->plagiarism_copyleaks_enable,
                     isset($data->plagiarism_copyleaks_draftsubmit) ? $data->plagiarism_copyleaks_draftsubmit : 0,
                     isset($data->plagiarism_copyleaks_reportgen) ? $data->plagiarism_copyleaks_reportgen : 0,
-                    $data->plagiarism_copyleaks_allowstudentaccess
+                    $data->plagiarism_copyleaks_allowstudentaccess,
                 );
             }
         } catch (plagiarism_copyleaks_exception $ex) {
@@ -206,6 +209,11 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin
                     $genoptions
                 );
             }
+            $mform->addElement(
+                'advcheckbox',
+                'plagiarism_copyleaks_disablestudentinternalaccess',
+                get_string('cldisablestudentinternalaccess', 'plagiarism_copyleaks')
+            );
 
             $mform->addElement(
                 'advcheckbox',
@@ -291,6 +299,10 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin
             }
 
             $cmconfig = plagiarism_copyleaks_moduleconfig::get_module_config($cmid);
+            $mform->setDefault(
+                "plagiarism_copyleaks_disablestudentinternalaccess",
+                $cmconfig["plagiarism_copyleaks_disablestudentinternalaccess"]
+            );
             $mform->setDefault(
                 "plagiarism_copyleaks_ignorereferences",
                 $cmconfig["plagiarism_copyleaks_ignorereferences"]
