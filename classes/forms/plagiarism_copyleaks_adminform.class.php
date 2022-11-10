@@ -40,16 +40,14 @@ require_once($CFG->dirroot . '/plagiarism/copyleaks/constants/plagiarism_copylea
 /**
  * Copyleaks admin setup form
  */
-class plagiarism_copyleaks_adminform extends moodleform
-{
+class plagiarism_copyleaks_adminform extends moodleform {
     /** @var mixed copyleaks settings ref */
     public $copyleakssettings;
 
     /**
      * Define the form
      * */
-    public function definition()
-    {
+    public function definition() {
         global $CFG;
         $mform = &$this->_form;
 
@@ -203,8 +201,7 @@ class plagiarism_copyleaks_adminform extends moodleform
      * @param mixed $data
      * @param mixed $files
      */
-    public function validation($data, $files)
-    {
+    public function validation($data, $files) {
         $newconfigsecret = $data["plagiarism_copyleaks_secret"];
         $newconfigkey = $data["plagiarism_copyleaks_key"];
         $newapiurl = $data["plagiarism_copyleaks_apiurl"];
@@ -264,8 +261,7 @@ class plagiarism_copyleaks_adminform extends moodleform
     /**
      * Init the form data form both DB and Copyleaks API
      */
-    public function init_form_data()
-    {
+    public function init_form_data() {
         $cache = cache::make('core', 'config');
         $cache->delete('plagiarism_copyleaks');
 
@@ -307,7 +303,6 @@ class plagiarism_copyleaks_adminform extends moodleform
             $plagiarismsettings["plagiarism_copyleaks_scaninternet"] = true;
             $plagiarismsettings["plagiarism_copyleaks_scaninternaldatabase"] = true;
             $plagiarismsettings["plagiarism_copyleaks_checkforparaphrase"] = true;
-            $plagiarismsettings["plagiarism_copyleaks_disablestudentinternalaccess"] = true;
         }
 
         if (!isset($plagiarismsettings["plagiarism_copyleaks_studentdisclosure"])) {
@@ -321,8 +316,7 @@ class plagiarism_copyleaks_adminform extends moodleform
     /**
      * Display the form to admins
      */
-    public function display()
-    {
+    public function display() {
         ob_start();
         parent::display();
         $form = ob_get_contents();
@@ -334,8 +328,7 @@ class plagiarism_copyleaks_adminform extends moodleform
      * Save form data
      * @param stdClass $data
      */
-    public function save(stdClass $data)
-    {
+    public function save(stdClass $data) {
         global $CFG;
 
         // Save admin settings.                
@@ -391,7 +384,8 @@ class plagiarism_copyleaks_adminform extends moodleform
             $scaninternaldatabase = $data->plagiarism_copyleaks_scaninternaldatabase === '1';
             if (isset($clinternalsources) && isset($clinternalsources->databases)) {
                 foreach ($clinternalsources->databases as $database) {
-                    if (isset($database) && ($database->id == "INTERNAL_DATA_BASE" || $database->id == DEFAULT_DATABASE_COPYLEAKSDB_ID)) {
+                    if (isset($database) && ($database->id == "INTERNAL_DATA_BASE"
+                        || $database->id == DEFAULT_DATABASE_COPYLEAKSDB_ID)) {
                         $database->includeOthersScans = $scaninternaldatabase;
                         $database->index = $scaninternaldatabase;
                         $database->includeUserScans = $scaninternaldatabase;
@@ -426,8 +420,7 @@ class plagiarism_copyleaks_adminform extends moodleform
     /**
      * get and init plugin default settings from Copyleaks API
      */
-    private function init_plugin_default_settings()
-    {
+    private function init_plugin_default_settings() {
         try {
             $mform = &$this->_form;
             // Get copyleaks api global plugin settings.
@@ -458,8 +451,7 @@ class plagiarism_copyleaks_adminform extends moodleform
     /**
      * save plugin default settings to Copyleaks API
      */
-    private function save_plugin_default_settings()
-    {
+    private function save_plugin_default_settings() {
         try {
             $mform = &$this->_form;
             // Get copyleaks api global plugin settings.

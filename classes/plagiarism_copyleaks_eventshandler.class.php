@@ -37,8 +37,7 @@ require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks
 /**
  * handle observer events
  */
-class plagiarism_copyleaks_eventshandler
-{
+class plagiarism_copyleaks_eventshandler {
     /** @var string moodle event type */
     public $eventtype;
     /** @var string module name*/
@@ -49,8 +48,7 @@ class plagiarism_copyleaks_eventshandler
      * @param string $eventtype
      * @param string $modulename
      */
-    public function __construct(string $eventtype, string $modulename)
-    {
+    public function __construct(string $eventtype, string $modulename) {
         $this->eventtype = $eventtype;
         $this->modulename = $modulename;
     }
@@ -60,8 +58,7 @@ class plagiarism_copyleaks_eventshandler
      * @param object $data
      * @return bool result
      */
-    public function handle_submissions($data)
-    {
+    public function handle_submissions($data) {
         global $DB;
 
         $result = true;
@@ -210,8 +207,7 @@ class plagiarism_copyleaks_eventshandler
      * @param object $data
      * @return object course module (cm)
      */
-    private function get_coursemodule($data)
-    {
+    private function get_coursemodule($data) {
         if ($this->modulename == 'quiz') {
             // During quiz submission, we do have the quiz id.
             return get_coursemodule_from_instance($this->modulename, $data['other']['quizid']);
@@ -226,8 +222,7 @@ class plagiarism_copyleaks_eventshandler
      * @param object $coursemodule cousre module (cm)
      * @return string author id
      */
-    private function get_author_id($data, $coursemodule)
-    {
+    private function get_author_id($data, $coursemodule) {
         global $DB;
 
         $authoruserid = (empty($data['relateduserid'])) ? $data['userid'] : $data['relateduserid'];
@@ -269,8 +264,7 @@ class plagiarism_copyleaks_eventshandler
      * @param string $submitteruserid
      * @param object $cmdata
      */
-    private function queue_text_content($data, $coursemodule, $authoruserid, $submitteruserid, $cmdata)
-    {
+    private function queue_text_content($data, $coursemodule, $authoruserid, $submitteruserid, $cmdata) {
         global $DB;
 
         if ($coursemodule->modname == 'workshop' && !isset($data['other']['content'])) {
@@ -284,7 +278,11 @@ class plagiarism_copyleaks_eventshandler
         $contentidentifier = sha1($data['other']['content']);
 
         // Check if the text content has already been submitted.
-        $files = plagiarism_copyleaks_submissions::successful_submission_instances($coursemodule->id, $authoruserid, $contentidentifier);
+        $files = plagiarism_copyleaks_submissions::successful_submission_instances(
+            $coursemodule->id,
+            $authoruserid,
+            $contentidentifier
+        );
         if (count($files) > 0) {
             return true;
         } else {
@@ -308,8 +306,7 @@ class plagiarism_copyleaks_eventshandler
      * @param string $submitteruserid
      * @param object $cmdata
      */
-    private function queue_quizzes($data, $coursemodule, $authoruserid, $submitteruserid, $cmdata)
-    {
+    private function queue_quizzes($data, $coursemodule, $authoruserid, $submitteruserid, $cmdata) {
         $result = true;
 
         $attempt = quiz_attempt::create($data['objectid']);
@@ -360,8 +357,7 @@ class plagiarism_copyleaks_eventshandler
      * @param string $submitteruserid
      * @param object $cmdata
      */
-    private function queue_files($data, $coursemodule, $authoruserid, $submitteruserid, $cmdata)
-    {
+    private function queue_files($data, $coursemodule, $authoruserid, $submitteruserid, $cmdata) {
         $result = true;
 
         foreach ($data['other']['pathnamehashes'] as $pathnamehash) {
@@ -510,8 +506,7 @@ class plagiarism_copyleaks_eventshandler
      * @param mixed $data
      * @return bool is submitter instructor
      */
-    private function is_instructor_submit($data)
-    {
+    private function is_instructor_submit($data) {
         return $data['relateduserid'] != $data['userid'];
     }
 }

@@ -87,7 +87,7 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion)
         $savedfield = new stdClass();
         $savedfield->cm = PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID;
         $savedfield->name = $fieldname;
-        $savedfield->value = 1;
+        $savedfield->value = 0;
         if (!isset($saveddefaultvalue[$fieldname])) {
             $savedfield->config_hash = $savedfield->cm . "_" . $savedfield->name;
             if (!$DB->insert_record('plagiarism_copyleaks_config', $savedfield)) {
@@ -119,7 +119,7 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion)
         $savedfield = new stdClass();
         $savedfield->cm = PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID;
         $savedfield->name = $fieldname;
-        $savedfield->value = 1;
+        $savedfield->value = 0;
         if (!isset($saveddefaultvalue[$fieldname])) {
             $savedfield->config_hash = $savedfield->cm . "_" . $savedfield->name;
             if (!$DB->insert_record('plagiarism_copyleaks_config', $savedfield)) {

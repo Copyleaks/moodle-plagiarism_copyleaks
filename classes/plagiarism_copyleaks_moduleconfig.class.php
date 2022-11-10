@@ -25,14 +25,12 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * module configurations helpers methods
  */
-class plagiarism_copyleaks_moduleconfig
-{
+class plagiarism_copyleaks_moduleconfig {
     /**
      * Get course module db properties
      * @return array Course Module DB Properties
      */
-    public static function get_config_db_properties()
-    {
+    public static function get_config_db_properties() {
         return array(
             'plagiarism_copyleaks_enable',
             'plagiarism_copyleaks_draftsubmit',
@@ -57,8 +55,7 @@ class plagiarism_copyleaks_moduleconfig
      * @param string $cmid course module id
      * @return array course module config, returns default config if not found
      */
-    public static function get_module_config($cmid)
-    {
+    public static function get_module_config($cmid) {
         global $DB;
         $result = $DB->get_records_menu(
             'plagiarism_copyleaks_config',
@@ -124,8 +121,7 @@ class plagiarism_copyleaks_moduleconfig
      * get course module default config
      * @return array course module config
      */
-    public static function get_modules_default_config()
-    {
+    public static function get_modules_default_config() {
         global $DB;
         $result = $DB->get_records_menu(
             'plagiarism_copyleaks_config',
@@ -237,8 +233,7 @@ class plagiarism_copyleaks_moduleconfig
      * @param string $cmid course module id
      * @return bool is Copyleaks plugin enabled
      */
-    public static function is_module_enabled($modulename, $cmid)
-    {
+    public static function is_module_enabled($modulename, $cmid) {
         $plagiarismsettings = self::get_module_config($cmid);
 
         $moduleclenabled = plagiarism_copyleaks_pluginconfig::is_plugin_configured('mod_' . $modulename);

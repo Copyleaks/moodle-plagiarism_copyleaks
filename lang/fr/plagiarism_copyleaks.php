@@ -44,6 +44,7 @@ $string['cleditrepositories'] = 'Edit repositories settings';
 $string['clenable'] = 'Activer Copyleaks';
 $string['clenablecheatdetection'] = 'Activer la détection de triche';
 $string['clcheckforparaphrase'] = 'Vérifier la paraphrase';
+$string['cldisablestudentinternalaccess'] = "Désactiver l'accès interne des étudiants";
 $string['clenablemodulefor'] = 'Activer les fuites de copie pour {$a}';
 $string['clenablesafesearch'] = 'Activer la recherche sécurisée';
 $string['clfailtoloaddata'] = 'Échec du chargement des données Copyleaks';
