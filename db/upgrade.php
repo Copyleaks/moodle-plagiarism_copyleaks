@@ -30,8 +30,7 @@ require_once($CFG->dirroot . '/plagiarism/copyleaks/lib.php');
  * @param int $oldversion
  * @return bool
  */
-function xmldb_plagiarism_copyleaks_upgrade($oldversion)
-{
+function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
     global $DB;
     $dbman = $DB->get_manager();
     if ($oldversion < 2021090901) {
@@ -87,7 +86,7 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion)
         $savedfield = new stdClass();
         $savedfield->cm = PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID;
         $savedfield->name = $fieldname;
-        $savedfield->value = 0;
+        $savedfield->value = 1;
         if (!isset($saveddefaultvalue[$fieldname])) {
             $savedfield->config_hash = $savedfield->cm . "_" . $savedfield->name;
             if (!$DB->insert_record('plagiarism_copyleaks_config', $savedfield)) {
