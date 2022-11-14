@@ -143,8 +143,8 @@ if (empty($clmoduleenabled) || empty($modulesettings['plagiarism_copyleaks_enabl
             }
 
             $cl = new plagiarism_copyleaks_comms();
-            $scanaccesstoken = $cl->request_access_for_report($plagiarismfiles->externalid);
-            $lang= $cl->get_lang();
+            $scanaccesstoken = $cl->request_access_for_report($plagiarismfiles->externalid, $isinstructor);
+            $lang = $cl->get_lang();
             echo html_writer::tag(
                 'iframe',
                 null,
