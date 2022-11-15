@@ -377,7 +377,7 @@ class plagiarism_copyleaks_adminform extends moodleform {
             $clexternalsources->internet->enabled = $data->plagiarism_copyleaks_scaninternet === '1';
             $clexternalsources->safeSearch = $data->plagiarism_copyleaks_enablesafesearch === '1';
             $clsearch->cheatDetection = $data->plagiarism_copyleaks_enablecheatdetection === '1';
-            $matchtypes->minorChangedCheck = $data->plagiarism_copyleaks_checkforparaphrase === '1';
+            $matchtypes->relatedMeaningCheck = $data->plagiarism_copyleaks_checkforparaphrase === '1';
             $config->disableStudentInternalAccess = $data->plagiarism_copyleaks_disablestudentinternalaccess === '1';
 
             $scaninternaldatabase = $data->plagiarism_copyleaks_scaninternaldatabase === '1';
