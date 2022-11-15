@@ -48,7 +48,7 @@ class plagiarism_copyleaks_submissiondisplay {
             }
         }
 
-        // If this is a quiz, retrieve the cmid
+        /* If this is a quiz, retrieve the cmid */
         $quizcomponent = (!empty($submissionref['component'])) ? $submissionref['component'] : "";
         if (empty($submissionref['cmid']) && !empty($submissionref['area']) && $quizcomponent == "qtype_essay") {
             $quizquestions = question_engine::load_questions_usage_by_activity($submissionref['area']);
@@ -353,7 +353,11 @@ class plagiarism_copyleaks_submissiondisplay {
                             $queuedstring = '&nbsp;<span class="copyleaks-text-gray">'
                                 . $clplagiarised . ':&nbsp;</span>';
 
-                            $queuedtxt = get_string('clplagiarisequeued', 'plagiarism_copyleaks', date("F j, Y, g:i a", $submittedfile->scheduledscandate));
+                            $queuedtxt = get_string(
+                                'clplagiarisequeued',
+                                'plagiarism_copyleaks',
+                                date("F j, Y, g:i a", $submittedfile->scheduledscandate)
+                            );
 
                             $queuedwrapper = '<span title="' . $queuedtxt . '">' . $queuedstring . '</span>';
 

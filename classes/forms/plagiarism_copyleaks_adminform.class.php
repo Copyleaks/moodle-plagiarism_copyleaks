@@ -330,8 +330,7 @@ class plagiarism_copyleaks_adminform extends moodleform {
      */
     public function save(stdClass $data) {
         global $CFG;
-
-        // Save admin settings.                
+        // Save admin settings.
         $configproperties = plagiarism_copyleaks_pluginconfig::admin_config_properties();
         foreach ($configproperties as $property) {
             plagiarism_copyleaks_pluginconfig::set_admin_config($data, $property);

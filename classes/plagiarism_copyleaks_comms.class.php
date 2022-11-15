@@ -233,7 +233,8 @@ class plagiarism_copyleaks_comms {
         if (isset($this->key) && isset($this->secret)) {
             $result = plagiarism_copyleaks_http_client::execute(
                 'POST',
-                $this->copyleaks_api_url() . "/api/moodle/" . $this->key . "/report/" . $scanid . "/" . $isinstructor . "/request-access",
+                $this->copyleaks_api_url() . "/api/moodle/" . $this->key .
+                    "/report/" . $scanid . "/" . $isinstructor . "/request-access",
                 true
             );
 

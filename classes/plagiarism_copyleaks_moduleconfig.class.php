@@ -74,9 +74,7 @@ class plagiarism_copyleaks_moduleconfig {
             !isset($result['plagiarism_copyleaks_scaninternet']) ||
             !isset($result['plagiarism_copyleaks_scaninternaldatabase']) ||
             !isset($result['plagiarism_copyleaks_enablesafesearch']) ||
-            !isset($result['plagiarism_copyleaks_enablecheatdetection']) ||
-            !isset($result['plagiarism_copyleaks_checkforparaphrase']) ||
-            !isset($result['plagiarism_copyleaks_disablestudentinternalaccess'])
+            !isset($result['plagiarism_copyleaks_enablecheatdetection'])
         ) {
             $defaults = self::get_modules_default_config();
 
@@ -108,11 +106,14 @@ class plagiarism_copyleaks_moduleconfig {
                 $defaults['plagiarism_copyleaks_enablecheatdetection'];
         }
 
-        // Sepperate this to parameters so old client will not get default result
+        /* Sepperate this two parameters so old client will not get default result */
         if (
             !isset($result['plagiarism_copyleaks_checkforparaphrase']) ||
             !isset($result['plagiarism_copyleaks_disablestudentinternalaccess'])
         ) {
+            if (!isset($defaults)) {
+                $defaults = self::get_modules_default_config();
+            }
             $result['plagiarism_copyleaks_checkforparaphrase'] =
                 $defaults['plagiarism_copyleaks_checkforparaphrase'];
 
@@ -152,7 +153,7 @@ class plagiarism_copyleaks_moduleconfig {
      * @param boolean $scaninternaldatabase
      * @param boolean $enablesafesearch
      * @param boolean $enablecheatdetection
-     * @param boolean $enableParaphrase
+     * @param boolean $enableparaphrase
      * @param boolean $disablestudentinternalaccess
      * @param string $cmid (optional)
      * @param boolean $enabled (optional)
@@ -170,7 +171,7 @@ class plagiarism_copyleaks_moduleconfig {
         $scaninternaldatabase,
         $enablesafesearch,
         $enablecheatdetection,
-        $enableParaphrase,
+        $enableparaphrase,
         $disablestudentinternalaccess,
         $cmid = PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID,
         $enabled = false,
@@ -194,7 +195,7 @@ class plagiarism_copyleaks_moduleconfig {
         $default['plagiarism_copyleaks_scaninternaldatabase'] = $scaninternaldatabase;
         $default['plagiarism_copyleaks_enablesafesearch'] = $enablesafesearch;
         $default['plagiarism_copyleaks_enablecheatdetection'] = $enablecheatdetection;
-        $default['plagiarism_copyleaks_checkforparaphrase'] = $enableParaphrase;
+        $default['plagiarism_copyleaks_checkforparaphrase'] = $enableparaphrase;
         $default['plagiarism_copyleaks_disablestudentinternalaccess'] = $disablestudentinternalaccess;
 
         // Db settings elements name.
