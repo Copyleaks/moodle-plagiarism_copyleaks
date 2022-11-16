@@ -204,7 +204,14 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
                     get_string("clreportgenspeed", "plagiarism_copyleaks"),
                     $genoptions
                 );
-            }
+            }          
+
+            $mform->addElement(
+                'advcheckbox',
+                'plagiarism_copyleaks_allowstudentaccess',
+                get_string('clallowstudentaccess', 'plagiarism_copyleaks')
+            );
+
             $mform->addElement(
                 'advcheckbox',
                 'plagiarism_copyleaks_disablestudentinternalaccess',
@@ -214,12 +221,6 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
                 'plagiarism_copyleaks_disablestudentinternalaccess',
                 'cldisablestudentinternalaccess',
                 'plagiarism_copyleaks'
-            );
-
-            $mform->addElement(
-                'advcheckbox',
-                'plagiarism_copyleaks_allowstudentaccess',
-                get_string('clallowstudentaccess', 'plagiarism_copyleaks')
             );
 
             // Copyleaks API settings.
