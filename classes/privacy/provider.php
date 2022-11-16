@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -14,7 +13,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
-
 
 /**
  * Privacy Subsystem implementation for plagiarism_copyleaks.
@@ -35,15 +33,15 @@ use core_privacy\local\request\helper;
 use core_privacy\local\request\writer;
 
 /** Privacy Subsystem implementation for plagiarism_copyleaks. */
-/* This plugin does export personal user data.*/
 class provider implements
+  // This plugin does export personal user data.
   \core_privacy\local\metadata\provider,
-
   \core_plagiarism\privacy\plagiarism_provider {
-  /* This trait must be included to provide the relevant polyfill for the metadata provider.*/
+
+  // This trait must be included to provide the relevant polyfill for the metadata provider.
   use \core_privacy\local\legacy_polyfill;
 
-  /* This trait must be included to provide the relevant polyfill for the plagirism provider.*/
+  // This trait must be included to provide the relevant polyfill for the plagirism provider.
   use \core_plagiarism\privacy\legacy_polyfill;
 
   /**
@@ -170,7 +168,7 @@ class provider implements
       return;
     }
 
-    /* Delete all submissions.*/
+    // Delete all submissions.
     $DB->delete_records('plagiarism_copyleaks_files', ['cm' => $context->instanceid]);
   }
 
