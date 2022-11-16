@@ -127,6 +127,11 @@ class plagiarism_copyleaks_adminform extends moodleform {
             'plagiarism_copyleaks_disablestudentinternalaccess',
             get_string('cldisablestudentinternalaccess', 'plagiarism_copyleaks')
         );
+        $mform->addHelpButton(
+            'plagiarism_copyleaks_disablestudentinternalaccess',
+            'cldisablestudentinternalaccess',
+            'plagiarism_copyleaks'
+        );
 
         $mform->addElement(
             'advcheckbox',
