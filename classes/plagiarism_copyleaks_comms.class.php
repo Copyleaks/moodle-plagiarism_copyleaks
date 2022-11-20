@@ -74,7 +74,7 @@ class plagiarism_copyleaks_comms {
                 'tr' => 'tr',
                 'ru' => 'ru',
                 'ar' => 'ar'
-            );            
+            );
             return (isset($langarray[$langcode])) ? $langarray[$langcode] : $defaultlangcode;
         } catch (Exception $e) {
             return $defaultlangcode;
@@ -225,11 +225,16 @@ class plagiarism_copyleaks_comms {
      * @param string $scanid Copyleaks report scan id
      * @return string a JWT to access student report only
      */
-    public function request_access_for_report(string $scanid) {
+    public function request_access_for_report(string $scanid, $isinstructor) {
+        if ($isinstructor == 0) {
+            $isinstructor = -1;
+        }
+
         if (isset($this->key) && isset($this->secret)) {
             $result = plagiarism_copyleaks_http_client::execute(
                 'POST',
-                $this->copyleaks_api_url() . "/api/moodle/" . $this->key . "/report/" . $scanid . "/request-access",
+                $this->copyleaks_api_url() . "/api/moodle/" . $this->key .
+                    "/report/" . $scanid . "/" . $isinstructor . "/request-access",
                 true
             );
 
@@ -245,10 +250,11 @@ class plagiarism_copyleaks_comms {
     public function request_access_for_repositories(string $cmid = null) {
         if (isset($this->key) && isset($this->secret)) {
 
-            if (isset($cmid))
+            if (isset($cmid)) {
                 $url = $this->copyleaks_api_url() . "/api/moodle/" . $this->key . "/repositories/" . $cmid . "/request-access";
-            else
+            } else {
                 $url = $this->copyleaks_api_url() . "/api/moodle/" . $this->key . "/repositories/request-access";
+            }
 
             $result = plagiarism_copyleaks_http_client::execute(
                 'POST',

@@ -45,6 +45,8 @@ class plagiarism_copyleaks_moduleconfig {
             'plagiarism_copyleaks_scaninternaldatabase',
             'plagiarism_copyleaks_enablesafesearch',
             'plagiarism_copyleaks_enablecheatdetection',
+            'plagiarism_copyleaks_checkforparaphrase',
+            'plagiarism_copyleaks_disablestudentinternalaccess'
         );
     }
 
@@ -75,6 +77,7 @@ class plagiarism_copyleaks_moduleconfig {
             !isset($result['plagiarism_copyleaks_enablecheatdetection'])
         ) {
             $defaults = self::get_modules_default_config();
+
             $result['plagiarism_copyleaks_ignorereferences'] =
                 $defaults['plagiarism_copyleaks_ignorereferences'];
 
@@ -101,6 +104,21 @@ class plagiarism_copyleaks_moduleconfig {
 
             $result['plagiarism_copyleaks_enablecheatdetection'] =
                 $defaults['plagiarism_copyleaks_enablecheatdetection'];
+        }
+
+        /* Sepperate this two parameters as old versions will not get them as default result */
+        if (
+            !isset($result['plagiarism_copyleaks_checkforparaphrase']) ||
+            !isset($result['plagiarism_copyleaks_disablestudentinternalaccess'])
+        ) {
+            if (!isset($defaults)) {
+                $defaults = self::get_modules_default_config();
+            }
+            $result['plagiarism_copyleaks_checkforparaphrase'] =
+                $defaults['plagiarism_copyleaks_checkforparaphrase'];
+
+            $result['plagiarism_copyleaks_disablestudentinternalaccess'] =
+                $defaults['plagiarism_copyleaks_disablestudentinternalaccess'];
         }
 
         return $result;
@@ -135,6 +153,8 @@ class plagiarism_copyleaks_moduleconfig {
      * @param boolean $scaninternaldatabase
      * @param boolean $enablesafesearch
      * @param boolean $enablecheatdetection
+     * @param boolean $enableparaphrase
+     * @param boolean $disablestudentinternalaccess
      * @param string $cmid (optional)
      * @param boolean $enabled (optional)
      * @param boolean $draftssubmit (optional)
@@ -151,6 +171,8 @@ class plagiarism_copyleaks_moduleconfig {
         $scaninternaldatabase,
         $enablesafesearch,
         $enablecheatdetection,
+        $enableparaphrase,
+        $disablestudentinternalaccess,
         $cmid = PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID,
         $enabled = false,
         $draftssubmit = 0,
@@ -173,6 +195,8 @@ class plagiarism_copyleaks_moduleconfig {
         $default['plagiarism_copyleaks_scaninternaldatabase'] = $scaninternaldatabase;
         $default['plagiarism_copyleaks_enablesafesearch'] = $enablesafesearch;
         $default['plagiarism_copyleaks_enablecheatdetection'] = $enablecheatdetection;
+        $default['plagiarism_copyleaks_checkforparaphrase'] = $enableparaphrase;
+        $default['plagiarism_copyleaks_disablestudentinternalaccess'] = $disablestudentinternalaccess;
 
         // Db settings elements name.
         $clcmconfigfields = self::get_config_db_properties();

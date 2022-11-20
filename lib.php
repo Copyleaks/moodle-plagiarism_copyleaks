@@ -74,6 +74,8 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
                 $clexternalsources = $copyleakssettings->externalSources;
                 $clsearch = $copyleakssettings->search;
                 $clinternalsources = $copyleakssettings->internalSources;
+                $matchtypes = $copyleakssettings->matchTypes;
+                $config = $copyleakssettings->config;
 
                 $clfilters->references = $data->plagiarism_copyleaks_ignorereferences === '1';
                 $clfilters->quotes = $data->plagiarism_copyleaks_ignorequotes === '1';
@@ -83,6 +85,8 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
                 $clexternalsources->internet->enabled = $data->plagiarism_copyleaks_scaninternet === '1';
                 $clexternalsources->safeSearch = $data->plagiarism_copyleaks_enablesafesearch === '1';
                 $clsearch->cheatDetection = $data->plagiarism_copyleaks_enablecheatdetection === '1';
+                $matchtypes->relatedMeaningCheck = $data->plagiarism_copyleaks_checkforparaphrase === '1';
+                $config->disableStudentInternalAccess = $data->plagiarism_copyleaks_disablestudentinternalaccess === '1';
 
                 $scaninternaldatabase = $data->plagiarism_copyleaks_scaninternaldatabase === '1';
                 if (isset($clinternalsources) && isset($clinternalsources->databases)) {
@@ -109,11 +113,13 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
                     $data->plagiarism_copyleaks_scaninternaldatabase,
                     $data->plagiarism_copyleaks_enablesafesearch,
                     $data->plagiarism_copyleaks_enablecheatdetection,
+                    $data->plagiarism_copyleaks_checkforparaphrase,
+                    $data->plagiarism_copyleaks_disablestudentinternalaccess,
                     $data->coursemodule,
                     $data->plagiarism_copyleaks_enable,
                     isset($data->plagiarism_copyleaks_draftsubmit) ? $data->plagiarism_copyleaks_draftsubmit : 0,
                     isset($data->plagiarism_copyleaks_reportgen) ? $data->plagiarism_copyleaks_reportgen : 0,
-                    $data->plagiarism_copyleaks_allowstudentaccess
+                    $data->plagiarism_copyleaks_allowstudentaccess,
                 );
             }
         } catch (plagiarism_copyleaks_exception $ex) {
@@ -198,12 +204,23 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
                     get_string("clreportgenspeed", "plagiarism_copyleaks"),
                     $genoptions
                 );
-            }
+            }          
 
             $mform->addElement(
                 'advcheckbox',
                 'plagiarism_copyleaks_allowstudentaccess',
                 get_string('clallowstudentaccess', 'plagiarism_copyleaks')
+            );
+
+            $mform->addElement(
+                'advcheckbox',
+                'plagiarism_copyleaks_disablestudentinternalaccess',
+                get_string('cldisablestudentinternalaccess', 'plagiarism_copyleaks')
+            );
+            $mform->addHelpButton(
+                'plagiarism_copyleaks_disablestudentinternalaccess',
+                'cldisablestudentinternalaccess',
+                'plagiarism_copyleaks'
             );
 
             // Copyleaks API settings.
@@ -249,6 +266,11 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
             );
             $mform->addElement(
                 'advcheckbox',
+                'plagiarism_copyleaks_checkforparaphrase',
+                get_string('clcheckforparaphrase', 'plagiarism_copyleaks')
+            );
+            $mform->addElement(
+                'advcheckbox',
                 'plagiarism_copyleaks_enablecheatdetection',
                 get_string('clenablecheatdetection', 'plagiarism_copyleaks')
             );
@@ -279,6 +301,10 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
             }
 
             $cmconfig = plagiarism_copyleaks_moduleconfig::get_module_config($cmid);
+            $mform->setDefault(
+                "plagiarism_copyleaks_disablestudentinternalaccess",
+                $cmconfig["plagiarism_copyleaks_disablestudentinternalaccess"]
+            );
             $mform->setDefault(
                 "plagiarism_copyleaks_ignorereferences",
                 $cmconfig["plagiarism_copyleaks_ignorereferences"]
@@ -314,6 +340,10 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
             $mform->setDefault(
                 "plagiarism_copyleaks_enablecheatdetection",
                 $cmconfig["plagiarism_copyleaks_enablecheatdetection"]
+            );
+            $mform->setDefault(
+                "plagiarism_copyleaks_checkforparaphrase",
+                $cmconfig["plagiarism_copyleaks_checkforparaphrase"]
             );
 
             if (isset($cmid) && isset($modulename)) {
@@ -357,7 +387,7 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
 
         // Check if Copyleaks plugin is enabled for this module.
         $moduleclenabled = plagiarism_copyleaks_pluginconfig::is_plugin_configured('mod_' . $cm->modname);
-        if (empty($clmodulesettings['plagiarism_copyleaks_enable']) || empty($moduleclenabled)) {            
+        if (empty($clmodulesettings['plagiarism_copyleaks_enable']) || empty($moduleclenabled)) {
             return "";
         }
 

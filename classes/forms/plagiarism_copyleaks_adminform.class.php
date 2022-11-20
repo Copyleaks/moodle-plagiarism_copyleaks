@@ -124,6 +124,17 @@ class plagiarism_copyleaks_adminform extends moodleform {
         // Thos settings will be save on copyleaks servers.
         $mform->addElement(
             'advcheckbox',
+            'plagiarism_copyleaks_disablestudentinternalaccess',
+            get_string('cldisablestudentinternalaccess', 'plagiarism_copyleaks')
+        );
+        $mform->addHelpButton(
+            'plagiarism_copyleaks_disablestudentinternalaccess',
+            'cldisablestudentinternalaccess',
+            'plagiarism_copyleaks'
+        );
+
+        $mform->addElement(
+            'advcheckbox',
             'plagiarism_copyleaks_ignorereferences',
             get_string('clignorereferences', 'plagiarism_copyleaks')
         );
@@ -161,6 +172,11 @@ class plagiarism_copyleaks_adminform extends moodleform {
             'advcheckbox',
             'plagiarism_copyleaks_enablesafesearch',
             get_string('clenablesafesearch', 'plagiarism_copyleaks')
+        );
+        $mform->addElement(
+            'advcheckbox',
+            'plagiarism_copyleaks_checkforparaphrase',
+            get_string('clcheckforparaphrase', 'plagiarism_copyleaks')
         );
         $mform->addElement(
             'advcheckbox',
@@ -284,9 +300,14 @@ class plagiarism_copyleaks_adminform extends moodleform {
                 $cldbdefaultconfig["plagiarism_copyleaks_enablesafesearch"];
             $plagiarismsettings["plagiarism_copyleaks_enablecheatdetection"] =
                 $cldbdefaultconfig["plagiarism_copyleaks_enablecheatdetection"];
+            $plagiarismsettings["plagiarism_copyleaks_checkforparaphrase"] =
+                $cldbdefaultconfig["plagiarism_copyleaks_checkforparaphrase"];
+            $plagiarismsettings["plagiarism_copyleaks_disablestudentinternalaccess"] =
+                $cldbdefaultconfig["plagiarism_copyleaks_disablestudentinternalaccess"];
         } else {
             $plagiarismsettings["plagiarism_copyleaks_scaninternet"] = true;
             $plagiarismsettings["plagiarism_copyleaks_scaninternaldatabase"] = true;
+            $plagiarismsettings["plagiarism_copyleaks_checkforparaphrase"] = true;
         }
 
         if (!isset($plagiarismsettings["plagiarism_copyleaks_studentdisclosure"])) {
@@ -314,8 +335,7 @@ class plagiarism_copyleaks_adminform extends moodleform {
      */
     public function save(stdClass $data) {
         global $CFG;
-
-        // Save admin settings.                
+        // Save admin settings.
         $configproperties = plagiarism_copyleaks_pluginconfig::admin_config_properties();
         foreach ($configproperties as $property) {
             plagiarism_copyleaks_pluginconfig::set_admin_config($data, $property);
@@ -351,6 +371,8 @@ class plagiarism_copyleaks_adminform extends moodleform {
             $clexternalsources = $copyleakssettings->externalSources;
             $clsearch = $copyleakssettings->search;
             $clinternalsources = $copyleakssettings->internalSources;
+            $matchtypes = $copyleakssettings->matchTypes;
+            $config = $copyleakssettings->config;
 
             $clfilters->references = $data->plagiarism_copyleaks_ignorereferences === '1';
             $clfilters->quotes = $data->plagiarism_copyleaks_ignorequotes === '1';
@@ -360,11 +382,14 @@ class plagiarism_copyleaks_adminform extends moodleform {
             $clexternalsources->internet->enabled = $data->plagiarism_copyleaks_scaninternet === '1';
             $clexternalsources->safeSearch = $data->plagiarism_copyleaks_enablesafesearch === '1';
             $clsearch->cheatDetection = $data->plagiarism_copyleaks_enablecheatdetection === '1';
+            $matchtypes->relatedMeaningCheck = $data->plagiarism_copyleaks_checkforparaphrase === '1';
+            $config->disableStudentInternalAccess = $data->plagiarism_copyleaks_disablestudentinternalaccess === '1';
 
             $scaninternaldatabase = $data->plagiarism_copyleaks_scaninternaldatabase === '1';
             if (isset($clinternalsources) && isset($clinternalsources->databases)) {
                 foreach ($clinternalsources->databases as $database) {
-                    if (isset($database) && ($database->id == "INTERNAL_DATA_BASE" || $database->id == DEFAULT_DATABASE_COPYLEAKSDB_ID)) {
+                    if (isset($database) && ($database->id == "INTERNAL_DATA_BASE"
+                        || $database->id == DEFAULT_DATABASE_COPYLEAKSDB_ID)) {
                         $database->includeOthersScans = $scaninternaldatabase;
                         $database->index = $scaninternaldatabase;
                         $database->includeUserScans = $scaninternaldatabase;
@@ -385,7 +410,9 @@ class plagiarism_copyleaks_adminform extends moodleform {
                     $data->plagiarism_copyleaks_scaninternet,
                     $data->plagiarism_copyleaks_scaninternaldatabase,
                     $data->plagiarism_copyleaks_enablesafesearch,
-                    $data->plagiarism_copyleaks_enablecheatdetection
+                    $data->plagiarism_copyleaks_enablecheatdetection,
+                    $data->plagiarism_copyleaks_checkforparaphrase,
+                    $data->plagiarism_copyleaks_disablestudentinternalaccess,
                 );
             }
         }

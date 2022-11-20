@@ -79,7 +79,7 @@ class plagiarism_copyleaks_sendsubmissions extends \core\task\scheduled_task {
                 return;
             }
 
-            foreach ($queuedsubmissions as $submission) {                
+            foreach ($queuedsubmissions as $submission) {
                 $submittedtextcontent = "";
                 // Check if submission type is supported.
                 $subtype = $submission->submissiontype;

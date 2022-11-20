@@ -105,6 +105,8 @@ class plagiarism_copyleaks_eventshandler {
                     $clmoduleconfig["plagiarism_copyleaks_scaninternaldatabase"],
                     $clmoduleconfig["plagiarism_copyleaks_enablesafesearch"],
                     $clmoduleconfig["plagiarism_copyleaks_enablecheatdetection"],
+                    $clmoduleconfig["plagiarism_copyleaks_checkforparaphrase"],
+                    $clmoduleconfig["plagiarism_copyleaks_disablestudentinternalaccess"],
                     $coursemodule->id
                 );
             } catch (Exception $e) {
@@ -276,7 +278,11 @@ class plagiarism_copyleaks_eventshandler {
         $contentidentifier = sha1($data['other']['content']);
 
         // Check if the text content has already been submitted.
-        $files = plagiarism_copyleaks_submissions::successful_submission_instances($coursemodule->id, $authoruserid, $contentidentifier);
+        $files = plagiarism_copyleaks_submissions::successful_submission_instances(
+            $coursemodule->id,
+            $authoruserid,
+            $contentidentifier
+        );
         if (count($files) > 0) {
             return true;
         } else {

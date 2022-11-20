@@ -40,7 +40,6 @@ $qpselectedtabid = optional_param('tab', "copyleaksconfiguration", PARAM_ALPHA);
 $qpdate = optional_param('date', null, PARAM_ALPHANUMEXT);
 
 $copyleakssetupform = new plagiarism_copyleaks_adminform();
-$plagiarismplugin = new plagiarism_plugin_copyleaks();
 
 if ($copyleakssetupform->is_cancelled()) {
     redirect(new moodle_url('/admin/category.php?category=plagiarism'));
