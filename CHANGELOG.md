@@ -3,7 +3,7 @@
 -  Add ability for admin & instructor users to manage Check for a paraphrased content match from the Admin level & Module level.
    Default = Enabled. (which means by default we scan for paraphrased content)
 -  Add ability for admin & instructor users to manage students' internal results access from Admin level & Module level.
-   Default = Disabled. (which mean by default we allow students to view internal results)
+   Default = Disabled. (which means by default we allow students to view internal results)
 
 ### Date: 		2022-July-21
 ### Release:	v2022072100
