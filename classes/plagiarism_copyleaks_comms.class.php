@@ -220,6 +220,35 @@ class plagiarism_copyleaks_comms {
         }
     }
 
+    public function get_resubmit_reports_ids($cursor) {
+        if (isset($this->key) && isset($this->secret)) {
+            $reqbody = (array)[
+                'cursor' => $cursor
+            ];
+            $result = plagiarism_copyleaks_http_client::execute(
+                'POST',
+                $this->copyleaks_api_url() . "/api/moodle/plugin/" . $this->key . "/task/resubmit-scans",
+                true,
+                json_encode($reqbody)
+            );
+            return $result;
+        }
+    }
+
+    public function delete_resubmitted_ids(array $ids) {
+        if (isset($this->key) && isset($this->secret)) {
+            $reqbody = (array)[
+                'ids' => $ids
+            ];
+            plagiarism_copyleaks_http_client::execute(
+                'POST',
+                $this->copyleaks_api_url() . "/api/moodle/plugin/" . $this->key . "/resubmit-scans/delete",
+                true,
+                json_encode($reqbody)
+            );
+        }
+    }
+
     /**
      * request access for copyleaks report
      * @param string $scanid Copyleaks report scan id
