@@ -220,6 +220,11 @@ class plagiarism_copyleaks_comms {
         }
     }
 
+    /**
+     * Get resubmit reports ids from lms server
+     * @param string $cursor Copyleaks db cursor
+     * @return object $result an array of resubmitted ids and new ids that rescanned
+     */
     public function get_resubmit_reports_ids($cursor) {
         if (isset($this->key) && isset($this->secret)) {
             $reqbody = (array)[
@@ -235,6 +240,10 @@ class plagiarism_copyleaks_comms {
         }
     }
 
+    /**
+     * send request to delete resubmitted id to copyleaks server
+     * @param array $ids Copyleaks report scan ids
+     */
     public function delete_resubmitted_ids(array $ids) {
         if (isset($this->key) && isset($this->secret)) {
             $reqbody = (array)[
@@ -242,7 +251,7 @@ class plagiarism_copyleaks_comms {
             ];
             plagiarism_copyleaks_http_client::execute(
                 'POST',
-                $this->copyleaks_api_url() . "/api/moodle/plugin/" . $this->key . "/resubmit-scans/delete",
+                $this->copyleaks_api_url() . "/api/moodle/plugin/" . $this->key . "/task/resubmit-scans/delete",
                 true,
                 json_encode($reqbody)
             );
@@ -252,6 +261,7 @@ class plagiarism_copyleaks_comms {
     /**
      * request access for copyleaks report
      * @param string $scanid Copyleaks report scan id
+     * @param boolean $isinstructor Copyleaks report scan id
      * @return string a JWT to access student report only
      */
     public function request_access_for_report(string $scanid, $isinstructor) {

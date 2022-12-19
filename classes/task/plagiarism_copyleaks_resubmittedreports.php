@@ -3,6 +3,8 @@
 
 namespace plagiarism_copyleaks\task;
 
+use core\check\result;
+
 defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/plagiarism/copyleaks/constants/plagiarism_copyleaks.constants.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_logs.class.php');
@@ -37,74 +39,73 @@ class plagiarism_copyleaks_resubmittedreports extends \core\task\scheduled_task 
 
     while ($canloadmoredata) {
       $response =  $copyleakscomms->get_resubmit_reports_ids($cursor);
-      if (!isset($response)) {
+      if (!is_object($response) || !isset($response->resubmitted) || count($response->resubmitted) == 0) {
         break;
       }
 
-      if (isset($response->$cursor)) {
-        $cursor = $response->cursor;
-      }
-      if (!isset($response->resubmitted) || count($response->resubmitted) == 0) {
-        break;
-      }
+      $cursor = $response->cursor;
       $resubmittedmodel = $response->resubmitted;
       $canloadmoredata = $response->canLoadMore;
       $oldIds = array_column($resubmittedmodel, 'oldScanId');
 
-      // Extract all the old scan ids from the response
-      // for ($i = 0; $i < count($resubmittedmodel); $i++) {
-      //   $oldIds[$i] = $resubmittedmodel[$i]->oldScanId;
-      // }
-
-      // Get all the scans from db with the ids of the 'response' old ids
       $currentdbresults = [];
 
-      for ($i = 0; $i < count($oldIds); $i++) {
-        $dbresult = $DB->get_record(
-          'plagiarism_copyleaks_files',
-          array('externalid' => $oldIds[$i])
-        );
-
-        if (!isset($dbresult)) {
-          continue;
-        }
-        $currentdbresults[$i] = $dbresult;
+      // Get all the scans from db with the ids of the 'response' old ids
+      $dbresult = $DB->get_recordset_list('plagiarism_copyleaks_files', 'externalid', $oldIds);
+      if (!isset($dbresult)) {
+        break;
       }
 
-      if ($currentdbresults == null) {
+      // Getting the result by the consition the all the external ids must contains in $oldIds
+      foreach ($dbresult as $result) {
+        $currentdbresults[] = $result;
+      }
+
+      if (count($currentdbresults) == 0) {
         continue;
       }
 
       $timestamp = time();
       $succeedids = [];
+      $idx = 0;
 
       // For each db result - Replace the new data
-      for ($k = 0; $k < count($currentdbresults); $k++) {
-        if ($currentdbresults[$k]->externalid == null) {
+      foreach ($currentdbresults as $currentresult) {
+        if ($currentresult->externalid == null) {
           continue;
         }
 
-        for ($i = 0; $i < count($resubmittedmodel); $i++) {
-          if ($currentdbresults[$k]->externalid == $resubmittedmodel[$k]->newScanId) {
-            $currentdbresults[$k]->externalid = $resubmittedmodel[$k]->newScanId;
-            $currentdbresults[$k]->similarityscore = $resubmittedmodel[$k]->similarityscore;
-            $currentdbresults[$k]->lastmodified = $timestamp;
-
-            // Update in the DB
-            if (!$DB->update_record('plagiarism_copyleaks_files',  $currentdbresults[$k])) {
-              \plagiarism_copyleaks_logs::add(
-                "Update record failed (CM: " . $resubmittedmodel[0]->originalityReport->courseModuleId . ", User: "
-                  . $currentdbresults[0]->userid . ") - ",
-                "UPDATE_RECORD_FAILED"
-              );
-            } else {
-              array_push($succeedids,  $currentdbresults[$k]->externalid);
+        // Get the copyleaks db entity with the old id
+        $filtered = array_filter(
+          $resubmittedmodel,
+          function ($element) use ($currentresult) {
+            if ($element->oldScanId == $currentresult->externalid) {
+              return $element;
             }
+          }
+        );
+        $curr =  $filtered[$idx++];
+
+        if (isset($curr) && $curr != null) {
+          $currentresult->externalid = $curr->newScanId;
+          $currentresult->similarityscore = $curr->plagiarismScore;
+          $currentresult->lastmodified = $timestamp;
+          // Update in the DB
+          if (!$DB->update_record('plagiarism_copyleaks_files',  $currentresult)) {
+            \plagiarism_copyleaks_logs::add(
+              "Update resubmitted failed (old scan id: " . $curr->oldScanId . ", new scan id: "
+                . $curr->newScanId . ") - ",
+              "UPDATE_RECORD_FAILED"
+            );
+          } else {
+            array_push($succeedids,  $currentresult->externalid);
           }
         }
       }
+      // Send request with ids who successfully changed in moodle db to deletion in the Google data store
+      if (count($succeedids) > 0) {
+        $copyleakscomms->delete_resubmitted_ids($succeedids);
+      }
     }
-    // Send request with ids who successfully changed in moodle db to deletion in the Google data store
-    $copyleakscomms->delete_resubmitted_ids($succeedids);
   }
 }
