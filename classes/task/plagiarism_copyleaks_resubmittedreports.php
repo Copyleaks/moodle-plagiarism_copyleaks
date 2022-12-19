@@ -58,6 +58,10 @@ class plagiarism_copyleaks_resubmittedreports extends \core\task\scheduled_task 
     $canloadmoredata = true;
 
     while ($canloadmoredata) {
+      if (!\plagiarism_copyleaks_comms::test_copyleaks_connection('scheduler_task')) {
+        return;
+      }
+
       $response = $copyleakscomms->get_resubmit_reports_ids($cursor);
       if (!is_object($response) || !isset($response->resubmitted) || count($response->resubmitted) == 0) {
         break;
