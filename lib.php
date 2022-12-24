@@ -405,7 +405,8 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
 
         $contents = format_text($clstudentdisclosure, FORMAT_MOODLE, array("noclean" => true));
         if (!$isuseragreed) {
-            $output =  "<input type='checkbox' id='cls_student_disclosure'> <label for='cls_student_disclosure'>$clstudentdisclosure</label>";
+            $checkbox =  "<input type='checkbox' id='cls_student_disclosure'> <label for='cls_student_disclosure' class='copyleaks-student-disclosure-checkbox'>$contents</label>";
+            $output = html_writer::tag('div', $checkbox, array('class' => 'copyleaks-student-disclosure '));
             $output .= html_writer::tag('script', "(function disableInput(){setTimeout(()=> {var checkbox = document.getElementById('cls_student_disclosure'); var btn = document.getElementById('id_submitbutton'); btn.disabled=true; checkbox.addEventListener('change', function() { if (this.checked) { btn.disabled=false; } else { btn.disabled=true;}});},500)})()", null);
         } else {
             $output = html_writer::tag('div', $contents, array('class' => 'copyleaks-student-disclosure'));
