@@ -43,15 +43,13 @@ require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks
 /**
  * Contains Plagiarism plugin specific functions called by Modules.
  */
-class plagiarism_plugin_copyleaks extends plagiarism_plugin
-{
+class plagiarism_plugin_copyleaks extends plagiarism_plugin {
     /**
      * hook to allow plagiarism specific information to be displayed beside a submission
      * @param array $linkarray contains all relevant information for the plugin to generate a link
      * @return string displayed output
      */
-    public function get_links($linkarray)
-    {
+    public function get_links($linkarray) {
         return plagiarism_copyleaks_submissiondisplay::output($linkarray);
     }
 
@@ -59,8 +57,7 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin
      * hook to save plagiarism specific settings on a module settings page
      * @param stdClass $data form data
      */
-    public function save_form_elements($data)
-    {
+    public function save_form_elements($data) {
         // Check if plugin is configured and enabled.
         if (empty($data->modulename) || !plagiarism_copyleaks_pluginconfig::is_plugin_configured('mod_' . $data->modulename)) {
             return;
@@ -144,8 +141,7 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin
      * @param stdClass $context
      * @param string $modulename
      */
-    public function get_form_elements_module($mform, $context, $modulename = "")
-    {
+    public function get_form_elements_module($mform, $context, $modulename = "") {
         global $DB, $CFG;
         // This is a bit of a hack and untidy way to ensure the form elements aren't displayed,
         // twice. This won't be needed once this method goes away.
@@ -369,9 +365,13 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin
      * @param int $cmid - course module id
      * @return string
      */
-    public function print_disclosure($cmid)
-    {
-        global $DB;
+    public function print_disclosure($cmid) {
+        global $DB, $USER;
+
+        // require_once('PATH_TO/simplehtml_form.php');
+
+        //Instantiate simplehtml_form 
+        // $mform = new MoodleQuickForm('student_disclosure', 'post', '/');
 
         // Get course module.
         $cm = get_coursemodule_from_id('', $cmid);
@@ -392,16 +392,24 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin
 
         $config = plagiarism_copyleaks_pluginconfig::admin_config();
 
-        if (isset($config->plagiarism_copyleaks_studentdisclosure)) {
-            $clstudentdisclosure = $config->plagiarism_copyleaks_studentdisclosure;
+        $isuseragreed = $DB->record_exists('plagiarism_copyleaks_users', array('userid' => $USER->id));
+        if (!$isuseragreed) {
+            if (isset($config->plagiarism_copyleaks_studentdisclosure)) {
+                $clstudentdisclosure = $config->plagiarism_copyleaks_studentdisclosure;
+            } else {
+                $clstudentdisclosure = get_string('clstudentdisclosuredefault', 'plagiarism_copyleaks');
+            }
         } else {
-            $clstudentdisclosure = get_string('clstudentdisclosuredefault', 'plagiarism_copyleaks');
+            $clstudentdisclosure = get_string('clstudentdagreedtoeula', 'plagiarism_copyleaks');
         }
 
-        $formatoptions = new stdClass;
-        $formatoptions->noclean = true;
         $contents = format_text($clstudentdisclosure, FORMAT_MOODLE, array("noclean" => true));
-        $output = html_writer::tag('div', $contents, array('class' => 'copyleaks-student-disclosure'));
+        if (!$isuseragreed) {
+            $output =  "<input type='checkbox' id='cls_student_disclosure'> <label for='cls_student_disclosure'>$clstudentdisclosure</label>";
+            $output .= html_writer::tag('script', "(function disableInput(){setTimeout(()=> {var checkbox = document.getElementById('cls_student_disclosure'); var btn = document.getElementById('id_submitbutton'); btn.disabled=true; checkbox.addEventListener('change', function() { if (this.checked) { btn.disabled=false; } else { btn.disabled=true;}});},500)})()", null);
+        } else {
+            $output = html_writer::tag('div', $contents, array('class' => 'copyleaks-student-disclosure'));
+        }
 
         return $output;
     }
@@ -411,8 +419,7 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin
      * @param object $course - full Course object
      * @param object $cm - full cm object
      */
-    public function update_status($course, $cm)
-    {
+    public function update_status($course, $cm) {
         // Called at top of submissions/grading pages - allows printing of admin style links or updating status.
     }
 }
@@ -424,8 +431,7 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin
  * @param MoodleQuickForm $mform
  * @return type
  */
-function plagiarism_copyleaks_coursemodule_standard_elements($formwrapper, $mform)
-{
+function plagiarism_copyleaks_coursemodule_standard_elements($formwrapper, $mform) {
     $copyleaksplugin = new plagiarism_plugin_copyleaks();
     /**
      * @var mixed $course
@@ -447,8 +453,7 @@ function plagiarism_copyleaks_coursemodule_standard_elements($formwrapper, $mfor
  * @param stdClass $data
  * @param stdClass $course
  */
-function plagiarism_copyleaks_coursemodule_edit_post_actions($data, $course)
-{
+function plagiarism_copyleaks_coursemodule_edit_post_actions($data, $course) {
     $copyleaksplugin = new plagiarism_plugin_copyleaks();
 
     $copyleaksplugin->save_form_elements($data);

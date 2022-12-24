@@ -26,6 +26,7 @@ $string['copyleaks'] = 'Copyleaks';
 $string['clstudentdisclosure'] = 'Student disclosure';
 $string['clstudentdisclosure_help'] = 'This text will be displayed to all students on the file upload page.';
 $string['clstudentdisclosuredefault']  = '<span>By submitting your files you are agreeing to the plagiarism detection service </span><a target="_blank" href="https://copyleaks.com/legal/privacypolicy">privacy policy</a>';
+$string['clstudentdagreedtoeula']  = '<span>You have already agreed to the plagiarism detection service </span><a target="_blank" href="https://copyleaks.com/legal/privacypolicy">privacy policy</a>';
 $string['cladminconfigsavesuccess'] = 'Copyleaks plagiarism settings was saved successfully.';
 $string['clpluginconfigurationtab'] = 'Configurations';
 $string['cllogstab'] = 'Logs';

@@ -509,4 +509,43 @@ class plagiarism_copyleaks_eventshandler {
     private function is_instructor_submit($data) {
         return $data['relateduserid'] != $data['userid'];
     }
+
+    /*
+    * Handle Submissions event
+     * @param object $data
+     * @return bool result
+    */
+    public function handle_user_deletion($data) {
+        global $cs;
+    }
+
+    /**
+     * Handle Submissions event
+     * @param object $data
+     * @return void
+     */
+    public function handle_eula_acceptance($data, $isretry = false) {
+        global $DB;
+        $USERS_TABLE = "plagiarism_copyleaks_users";
+        // Check if the user not agreed already.
+        $isuseragreed = $DB->record_exists($USERS_TABLE, array('userid' => $data["userid"]));
+
+        if (!$isuseragreed) {
+            $dataobject = array(
+                "userid" => $data["userid"],
+                "user_eula_accepted" => 1
+            );
+
+            $id = $DB->insert_record($USERS_TABLE, $dataobject, true, false);
+
+            if ((!isset($id) || $id != null) && !$isretry) {
+                $this->handle_eula_acceptance($data, true);
+            } else if ($isretry) {
+                \plagiarism_copyleaks_logs::add(
+                    "Create new row in $USERS_TABLE is faild. (user id " . $data["userid"],
+                    "UPDATE_RECORD_FAILED"
+                );
+            }
+        }
+    }
 }

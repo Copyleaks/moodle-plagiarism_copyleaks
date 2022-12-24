@@ -54,6 +54,11 @@ class plagiarism_copyleaks_observer {
         );
     }
 
+    public static function core_event_assessable_deletion(\core\event\user_deleted $event) {
+        $eventhandler = new plagiarism_copyleaks_eventshandler('user', 'deletion');
+        $eventhandler->handle_user_deletion($event->get_data());
+    }
+
     /**
      * assign submission file upload event handler.
      * @param \assignsubmission_file\event\assessable_uploaded $event
@@ -85,6 +90,7 @@ class plagiarism_copyleaks_observer {
     ) {
         $eventhandler = new plagiarism_copyleaks_eventshandler('assessable_submitted', 'assign');
         $eventhandler->handle_submissions($event->get_data());
+        $eventhandler->handle_eula_acceptance($event->get_data());
     }
 
     /**
