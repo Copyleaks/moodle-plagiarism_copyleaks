@@ -516,7 +516,14 @@ class plagiarism_copyleaks_eventshandler {
      * @return bool result
     */
     public function handle_user_deletion($data) {
-        global $cs;
+        global $DB;
+        $USERS_TABLE = "plagiarism_copyleaks_users";
+
+        $useragreed = $DB->get_record($USERS_TABLE, array('userid' => $data["objectid"]), "userid");
+        if ($useragreed) {
+            $isdeleted = $DB->delete_records($USERS_TABLE, ['userid' => $data["objectid"]]);
+            $wer = 1;
+        }
     }
 
     /**
@@ -534,11 +541,9 @@ class plagiarism_copyleaks_eventshandler {
             $dataobject = array(
                 "userid" => $data["userid"],
                 "user_eula_accepted" => 1
-            );
+            );;
 
-            $id = $DB->insert_record($USERS_TABLE, $dataobject, true, false);
-
-            if ((!isset($id) || $id != null) && !$isretry) {
+            if (!($DB->insert_record($USERS_TABLE, $dataobject, true, false)) && !$isretry) {
                 $this->handle_eula_acceptance($data, true);
             } else if ($isretry) {
                 \plagiarism_copyleaks_logs::add(
