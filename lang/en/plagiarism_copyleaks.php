@@ -50,6 +50,7 @@ $string['clenablesafesearch'] = 'Enable safe search';
 $string['clenablecheatdetection'] = 'Enable cheat detection';
 $string['clcheckforparaphrase'] = 'Check for paraphrased text';
 $string['cldisablestudentinternalaccess'] = 'Disable view of database for students';
+$string['clshowstudentresultsinfo'] = "Show internal results details";
 $string['clallowstudentaccess'] = 'Allow students access to plagiarism reports';
 $string['clinvalidkeyorsecret'] = 'Invalid key or secret';
 $string['clfailtoloaddata'] = 'Fail to load Copyleaks data';

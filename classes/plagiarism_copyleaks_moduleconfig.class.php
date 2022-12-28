@@ -21,6 +21,8 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use core\check\performance\stats;
+
 defined('MOODLE_INTERNAL') || die();
 /**
  * module configurations helpers methods
@@ -46,7 +48,8 @@ class plagiarism_copyleaks_moduleconfig {
             'plagiarism_copyleaks_enablesafesearch',
             'plagiarism_copyleaks_enablecheatdetection',
             'plagiarism_copyleaks_checkforparaphrase',
-            'plagiarism_copyleaks_disablestudentinternalaccess'
+            'plagiarism_copyleaks_disablestudentinternalaccess',
+            'plagiarism_copyleaks_showstudentresultsinfo'
         );
     }
 
@@ -173,6 +176,7 @@ class plagiarism_copyleaks_moduleconfig {
         $enablecheatdetection,
         $enableparaphrase,
         $disablestudentinternalaccess,
+        $showstudentresultsinfo,
         $cmid = PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID,
         $enabled = false,
         $draftssubmit = 0,
@@ -197,6 +201,9 @@ class plagiarism_copyleaks_moduleconfig {
         $default['plagiarism_copyleaks_enablecheatdetection'] = $enablecheatdetection;
         $default['plagiarism_copyleaks_checkforparaphrase'] = $enableparaphrase;
         $default['plagiarism_copyleaks_disablestudentinternalaccess'] = $disablestudentinternalaccess;
+        if ($cmid == 0) {
+            $default['plagiarism_copyleaks_showstudentresultsinfo'] = $showstudentresultsinfo;
+        }
 
         // Db settings elements name.
         $clcmconfigfields = self::get_config_db_properties();
@@ -248,5 +255,10 @@ class plagiarism_copyleaks_moduleconfig {
             return false;
         }
         return true;
+    }
+
+    public static function is_allow_show_internal_results_info() {
+        $cldbdefaultconfig = self::get_modules_default_config();
+        return isset($cldbdefaultconfig["plagiarism_copyleaks_showstudentresultsinfo"]) && $cldbdefaultconfig["plagiarism_copyleaks_showstudentresultsinfo"] == "1";
     }
 }

@@ -157,6 +157,40 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         if (!$dbman->table_exists($table)) {
             $dbman->create_table($table);
         }
+
+        upgrade_plugin_savepoint(true, 2022122400, 'plagiarism', 'copyleaks');
+    }
+
+    if ($oldversion < 2022122802) {
+        // Get saved db settings.
+        $saveddefaultvalue = $DB->get_records_menu('plagiarism_copyleaks_config', array('cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID), '', 'name,value');
+
+        // Update saved default copyleaks settings.
+        $fieldname = 'plagiarism_copyleaks_showstudentresultsinfo';
+        $savedfield = new stdClass();
+        $savedfield->cm = PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID;
+        $savedfield->name = $fieldname;
+        $savedfield->value = 0;
+        if (!isset($saveddefaultvalue[$fieldname])) {
+            $savedfield->config_hash = $savedfield->cm . "_" . $savedfield->name;
+            if (!$DB->insert_record('plagiarism_copyleaks_config', $savedfield)) {
+                throw new moodle_exception(get_string('clinserterror', 'plagiarism_copyleaks'));
+            }
+        } else {
+            $savedfield->id = $DB->get_field(
+                'plagiarism_copyleaks_config',
+                'id',
+                (array(
+                    'cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID,
+                    'name' => $fieldname
+                ))
+            );
+            if (!$DB->update_record('plagiarism_copyleaks_config', $savedfield)) {
+                throw new moodle_exception(get_string('clupdateerror', 'plagiarism_copyleaks'));
+            }
+        }
+
+        upgrade_plugin_savepoint(true, 2022122802, 'plagiarism', 'copyleaks');
     }
 
     return true;

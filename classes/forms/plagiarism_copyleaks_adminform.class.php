@@ -127,7 +127,11 @@ class plagiarism_copyleaks_adminform extends moodleform {
             'plagiarism_copyleaks_disablestudentinternalaccess',
             get_string('cldisablestudentinternalaccess', 'plagiarism_copyleaks')
         );
-
+        $mform->addElement(
+            'advcheckbox',
+            'plagiarism_copyleaks_showstudentresultsinfo',
+            get_string('clshowstudentresultsinfo', 'plagiarism_copyleaks')
+        );
         $mform->addElement(
             'advcheckbox',
             'plagiarism_copyleaks_ignorereferences',
@@ -300,6 +304,8 @@ class plagiarism_copyleaks_adminform extends moodleform {
                 $cldbdefaultconfig["plagiarism_copyleaks_checkforparaphrase"];
             $plagiarismsettings["plagiarism_copyleaks_disablestudentinternalaccess"] =
                 $cldbdefaultconfig["plagiarism_copyleaks_disablestudentinternalaccess"];
+            $plagiarismsettings["plagiarism_copyleaks_showstudentresultsinfo"] =
+                $cldbdefaultconfig["plagiarism_copyleaks_showstudentresultsinfo"];
         } else {
             $plagiarismsettings["plagiarism_copyleaks_scaninternet"] = true;
             $plagiarismsettings["plagiarism_copyleaks_scaninternaldatabase"] = true;
@@ -380,6 +386,7 @@ class plagiarism_copyleaks_adminform extends moodleform {
             $clsearch->cheatDetection = $data->plagiarism_copyleaks_enablecheatdetection === '1';
             $matchtypes->relatedMeaningCheck = $data->plagiarism_copyleaks_checkforparaphrase === '1';
             $config->disableStudentInternalAccess = $data->plagiarism_copyleaks_disablestudentinternalaccess === '1';
+            $config->ShowStudentResultsInfo = $data->plagiarism_copyleaks_showstudentresultsinfo === '1';
 
             $scaninternaldatabase = $data->plagiarism_copyleaks_scaninternaldatabase === '1';
             if (isset($clinternalsources) && isset($clinternalsources->databases)) {
@@ -409,6 +416,7 @@ class plagiarism_copyleaks_adminform extends moodleform {
                     $data->plagiarism_copyleaks_enablecheatdetection,
                     $data->plagiarism_copyleaks_checkforparaphrase,
                     $data->plagiarism_copyleaks_disablestudentinternalaccess,
+                    $data->plagiarism_copyleaks_showstudentresultsinfo
                 );
             }
         }

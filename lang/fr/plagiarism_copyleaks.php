@@ -50,6 +50,7 @@ $string['clenablesafesearch'] = 'Activer la recherche sécurisée';
 $string['clfailtoloaddata'] = 'Échec du chargement des données Copyleaks';
 $string['clfailtosavedata'] = 'Échec de l\'enregistrement des données Copyleaks';
 $string['clgenereportimmediately'] = 'Générez des rapports immédiatement';
+$string['clshowstudentresultsinfo'] = "Afficher les détails des résultats internes";
 $string['clgenereportonduedate'] = 'Générer des rapports à la date d\'échéance';
 $string['clignorequotes'] = 'Ignorer les guillemets';
 $string['clignorereferences'] = 'Ignorer les références';
