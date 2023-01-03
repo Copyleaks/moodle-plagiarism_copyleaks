@@ -57,11 +57,12 @@ class plagiarism_copyleaks_resubmittedreports extends \core\task\scheduled_task 
         $cursor = '';
         $canloadmoredata = true;
 
-        while ($canloadmoredata) {
+        while ($canloadmoredata) {                        
             if (!\plagiarism_copyleaks_comms::test_copyleaks_connection('scheduler_task')) {
                 return;
             }
-
+            
+            $succeedids = [];
             $response = $copyleakscomms->get_resubmit_reports_ids($cursor);
             if (!is_object($response) || !isset($response->resubmitted) || count($response->resubmitted) == 0) {
                 break;
@@ -76,8 +77,13 @@ class plagiarism_copyleaks_resubmittedreports extends \core\task\scheduled_task 
 
             /* Get all the scans from db with the ids of the 'response' old ids */
             $dbrecordset = $DB->get_recordset_list('plagiarism_copyleaks_files', 'externalid', $oldids);
-            if (!$dbrecordset->valid()) {
-                break;
+            if (!$dbrecordset->valid()) { 
+                array_push($succeedids, ...$oldids);               
+                /* Send request with ids who successfully changed in moodle db to deletion in the Google data store */
+                if (count($succeedids) > 0) {
+                    $copyleakscomms->delete_resubmitted_ids($succeedids);
+                }
+                continue;
             }
 
             /* Getting the result by the consition the all the external ids must contains in $oldids */
@@ -92,7 +98,6 @@ class plagiarism_copyleaks_resubmittedreports extends \core\task\scheduled_task 
             }
 
             $timestamp = time();
-            $succeedids = [];
             $idx = 0;
 
             /* For each db result - Replace the new data */
@@ -110,6 +115,7 @@ class plagiarism_copyleaks_resubmittedreports extends \core\task\scheduled_task 
                         }
                     }
                 );
+
                 /* Even the variable $filtered is assign each time the key will increased in each assignment */
                 $curr = $filtered[$idx++];
 
@@ -125,7 +131,7 @@ class plagiarism_copyleaks_resubmittedreports extends \core\task\scheduled_task 
                             "UPDATE_RECORD_FAILED"
                         );
                     } else {
-                        array_push($succeedids,  $currentresult->externalid);
+                        array_push($succeedids,  $curr->oldScanId);
                     }
                 }
             }
