@@ -276,7 +276,6 @@ class plagiarism_copyleaks_adminform extends moodleform {
         $cache = cache::make('core', 'config');
         $cache->delete('plagiarism_copyleaks');
 
-
         // Get moodle admin config.
         $plagiarismsettings = (array) plagiarism_copyleaks_pluginconfig::admin_config();
 
