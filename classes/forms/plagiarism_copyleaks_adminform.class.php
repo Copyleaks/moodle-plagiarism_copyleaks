@@ -393,7 +393,7 @@ class plagiarism_copyleaks_adminform extends moodleform {
             $clsearch->cheatDetection = $data->plagiarism_copyleaks_enablecheatdetection === '1';
             $matchtypes->relatedMeaningCheck = $data->plagiarism_copyleaks_checkforparaphrase === '1';
             $config->disableStudentInternalAccess = $data->plagiarism_copyleaks_disablestudentinternalaccess === '1';
-            $config->ShowStudentResultsInfo = $data->plagiarism_copyleaks_showstudentresultsinfo === '1';
+            $config->showStudentResultsInfo = $data->plagiarism_copyleaks_showstudentresultsinfo === '1';
 
             $scaninternaldatabase = $data->plagiarism_copyleaks_scaninternaldatabase === '1';
             if (isset($clinternalsources) && isset($clinternalsources->databases)) {
