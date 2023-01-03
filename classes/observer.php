@@ -89,8 +89,7 @@ class plagiarism_copyleaks_observer {
         \mod_assign\event\assessable_submitted $event
     ) {
         $eventhandler = new plagiarism_copyleaks_eventshandler('assessable_submitted', 'assign');
-        $eventhandler->handle_submissions($event->get_data());
-        $eventhandler->handle_eula_acceptance($event->get_data());
+        $eventhandler->handle_submissions($event->get_data());        
     }
 
     /**

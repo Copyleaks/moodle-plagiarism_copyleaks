@@ -168,17 +168,35 @@ class plagiarism_copyleaks_comms {
         string $identifier,
         string $submissiontype
     ) {
-        $student = get_complete_user_data('id', $userid);
         if (isset($this->key) && isset($this->secret)) {
-            $paramsmerge = (array)[
-                'fileName' => $filename,
-                'courseModuleId' => $cmid,
-                'moodleUserId' => $userid,
-                'identifier' => $identifier,
-                'submissionType' => $submissiontype,
-                'userEmail' => $student->email,
-                'userName' => $student->firstname . " " . $student->lastname
-            ];
+            $coursemodule = get_coursemodule_from_id('', $cmid);            
+            if(
+                plagiarism_copyleaks_moduleconfig::is_allowed_eula_acceptance($coursemodule->modname) &&
+                plagiarism_copyleaks_moduleconfig::is_allow_student_results_info()
+                ){
+                $student = get_complete_user_data('id', $userid);
+                $paramsmerge = (array)[
+                    'fileName' => $filename,
+                    'courseModuleId' => $cmid,
+                    'moodleUserId' => $userid,
+                    'identifier' => $identifier,
+                    'submissionType' => $submissiontype,                    
+                    'userEmail' => $student->email,
+                    'userFullName' => $student->firstname . " " . $student->lastname,                    
+                    'moduleName' => $coursemodule->name,
+                    'courseId' => $coursemodule->course,
+                    'courseName' => (get_course($coursemodule->course))->fullname
+                ];
+            }else{
+                $paramsmerge = (array)[
+                    'fileName' => $filename,
+                    'courseModuleId' => $cmid,
+                    'moodleUserId' => $userid,
+                    'identifier' => $identifier,
+                    'submissionType' => $submissiontype
+                ];
+            }
+
 
             $mimetype = mime_content_type($filepath);
             if (class_exists('CURLFile')) {
@@ -412,19 +430,5 @@ class plagiarism_copyleaks_comms {
             }
             return false;
         }
-    }
-
-    private function setUserCustomMetaData() {
-        global $USER;
-        $userdetails = array();
-        $cldbdefaultconfig = plagiarism_copyleaks_moduleconfig::get_modules_default_config();
-        $adduserdetails = isset($cldbdefaultconfig["plagiarism_copyleaks_showstudentresultsinfo"]) && $cldbdefaultconfig["plagiarism_copyleaks_showstudentresultsinfo"] == "1";
-        if ($adduserdetails) {
-            $userdetails = array(
-                "userid" => $USER->id,
-                "useremail" => $USER->email,
-            );
-        }
-        return $userdetails;
     }
 }

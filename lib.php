@@ -103,7 +103,7 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
                 // Save to Copyleaks API.
                 $cl->save_course_module_settings($data->coursemodule, $data->modulename, $data->name, $copyleakssettings);
                 // get 
-                $allowshowresultinfo = plagiarism_copyleaks_moduleconfig::is_allow_show_internal_results_info();
+                $showstudentresultsinfo = plagiarism_copyleaks_moduleconfig::is_allow_student_results_info();
 
                 plagiarism_copyleaks_moduleconfig::set_module_config(
                     $data->plagiarism_copyleaks_ignorereferences,
@@ -117,7 +117,7 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
                     $data->plagiarism_copyleaks_enablecheatdetection,
                     $data->plagiarism_copyleaks_checkforparaphrase,
                     $data->plagiarism_copyleaks_disablestudentinternalaccess,
-                    $allowshowresultinfo,
+                    $showstudentresultsinfo,
                     $data->coursemodule,
                     $data->plagiarism_copyleaks_enable,
                     isset($data->plagiarism_copyleaks_draftsubmit) ? $data->plagiarism_copyleaks_draftsubmit : 0,

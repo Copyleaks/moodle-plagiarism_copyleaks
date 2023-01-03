@@ -59,8 +59,8 @@ class plagiarism_copyleaks_eventshandler {
      * @return bool result
      */
     public function handle_submissions($data) {
-        global $DB;
-
+        global $DB;        
+        
         $result = true;
 
         // Get course module.
@@ -69,12 +69,18 @@ class plagiarism_copyleaks_eventshandler {
         // Stop event if the course module is not found.
         if (!$coursemodule) {
             return true;
-        }
+        }        
 
         // Check if module is enabled for this event.
         if (!plagiarism_copyleaks_moduleconfig::is_module_enabled($coursemodule->modname, $coursemodule->id)) {
             return true;
         }
+
+        // Check the supported EULA acceptance module.        
+        if (plagiarism_copyleaks_moduleconfig::is_allowed_eula_acceptance($coursemodule->modname)) {
+            $this->handle_eula_acceptance($data);
+        }
+
 
         // Get course module ref.
         $cmdata = $DB->get_record(
@@ -511,19 +517,25 @@ class plagiarism_copyleaks_eventshandler {
         return $data['relateduserid'] != $data['userid'];
     }
 
-    /*
-    * Handle Submissions event
-     * @param object $data
-     * @return bool result
+   /** 
+    * Handle user deletion event
+    * @param object $data    
+    * @return void
     */
     public function handle_user_deletion($data) {
         global $DB;
         $USERS_TABLE = "plagiarism_copyleaks_users";
 
-        $useragreed = $DB->get_record($USERS_TABLE, array('userid' => $data["objectid"]), "userid");
-        if ($useragreed) {
-            $isdeleted = $DB->delete_records($USERS_TABLE, ['userid' => $data["objectid"]]);
-            $wer = 1;
+        // Check if the user not agreed already.
+        $isuseragreed = $DB->record_exists("plagiarism_copyleaks_users", array('userid' => $data["userid"]));
+
+        if ($isuseragreed) {                    
+            if(!($DB->delete_records($USERS_TABLE, ['userid' => $data["userid"]]))){
+                \plagiarism_copyleaks_logs::add(
+                    "Faild to delete row in $USERS_TABLE. (user id " . $data["userid"],
+                    "DELETE_RECORD_FAILED"
+                );
+            };            
         }
     }
 
@@ -536,7 +548,7 @@ class plagiarism_copyleaks_eventshandler {
         global $DB;
         $USERS_TABLE = "plagiarism_copyleaks_users";
         // Check if the user not agreed already.
-        $isuseragreed = $DB->record_exists($USERS_TABLE, array('userid' => $data["userid"]));
+        $isuseragreed = $DB->record_exists("plagiarism_copyleaks_users", array('userid' => $data["userid"]));
 
         if (!$isuseragreed) {
             $dataobject = array(
