@@ -54,6 +54,6 @@ $observers = array(
     ),
     array(
         'eventname' => '\core\event\user_deleted',
-        'callback'  => 'plagiarism_copyleaks_observer::core_event_assessable_deletion'
+        'callback'  => 'plagiarism_copyleaks_observer::core_event_user_deletion'
     )
 );

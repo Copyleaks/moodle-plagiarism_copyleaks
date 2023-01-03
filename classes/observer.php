@@ -54,7 +54,11 @@ class plagiarism_copyleaks_observer {
         );
     }
 
-    public static function core_event_assessable_deletion(\core\event\user_deleted $event) {
+    /**
+     * on user deletion event handler.
+     * @param \core\event\user_deleted $event
+     */
+    public static function core_event_user_deletion(\core\event\user_deleted $event) {
         $eventhandler = new plagiarism_copyleaks_eventshandler('user', 'deletion');
         $eventhandler->handle_user_deletion($event->get_data());
     }
