@@ -143,11 +143,11 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
 
     if ($oldversion < 2022122400) {
         $table = new xmldb_table('plagiarism_copyleaks_users');
-
+                
         // Adding fields to table plagiarism_copyleaks_users.
         $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
-        $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null, 'id');
-        $table->add_field('user_eula_accepted', XMLDB_TYPE_INTEGER, '1', null, false, null, 0);
+        $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', !XMLDB_UNSIGNED, XMLDB_NOTNULL, !XMLDB_SEQUENCE, null);
+        $table->add_field('user_eula_accepted', XMLDB_TYPE_INTEGER, '1', !XMLDB_UNSIGNED, !XMLDB_NOTNULL, !XMLDB_SEQUENCE, 0);
 
         // Adding keys and indexes to table plagiarism_copyleaks_users.
         $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
