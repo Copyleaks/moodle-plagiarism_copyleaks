@@ -280,7 +280,7 @@ class plagiarism_copyleaks_moduleconfig {
     }
 
     /**
-     * Check if user accepte Copyleaks EULA
+     * Check if user accepted Copyleaks EULA
      * @param string $userid user id to check
      * @return bool did user accept EULA
      */

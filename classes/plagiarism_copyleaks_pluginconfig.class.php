@@ -32,10 +32,8 @@ class plagiarism_copyleaks_pluginconfig {
      * @param string $modulename
      * @return bool if plugin is configured and enabled return true, otherwise false.
      */
-
     public static function is_plugin_configured($modulename) {
         $config = self::admin_config();
-
 
         if (
             empty($config->plagiarism_copyleaks_key) ||

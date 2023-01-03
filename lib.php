@@ -371,11 +371,6 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
     public function print_disclosure($cmid) {
         global $DB, $USER;
 
-        // require_once('PATH_TO/simplehtml_form.php');
-
-        //Instantiate simplehtml_form 
-        // $mform = new MoodleQuickForm('student_disclosure', 'post', '/');
-
         // Get course module.
         $cm = get_coursemodule_from_id('', $cmid);
 

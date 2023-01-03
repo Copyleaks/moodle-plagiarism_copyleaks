@@ -59,17 +59,15 @@ class plagiarism_copyleaks_eventshandler {
      * @return bool result
      */
     public function handle_submissions($data) {
-        global $DB;        
-        
+        global $DB;
         $result = true;
-
         // Get course module.
         $coursemodule = $this->get_coursemodule($data);
 
         // Stop event if the course module is not found.
         if (!$coursemodule) {
             return true;
-        }        
+        }
 
         // Check if module is enabled for this event.
         if (!plagiarism_copyleaks_moduleconfig::is_module_enabled($coursemodule->modname, $coursemodule->id)) {
@@ -540,8 +538,9 @@ class plagiarism_copyleaks_eventshandler {
     }
 
     /**
-     * Handle Submissions event
+     * Handle user EULA acceptance event
      * @param object $data
+     * @param bool $isretry
      * @return void
      */
     public function handle_eula_acceptance($data, $isretry = false) {

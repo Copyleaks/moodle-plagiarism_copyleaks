@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 /**
- * Copyleaks Plagiarism Plugin - Handle Queued Files
+ * Copyleaks Plagiarism Plugin - Handle Resubmit Files
  * @package   plagiarism_copyleaks
  * @copyright 2022 Copyleaks
  * @author    Gil Cohen <gilc@copyleaks.com>
@@ -32,7 +32,6 @@ require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks
 /**
  * Copyleaks Plagiarism Plugin - Handle Resubmit Files
  */
-
 class plagiarism_copyleaks_resubmittedreports extends \core\task\scheduled_task {
     /**
      * Get scheduler name, this will be shown to admins on schedulers dashboard.
@@ -41,16 +40,22 @@ class plagiarism_copyleaks_resubmittedreports extends \core\task\scheduled_task 
         return get_string('clsendresubmissionsfiles', 'plagiarism_copyleaks');
     }
 
+    /**
+     * Execute the task.
+     */
     public function execute() {
         global $CFG;
         require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_submissions.class.php');
         require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_comms.class.php');
         require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_assignmodule.class.php');
 
-        $this->send_resubmitted_files();
+        $this->handle_resubmitted_files();
     }
 
-    private function send_resubmitted_files() {
+    /**
+     * Handle and change the score of resubmitted files.
+     */
+    private function handle_resubmitted_files() {
         global $DB;
 
         $copyleakscomms = new \plagiarism_copyleaks_comms();
