@@ -272,8 +272,22 @@ class plagiarism_copyleaks_moduleconfig {
      * @return bool is allowed
      */
     public static function is_allowed_eula_acceptance($modname){        
-        $supportedeulamodules = array('assign', 'forum', 'workshop');
+        $supportedeulamodules = array('assign', 'workshop');
         if (in_array($modname,$supportedeulamodules)) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Check if user accepte Copyleaks EULA
+     * @param string $userid user id to check
+     * @return bool did user accept EULA
+     */
+    public static function did_user_accept_eula($userid){
+        global $DB;        
+        $isuseragreed = $DB->record_exists("plagiarism_copyleaks_users", array('userid' => $userid));
+        if($isuseragreed){
             return true;
         }
         return false;
