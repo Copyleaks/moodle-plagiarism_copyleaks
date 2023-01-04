@@ -24,6 +24,7 @@
 namespace plagiarism_copyleaks\task;
 
 use core\check\result;
+use stdClass;
 
 defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/plagiarism/copyleaks/constants/plagiarism_copyleaks.constants.php');
@@ -103,7 +104,7 @@ class plagiarism_copyleaks_resubmittedreports extends \core\task\scheduled_task 
             }
 
             $timestamp = time();
-            $resbumitidx = 0;
+            // $resbumitidx = 0;
 
             /* For each db result - Replace the new data */
             foreach ($currentdbresults as $currentresult) {
@@ -111,33 +112,31 @@ class plagiarism_copyleaks_resubmittedreports extends \core\task\scheduled_task 
                     continue;
                 }
 
-                /* Get the copyleaks db entity with the old id */                                
-                $filtered = array_filter(
-                    $resubmittedmodel,
-                    function ($element) use ($currentresult) {
-                        if ($element->oldScanId == $currentresult->externalid) {
-                            return $element;
-                        }
+                /* Get the copyleaks db entity with the old id */
+                $curr = new stdClass();
+                foreach ($resubmittedmodel as $element) {
+                    if ($element->oldScanId == $currentresult->externalid) {
+                        $curr = $element;
+                        break;
                     }
-                );
+                }
 
-                /* Even the variable $filtered is assign each time the key will increased in each assignment */
-                $curr = $filtered[$resbumitidx++];
+                if (!isset($curr->oldScanId) || $curr->oldScanId == null) {
+                    continue;
+                }
 
-                if (isset($curr) && $curr != null) {
-                    $currentresult->externalid = $curr->newScanId;
-                    $currentresult->similarityscore = $curr->plagiarismScore;
-                    $currentresult->lastmodified = $timestamp;
-                    /* Update in the DB */
-                    if (!$DB->update_record('plagiarism_copyleaks_files',  $currentresult)) {
-                        \plagiarism_copyleaks_logs::add(
-                            "Update resubmitted failed (old scan id: " . $curr->oldScanId . ", new scan id: "
-                                . $curr->newScanId . ") - ",
-                            "UPDATE_RECORD_FAILED"
-                        );
-                    } else {
-                        array_push($succeedids,  $curr->oldScanId);
-                    }
+                $currentresult->externalid = $curr->newScanId;
+                $currentresult->similarityscore = $curr->plagiarismScore;
+                $currentresult->lastmodified = $timestamp;
+                /* Update in the DB */
+                if (!$DB->update_record('plagiarism_copyleaks_files',  $currentresult)) {
+                    \plagiarism_copyleaks_logs::add(
+                        "Update resubmitted failed (old scan id: " . $curr->oldScanId . ", new scan id: "
+                            . $curr->newScanId . ") - ",
+                        "UPDATE_RECORD_FAILED"
+                    );
+                } else {
+                    array_push($succeedids,  $curr->oldScanId);
                 }
             }
             /* Send request with ids who successfully changed in moodle db to deletion in the Google data store */
