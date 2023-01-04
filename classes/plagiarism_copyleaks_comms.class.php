@@ -170,8 +170,7 @@ class plagiarism_copyleaks_comms {
     ) {
         if (isset($this->key) && isset($this->secret)) {
             $coursemodule = get_coursemodule_from_id('', $cmid);
-            if (
-                plagiarism_copyleaks_moduleconfig::is_allowed_eula_acceptance($coursemodule->modname) &&
+            if (                
                 plagiarism_copyleaks_moduleconfig::is_allow_student_results_info() &&
                 plagiarism_copyleaks_moduleconfig::did_user_accept_eula($userid)
             ) {
