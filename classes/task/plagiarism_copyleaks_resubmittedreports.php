@@ -103,7 +103,7 @@ class plagiarism_copyleaks_resubmittedreports extends \core\task\scheduled_task 
             }
 
             $timestamp = time();
-            $idx = 0;
+            $resbumitidx = 0;
 
             /* For each db result - Replace the new data */
             foreach ($currentdbresults as $currentresult) {
@@ -111,7 +111,7 @@ class plagiarism_copyleaks_resubmittedreports extends \core\task\scheduled_task 
                     continue;
                 }
 
-                /* Get the copyleaks db entity with the old id */
+                /* Get the copyleaks db entity with the old id */                                
                 $filtered = array_filter(
                     $resubmittedmodel,
                     function ($element) use ($currentresult) {
@@ -122,7 +122,7 @@ class plagiarism_copyleaks_resubmittedreports extends \core\task\scheduled_task 
                 );
 
                 /* Even the variable $filtered is assign each time the key will increased in each assignment */
-                $curr = $filtered[$idx++];
+                $curr = $filtered[$resbumitidx++];
 
                 if (isset($curr) && $curr != null) {
                     $currentresult->externalid = $curr->newScanId;
