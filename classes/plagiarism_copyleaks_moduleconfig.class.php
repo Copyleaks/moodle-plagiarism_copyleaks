@@ -258,12 +258,13 @@ class plagiarism_copyleaks_moduleconfig {
     }
 
     /**
-     * Check if admin allows passing student info to Copyleaks API     
+     * Check if admin allows passing student info to Copyleaks API
      * @return bool is allowed
      */
     public static function is_allow_student_results_info() {
         $cldbdefaultconfig = self::get_modules_default_config();
-        return isset($cldbdefaultconfig["plagiarism_copyleaks_showstudentresultsinfo"]) && $cldbdefaultconfig["plagiarism_copyleaks_showstudentresultsinfo"] == "1";
+        return isset($cldbdefaultconfig["plagiarism_copyleaks_showstudentresultsinfo"]) &&
+            $cldbdefaultconfig["plagiarism_copyleaks_showstudentresultsinfo"] == "1";
     }
 
     /**
@@ -271,9 +272,9 @@ class plagiarism_copyleaks_moduleconfig {
      * @param string $modname module type name
      * @return bool is allowed
      */
-    public static function is_allowed_eula_acceptance($modname){        
+    public static function is_allowed_eula_acceptance($modname) {
         $supportedeulamodules = array('assign', 'workshop');
-        if (in_array($modname,$supportedeulamodules)) {
+        if (in_array($modname, $supportedeulamodules)) {
             return true;
         }
         return false;
@@ -284,10 +285,10 @@ class plagiarism_copyleaks_moduleconfig {
      * @param string $userid user id to check
      * @return bool did user accept EULA
      */
-    public static function did_user_accept_eula($userid){
-        global $DB;        
+    public static function did_user_accept_eula($userid) {
+        global $DB;
         $isuseragreed = $DB->record_exists("plagiarism_copyleaks_users", array('userid' => $userid));
-        if($isuseragreed){
+        if ($isuseragreed) {
             return true;
         }
         return false;

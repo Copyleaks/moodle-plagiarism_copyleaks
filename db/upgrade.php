@@ -47,7 +47,12 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
 
     if ($oldversion < 2022072100) {
         // Get saved db settings.
-        $saveddefaultvalue = $DB->get_records_menu('plagiarism_copyleaks_config', array('cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID), '', 'name,value');
+        $saveddefaultvalue = $DB->get_records_menu(
+            'plagiarism_copyleaks_config',
+            array('cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID),
+            '',
+            'name,value'
+        );
 
         // Update saved default copyleaks settings.
         $fieldname = 'plagiarism_copyleaks_enable';
@@ -79,7 +84,12 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
 
     if ($oldversion < 2022103100) {
         // Get saved db settings.
-        $saveddefaultvalue = $DB->get_records_menu('plagiarism_copyleaks_config', array('cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID), '', 'name,value');
+        $saveddefaultvalue = $DB->get_records_menu(
+            'plagiarism_copyleaks_config',
+            array('cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID),
+            '',
+            'name,value'
+        );
 
         // Update saved default copyleaks settings.
         $fieldname = 'plagiarism_copyleaks_checkforparaphrase';
@@ -111,7 +121,12 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
 
     if ($oldversion < 2022110900) {
         // Get saved db settings.
-        $saveddefaultvalue = $DB->get_records_menu('plagiarism_copyleaks_config', array('cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID), '', 'name,value');
+        $saveddefaultvalue = $DB->get_records_menu(
+            'plagiarism_copyleaks_config',
+            array('cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID),
+            '',
+            'name,value'
+        );
 
         // Update saved default copyleaks settings.
         $fieldname = 'plagiarism_copyleaks_disablestudentinternalaccess';
@@ -143,7 +158,7 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
 
     if ($oldversion < 2022122400) {
         $table = new xmldb_table('plagiarism_copyleaks_users');
-                
+
         // Adding fields to table plagiarism_copyleaks_users.
         $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
         $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', !XMLDB_UNSIGNED, XMLDB_NOTNULL, !XMLDB_SEQUENCE, null);
@@ -163,7 +178,12 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
 
     if ($oldversion < 2022122802) {
         // Get saved db settings.
-        $saveddefaultvalue = $DB->get_records_menu('plagiarism_copyleaks_config', array('cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID), '', 'name,value');
+        $saveddefaultvalue = $DB->get_records_menu(
+            'plagiarism_copyleaks_config',
+            array('cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID),
+            '',
+            'name,value'
+        );
 
         // Update saved default copyleaks settings.
         $fieldname = 'plagiarism_copyleaks_showstudentresultsinfo';

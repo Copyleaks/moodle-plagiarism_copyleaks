@@ -85,7 +85,7 @@ if ($isadminview) {
     // Admin repositories settings.
     $cl = new plagiarism_copyleaks_comms();
     $accesstoken = $cl->request_access_for_repositories();
-    $lang= $cl->get_lang();
+    $lang = $cl->get_lang();
     echo html_writer::tag(
         'iframe',
         null,
@@ -116,15 +116,23 @@ if ($isadminview) {
     $clmoduleenabled = plagiarism_copyleaks_pluginconfig::is_plugin_configured('mod_' . $cm->modname);
     // Check if copyleaks plugin is disabled.
     if (empty($clmoduleenabled) || empty($modulesettings['plagiarism_copyleaks_enable'])) {
-        echo html_writer::div(get_string('cldisabledformodule', 'plagiarism_copyleaks'), null, array('style' => $errormessagestyle));
+        echo html_writer::div(
+            get_string('cldisabledformodule', 'plagiarism_copyleaks'),
+            null,
+            array('style' => $errormessagestyle)
+        );
     } else {
         if (!$isinstructor) {
             // Incase students.
-            echo html_writer::div(get_string('clnopageaccess', 'plagiarism_copyleaks'), null, array('style' => $errormessagestyle));
+            echo html_writer::div(
+                get_string('clnopageaccess', 'plagiarism_copyleaks'),
+                null,
+                array('style' => $errormessagestyle)
+            );
         } else {
             $cl = new plagiarism_copyleaks_comms();
             $accesstoken = $cl->request_access_for_repositories($cmid);
-            $lang= $cl->get_lang();
+            $lang = $cl->get_lang();
             echo html_writer::tag(
                 'iframe',
                 null,
@@ -133,8 +141,8 @@ if ($isadminview) {
                     'srcdoc' =>
                     "<form target='_self'" .
                         "method='POST'" .
-                        "style='display: none;'" .
-                        "action='$config->plagiarism_copyleaks_apiurl/api/moodle/$config->plagiarism_copyleaks_key/repositories/$cmid'>" .
+                        "style='display: none;' action='$config->plagiarism_copyleaks_apiurl/api" .
+                        "/moodle/$config->plagiarism_copyleaks_key/repositories/$cmid'>" .
                         "<input name='token' value='$accesstoken'>" .
                         "<input name='lang' value='$lang'>" .
                         "</form>" .

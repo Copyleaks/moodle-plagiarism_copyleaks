@@ -62,11 +62,11 @@ class plagiarism_copyleaks_resubmittedreports extends \core\task\scheduled_task 
         $cursor = '';
         $canloadmoredata = true;
 
-        while ($canloadmoredata) {                        
+        while ($canloadmoredata) {
             if (!\plagiarism_copyleaks_comms::test_copyleaks_connection('scheduler_task')) {
                 return;
             }
-            
+
             $succeedids = [];
             $response = $copyleakscomms->get_resubmit_reports_ids($cursor);
             if (!is_object($response) || !isset($response->resubmitted) || count($response->resubmitted) == 0) {
@@ -82,8 +82,8 @@ class plagiarism_copyleaks_resubmittedreports extends \core\task\scheduled_task 
 
             /* Get all the scans from db with the ids of the 'response' old ids */
             $dbrecordset = $DB->get_recordset_list('plagiarism_copyleaks_files', 'externalid', $oldids);
-            if (!$dbrecordset->valid()) { 
-                array_push($succeedids, ...$oldids);               
+            if (!$dbrecordset->valid()) {
+                array_push($succeedids, ...$oldids);
                 /* Send request with ids who successfully changed in moodle db to deletion in the Google data store */
                 if (count($succeedids) > 0) {
                     $copyleakscomms->delete_resubmitted_ids($succeedids);

@@ -91,7 +91,8 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
                 $scaninternaldatabase = $data->plagiarism_copyleaks_scaninternaldatabase === '1';
                 if (isset($clinternalsources) && isset($clinternalsources->databases)) {
                     foreach ($clinternalsources->databases as $database) {
-                        if (isset($database) && ($database->id == "INTERNAL_DATA_BASE" || $database->id == DEFAULT_DATABASE_COPYLEAKSDB_ID)) {
+                        if (isset($database) && ($database->id == "INTERNAL_DATA_BASE" ||
+                            $database->id == DEFAULT_DATABASE_COPYLEAKSDB_ID)) {
                             $database->includeOthersScans = $scaninternaldatabase;
                             $database->index = $scaninternaldatabase;
                             $database->includeUserScans = $scaninternaldatabase;
@@ -102,7 +103,6 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
 
                 // Save to Copyleaks API.
                 $cl->save_course_module_settings($data->coursemodule, $data->modulename, $data->name, $copyleakssettings);
-                // get 
                 $showstudentresultsinfo = plagiarism_copyleaks_moduleconfig::is_allow_student_results_info();
 
                 plagiarism_copyleaks_moduleconfig::set_module_config(
@@ -350,7 +350,8 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
                         "<div class='col-md-3'></div>" .
                         "<div class='col-md-9'>" .
                         html_writer::link(
-                            "$CFG->wwwroot/plagiarism/copyleaks/plagiarism_copyleaks_repositories.php?cmid=$cmid&modulename=$modulename",
+                            "$CFG->wwwroot/plagiarism/copyleaks/plagiarism_copyleaks_repositories.php?" .
+                                "cmid=$cmid&modulename=$modulename",
                             get_string('cleditrepositories', 'plagiarism_copyleaks'),
                             array('title' => get_string('cleditrepositories', 'plagiarism_copyleaks'))
                         )
@@ -403,25 +404,27 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
 
         $contents = format_text($clstudentdisclosure, FORMAT_MOODLE, array("noclean" => true));
         if (!$isuseragreed) {
-            $checkbox =  "<input type='checkbox' id='cls_student_disclosure'> <label for='cls_student_disclosure' class='copyleaks-student-disclosure-checkbox'>$contents</label>";
+            $checkbox = "<input type='checkbox' id='cls_student_disclosure'>" .
+                "<label for='cls_student_disclosure' class='copyleaks-student-disclosure-checkbox'>$contents</label>";
             $output = html_writer::tag('div', $checkbox, array('class' => 'copyleaks-student-disclosure '));
             $output .= html_writer::tag(
                 'script',
-                 "(function disableInput() {
-                    setTimeout(() => {
-                      var checkbox = document.getElementById('cls_student_disclosure');
-                      var btn = document.getElementById('id_submitbutton');
-                      btn.disabled = true;    
-                      var intrval = setInterval(() => {                        
-                        if(checkbox.checked){
-                          btn.disabled = false;
-                        }else{
-                          btn.disabled = true;
-                        }
-                      }, 1000)
-                    }, 500);
-                  }());",
-                null);
+                "(function disableInput() {" .
+                    "setTimeout(() => {" .
+                    "var checkbox = document.getElementById('cls_student_disclosure');" .
+                    "var btn = document.getElementById('id_submitbutton');" .
+                    "btn.disabled = true;" .
+                    "var intrval = setInterval(() => {" .
+                    "if(checkbox.checked){" .
+                    "btn.disabled = false;" .
+                    "}else{" .
+                    "btn.disabled = true;" .
+                    "}" .
+                    "}, 1000)" .
+                    "}, 500);" .
+                    "}());",
+                null
+            );
         } else {
             $output = html_writer::tag('div', $contents, array('class' => 'copyleaks-student-disclosure'));
         }
@@ -446,11 +449,11 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
  * @param MoodleQuickForm $mform
  * @return type
  */
+/**
+ * @var mixed $course
+ */
 function plagiarism_copyleaks_coursemodule_standard_elements($formwrapper, $mform) {
     $copyleaksplugin = new plagiarism_plugin_copyleaks();
-    /**
-     * @var mixed $course
-     */
     $course = $formwrapper->get_course();
     $context = context_course::instance($course->id);
     $modulename = $formwrapper->get_current()->modulename;
