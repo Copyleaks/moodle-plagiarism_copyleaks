@@ -23,7 +23,6 @@
 
 namespace plagiarism_copyleaks\task;
 
-use core\check\result;
 use stdClass;
 
 defined('MOODLE_INTERNAL') || die();
