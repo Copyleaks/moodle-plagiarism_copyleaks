@@ -21,6 +21,8 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use core\check\performance\stats;
+
 defined('MOODLE_INTERNAL') || die();
 /**
  * module configurations helpers methods
@@ -46,7 +48,8 @@ class plagiarism_copyleaks_moduleconfig {
             'plagiarism_copyleaks_enablesafesearch',
             'plagiarism_copyleaks_enablecheatdetection',
             'plagiarism_copyleaks_checkforparaphrase',
-            'plagiarism_copyleaks_disablestudentinternalaccess'
+            'plagiarism_copyleaks_disablestudentinternalaccess',
+            'plagiarism_copyleaks_showstudentresultsinfo'
         );
     }
 
@@ -173,6 +176,7 @@ class plagiarism_copyleaks_moduleconfig {
         $enablecheatdetection,
         $enableparaphrase,
         $disablestudentinternalaccess,
+        $showstudentresultsinfo,
         $cmid = PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID,
         $enabled = false,
         $draftssubmit = 0,
@@ -197,6 +201,9 @@ class plagiarism_copyleaks_moduleconfig {
         $default['plagiarism_copyleaks_enablecheatdetection'] = $enablecheatdetection;
         $default['plagiarism_copyleaks_checkforparaphrase'] = $enableparaphrase;
         $default['plagiarism_copyleaks_disablestudentinternalaccess'] = $disablestudentinternalaccess;
+        if ($cmid == 0) {
+            $default['plagiarism_copyleaks_showstudentresultsinfo'] = $showstudentresultsinfo;
+        }
 
         // Db settings elements name.
         $clcmconfigfields = self::get_config_db_properties();
@@ -235,7 +242,7 @@ class plagiarism_copyleaks_moduleconfig {
     }
 
     /**
-     * check if Copyleaks plugin is enabled
+     * Check if Copyleaks plugin is enabled
      * @param string $modulename course module name
      * @param string $cmid course module id
      * @return bool is Copyleaks plugin enabled
@@ -248,5 +255,42 @@ class plagiarism_copyleaks_moduleconfig {
             return false;
         }
         return true;
+    }
+
+    /**
+     * Check if admin allows passing student info to Copyleaks API
+     * @return bool is allowed
+     */
+    public static function is_allow_student_results_info() {
+        $cldbdefaultconfig = self::get_modules_default_config();
+        return isset($cldbdefaultconfig["plagiarism_copyleaks_showstudentresultsinfo"]) &&
+            $cldbdefaultconfig["plagiarism_copyleaks_showstudentresultsinfo"] == "1";
+    }
+
+    /**
+     * Check if it is possible for students to accept EULA in a specific module
+     * @param string $modname module type name
+     * @return bool is allowed
+     */
+    public static function is_allowed_eula_acceptance($modname) {
+        $supportedeulamodules = array('assign', 'workshop');
+        if (in_array($modname, $supportedeulamodules)) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Check if user accepted Copyleaks EULA
+     * @param string $userid user id to check
+     * @return bool did user accept EULA
+     */
+    public static function did_user_accept_eula($userid) {
+        global $DB;
+        $isuseragreed = $DB->record_exists("plagiarism_copyleaks_users", array('userid' => $userid));
+        if ($isuseragreed) {
+            return true;
+        }
+        return false;
     }
 }

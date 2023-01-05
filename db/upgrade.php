@@ -47,7 +47,12 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
 
     if ($oldversion < 2022072100) {
         // Get saved db settings.
-        $saveddefaultvalue = $DB->get_records_menu('plagiarism_copyleaks_config', array('cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID), '', 'name,value');
+        $saveddefaultvalue = $DB->get_records_menu(
+            'plagiarism_copyleaks_config',
+            array('cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID),
+            '',
+            'name,value'
+        );
 
         // Update saved default copyleaks settings.
         $fieldname = 'plagiarism_copyleaks_enable';
@@ -79,7 +84,12 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
 
     if ($oldversion < 2022103100) {
         // Get saved db settings.
-        $saveddefaultvalue = $DB->get_records_menu('plagiarism_copyleaks_config', array('cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID), '', 'name,value');
+        $saveddefaultvalue = $DB->get_records_menu(
+            'plagiarism_copyleaks_config',
+            array('cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID),
+            '',
+            'name,value'
+        );
 
         // Update saved default copyleaks settings.
         $fieldname = 'plagiarism_copyleaks_checkforparaphrase';
@@ -111,7 +121,12 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
 
     if ($oldversion < 2022110900) {
         // Get saved db settings.
-        $saveddefaultvalue = $DB->get_records_menu('plagiarism_copyleaks_config', array('cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID), '', 'name,value');
+        $saveddefaultvalue = $DB->get_records_menu(
+            'plagiarism_copyleaks_config',
+            array('cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID),
+            '',
+            'name,value'
+        );
 
         // Update saved default copyleaks settings.
         $fieldname = 'plagiarism_copyleaks_disablestudentinternalaccess';
@@ -139,6 +154,63 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         }
 
         upgrade_plugin_savepoint(true, 2022110900, 'plagiarism', 'copyleaks');
+    }
+
+    if ($oldversion < 2022122400) {
+        $table = new xmldb_table('plagiarism_copyleaks_users');
+
+        // Adding fields to table plagiarism_copyleaks_users.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', !XMLDB_UNSIGNED, XMLDB_NOTNULL, !XMLDB_SEQUENCE, null);
+        $table->add_field('user_eula_accepted', XMLDB_TYPE_INTEGER, '1', !XMLDB_UNSIGNED, !XMLDB_NOTNULL, !XMLDB_SEQUENCE, 0);
+
+        // Adding keys and indexes to table plagiarism_copyleaks_users.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        $table->add_index('userid', XMLDB_INDEX_UNIQUE, array('userid'));
+
+        // Conditionally launch create table for plagiarism_copyleaks_users.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        upgrade_plugin_savepoint(true, 2022122400, 'plagiarism', 'copyleaks');
+    }
+
+    if ($oldversion < 2022122802) {
+        // Get saved db settings.
+        $saveddefaultvalue = $DB->get_records_menu(
+            'plagiarism_copyleaks_config',
+            array('cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID),
+            '',
+            'name,value'
+        );
+
+        // Update saved default copyleaks settings.
+        $fieldname = 'plagiarism_copyleaks_showstudentresultsinfo';
+        $savedfield = new stdClass();
+        $savedfield->cm = PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID;
+        $savedfield->name = $fieldname;
+        $savedfield->value = 0;
+        if (!isset($saveddefaultvalue[$fieldname])) {
+            $savedfield->config_hash = $savedfield->cm . "_" . $savedfield->name;
+            if (!$DB->insert_record('plagiarism_copyleaks_config', $savedfield)) {
+                throw new moodle_exception(get_string('clinserterror', 'plagiarism_copyleaks'));
+            }
+        } else {
+            $savedfield->id = $DB->get_field(
+                'plagiarism_copyleaks_config',
+                'id',
+                (array(
+                    'cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID,
+                    'name' => $fieldname
+                ))
+            );
+            if (!$DB->update_record('plagiarism_copyleaks_config', $savedfield)) {
+                throw new moodle_exception(get_string('clupdateerror', 'plagiarism_copyleaks'));
+            }
+        }
+
+        upgrade_plugin_savepoint(true, 2022122802, 'plagiarism', 'copyleaks');
     }
 
     return true;

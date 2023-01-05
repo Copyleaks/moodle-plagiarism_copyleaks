@@ -60,9 +60,7 @@ class plagiarism_copyleaks_eventshandler {
      */
     public function handle_submissions($data) {
         global $DB;
-
         $result = true;
-
         // Get course module.
         $coursemodule = $this->get_coursemodule($data);
 
@@ -74,6 +72,11 @@ class plagiarism_copyleaks_eventshandler {
         // Check if module is enabled for this event.
         if (!plagiarism_copyleaks_moduleconfig::is_module_enabled($coursemodule->modname, $coursemodule->id)) {
             return true;
+        }
+
+        // Check the supported EULA acceptance module.
+        if (plagiarism_copyleaks_moduleconfig::is_allowed_eula_acceptance($coursemodule->modname)) {
+            $this->handle_eula_acceptance($data);
         }
 
         // Get course module ref.
@@ -107,6 +110,7 @@ class plagiarism_copyleaks_eventshandler {
                     $clmoduleconfig["plagiarism_copyleaks_enablecheatdetection"],
                     $clmoduleconfig["plagiarism_copyleaks_checkforparaphrase"],
                     $clmoduleconfig["plagiarism_copyleaks_disablestudentinternalaccess"],
+                    $clmoduleconfig["plagiarism_copyleaks_showstudentresultsinfo"],
                     $coursemodule->id
                 );
             } catch (Exception $e) {
@@ -508,5 +512,56 @@ class plagiarism_copyleaks_eventshandler {
      */
     private function is_instructor_submit($data) {
         return $data['relateduserid'] != $data['userid'];
+    }
+
+    /**
+     * Handle user deletion event
+     * @param object $data
+     * @return void
+     */
+    public function handle_user_deletion($data) {
+        global $DB;
+        $usertable = "plagiarism_copyleaks_users";
+
+        // Check if the user not agreed already.
+        $isuseragreed = $DB->record_exists("plagiarism_copyleaks_users", array('userid' => $data["userid"]));
+
+        if ($isuseragreed) {
+            if (!($DB->delete_records($usertable, ['userid' => $data["userid"]]))) {
+                \plagiarism_copyleaks_logs::add(
+                    "Faild to delete row in $usertable. (user id " . $data["userid"],
+                    "DELETE_RECORD_FAILED"
+                );
+            };
+        }
+    }
+
+    /**
+     * Handle user EULA acceptance event
+     * @param object $data
+     * @param bool $isretry
+     * @return void
+     */
+    public function handle_eula_acceptance($data, $isretry = false) {
+        global $DB;
+        $usertable = "plagiarism_copyleaks_users";
+        // Check if the user not agreed already.
+        $isuseragreed = $DB->record_exists("plagiarism_copyleaks_users", array('userid' => $data["userid"]));
+
+        if (!$isuseragreed) {
+            $dataobject = array(
+                "userid" => $data["userid"],
+                "user_eula_accepted" => 1
+            );;
+
+            if (!($DB->insert_record($usertable, $dataobject, true, false)) && !$isretry) {
+                $this->handle_eula_acceptance($data, true);
+            } else if ($isretry) {
+                \plagiarism_copyleaks_logs::add(
+                    "Create new row in $usertable is faild. (user id " . $data["userid"],
+                    "UPDATE_RECORD_FAILED"
+                );
+            }
+        }
     }
 }

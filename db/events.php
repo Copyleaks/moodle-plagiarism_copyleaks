@@ -51,5 +51,9 @@ $observers = array(
     array(
         'eventname' => '\mod_quiz\event\attempt_submitted',
         'callback'  => 'plagiarism_copyleaks_observer::mod_quiz_event_attempt_submitted'
+    ),
+    array(
+        'eventname' => '\core\event\user_deleted',
+        'callback'  => 'plagiarism_copyleaks_observer::core_event_user_deletion'
     )
 );

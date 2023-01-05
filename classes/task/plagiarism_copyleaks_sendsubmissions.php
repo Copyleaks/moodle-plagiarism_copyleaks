@@ -31,7 +31,6 @@ require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks
  * Copyleaks Plagiarism Plugin - Handle Queued Files
  */
 class plagiarism_copyleaks_sendsubmissions extends \core\task\scheduled_task {
-
     /**
      * Get scheduler name, this will be shown to admins on schedulers dashboard.
      */

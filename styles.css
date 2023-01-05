@@ -1,73 +1,77 @@
 .copyleaks {
-    display: flex;
-    /* justify-content: center; */
-    align-items: center;
-    margin-top: 10px;
-    min-width: 200px;
+  display: flex;
+  /* justify-content: center; */
+  align-items: center;
+  margin-top: 10px;
+  min-width: 200px;
 }
 
 .copyleaks .icon_size {
-    width: 20px;
-    height: auto;
+  width: 20px;
+  height: auto;
 }
 .copyleaks span.high,
 .copyleaks span.middle,
 .copyleaks span.low {
-    font-weight: 700;
-    text-decoration: none;
+  font-weight: 700;
+  text-decoration: none;
 }
 .copyleaks span.high > span,
 .copyleaks span.middle > span,
 .copyleaks span.low > span {
-    border-radius: 100%;
-    width: 12px;
-    height: 12px;
-    display: inline-flex;
-    margin-right: 4px;
+  border-radius: 100%;
+  width: 12px;
+  height: 12px;
+  display: inline-flex;
+  margin-right: 4px;
 }
 
 .copyleaks span.high > span {
-    background: #d30a0a;
+  background: #d30a0a;
 }
 .copyleaks span.middle > span {
-    background: #b58f04;
+  background: #b58f04;
 }
 .copyleaks span.low > span {
-    background: #1ab21e;
+  background: #1ab21e;
 }
 
 .copyleaks span.high {
-    color: #d30a0a;
+  color: #d30a0a;
 }
 
 .copyleaks span.middle {
-    color: #b58f04;
+  color: #b58f04;
 }
 
 .copyleaks span.low {
-    color: #1ab21e;
+  color: #1ab21e;
 }
 
 .copyleaks span.strong {
-    font-weight: 500;
+  font-weight: 500;
 }
 
 .copyleaks-text-gray {
-    color: #1d2125;
+  color: #1d2125;
 }
 
 .copyleaks-text-warn {
-    color: #d30a0a;
-    font-weight: 600;
+  color: #d30a0a;
+  font-weight: 600;
 }
 
 .copyleaks-student-disclosure {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 10px;
-    background: #f7f7f7;
-    font-weight: 600;
-    margin-bottom: 10px;
-    margin-top: -16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  background: #f7f7f7;
+  font-weight: 600;
+  margin-bottom: 10px;
+  margin-top: -16px;
+}
+.copyleaks-student-disclosure-checkbox {
+  margin-bottom: 0 !important;
+  margin-left: 5px;
 }

@@ -35,6 +35,15 @@ $tasks = array(
         'month' => '*'
     ),
     array(
+        'classname' => 'plagiarism_copyleaks\task\plagiarism_copyleaks_resubmittedreports',
+        'blocking' => 0,
+        'minute' => '*/2',
+        'hour' => '*',
+        'day' => '*',
+        'dayofweek' => '*',
+        'month' => '*'
+    ),
+    array(
         'classname' => 'plagiarism_copyleaks\task\plagiarism_copyleaks_sendsubmissions',
         'blocking' => 0,
         'minute' => '*/1',

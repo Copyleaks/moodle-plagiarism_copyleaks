@@ -169,14 +169,33 @@ class plagiarism_copyleaks_comms {
         string $submissiontype
     ) {
         if (isset($this->key) && isset($this->secret)) {
-
-            $paramsmerge = (array)[
-                'fileName' => $filename,
-                'courseModuleId' => $cmid,
-                'moodleUserId' => $userid,
-                'identifier' => $identifier,
-                'submissionType' => $submissiontype,
-            ];
+            $coursemodule = get_coursemodule_from_id('', $cmid);
+            if (
+                plagiarism_copyleaks_moduleconfig::is_allow_student_results_info() &&
+                plagiarism_copyleaks_moduleconfig::did_user_accept_eula($userid)
+            ) {
+                $student = get_complete_user_data('id', $userid);
+                $paramsmerge = (array)[
+                    'fileName' => $filename,
+                    'courseModuleId' => $cmid,
+                    'moodleUserId' => $userid,
+                    'identifier' => $identifier,
+                    'submissionType' => $submissiontype,
+                    'userEmail' => $student->email,
+                    'userFullName' => $student->firstname . " " . $student->lastname,
+                    'moduleName' => $coursemodule->name,
+                    'courseId' => $coursemodule->course,
+                    'courseName' => (get_course($coursemodule->course))->fullname
+                ];
+            } else {
+                $paramsmerge = (array)[
+                    'fileName' => $filename,
+                    'courseModuleId' => $cmid,
+                    'moodleUserId' => $userid,
+                    'identifier' => $identifier,
+                    'submissionType' => $submissiontype
+                ];
+            }
 
             $mimetype = mime_content_type($filepath);
             if (class_exists('CURLFile')) {
@@ -221,8 +240,47 @@ class plagiarism_copyleaks_comms {
     }
 
     /**
+     * Get resubmit reports ids from lms server
+     * @param string $cursor Copyleaks db cursor
+     * @return object $result an array of resubmitted ids and new ids that rescanned
+     */
+    public function get_resubmit_reports_ids($cursor) {
+        if (isset($this->key) && isset($this->secret)) {
+            $reqbody = (array)[
+                'cursor' => $cursor
+            ];
+            $result = plagiarism_copyleaks_http_client::execute(
+                'POST',
+                $this->copyleaks_api_url() . "/api/moodle/plugin/" . $this->key . "/task/resubmit-scans",
+                true,
+                json_encode($reqbody)
+            );
+            return $result;
+        }
+    }
+
+    /**
+     * send request to delete resubmitted id to copyleaks server
+     * @param array $ids Copyleaks report scan ids
+     */
+    public function delete_resubmitted_ids(array $ids) {
+        if (isset($this->key) && isset($this->secret)) {
+            $reqbody = (array)[
+                'ids' => $ids
+            ];
+            plagiarism_copyleaks_http_client::execute(
+                'POST',
+                $this->copyleaks_api_url() . "/api/moodle/plugin/" . $this->key . "/task/resubmit-scans/delete",
+                true,
+                json_encode($reqbody)
+            );
+        }
+    }
+
+    /**
      * request access for copyleaks report
      * @param string $scanid Copyleaks report scan id
+     * @param boolean $isinstructor Copyleaks report scan id
      * @return string a JWT to access student report only
      */
     public function request_access_for_report(string $scanid, $isinstructor) {
