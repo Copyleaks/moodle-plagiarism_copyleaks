@@ -1,3 +1,9 @@
+### Date: 		2023-Jan-08
+### Release:	v2023010800
+-  For Assignment & Workshop - students must accept EULA before submission
+-  Admins can now allow passing students' information to Copyleaks.
+   We use this information to display more data for teachers about internal results.
+
 ### Date: 		2022-Nov-20
 ### Release:	v2022111600
 -  Add ability for admin & instructor users to manage Check for a paraphrased content match from the Admin level & Module level.
