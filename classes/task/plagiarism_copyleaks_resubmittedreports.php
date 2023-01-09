@@ -103,7 +103,6 @@ class plagiarism_copyleaks_resubmittedreports extends \core\task\scheduled_task 
             }
 
             $timestamp = time();
-            // $resbumitidx = 0;
 
             /* For each db result - Replace the new data */
             foreach ($currentdbresults as $currentresult) {
