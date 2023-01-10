@@ -37,7 +37,7 @@ $tasks = array(
     array(
         'classname' => 'plagiarism_copyleaks\task\plagiarism_copyleaks_resubmittedreports',
         'blocking' => 0,
-        'minute' => '*/2',
+        'minute' => '*/10',
         'hour' => '*',
         'day' => '*',
         'dayofweek' => '*',

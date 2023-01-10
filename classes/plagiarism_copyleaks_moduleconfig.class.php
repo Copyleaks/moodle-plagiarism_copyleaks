@@ -108,7 +108,7 @@ class plagiarism_copyleaks_moduleconfig {
                 $defaults['plagiarism_copyleaks_enablecheatdetection'];
         }
 
-        /* Sepperate this two parameters so old client will not get default result */
+        /* Sepperate this two parameters as old versions will not get them as default result */
         if (
             !isset($result['plagiarism_copyleaks_checkforparaphrase']) ||
             !isset($result['plagiarism_copyleaks_disablestudentinternalaccess'])
