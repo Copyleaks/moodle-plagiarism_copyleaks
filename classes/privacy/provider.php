@@ -24,8 +24,6 @@
 
 namespace plagiarism_copyleaks\privacy;
 
-defined('MOODLE_INTERNAL') || die();
-
 use core_privacy\local\metadata\collection;
 use core_privacy\local\request\contextlist;
 use core_privacy\local\request\helper;
@@ -33,6 +31,13 @@ use core_privacy\local\request\writer;
 
 /** Privacy Subsystem implementation for plagiarism_copyleaks. */
 /* This plugin does export personal user data.*/
+/**
+ * provider.php - provider for uses of copyleaks plugin data.
+ * @package   plagiarism_copyleaks
+ * @copyright 2021 Copyleaks
+ * @author    Bayan Abuawad <bayana@copyleaks.com>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class provider implements
     \core_privacy\local\metadata\provider,
 

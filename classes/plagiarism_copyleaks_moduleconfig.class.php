@@ -23,7 +23,6 @@
 
 use core\check\performance\stats;
 
-defined('MOODLE_INTERNAL') || die();
 /**
  * module configurations helpers methods
  */

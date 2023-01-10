@@ -122,7 +122,7 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
                     $data->plagiarism_copyleaks_enable,
                     isset($data->plagiarism_copyleaks_draftsubmit) ? $data->plagiarism_copyleaks_draftsubmit : 0,
                     isset($data->plagiarism_copyleaks_reportgen) ? $data->plagiarism_copyleaks_reportgen : 0,
-                    $data->plagiarism_copyleaks_allowstudentaccess,
+                    $data->plagiarism_copyleaks_allowstudentaccess
                 );
             }
         } catch (plagiarism_copyleaks_exception $ex) {
