@@ -300,6 +300,23 @@ class plagiarism_copyleaks_comms {
         }
     }
 
+    public function request_access_for_settings($isinstructor) {
+        if ($isinstructor == 0) {
+            $isinstructor = -1;
+        }
+
+        if (isset($this->key) && isset($this->secret)) {
+            $result = plagiarism_copyleaks_http_client::execute(
+                'POST',
+                $this->copyleaks_api_url() . "/api/moodle/" . $this->key .
+                    "/settings/" . $isinstructor . "/request-access",
+                true
+            );
+
+            return $result->token;
+        }
+    }
+
     /**
      * request access for integration repositories
      * @param string $cmid course module (optional)

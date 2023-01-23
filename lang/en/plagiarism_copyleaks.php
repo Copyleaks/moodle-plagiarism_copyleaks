@@ -74,6 +74,7 @@ $string['clapisubmissionerror'] = 'Copyleaks has returned an error while trying 
 $string['clcheatingdetected'] = 'Cheating detected, Open report to learn more';
 $string['clcheatingdetectedtxt'] = 'Cheating detected';
 $string['clreportpagetitle'] = 'Copyleaks report';
+$string['clsettingspagetitle'] = 'Copyleaks settings';
 $string['clrepositoriespagetitle'] = 'Copyleaks repositories settings';
 $string['cldefaultrepositoriespagetitle'] = 'Copyleaks default repositories settings';
 $string['cleditrepositories'] = 'Edit repositories settings';

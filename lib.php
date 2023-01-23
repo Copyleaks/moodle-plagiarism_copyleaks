@@ -358,6 +358,21 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
                         . "</div>" .
                         "</div>"
                 );
+
+                $mform->addElement(
+                    'html',
+                    "<div class='form-group row'>" .
+                        "<div class='col-md-3'></div>" .
+                        "<div class='col-md-9'>" .
+                        html_writer::link(
+                            "$CFG->wwwroot/plagiarism/copyleaks/plagiarism_copyleaks_settings.php?" .
+                                "cmid=$cmid&modulename=$modulename",
+                            get_string('clsettingspagetitle', 'plagiarism_copyleaks'),
+                            array('title' => get_string('clsettingspagetitle', 'plagiarism_copyleaks'))
+                        )
+                        . "</div>" .
+                        "</div>"
+                );
             }
 
             $settingsdisplayed = true;
