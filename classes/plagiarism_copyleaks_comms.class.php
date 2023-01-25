@@ -300,17 +300,30 @@ class plagiarism_copyleaks_comms {
         }
     }
 
-    public function request_access_for_settings($isinstructor) {
+    /**
+     * request access for copyleaks report
+     * @param boolean $isinstructor Copyleaks report scan id
+     * @param array $breadcrumbs Moodle breadcrumbs.
+     * @param array $name of the activity type.
+     * @param array $coursemodulename of the activity.
+     * @return string a JWT to access student report only
+     */
+    public function request_access_for_settings($isinstructor, $breadcrumbs, $name, $coursemodulename) {
         if ($isinstructor == 0) {
             $isinstructor = -1;
         }
 
         if (isset($this->key) && isset($this->secret)) {
+            $reqbody = (array)[
+                'breadcrumbs' => $breadcrumbs,
+                'name' => $name,
+                'courseModuleName' => $coursemodulename
+            ];
             $result = plagiarism_copyleaks_http_client::execute(
                 'POST',
-                $this->copyleaks_api_url() . "/api/moodle/" . $this->key .
-                    "/settings/" . $isinstructor . "/request-access",
-                true
+                $this->copyleaks_api_url() . "/api/moodle/" . $this->key . "/settings/request-access",
+                true,
+                json_encode($reqbody)
             );
 
             return $result->token;
@@ -446,5 +459,21 @@ class plagiarism_copyleaks_comms {
             }
             return false;
         }
+    }
+
+    /**
+     * Set navbar breadcrumbs.
+     * @param mixed $cm
+     * @param mixed $course
+     * @return array $breadcrumbs
+     */
+    public static function set_navbar_breadcrumbs($cm, $course) {
+        $breadcrumbs = [];
+        $moodlecontext = get_site();
+        $moodlename = $moodlecontext->fullname;
+        $coursemodulename = $cm->name;
+        $coursename = $course->fullname;
+        $breadcrumbs = [$moodlename, $coursemodulename, $coursename];
+        return $breadcrumbs;
     }
 }

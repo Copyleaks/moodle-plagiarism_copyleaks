@@ -40,8 +40,6 @@ $course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST)
 // Request login.
 require_login($course, true, $cm);
 
-
-
 // Setup page meta data.
 $context = context_course::instance($cm->course);
 $PAGE->set_course($course);
@@ -135,21 +133,21 @@ if (empty($clmoduleenabled) || empty($modulesettings['plagiarism_copyleaks_enabl
             }
 
             $cl = new plagiarism_copyleaks_comms();
-            $scanaccesstoken = $cl->request_access_for_settings($isinstructor);
+            $breadcrumbs = $cl->set_navbar_breadcrumbs($cm, $course);
+            $accesstoken = $cl->request_access_for_settings($isinstructor, $breadcrumbs, $cm->modname, $cm->name);
 
             $lang = $cl->get_lang();
             echo html_writer::tag(
                 'iframe',
                 null,
                 array(
-                    'title' => 'Copyleaks Report',
+                    'title' => 'Copyleaks Settings',
                     'srcdoc' =>
                     "<form target='_self'" .
                         "method='POST'" .
                         "style='display: none;'" .
-                        "action='$config->plagiarism_copyleaks_apiurl/api/moodle/$config->plagiarism_copyleaks_key" .
-                        "/settings'>" .
-                        "<input name='token' value='$scanaccesstoken'>" .
+                        "action='$config->plagiarism_copyleaks_apiurl/api/moodle/$config->plagiarism_copyleaks_key" . "/settings/ " . " $cmid' >" .
+                        "<input name='token' value='$accesstoken'>" .
                         "<input name='lang' value='$lang'>" .
                         "</form>" .
                         "<script type='text/javascript'>" .
@@ -167,13 +165,13 @@ if (empty($clmoduleenabled) || empty($modulesettings['plagiarism_copyleaks_enabl
     }
 }
 
-// // Output footer.
-// if ($viewmode == 'course') {
-//     echo $OUTPUT->footer();
-// }
+// Output footer.
+if ($viewmode == 'course') {
+    echo $OUTPUT->footer();
+}
 
-// if ($viewmode == 'fullscreen') {
-//     echo html_writer::script(
-//         "window.document.body.style.margin=0;"
-//     );
-// }
+if ($viewmode == 'fullscreen') {
+    echo html_writer::script(
+        "window.document.body.style.margin=0;"
+    );
+}
