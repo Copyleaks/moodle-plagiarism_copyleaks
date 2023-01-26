@@ -79,24 +79,31 @@ class plagiarism_copyleaks_resubmittedreports extends \core\task\scheduled_task 
             $oldids = array_column($resubmittedmodel, 'oldScanId');
 
             $currentdbresults = [];
-
-            /* Get all the scans from db with the ids of the 'response' old ids */
-            $dbrecordset = $DB->get_recordset_list('plagiarism_copyleaks_files', 'externalid', $oldids);
-            if (!$dbrecordset->valid()) {
-                array_push($succeedids, ...$oldids);
-                /* Send request with ids who successfully changed in moodle db to deletion in the Google data store */
-                if (count($succeedids) > 0) {
-                    $copyleakscomms->delete_resubmitted_ids($succeedids);
-                }
-                continue;
+            foreach ($oldids as $id) {
+                $currentdbresults[] = $DB->get_record(
+                    'plagiarism_copyleaks_files',
+                    array('externalid' => $id)
+                );
             }
 
-            /* Getting the result by the consition the all the external ids must contains in $oldids */
-            foreach ($dbrecordset as $result) {
-                $currentdbresults[] = $result;
-            }
 
-            $dbrecordset->close();
+            // /* Get all the scans from db with the ids of the 'response' old ids */
+            // $dbrecordset = $DB->get_recordset_list('plagiarism_copyleaks_files', 'externalid', $oldids);
+            // if (!$dbrecordset->valid()) {
+            //     array_push($succeedids, ...$oldids);
+            //     /* Send request with ids who successfully changed in moodle db to deletion in the Google data store */
+            //     if (count($succeedids) > 0) {
+            //         $copyleakscomms->delete_resubmitted_ids($succeedids);
+            //     }
+            //     continue;
+            // }
+
+            // /* Getting the result by the consition the all the external ids must contains in $oldids */
+            // foreach ($dbrecordset as $result) {
+            //     $currentdbresults[] = $result;
+            // }
+
+            // $dbrecordset->close();
 
             if (count($currentdbresults) == 0) {
                 break;
