@@ -45,6 +45,7 @@ $string['clenable'] = 'Activer Copyleaks';
 $string['clenablecheatdetection'] = 'Activer la détection de triche';
 $string['clcheckforparaphrase'] = 'Vérifier la paraphrase';
 $string['cldisablestudentinternalaccess'] = "Désactiver l'accès interne des étudiants";
+$string['cldisablestudentinternalaccess_help'] = 'Les étudiants ne pourront voir AUCUN résultat de la base de données interne et des référentiels privés';
 $string['clenablemodulefor'] = 'Activer les fuites de copie pour {$a}';
 $string['clenablesafesearch'] = 'Activer la recherche sécurisée';
 $string['clfailtoloaddata'] = 'Échec du chargement des données Copyleaks';
