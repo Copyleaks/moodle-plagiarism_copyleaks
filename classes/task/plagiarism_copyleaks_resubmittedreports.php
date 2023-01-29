@@ -27,6 +27,7 @@ use stdClass;
 
 defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/plagiarism/copyleaks/constants/plagiarism_copyleaks.constants.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/enums/plagiarism_copyleaks_enums.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_logs.class.php');
 
 /**
@@ -123,12 +124,12 @@ class plagiarism_copyleaks_resubmittedreports extends \core\task\scheduled_task 
                     continue;
                 }
 
-                if ($curr->status == \DaysOfWeek::Scored) {
+                if ($curr->status == \plagiarism_copyleaks_reportstatus::SCORED) {
                     $currentresult->externalid = $curr->newScanId;
                     $currentresult->similarityscore = $curr->plagiarismScore;
                     $currentresult->lastmodified = $timestamp;
                     /* Update in the DB */
-                } else if ($curr->status == \DaysOfWeek::Error) {
+                } else if ($curr->status == \plagiarism_copyleaks_reportstatus::ERROR) {
                     $currentresult->similarityscore = null;
                     $currentresult->statuscode = "error";
                     $currentresult->errormsg = $curr->errorMessage;
