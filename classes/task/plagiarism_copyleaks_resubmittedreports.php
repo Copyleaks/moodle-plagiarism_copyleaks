@@ -79,31 +79,24 @@ class plagiarism_copyleaks_resubmittedreports extends \core\task\scheduled_task 
             $oldids = array_column($resubmittedmodel, 'oldScanId');
 
             $currentdbresults = [];
-            foreach ($oldids as $id) {
-                $currentdbresults[] = $DB->get_record(
-                    'plagiarism_copyleaks_files',
-                    array('externalid' => $id)
-                );
+
+            /* Get all the scans from db with the ids of the 'response' old ids */
+            $dbrecordset = $DB->get_recordset_list('plagiarism_copyleaks_files', 'externalid', $oldids);
+            if (!$dbrecordset->valid()) {
+                array_push($succeedids, ...$oldids);
+                /* Send request with ids who successfully changed in moodle db to deletion in the Google data store */
+                if (count($succeedids) > 0) {
+                    $copyleakscomms->delete_resubmitted_ids($succeedids);
+                }
+                continue;
             }
 
+            /* Getting the result by the consition the all the external ids must contains in $oldids */
+            foreach ($dbrecordset as $result) {
+                $currentdbresults[] = $result;
+            }
 
-            // /* Get all the scans from db with the ids of the 'response' old ids */
-            // $dbrecordset = $DB->get_recordset_list('plagiarism_copyleaks_files', 'externalid', $oldids);
-            // if (!$dbrecordset->valid()) {
-            //     array_push($succeedids, ...$oldids);
-            //     /* Send request with ids who successfully changed in moodle db to deletion in the Google data store */
-            //     if (count($succeedids) > 0) {
-            //         $copyleakscomms->delete_resubmitted_ids($succeedids);
-            //     }
-            //     continue;
-            // }
-
-            // /* Getting the result by the consition the all the external ids must contains in $oldids */
-            // foreach ($dbrecordset as $result) {
-            //     $currentdbresults[] = $result;
-            // }
-
-            // $dbrecordset->close();
+            $dbrecordset->close();
 
             if (count($currentdbresults) == 0) {
                 break;
@@ -130,14 +123,21 @@ class plagiarism_copyleaks_resubmittedreports extends \core\task\scheduled_task 
                     continue;
                 }
 
-                $currentresult->externalid = $curr->newScanId;
-                $currentresult->similarityscore = $curr->plagiarismScore;
-                $currentresult->lastmodified = $timestamp;
-                /* Update in the DB */
+                if ($curr->status == \DaysOfWeek::Scored) {
+                    $currentresult->externalid = $curr->newScanId;
+                    $currentresult->similarityscore = $curr->plagiarismScore;
+                    $currentresult->lastmodified = $timestamp;
+                    /* Update in the DB */
+                } else if ($curr->status == \DaysOfWeek::Error) {
+                    $currentresult->similarityscore = null;
+                    $currentresult->statuscode = "error";
+                    $currentresult->errormsg = $curr->errorMessage;
+                }
+
                 if (!$DB->update_record('plagiarism_copyleaks_files',  $currentresult)) {
                     \plagiarism_copyleaks_logs::add(
                         "Update resubmitted failed (old scan id: " . $curr->oldScanId . ", new scan id: "
-                            . $curr->newScanId . ") - ",
+                            . $curr->newScanId . "with status of " . $curr->statusCode . ") - ",
                         "UPDATE_RECORD_FAILED"
                     );
                 } else {

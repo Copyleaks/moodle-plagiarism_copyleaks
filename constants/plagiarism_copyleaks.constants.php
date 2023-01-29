@@ -55,3 +55,9 @@ $copyleaksacceptedfiles = array(
 );
 define('PLAGIARISM_COPYLEAKS_ACCEPTED_FILES', $copyleaksacceptedfiles);
 define('DEFAULT_DATABASE_COPYLEAKSDB_ID', 'DEFAULT_DATABASE_COPYLEAKSDB_ID');
+
+class DaysOfWeek {
+    const SCORED = 1;
+    const ERROR = 2;
+    const PENDING = 3;
+}
