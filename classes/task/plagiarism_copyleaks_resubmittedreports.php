@@ -124,25 +124,29 @@ class plagiarism_copyleaks_resubmittedreports extends \core\task\scheduled_task 
                     continue;
                 }
 
+                $isupdated = false;
                 if ($curr->status == \plagiarism_copyleaks_reportstatus::SCORED) {
                     $currentresult->externalid = $curr->newScanId;
                     $currentresult->similarityscore = $curr->plagiarismScore;
                     $currentresult->lastmodified = $timestamp;
+                    $isupdated = true;
                     /* Update in the DB */
                 } else if ($curr->status == \plagiarism_copyleaks_reportstatus::ERROR) {
                     $currentresult->similarityscore = null;
                     $currentresult->statuscode = "error";
                     $currentresult->errormsg = $curr->errorMessage;
+                    $isupdated = true;
                 }
-
-                if (!$DB->update_record('plagiarism_copyleaks_files',  $currentresult)) {
-                    \plagiarism_copyleaks_logs::add(
-                        "Update resubmitted failed (old scan id: " . $curr->oldScanId . ", new scan id: "
-                            . $curr->newScanId . "with status of " . $curr->statusCode . ") - ",
-                        "UPDATE_RECORD_FAILED"
-                    );
-                } else {
-                    array_push($succeedids,  $curr->oldScanId);
+                if ($isupdated) {
+                    if (!$DB->update_record('plagiarism_copyleaks_files',  $currentresult)) {
+                        \plagiarism_copyleaks_logs::add(
+                            "Update resubmitted failed (old scan id: " . $curr->oldScanId . ", new scan id: "
+                                . $curr->newScanId . "with status of " . $curr->statusCode . ") - ",
+                            "UPDATE_RECORD_FAILED"
+                        );
+                    } else {
+                        array_push($succeedids,  $curr->oldScanId);
+                    }
                 }
             }
             /* Send request with ids who successfully changed in moodle db to deletion in the Google data store */
