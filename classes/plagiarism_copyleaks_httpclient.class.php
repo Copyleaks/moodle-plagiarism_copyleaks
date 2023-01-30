@@ -32,6 +32,7 @@ require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/exceptions/plagiaris
  * containes a generic method for AJAX calls
  */
 class plagiarism_copyleaks_http_client {
+
     /**
      * Generic execute method for AJAX calls
      * @param string $verb - request verb
@@ -50,9 +51,11 @@ class plagiarism_copyleaks_http_client {
         $isauthretry = false,
         $contenttype = 'application/json'
     ) {
+        global $CFG;
+        require_once($CFG->dirroot . '/plagiarism/copyleaks/version.php');
 
         if (!class_exists('curl')) {
-            global $CFG;
+
             require_once($CFG->libdir . '/filelib.php');
         }
 
@@ -66,14 +69,17 @@ class plagiarism_copyleaks_http_client {
             )
         );
 
+        $version = PLAGIARISM_COPYLEAKS_PLUGIN_VERSION;
         $headers = (array)[
-            'Content-Type' => $contenttype
+            'Content-Type' => $contenttype,
+            'Plugin-Version' => "$version"
         ];
 
         if ($requireauth) {
             $cljwttoken = plagiarism_copyleaks_comms::login_to_copyleaks();
             $authorization = "Authorization: Bearer $cljwttoken";
-            $headers = array('Content-Type: ' . $contenttype, $authorization);
+            $pluginversion = "Plugin-Version: $version";
+            $headers = array('Content-Type: ' . $contenttype, $authorization, $pluginversion);
         }
 
         $c->setHeader($headers);

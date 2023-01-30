@@ -29,3 +29,5 @@ $plugin->requires = 2018051700;
 $plugin->component = 'plagiarism_copyleaks';
 $plugin->maturity = MATURITY_STABLE;
 $plugin->cron = 0;
+
+define('PLAGIARISM_COPYLEAKS_PLUGIN_VERSION', $plugin->version);
