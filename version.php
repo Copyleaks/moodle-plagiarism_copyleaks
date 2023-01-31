@@ -23,11 +23,13 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2023013000;
+$copyleaksversion = 2023013100;
+
+define('PLAGIARISM_COPYLEAKS_PLUGIN_VERSION', $copyleaksversion);
+$plugin->version = $copyleaksversion;
 $plugin->release = "3.5+";
 $plugin->requires = 2018051700;
 $plugin->component = 'plagiarism_copyleaks';
 $plugin->maturity = MATURITY_STABLE;
 $plugin->cron = 0;
 
-define('PLAGIARISM_COPYLEAKS_PLUGIN_VERSION', $plugin->version);
