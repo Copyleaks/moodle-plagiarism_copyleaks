@@ -23,11 +23,9 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-define('PLAGIARISM_COPYLEAKS_PLUGIN_VERSION', 2023013101);
-$plugin->version = 2023013101;
+$plugin->version = 2023013105;
 $plugin->release = "3.5+";
 $plugin->requires = 2018051700;
 $plugin->component = 'plagiarism_copyleaks';
 $plugin->maturity = MATURITY_STABLE;
 $plugin->cron = 0;
-

@@ -51,8 +51,7 @@ class plagiarism_copyleaks_http_client {
         $isauthretry = false,
         $contenttype = 'application/json'
     ) {
-        global $CFG;
-        require_once($CFG->dirroot . '/plagiarism/copyleaks/version.php');
+        global $CFG;        
 
         if (!class_exists('curl')) {
 
@@ -69,7 +68,7 @@ class plagiarism_copyleaks_http_client {
             )
         );
 
-        $version = PLAGIARISM_COPYLEAKS_PLUGIN_VERSION;
+        $version = 2023013105;
         $headers = (array)[
             'Content-Type' => $contenttype,
             'Plugin-Version' => "$version"
