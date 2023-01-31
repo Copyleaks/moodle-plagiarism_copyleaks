@@ -23,10 +23,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$copyleaksversion = 2023013100;
-
-define('PLAGIARISM_COPYLEAKS_PLUGIN_VERSION', $copyleaksversion);
-$plugin->version = $copyleaksversion;
+define('PLAGIARISM_COPYLEAKS_PLUGIN_VERSION', 2023013101);
+$plugin->version = 2023013101;
 $plugin->release = "3.5+";
 $plugin->requires = 2018051700;
 $plugin->component = 'plagiarism_copyleaks';
