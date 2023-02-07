@@ -84,12 +84,7 @@ class plagiarism_copyleaks_resubmittedreports extends \core\task\scheduled_task 
             /* Get all the scans from db with the ids of the 'response' old ids */
             $dbrecordset = $DB->get_recordset_list('plagiarism_copyleaks_files', 'externalid', $oldids);
             if (!$dbrecordset->valid()) {
-                array_push($succeedids, ...$oldids);
-                /* Send request with ids who successfully changed in moodle db to deletion in the Google data store */
-                if (count($succeedids) > 0) {
-                    $copyleakscomms->delete_resubmitted_ids($succeedids);
-                }
-                continue;
+                break;
             }
 
             /* Getting the result by the consition the all the external ids must contains in $oldids */
