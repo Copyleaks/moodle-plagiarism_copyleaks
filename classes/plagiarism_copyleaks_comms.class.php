@@ -302,22 +302,22 @@ class plagiarism_copyleaks_comms {
 
     /**
      * request access for copyleaks report
-     * @param boolean $isinstructor Copyleaks report scan id
+     * @param boolean $isinstructor Copyleaks identify instructor
      * @param array $breadcrumbs Moodle breadcrumbs.
      * @param array $name of the activity type.
      * @param array $coursemodulename of the activity.
+     * @param boolean $isadminview Copyleaks identify admins
      * @return string a JWT to access student report only
      */
-    public function request_access_for_settings($isinstructor, $breadcrumbs, $name, $coursemodulename) {
-        if ($isinstructor == 0) {
-            $isinstructor = -1;
-        }
+    public function request_access_for_settings($role, $breadcrumbs, $name, $coursemodulename) {
+
 
         if (isset($this->key) && isset($this->secret)) {
             $reqbody = (array)[
                 'breadcrumbs' => $breadcrumbs,
                 'name' => $name,
-                'courseModuleName' => $coursemodulename
+                'courseModuleName' => $coursemodulename,
+                'accessRole' => $role
             ];
             $result = plagiarism_copyleaks_http_client::execute(
                 'POST',
@@ -469,11 +469,24 @@ class plagiarism_copyleaks_comms {
      */
     public static function set_navbar_breadcrumbs($cm, $course) {
         $breadcrumbs = [];
-        $moodlecontext = get_site();
-        $moodlename = $moodlecontext->fullname;
-        $coursemodulename = $cm->name;
-        $coursename = $course->fullname;
-        $breadcrumbs = [$moodlename, $coursemodulename, $coursename];
+        if ($cm) {
+            $moodlecontext = get_site();
+            $moodlename = $moodlecontext->fullname;
+            $coursemodulename = $cm->name;
+            $coursename = $course->fullname;
+
+            $breadcrumbs = [
+                $moodlename,
+                $coursemodulename,
+                $coursename
+            ];
+        } else {
+            $breadcrumbs = [
+                'Site Administration',
+                'Copyleaks Plugin',
+                'Integration Settings',
+            ];
+        }
         return $breadcrumbs;
     }
 }

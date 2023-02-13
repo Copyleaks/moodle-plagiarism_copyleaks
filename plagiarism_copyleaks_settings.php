@@ -28,46 +28,56 @@ require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_assignmodule.class.php');
 
 // Get url params.
-$cmid = required_param('cmid', PARAM_INT);
-// $userid = required_param('userid', PARAM_INT);
-$modulename = required_param('modulename', PARAM_TEXT);
-// $viewmode = optional_param('view', 'course', PARAM_TEXT);
+$cmid = optional_param('cmid', null, PARAM_INT);
+$modulename = optional_param('modulename', null, PARAM_TEXT);
+$viewmode = optional_param('view', 'moodle', PARAM_TEXT);
 
-// Get instance modules.
-$cm = get_coursemodule_from_id('', $cmid);
-$course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
-
-// Request login.
-require_login($course, true, $cm);
-
-// Setup page meta data.
-$context = context_course::instance($cm->course);
-$PAGE->set_course($course);
-$PAGE->set_cm($cm);
-$PAGE->set_pagelayout('incourse');
-$PAGE->add_body_class('cl-report-page');
-$PAGE->set_url('/moodle/plagiarism/copyleaks/plagiarism_copyleaks_settings.php', array(
-    'cmid' => $cmid,
-    'modulename' => $modulename
-));
-$roles = get_user_roles($context, $USER->id);
-foreach ($roles as $role) {
-    if ($role->shortname == 'student') {
-        return;
-    }
+$isadminview = false;
+if (!isset($cmid) || !isset($modulename)) {
+    $isadminview = true;
 }
+
+if ($isadminview) {
+    require_once($CFG->libdir . '/adminlib.php');
+    // Request login.
+    require_login();
+    admin_externalpage_setup('plagiarismcopyleaks');
+    $context = context_system::instance();
+    require_capability('moodle/site:config', $context, $USER->id, true, "nopermissions");
+
+    // Setup page meta data for admin.
+    $PAGE->set_url('/moodle/plagiarism/copyleaks/plagiarism_copyleaks_repositories.php', array(
+        'viewmode' => $viewmode
+    ));
+    $pagetitle = get_string('cldefaultrepositoriespagetitle', 'plagiarism_copyleaks');
+} else {
+    // Get instance modules.
+    $cm = get_coursemodule_from_id('', $cmid);
+    $course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
+    // Request login.
+    require_login($course, true, $cm);
+    // Setup page meta data.
+
+    $context = context_course::instance($cm->course);
+    $PAGE->set_course($course);
+    $PAGE->set_cm($cm);
+    $PAGE->set_pagelayout('incourse');
+    $PAGE->add_body_class('cl-report-page');
+
+    $roles = get_user_roles($context, $USER->id);
+    foreach ($roles as $role) {
+        if ($role->shortname == 'student') {
+            return;
+        }
+    }
+    $PAGE->set_url('/moodle/plagiarism/copyleaks/plagiarism_copyleaks_settings.php', array(
+        'cmid' => $cmid,
+        'modulename' => $modulename
+    ));
+}
+
 global $USER;
 $userid = $USER->id;
-// Setup page title and header.
-$fs = get_file_storage();
-$pagetitle = '';
-if ($course->fullname) {
-    $pagetitle = get_string('clsettingspagetitle', 'plagiarism_copyleaks') . ' - ' . $course->fullname;
-} else {
-    $pagetitle = get_string('clsettingspagetitle', 'plagiarism_copyleaks') . ' - Admin Settings';
-}
-$PAGE->set_title($pagetitle);
-$PAGE->set_heading($pagetitle);
 
 if ($viewmode == 'course') {
     echo $OUTPUT->header();
@@ -83,23 +93,25 @@ $errormessagestyle = 'color:red; display:flex; width:100%; justify-content:cente
 $clmoduleenabled = plagiarism_copyleaks_pluginconfig::is_plugin_configured('mod_' . $cm->modname);
 
 // Check if copyleaks plugin is disabled.
-if (empty($clmoduleenabled) || empty($modulesettings['plagiarism_copyleaks_enable'])) {
+if (!$isadminview && (empty($clmoduleenabled) || empty($modulesettings['plagiarism_copyleaks_enable']))) {
     echo html_writer::div(get_string('cldisabledformodule', 'plagiarism_copyleaks'), null, array('style' => $errormessagestyle));
 } else {
     // Incase students not allowed to see the plagiairsm score.
     if (!$isinstructor && empty($modulesettings['plagiarism_copyleaks_allowstudentaccess'])) {
         echo html_writer::div(get_string('clnopageaccess', 'plagiarism_copyleaks'), null, array('style' => $errormessagestyle));
     } else {
-        $moduledata = $DB->get_record($cm->modname, array('id' => $cm->instance));
+        if (!$isadminview) {
+            $moduledata = $DB->get_record($cm->modname, array('id' => $cm->instance));
 
-        $owners = array($userid);
+            $owners = array($userid);
 
-        if ($cm->modname == 'assign' && $moduledata->teamsubmission) {
-            require_once($CFG->dirroot . '/mod/assign/locallib.php');
-            $assignment = new assign($context, $cm, null);
-            if ($group = $assignment->get_submission_group($userid)) {
-                $users = groups_get_members($group->id);
-                $owners = array_keys($users);
+            if ($cm->modname == 'assign' && $moduledata->teamsubmission) {
+                require_once($CFG->dirroot . '/mod/assign/locallib.php');
+                $assignment = new assign($context, $cm, null);
+                if ($group = $assignment->get_submission_group($userid)) {
+                    $users = groups_get_members($group->id);
+                    $owners = array_keys($users);
+                }
             }
         }
 
@@ -123,20 +135,20 @@ if (empty($clmoduleenabled) || empty($modulesettings['plagiarism_copyleaks_enabl
                     "document.getElementsByTagName('head')[0].appendChild(css); "
             );
 
-            if ($viewmode == 'course') {
-                echo html_writer::link(
-                    "$CFG->wwwroot/plagiarism/copyleaks/plagiarism_copyleaks_settings.php" .
-                        "?cmid=$cmid&userid=$userid&identifier=$identifier&modulename=$modulename&view=fullscreen",
-                    get_string('clopenfullscreen', 'plagiarism_copyleaks'),
-                    array('title' => get_string('clopenfullscreen', 'plagiarism_copyleaks'))
-                );
-            }
-
             $cl = new plagiarism_copyleaks_comms();
             $breadcrumbs = $cl->set_navbar_breadcrumbs($cm, $course);
-            $accesstoken = $cl->request_access_for_settings($isinstructor, $breadcrumbs, $cm->modname, $cm->name);
+            $role = 0;
+            if ($isadminview) {
+                $role = 1;
+            } else if ($isinstructor) {
+                $role = 2;
+            }
+            $accesstoken = $cl->request_access_for_settings($role, $breadcrumbs, $cm->modname, $cm->name);
 
             $lang = $cl->get_lang();
+            if (!isset($cmid)) {
+                $cmid = 0;
+            }
             echo html_writer::tag(
                 'iframe',
                 null,
@@ -149,6 +161,7 @@ if (empty($clmoduleenabled) || empty($modulesettings['plagiarism_copyleaks_enabl
                         "action='$config->plagiarism_copyleaks_apiurl/api/moodle/$config->plagiarism_copyleaks_key" . "/settings/ " . " $cmid' >" .
                         "<input name='token' value='$accesstoken'>" .
                         "<input name='lang' value='$lang'>" .
+                        "<input name='accessRole' value='$role'>" .
                         "</form>" .
                         "<script type='text/javascript'>" .
                         "window.document.forms[0].submit();" .
@@ -165,13 +178,8 @@ if (empty($clmoduleenabled) || empty($modulesettings['plagiarism_copyleaks_enabl
     }
 }
 
-// Output footer.
-if ($viewmode == 'course') {
-    echo $OUTPUT->footer();
-}
 
-if ($viewmode == 'fullscreen') {
-    echo html_writer::script(
-        "window.document.body.style.margin=0;"
-    );
-}
+
+echo html_writer::script(
+    "window.document.body.style.margin=0;"
+);

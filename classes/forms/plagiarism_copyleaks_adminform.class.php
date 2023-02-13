@@ -192,13 +192,13 @@ class plagiarism_copyleaks_adminform extends moodleform {
 
         $mform->addElement(
             'html',
-            "<div class='form-group row  fitem'>" .
+            "<div class='form-group row'>" .
                 "<div class='col-md-3'></div>" .
                 "<div class='col-md-9'>" .
                 html_writer::link(
-                    "$CFG->wwwroot/plagiarism/copyleaks/plagiarism_copyleaks_repositories.php",
-                    get_string('cleditrepositories', 'plagiarism_copyleaks'),
-                    array('title' => get_string('cleditrepositories', 'plagiarism_copyleaks'))
+                    "$CFG->wwwroot/plagiarism/copyleaks/plagiarism_copyleaks_settings.php?",
+                    get_string('clsettingspagetitle', 'plagiarism_copyleaks'),
+                    array('title' => get_string('clsettingspagetitle', 'plagiarism_copyleaks'))
                 )
                 . "</div>" .
                 "</div>"
