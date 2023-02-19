@@ -468,6 +468,7 @@ class plagiarism_copyleaks_comms {
      * @return array $breadcrumbs
      */
     public static function set_navbar_breadcrumbs($cm, $course) {
+        global $CFG;
         $breadcrumbs = [];
         if ($cm) {
             $moodlecontext = get_site();
@@ -475,16 +476,39 @@ class plagiarism_copyleaks_comms {
             $coursemodulename = $cm->name;
             $coursename = $course->fullname;
 
+
             $breadcrumbs = [
-                $moodlename,
-                $coursemodulename,
-                $coursename
+                [
+                    'url' => "$CFG->wwwroot",
+                    'name' => $moodlename
+                ],
+                [
+                    'url' => "$CFG->wwwroot/course/view.php?id=$course->id",
+                    'name' => $coursename
+                ],
+                [
+                    'url' => "$CFG->wwwroot/mod/assign/view.php?id=$cm->id",
+                    'name' => $coursemodulename
+                ],
+                [
+                    'url' => "$CFG->wwwroot/plagiarism/copyleaks/plagiarism_copyleaks_settings.php?cmid=$cm->id&modulename=$cm->modname",
+                    'name' => 'Module Settings'
+                ],
             ];
         } else {
             $breadcrumbs = [
-                'Site Administration',
-                'Copyleaks Plugin',
-                'Integration Settings',
+                [
+                    'url' => "$CFG->wwwroot/admin/search.php",
+                    'name' => 'Site Administration'
+                ],
+                [
+                    'url' => "$CFG->wwwroot/plagiarism/copyleaks/settings.php",
+                    'name' => 'Copyleaks Plugin'
+                ],
+                [
+                    'url' => "$CFG->wwwroot/plagiarism/copyleaks/plagiarism_copyleaks_settings.php",
+                    'name' => 'Integration Settings'
+                ],
             ];
         }
         return $breadcrumbs;
