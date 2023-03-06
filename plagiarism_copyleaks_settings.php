@@ -35,7 +35,7 @@ $modulename = optional_param('modulename', null, PARAM_TEXT);
 $viewmode = optional_param('view', 'moodle', PARAM_TEXT);
 $isnewmodulesettings = optional_param('isnewactivity', false, PARAM_TEXT);
 
-$isadminview = false;
+$isadminview = $cmid == "0";
 
 if ($isadminview) {
     require_once($CFG->libdir . '/adminlib.php');

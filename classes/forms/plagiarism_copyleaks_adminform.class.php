@@ -111,18 +111,19 @@ class plagiarism_copyleaks_adminform extends moodleform {
             get_string('claccountsecret', 'plagiarism_copyleaks')
         );
 
+
+        $settingslink = "$CFG->wwwroot/plagiarism/copyleaks/plagiarism_copyleaks_settings.php?cmid=0";
         $mform->addElement(
             'html',
-            "<div class='form-group row'>" .
-                "<div class='col-md-3'></div>" .
-                "<div class='col-md-9'>" .
-                html_writer::link(
-                    "$CFG->wwwroot/plagiarism/copyleaks/plagiarism_copyleaks_settings.php?",
-                    get_string('clsettingspagetitle', 'plagiarism_copyleaks'),
-                    array('title' => get_string('clsettingspagetitle', 'plagiarism_copyleaks'))
-                )
-                . "</div>" .
-                "</div>"
+            '<div class="form-group row">' .
+                '<div class="col-md-3"></div>' .
+                '<div class="col-md-9">' .
+                "<div class='copyleaks-edit-settings-note'>" . get_string('clsettingsnote', 'plagiarism_copyleaks') . "</div>" .
+                "<div style='width:180px'>" .
+                "<a class='copyleaks-settings-link' href='$settingslink' target='_blank'>" .
+                '<div class="copyleaks-settings-btn">' .
+                get_string('clsettingspagetitle', 'plagiarism_copyleaks') .
+                '</div></a></div></div></div>'
         );
 
         $this->add_action_buttons();
