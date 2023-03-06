@@ -93,36 +93,6 @@ class plagiarism_copyleaks_eventshandler {
         // Initialise module config.
         $clmoduleconfig = plagiarism_copyleaks_moduleconfig::get_module_config($coursemodule->id);
 
-        // Incase of module with default settings, update copyleaks api to use default settings.
-        if (isset($clmoduleconfig['cmid']) && $clmoduleconfig['cmid'] == PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID) {
-            $cl = new plagiarism_copyleaks_comms();
-            try {
-                $cl->save_course_module_settings($coursemodule->id, $coursemodule->modname, $coursemodule->name);
-                plagiarism_copyleaks_moduleconfig::set_module_config(
-                    $clmoduleconfig["plagiarism_copyleaks_ignorereferences"],
-                    $clmoduleconfig["plagiarism_copyleaks_ignorequotes"],
-                    $clmoduleconfig["plagiarism_copyleaks_ignoretitles"],
-                    $clmoduleconfig["plagiarism_copyleaks_ignoreretableofcontents"],
-                    $clmoduleconfig["plagiarism_copyleaks_ignoreresourcecodecomments"],
-                    $clmoduleconfig["plagiarism_copyleaks_scaninternet"],
-                    $clmoduleconfig["plagiarism_copyleaks_scaninternaldatabase"],
-                    $clmoduleconfig["plagiarism_copyleaks_enablesafesearch"],
-                    $clmoduleconfig["plagiarism_copyleaks_enablecheatdetection"],
-                    $clmoduleconfig["plagiarism_copyleaks_checkforparaphrase"],
-                    $clmoduleconfig["plagiarism_copyleaks_disablestudentinternalaccess"],
-                    $clmoduleconfig["plagiarism_copyleaks_showstudentresultsinfo"],
-                    $coursemodule->id
-                );
-            } catch (Exception $e) {
-                plagiarism_copyleaks_logs::add(
-                    "incase of module with default settings, update Copyleaks api to use default settings failed - "
-                        . $e->getMessage(),
-                    "API_ERROR"
-                );
-                return true;
-            }
-        }
-
         if ($coursemodule->modname == 'assign') {
             // Default to 0 => Submit file when first uploaded.
             $clmoduleconfig["plagiarism_copyleaks_draftsubmit"] = ($cmdata->submissiondrafts &&

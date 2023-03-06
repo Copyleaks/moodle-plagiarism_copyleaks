@@ -36,19 +36,7 @@ class plagiarism_copyleaks_moduleconfig {
             'plagiarism_copyleaks_enable',
             'plagiarism_copyleaks_draftsubmit',
             'plagiarism_copyleaks_reportgen',
-            'plagiarism_copyleaks_allowstudentaccess',
-            'plagiarism_copyleaks_ignorereferences',
-            'plagiarism_copyleaks_ignorequotes',
-            'plagiarism_copyleaks_ignoretitles',
-            'plagiarism_copyleaks_ignoreretableofcontents',
-            'plagiarism_copyleaks_ignoreresourcecodecomments',
-            'plagiarism_copyleaks_scaninternet',
-            'plagiarism_copyleaks_scaninternaldatabase',
-            'plagiarism_copyleaks_enablesafesearch',
-            'plagiarism_copyleaks_enablecheatdetection',
-            'plagiarism_copyleaks_checkforparaphrase',
-            'plagiarism_copyleaks_disablestudentinternalaccess',
-            'plagiarism_copyleaks_showstudentresultsinfo'
+            'plagiarism_copyleaks_allowstudentaccess'
         );
     }
 
@@ -59,68 +47,16 @@ class plagiarism_copyleaks_moduleconfig {
      */
     public static function get_module_config($cmid) {
         global $DB;
+
         $result = $DB->get_records_menu(
             'plagiarism_copyleaks_config',
             array('cm' => $cmid),
             '',
             'name,value'
         );
+
         if (!$result) {
             $result = self::get_modules_default_config();
-        } else if (
-            !isset($result['plagiarism_copyleaks_ignorereferences']) ||
-            !isset($result['plagiarism_copyleaks_ignorequotes']) ||
-            !isset($result['plagiarism_copyleaks_ignoretitles']) ||
-            !isset($result['plagiarism_copyleaks_ignoreretableofcontents']) ||
-            !isset($result['plagiarism_copyleaks_ignoreresourcecodecomments']) ||
-            !isset($result['plagiarism_copyleaks_scaninternet']) ||
-            !isset($result['plagiarism_copyleaks_scaninternaldatabase']) ||
-            !isset($result['plagiarism_copyleaks_enablesafesearch']) ||
-            !isset($result['plagiarism_copyleaks_enablecheatdetection'])
-        ) {
-            $defaults = self::get_modules_default_config();
-
-            $result['plagiarism_copyleaks_ignorereferences'] =
-                $defaults['plagiarism_copyleaks_ignorereferences'];
-
-            $result['plagiarism_copyleaks_ignorequotes'] =
-                $defaults['plagiarism_copyleaks_ignorequotes'];
-
-            $result['plagiarism_copyleaks_ignoretitles'] =
-                $defaults['plagiarism_copyleaks_ignoretitles'];
-
-            $result['plagiarism_copyleaks_ignoreretableofcontents'] =
-                $defaults['plagiarism_copyleaks_ignoreretableofcontents'];
-
-            $result['plagiarism_copyleaks_ignoreresourcecodecomments'] =
-                $defaults['plagiarism_copyleaks_ignoreresourcecodecomments'];
-
-            $result['plagiarism_copyleaks_scaninternet'] =
-                $defaults['plagiarism_copyleaks_scaninternet'];
-
-            $result['plagiarism_copyleaks_scaninternaldatabase'] =
-                $defaults['plagiarism_copyleaks_scaninternaldatabase'];
-
-            $result['plagiarism_copyleaks_enablesafesearch'] =
-                $defaults['plagiarism_copyleaks_enablesafesearch'];
-
-            $result['plagiarism_copyleaks_enablecheatdetection'] =
-                $defaults['plagiarism_copyleaks_enablecheatdetection'];
-        }
-
-        /* Sepperate this two parameters so old client will not get default result */
-        if (
-            !isset($result['plagiarism_copyleaks_checkforparaphrase']) ||
-            !isset($result['plagiarism_copyleaks_disablestudentinternalaccess'])
-        ) {
-            if (!isset($defaults)) {
-                $defaults = self::get_modules_default_config();
-            }
-            $result['plagiarism_copyleaks_checkforparaphrase'] =
-                $defaults['plagiarism_copyleaks_checkforparaphrase'];
-
-            $result['plagiarism_copyleaks_disablestudentinternalaccess'] =
-                $defaults['plagiarism_copyleaks_disablestudentinternalaccess'];
         }
 
         return $result;
@@ -146,17 +82,6 @@ class plagiarism_copyleaks_moduleconfig {
 
     /**
      * update course module default config
-     * @param boolean $ignorereferences
-     * @param boolean $ignorequotes
-     * @param boolean $ignoretitles
-     * @param boolean $ignoreretableofcontents
-     * @param boolean $ignoreresourcecodecomments
-     * @param boolean $scaninternet
-     * @param boolean $scaninternaldatabase
-     * @param boolean $enablesafesearch
-     * @param boolean $enablecheatdetection
-     * @param boolean $enableparaphrase
-     * @param boolean $disablestudentinternalaccess
      * @param string $cmid (optional)
      * @param boolean $enabled (optional)
      * @param boolean $draftssubmit (optional)
@@ -164,18 +89,6 @@ class plagiarism_copyleaks_moduleconfig {
      * @param boolean $allowstudentaccess (optional)
      */
     public static function set_module_config(
-        $ignorereferences,
-        $ignorequotes,
-        $ignoretitles,
-        $ignoreretableofcontents,
-        $ignoreresourcecodecomments,
-        $scaninternet,
-        $scaninternaldatabase,
-        $enablesafesearch,
-        $enablecheatdetection,
-        $enableparaphrase,
-        $disablestudentinternalaccess,
-        $showstudentresultsinfo,
         $cmid = PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID,
         $enabled = false,
         $draftssubmit = 0,
@@ -189,20 +102,6 @@ class plagiarism_copyleaks_moduleconfig {
         $default['plagiarism_copyleaks_draftsubmit'] = $draftssubmit;
         $default['plagiarism_copyleaks_reportgen'] = $reportgen;
         $default['plagiarism_copyleaks_allowstudentaccess'] = $allowstudentaccess;
-        $default['plagiarism_copyleaks_ignorereferences'] = $ignorereferences;
-        $default['plagiarism_copyleaks_ignorequotes'] = $ignorequotes;
-        $default['plagiarism_copyleaks_ignoretitles'] = $ignoretitles;
-        $default['plagiarism_copyleaks_ignoreretableofcontents'] = $ignoreretableofcontents;
-        $default['plagiarism_copyleaks_ignoreresourcecodecomments'] = $ignoreresourcecodecomments;
-        $default['plagiarism_copyleaks_scaninternet'] = $scaninternet;
-        $default['plagiarism_copyleaks_scaninternaldatabase'] = $scaninternaldatabase;
-        $default['plagiarism_copyleaks_enablesafesearch'] = $enablesafesearch;
-        $default['plagiarism_copyleaks_enablecheatdetection'] = $enablecheatdetection;
-        $default['plagiarism_copyleaks_checkforparaphrase'] = $enableparaphrase;
-        $default['plagiarism_copyleaks_disablestudentinternalaccess'] = $disablestudentinternalaccess;
-        if ($cmid == 0) {
-            $default['plagiarism_copyleaks_showstudentresultsinfo'] = $showstudentresultsinfo;
-        }
 
         // Db settings elements name.
         $clcmconfigfields = self::get_config_db_properties();
@@ -254,16 +153,6 @@ class plagiarism_copyleaks_moduleconfig {
             return false;
         }
         return true;
-    }
-
-    /**
-     * Check if admin allows passing student info to Copyleaks API
-     * @return bool is allowed
-     */
-    public static function is_allow_student_results_info() {
-        $cldbdefaultconfig = self::get_modules_default_config();
-        return isset($cldbdefaultconfig["plagiarism_copyleaks_showstudentresultsinfo"]) &&
-            $cldbdefaultconfig["plagiarism_copyleaks_showstudentresultsinfo"] == "1";
     }
 
     /**

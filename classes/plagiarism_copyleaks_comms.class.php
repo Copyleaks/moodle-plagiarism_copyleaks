@@ -82,75 +82,6 @@ class plagiarism_copyleaks_comms {
     }
 
     /**
-     * Get plugin default settings that are saved at Copyleaks API
-     */
-    public function get_plugin_default_settings() {
-        if (isset($this->key) && isset($this->secret)) {
-            $result = plagiarism_copyleaks_http_client::execute(
-                'GET',
-                $this->copyleaks_api_url() . "/api/moodle/plugin/" . $this->key . "/scan-settings",
-                true
-            );
-            return $result;
-        }
-    }
-
-    /**
-     * Save plugin default settings at Copyleaks API
-     * @param any $settings Copyleaks settings
-     */
-    public function save_plugin_default_settings($settings) {
-        if (isset($this->key) && isset($this->secret)) {
-            plagiarism_copyleaks_http_client::execute(
-                'POST',
-                $this->copyleaks_api_url() . "/api/moodle/plugin/" . $this->key . "/scan-settings",
-                true,
-                $settings
-            );
-        }
-    }
-
-    /**
-     * get course module copyleaks settings
-     * @param string $cmid Course Module ID
-     * @return any course module copyleaks settings
-     */
-    public function get_course_module_settings(string $cmid) {
-        if (isset($this->key) && isset($this->secret)) {
-            $result = plagiarism_copyleaks_http_client::execute(
-                'GET',
-                $this->copyleaks_api_url() . "/api/moodle/plugin/" . $this->key . "/course/module/" . $cmid . "/scan-settings",
-                true
-            );
-            return $result;
-        }
-    }
-
-    /**
-     * save course module copyleaks settings
-     * @param string $cmid course module id
-     * @param string $cmname course module type
-     * @param string $name course module name
-     * @param any $settings Copyleaks settings
-     */
-    public function save_course_module_settings(string $cmid, string $cmname, string $name, $settings = null) {
-        if (isset($this->key) && isset($this->secret)) {
-            $reqdata = (array)[
-                'name' => $name,
-                'courseModuleName' => $cmname,
-                'scanProperties' => $settings,
-            ];
-            $result = plagiarism_copyleaks_http_client::execute(
-                'POST',
-                $this->copyleaks_api_url() . "/api/moodle/plugin/" . $this->key . "/course/module/" . $cmid . "/scan-settings",
-                true,
-                json_encode($reqdata)
-            );
-            return $result;
-        }
-    }
-
-    /**
      * Submit to Copyleaks for plagiairsm scan
      * @param string $filepath file path
      * @param string $filename file name
@@ -171,7 +102,6 @@ class plagiarism_copyleaks_comms {
         if (isset($this->key) && isset($this->secret)) {
             $coursemodule = get_coursemodule_from_id('', $cmid);
             if (
-                plagiarism_copyleaks_moduleconfig::is_allow_student_results_info() &&
                 plagiarism_copyleaks_moduleconfig::did_user_accept_eula($userid)
             ) {
                 $student = get_complete_user_data('id', $userid);
@@ -330,28 +260,7 @@ class plagiarism_copyleaks_comms {
         }
     }
 
-    /**
-     * request access for integration repositories
-     * @param string $cmid course module (optional)
-     * @return string a JWT to access integration repositories only
-     */
-    public function request_access_for_repositories(string $cmid = null) {
-        if (isset($this->key) && isset($this->secret)) {
 
-            if (isset($cmid)) {
-                $url = $this->copyleaks_api_url() . "/api/moodle/" . $this->key . "/repositories/" . $cmid . "/request-access";
-            } else {
-                $url = $this->copyleaks_api_url() . "/api/moodle/" . $this->key . "/repositories/request-access";
-            }
-
-            $result = plagiarism_copyleaks_http_client::execute(
-                'POST',
-                $url,
-                true
-            );
-            return $result->token;
-        }
-    }
 
     /**
      * get copyleaks api url.
@@ -462,12 +371,64 @@ class plagiarism_copyleaks_comms {
     }
 
     /**
+     * Update course module temp id at Copyleaks server.
+     * @param string $cmid
+     * @return bool
+     */
+    public function update_temp_course_module_id($cmid, $tempCourseModuleId) {
+        try {
+            if (isset($this->key) && isset($this->secret)) {
+                $reqbody = (array)[
+                    'tempCourseModuleId' => $tempCourseModuleId,
+                    'courseModuleId' => $cmid
+                ];
+                plagiarism_copyleaks_http_client::execute(
+                    'POST',
+                    $this->copyleaks_api_url() . "/api/moodle/plugin/$this->key/update-temp-cmid",
+                    true,
+                    json_encode($reqbody),
+                );
+                return true;
+            } else {
+                return false;
+            }
+        } catch (Exception $e) {
+            $errormsg = get_string('cltaskfailedconnecting', 'plagiarism_copyleaks', $e->getMessage());
+            plagiarism_copyleaks_logs::add($errormsg, 'API_ERROR');
+            return false;
+        }
+    }
+
+    /**
+     * Get temp course module id .
+     * @param string $courseid 
+     * @return string
+     */
+    public function get_new_course_module_guid($courseid) {
+        try {
+            if (isset($this->key) && isset($this->secret)) {
+                $timestamp = time(); // Get the current timestamp
+                $random_string = uniqid($courseid, true); // Generate a unique ID based on more entropy
+                $random_string .= $timestamp; // Append the timestamp to the random string
+                $random_string = md5($random_string); // Hash the combined string using md5 for added security
+                return $random_string . "CLS";
+            }
+        } catch (Exception $e) {
+            $errormsg = get_string('cltaskfailedconnecting', 'plagiarism_copyleaks', $e->getMessage());
+            plagiarism_copyleaks_logs::add($errormsg, 'API_ERROR');
+        }
+    }
+
+    /**
      * Set navbar breadcrumbs.
      * @param mixed $cm
      * @param mixed $course
      * @return array $breadcrumbs
      */
     public static function set_navbar_breadcrumbs($cm, $course) {
+        if (!isset($cm)) {
+            return;
+        }
         global $CFG;
         $breadcrumbs = [];
         if ($cm) {

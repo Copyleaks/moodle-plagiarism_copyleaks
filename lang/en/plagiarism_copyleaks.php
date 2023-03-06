@@ -86,7 +86,7 @@ $string['clplagiarisescanning'] = 'Scanning for plagiarism...';
 $string['clplagiarisequeued'] = 'Scheduled for plagiarism scan at {$a}';
 $string['cldisabledformodule'] = 'Copyleaks plugin is disabled for this module.';
 $string['clnopageaccess'] = 'You dont have access to this page.';
-
+$string['clsettingsnote'] = "Edit module's plagiarism scan settings";
 $string['privacy:metadata:core_files'] = 'Copyleaks stores files that have been uploaded to Moodle to form a Copyleaks submission.';
 
 $string['privacy:metadata:plagiarism_copyleaks_files'] = 'Information that links a Moodle submission to a Copyleaks submission.';

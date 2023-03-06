@@ -75,3 +75,29 @@
     margin-bottom: 0;
     margin-left: 5px;
 }
+
+.copyleaks-edit-settings-note {
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+a.copyleaks-settings-link:hover {
+    text-decoration: none;
+}
+
+.copyleaks-settings-btn {
+    width: 180px;
+    height: 36px;
+    background-color: #17a1ff;
+    border-radius: 3px;
+    border: none;
+    text-decoration: none;
+    color: white;
+    font-size: 16px;
+    text-align: center;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

@@ -28,14 +28,14 @@ require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_assignmodule.class.php');
 
 // Get url params.
-$cmid = optional_param('cmid', null, PARAM_INT);
+$cmid = optional_param('cmid', -1, PARAM_TEXT);
+
+$courseid = optional_param('courseid', null, PARAM_INT);
 $modulename = optional_param('modulename', null, PARAM_TEXT);
 $viewmode = optional_param('view', 'moodle', PARAM_TEXT);
+$isnewmodulesettings = optional_param('isnewactivity', false, PARAM_TEXT);
 
 $isadminview = false;
-if (!isset($cmid) || !isset($modulename)) {
-    $isadminview = true;
-}
 
 if ($isadminview) {
     require_once($CFG->libdir . '/adminlib.php');
@@ -52,15 +52,21 @@ if ($isadminview) {
     $pagetitle = get_string('cldefaultrepositoriespagetitle', 'plagiarism_copyleaks');
 } else {
     // Get instance modules.
-    $cm = get_coursemodule_from_id('', $cmid);
-    $course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
+    $cm = null;
+    if (!$isnewmodulesettings) {
+        $cm = get_coursemodule_from_id('', $cmid);
+        $PAGE->set_cm($cm);
+    }
+    if (!isset($courseid)) {
+        $courseid = $cm->course;
+    }
+    $course = $DB->get_record('course', array('id' => $courseid), '*', MUST_EXIST);
     // Request login.
     require_login($course, true, $cm);
     // Setup page meta data.
 
-    $context = context_course::instance($cm->course);
+    $context = context_course::instance($courseid);
     $PAGE->set_course($course);
-    $PAGE->set_cm($cm);
     $PAGE->set_pagelayout('incourse');
     $PAGE->add_body_class('cl-report-page');
 
@@ -71,6 +77,7 @@ if ($isadminview) {
         }
     }
     $PAGE->set_url('/moodle/plagiarism/copyleaks/plagiarism_copyleaks_settings.php', array(
+        'courseid' => $courseid,
         'cmid' => $cmid,
         'modulename' => $modulename
     ));
@@ -83,8 +90,6 @@ if ($viewmode == 'course') {
     echo $OUTPUT->header();
 }
 
-// Copyleaks course settings.
-$modulesettings = $DB->get_records_menu('plagiarism_copyleaks_config', array('cm' => $cmid), '', 'name,value');
 
 $isinstructor = plagiarism_copyleaks_assignmodule::is_instructor($context);
 
@@ -93,17 +98,16 @@ $errormessagestyle = 'color:red; display:flex; width:100%; justify-content:cente
 $clmoduleenabled = plagiarism_copyleaks_pluginconfig::is_plugin_configured('mod_' . $cm->modname);
 
 // Check if copyleaks plugin is disabled.
-if (!$isadminview && (empty($clmoduleenabled) || empty($modulesettings['plagiarism_copyleaks_enable']))) {
+if (!$isnewmodulesettings && !$isadminview && !$clmoduleenabled) {
     echo html_writer::div(get_string('cldisabledformodule', 'plagiarism_copyleaks'), null, array('style' => $errormessagestyle));
 } else {
     // Incase students not allowed to see the plagiairsm score.
     if (!$isinstructor && empty($modulesettings['plagiarism_copyleaks_allowstudentaccess'])) {
         echo html_writer::div(get_string('clnopageaccess', 'plagiarism_copyleaks'), null, array('style' => $errormessagestyle));
     } else {
-        if (!$isadminview) {
+        if (!$isadminview && isset($cm)) {
             $moduledata = $DB->get_record($cm->modname, array('id' => $cm->instance));
 
-            $owners = array($userid);
 
             if ($cm->modname == 'assign' && $moduledata->teamsubmission) {
                 require_once($CFG->dirroot . '/mod/assign/locallib.php');
@@ -114,6 +118,7 @@ if (!$isadminview && (empty($clmoduleenabled) || empty($modulesettings['plagiari
                 }
             }
         }
+        $owners = array($userid);
 
         // Proceed to displaying the report.
         if ($isinstructor || in_array($USER->id, $owners)) {
@@ -158,7 +163,7 @@ if (!$isadminview && (empty($clmoduleenabled) || empty($modulesettings['plagiari
                     "<form target='_self'" .
                         "method='POST'" .
                         "style='display: none;'" .
-                        "action='$config->plagiarism_copyleaks_apiurl/api/moodle/$config->plagiarism_copyleaks_key" . "/settings/ " . " $cmid' >" .
+                        "action='$config->plagiarism_copyleaks_apiurl/api/moodle/$config->plagiarism_copyleaks_key/settings/$cmid' >" .
                         "<input name='token' value='$accesstoken'>" .
                         "<input name='lang' value='$lang'>" .
                         "<input name='accessRole' value='$role'>" .
