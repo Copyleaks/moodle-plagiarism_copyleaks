@@ -154,6 +154,7 @@ if (!$isnewmodulesettings && !$isadminview && !$clmoduleenabled) {
             if (!isset($cmid)) {
                 $cmid = 0;
             }
+            $actionurl = "$config->plagiarism_copyleaks_apiurl/api/moodle/$config->plagiarism_copyleaks_key/settings/$cmid";
             echo html_writer::tag(
                 'iframe',
                 null,
@@ -163,7 +164,7 @@ if (!$isnewmodulesettings && !$isadminview && !$clmoduleenabled) {
                     "<form target='_self'" .
                         "method='POST'" .
                         "style='display: none;'" .
-                        "action='$config->plagiarism_copyleaks_apiurl/api/moodle/$config->plagiarism_copyleaks_key/settings/$cmid' >" .
+                        "action='$actionurl' >" .
                         "<input name='token' value='$accesstoken'>" .
                         "<input name='lang' value='$lang'>" .
                         "<input name='accessRole' value='$role'>" .

@@ -240,8 +240,6 @@ class plagiarism_copyleaks_comms {
      * @return string a JWT to access student report only
      */
     public function request_access_for_settings($role, $breadcrumbs, $name, $coursemodulename) {
-
-
         if (isset($this->key) && isset($this->secret)) {
             $reqbody = (array)[
                 'breadcrumbs' => $breadcrumbs,
@@ -397,17 +395,17 @@ class plagiarism_copyleaks_comms {
 
     /**
      * Get temp course module id .
-     * @param string $courseid 
+     * @param string $courseid
      * @return string
      */
     public function get_new_course_module_guid($courseid) {
         try {
             if (isset($this->key) && isset($this->secret)) {
-                $timestamp = time(); // Get the current timestamp
-                $random_string = uniqid($courseid, true); // Generate a unique ID based on more entropy
-                $random_string .= $timestamp; // Append the timestamp to the random string
-                $random_string = md5($random_string); // Hash the combined string using md5 for added security
-                return $random_string . "CLS";
+                $timestamp = time(); /* Get the current timestamp */
+                $randomstring = uniqid($courseid, true); /* Generate a unique ID based on more entropy.*/
+                $randomstring .= $timestamp; /* Append the timestamp to the random string. */
+                $randomstring = md5($randomstring); /* Hash the combined string using md5 for added security. */
+                return $randomstring . "CLS";
             }
         } catch (Exception $e) {
             $errormsg = get_string('cltaskfailedconnecting', 'plagiarism_copyleaks', $e->getMessage());
@@ -433,7 +431,6 @@ class plagiarism_copyleaks_comms {
             $coursemodulename = $cm->name;
             $coursename = $course->fullname;
 
-
             $breadcrumbs = [
                 [
                     'url' => "$CFG->wwwroot",
@@ -446,11 +443,7 @@ class plagiarism_copyleaks_comms {
                 [
                     'url' => "$CFG->wwwroot/mod/assign/view.php?id=$cm->id",
                     'name' => $coursemodulename
-                ],
-                [
-                    'url' => "$CFG->wwwroot/plagiarism/copyleaks/plagiarism_copyleaks_settings.php?cmid=$cm->id&modulename=$cm->modname",
-                    'name' => 'Module Settings'
-                ],
+                ]
             ];
         } else {
             $breadcrumbs = [

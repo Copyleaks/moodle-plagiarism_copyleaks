@@ -201,7 +201,7 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
             }
 
             $settingslink = "$CFG->wwwroot/plagiarism/copyleaks/plagiarism_copyleaks_settings.php?";
-            $addparam = optional_param('add', NULL, PARAM_TEXT);
+            $addparam = optional_param('add', null, PARAM_TEXT);
             $courseid = optional_param('course', 0, PARAM_INT);
             $isnewactivity = isset($addparam) && $addparam != "0";
             if ($isnewactivity) {
@@ -230,7 +230,6 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
                     get_string('clsettingspagetitle', 'plagiarism_copyleaks') .
                     '</div></a></div></div></div>'
             );
-
 
             $settingsdisplayed = true;
         }
