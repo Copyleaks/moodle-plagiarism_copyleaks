@@ -372,21 +372,17 @@ class plagiarism_copyleaks_comms {
 
     /**
      * Update course module temp id at Copyleaks server.
-     * @param string $cmid
+     * @param array $data
      * @return bool
      */
-    public function update_temp_course_module_id($cmid, $tempCourseModuleId) {
+    public function upsert_course_module($data) {
         try {
             if (isset($this->key) && isset($this->secret)) {
-                $reqbody = (array)[
-                    'tempCourseModuleId' => $tempCourseModuleId,
-                    'courseModuleId' => $cmid
-                ];
                 plagiarism_copyleaks_http_client::execute(
                     'POST',
-                    $this->copyleaks_api_url() . "/api/moodle/plugin/$this->key/update-temp-cmid",
+                    $this->copyleaks_api_url() . "/api/moodle/plugin/$this->key/upsert-module",
                     true,
-                    json_encode($reqbody),
+                    json_encode($data),
                 );
                 return true;
             } else {

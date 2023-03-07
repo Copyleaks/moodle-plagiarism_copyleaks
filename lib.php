@@ -65,11 +65,15 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
 
         $cl = new plagiarism_copyleaks_comms();
 
-        if (isset($data->plagiarism_copyleaks_tempcmid)) {
-            $cl->update_temp_course_module_id($data->coursemodule, $data->plagiarism_copyleaks_tempcmid);
-        }
-
+        $updatedata = array(
+            'tempCourseModuleId' => $data->plagiarism_copyleaks_tempcmid,
+            'courseModuleId' => $data->coursemodule,
+            'name' => $data->name,
+            'moduleName' => $data->modulename,
+        );
         // Save settings to Copyleaks API.
+        $cl->upsert_course_module($updatedata);
+
         try {
             // Get copyleaks api course module settings.
             $cl = new plagiarism_copyleaks_comms();
@@ -199,7 +203,7 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
             $settingslink = "$CFG->wwwroot/plagiarism/copyleaks/plagiarism_copyleaks_settings.php?";
             $addparam = optional_param('add', NULL, PARAM_TEXT);
             $courseid = optional_param('course', 0, PARAM_INT);
-            $isnewactivity = isset($addparam);
+            $isnewactivity = isset($addparam) && $addparam != "0";
             if ($isnewactivity) {
                 $cl = new plagiarism_copyleaks_comms();
                 $cmid = $cl->get_new_course_module_guid("$courseid");
