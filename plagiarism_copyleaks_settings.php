@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 /**
- * Copyleaks report page
+ * Copyleaks settings page
  * @package   plagiarism_copyleaks
  * @author    Bayan Abuawad <bayana@copyleaks.com>
  * @copyright 2021 Copyleaks
@@ -28,14 +28,16 @@ require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_assignmodule.class.php');
 
 // Get url params.
-$cmid = optional_param('cmid', -1, PARAM_TEXT);
+$cmid = optional_param('cmid', null, PARAM_INT);
 
 $courseid = optional_param('courseid', null, PARAM_INT);
 $modulename = optional_param('modulename', null, PARAM_TEXT);
-$viewmode = optional_param('view', 'moodle', PARAM_TEXT);
 $isnewmodulesettings = optional_param('isnewactivity', false, PARAM_TEXT);
 
-$isadminview = $cmid == "0";
+$isadminview = false;
+if (!isset($cmid) || !isset($modulename)) {
+    $isadminview = true;
+}
 
 if ($isadminview) {
     require_once($CFG->libdir . '/adminlib.php');
@@ -46,10 +48,7 @@ if ($isadminview) {
     require_capability('moodle/site:config', $context, $USER->id, true, "nopermissions");
 
     // Setup page meta data for admin.
-    $PAGE->set_url('/moodle/plagiarism/copyleaks/plagiarism_copyleaks_repositories.php', array(
-        'viewmode' => $viewmode
-    ));
-    $pagetitle = get_string('cldefaultrepositoriespagetitle', 'plagiarism_copyleaks');
+    $PAGE->set_url('/moodle/plagiarism/copyleaks/plagiarism_copyleaks_settings.php');
 } else {
     // Get instance modules.
     $cm = null;
@@ -61,14 +60,15 @@ if ($isadminview) {
         $courseid = $cm->course;
     }
     $course = $DB->get_record('course', array('id' => $courseid), '*', MUST_EXIST);
+
     // Request login.
     require_login($course, true, $cm);
-    // Setup page meta data.
 
+    // Setup page meta data.
     $context = context_course::instance($courseid);
     $PAGE->set_course($course);
     $PAGE->set_pagelayout('incourse');
-    $PAGE->add_body_class('cl-report-page');
+    $PAGE->add_body_class('cl-settings-page');
 
     $roles = get_user_roles($context, $USER->id);
     foreach ($roles as $role) {
@@ -86,10 +86,6 @@ if ($isadminview) {
 global $USER;
 $userid = $USER->id;
 
-if ($viewmode == 'course') {
-    echo $OUTPUT->header();
-}
-
 
 $isinstructor = plagiarism_copyleaks_assignmodule::is_instructor($context);
 
@@ -102,26 +98,11 @@ if (!$isnewmodulesettings && !$isadminview && !$clmoduleenabled) {
     echo html_writer::div(get_string('cldisabledformodule', 'plagiarism_copyleaks'), null, array('style' => $errormessagestyle));
 } else {
     // Incase students not allowed to see the plagiairsm score.
-    if (!$isinstructor && empty($modulesettings['plagiarism_copyleaks_allowstudentaccess'])) {
+    if (!$isinstructor) {
         echo html_writer::div(get_string('clnopageaccess', 'plagiarism_copyleaks'), null, array('style' => $errormessagestyle));
     } else {
-        if (!$isadminview && isset($cm)) {
-            $moduledata = $DB->get_record($cm->modname, array('id' => $cm->instance));
-
-
-            if ($cm->modname == 'assign' && $moduledata->teamsubmission) {
-                require_once($CFG->dirroot . '/mod/assign/locallib.php');
-                $assignment = new assign($context, $cm, null);
-                if ($group = $assignment->get_submission_group($userid)) {
-                    $users = groups_get_members($group->id);
-                    $owners = array_keys($users);
-                }
-            }
-        }
-        $owners = array($userid);
-
-        // Proceed to displaying the report.
-        if ($isinstructor || in_array($USER->id, $owners)) {
+        // Proceed to displaying the settings.
+        if ($isinstructor) {
 
             // Get admin config.
             $config = plagiarism_copyleaks_pluginconfig::admin_config();
@@ -130,9 +111,9 @@ if (!$isnewmodulesettings && !$isadminview && !$clmoduleenabled) {
             echo html_writer::script(
                 "var css = document.createElement('style'); " .
                     "css.type = 'text/css'; " .
-                    "styles = ' body.cl-report-page footer { display:none; }'; " .
-                    "styles += 'body.cl-report-page .m-t-2 { display:none; }'; " .
-                    "styles += ' body.cl-report-page #page-wrapper::after { min-height:unset; }'; " .
+                    "styles = ' body.cl-settings-page footer { display:none; }'; " .
+                    "styles += 'body.cl-settings-page .m-t-2 { display:none; }'; " .
+                    "styles += ' body.cl-settings-page #page-wrapper::after { min-height:unset; }'; " .
                     "if (css.styleSheet) " .
                     "css.styleSheet.cssText = styles; " .
                     "else " .
@@ -154,11 +135,11 @@ if (!$isnewmodulesettings && !$isadminview && !$clmoduleenabled) {
             if (!isset($cmid)) {
                 $cmid = 0;
             }
+
             $actionurl = "$config->plagiarism_copyleaks_apiurl/api/moodle/$config->plagiarism_copyleaks_key/settings";
-            if ($cmid != "0") {
+            if (isset($cmid)) {
                 $actionurl = $actionurl . "/$cmid";
             }
-
             echo html_writer::tag(
                 'iframe',
                 null,
@@ -176,10 +157,7 @@ if (!$isnewmodulesettings && !$isadminview && !$clmoduleenabled) {
                         "<script type='text/javascript'>" .
                         "window.document.forms[0].submit();" .
                         "</script>",
-                    'style' =>
-                    $viewmode == 'course' ?
-                        'width: 100%; height: calc(100vh - 87px); margin: 0px; padding: 0px; border: none;' :
-                        'width: 100%; height: 100%; margin: 0px; padding: 0px; border: none;'
+                    'style' => 'width: 100%; height: 100%; margin: 0px; padding: 0px; border: none;'
                 )
             );
         } else {
@@ -187,8 +165,6 @@ if (!$isnewmodulesettings && !$isadminview && !$clmoduleenabled) {
         }
     }
 }
-
-
 
 echo html_writer::script(
     "window.document.body.style.margin=0;"
