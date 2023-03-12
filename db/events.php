@@ -25,6 +25,10 @@ defined('MOODLE_INTERNAL') || die();
 
 $observers = array(
     array(
+        'eventname' => '\core\event\course_restored',
+        'callback'  => 'plagiarism_copyleaks_observer::core_event_course_restored'
+    ),
+    array(
         'eventname' => '\core\event\course_module_deleted',
         'callback'  => 'plagiarism_copyleaks_observer::core_event_course_module_deleted'
     ),

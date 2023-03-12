@@ -32,6 +32,19 @@ require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks
 class plagiarism_copyleaks_observer {
     /**
      * course module deleted event handler.
+     * @param \core\event\course_restored $event
+     */
+    public static function core_event_course_restored(
+        \core\event\course_restored $event
+    ) {
+        global $DB;
+        $data = $event->get_data();
+        // Get all the module IDs for the course
+        $modinfo = get_fast_modinfo($data['other']['originalcourseid']);
+        $modids = array_keys($modinfo->instances);
+    }
+    /**
+     * course module deleted event handler.
      * @param \core\event\course_module_deleted $event
      */
     public static function core_event_course_module_deleted(
