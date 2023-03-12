@@ -239,7 +239,7 @@ class plagiarism_copyleaks_comms {
      * @param boolean $isadminview Copyleaks identify admins
      * @return string a JWT to access student report only
      */
-    public function request_access_for_settings($role, $breadcrumbs, $name, $coursemodulename) {
+    public function request_access_for_settings($role, $breadcrumbs, $name, $coursemodulename, $cmid) {
         if (isset($this->key) && isset($this->secret)) {
             $reqbody = (array)[
                 'breadcrumbs' => $breadcrumbs,
@@ -247,9 +247,13 @@ class plagiarism_copyleaks_comms {
                 'courseModuleName' => $coursemodulename,
                 'accessRole' => $role
             ];
+            $url = $this->copyleaks_api_url() . "/api/moodle/" . $this->key . "/settings/request-access";
+            if (isset($cmid) && $cmid != "0") {
+                $url = $url . "/$cmid";
+            }
             $result = plagiarism_copyleaks_http_client::execute(
                 'POST',
-                $this->copyleaks_api_url() . "/api/moodle/" . $this->key . "/settings/request-access",
+                $url,
                 true,
                 json_encode($reqbody)
             );

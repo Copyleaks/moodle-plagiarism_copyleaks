@@ -148,13 +148,17 @@ if (!$isnewmodulesettings && !$isadminview && !$clmoduleenabled) {
             } else if ($isinstructor) {
                 $role = 2;
             }
-            $accesstoken = $cl->request_access_for_settings($role, $breadcrumbs, $cm->modname, $cm->name);
+            $accesstoken = $cl->request_access_for_settings($role, $breadcrumbs, $cm->modname, $cm->name, $cmid);
 
             $lang = $cl->get_lang();
             if (!isset($cmid)) {
                 $cmid = 0;
             }
-            $actionurl = "$config->plagiarism_copyleaks_apiurl/api/moodle/$config->plagiarism_copyleaks_key/settings/$cmid";
+            $actionurl = "$config->plagiarism_copyleaks_apiurl/api/moodle/$config->plagiarism_copyleaks_key/settings";
+            if ($cmid != "0") {
+                $actionurl = $actionurl . "/$cmid";
+            }
+
             echo html_writer::tag(
                 'iframe',
                 null,
