@@ -50,6 +50,7 @@ $string['clenablesafesearch'] = 'Enable safe search';
 $string['clenablecheatdetection'] = 'Enable cheat detection';
 $string['clcheckforparaphrase'] = 'Check for paraphrased text';
 $string['cldisablestudentinternalaccess'] = 'Disable view of database for students';
+$string['cldisablestudentinternalaccess_help'] = 'Students will not be able to view ANY results from the internal database and private repositories';
 $string['clshowstudentresultsinfo'] = "Show student information in results";
 $string['clshowstudentresultsinfo_help'] = "Instructors will be able to see more details about students in the results card";
 $string['clallowstudentaccess'] = 'Allow students access to plagiarism reports';

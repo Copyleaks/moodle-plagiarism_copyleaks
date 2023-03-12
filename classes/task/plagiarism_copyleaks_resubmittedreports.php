@@ -27,6 +27,7 @@ use stdClass;
 
 defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/plagiarism/copyleaks/constants/plagiarism_copyleaks.constants.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/enums/plagiarism_copyleaks_enums.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_logs.class.php');
 
 /**
@@ -83,12 +84,7 @@ class plagiarism_copyleaks_resubmittedreports extends \core\task\scheduled_task 
             /* Get all the scans from db with the ids of the 'response' old ids */
             $dbrecordset = $DB->get_recordset_list('plagiarism_copyleaks_files', 'externalid', $oldids);
             if (!$dbrecordset->valid()) {
-                array_push($succeedids, ...$oldids);
-                /* Send request with ids who successfully changed in moodle db to deletion in the Google data store */
-                if (count($succeedids) > 0) {
-                    $copyleakscomms->delete_resubmitted_ids($succeedids);
-                }
-                continue;
+                break;
             }
 
             /* Getting the result by the consition the all the external ids must contains in $oldids */
@@ -123,18 +119,29 @@ class plagiarism_copyleaks_resubmittedreports extends \core\task\scheduled_task 
                     continue;
                 }
 
-                $currentresult->externalid = $curr->newScanId;
-                $currentresult->similarityscore = $curr->plagiarismScore;
-                $currentresult->lastmodified = $timestamp;
-                /* Update in the DB */
-                if (!$DB->update_record('plagiarism_copyleaks_files',  $currentresult)) {
-                    \plagiarism_copyleaks_logs::add(
-                        "Update resubmitted failed (old scan id: " . $curr->oldScanId . ", new scan id: "
-                            . $curr->newScanId . ") - ",
-                        "UPDATE_RECORD_FAILED"
-                    );
-                } else {
-                    array_push($succeedids,  $curr->oldScanId);
+                $isupdated = false;
+                if ($curr->status == \plagiarism_copyleaks_reportstatus::SCORED) {
+                    $currentresult->externalid = $curr->newScanId;
+                    $currentresult->similarityscore = $curr->plagiarismScore;
+                    $currentresult->lastmodified = $timestamp;
+                    $isupdated = true;
+                    /* Update in the DB */
+                } else if ($curr->status == \plagiarism_copyleaks_reportstatus::ERROR) {
+                    $currentresult->similarityscore = null;
+                    $currentresult->statuscode = "error";
+                    $currentresult->errormsg = $curr->errorMessage;
+                    $isupdated = true;
+                }
+                if ($isupdated) {
+                    if (!$DB->update_record('plagiarism_copyleaks_files',  $currentresult)) {
+                        \plagiarism_copyleaks_logs::add(
+                            "Update resubmitted failed (old scan id: " . $curr->oldScanId . ", new scan id: "
+                                . $curr->newScanId . "with status of " . $curr->statusCode . ") - ",
+                            "UPDATE_RECORD_FAILED"
+                        );
+                    } else {
+                        array_push($succeedids,  $curr->oldScanId);
+                    }
                 }
             }
             /* Send request with ids who successfully changed in moodle db to deletion in the Google data store */

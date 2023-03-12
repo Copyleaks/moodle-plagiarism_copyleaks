@@ -112,6 +112,7 @@ class plagiarism_copyleaks_adminform extends moodleform {
         );
 
         $settingslink = "$CFG->wwwroot/plagiarism/copyleaks/plagiarism_copyleaks_settings.php?cmid=0";
+        
         $mform->addElement(
             'html',
             '<div class="form-group row">' .
