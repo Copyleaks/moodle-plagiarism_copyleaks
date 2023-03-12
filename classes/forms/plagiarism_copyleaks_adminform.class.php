@@ -118,7 +118,7 @@ class plagiarism_copyleaks_adminform extends moodleform {
             '<div class="form-group row">' .
                 '<div class="col-md-3"></div>' .
                 '<div class="col-md-9">' .
-                "<div class='copyleaks-edit-settings-note'>" . get_string('clsettingsnote', 'plagiarism_copyleaks') . "</div>" .
+                "<div class='copyleaks-edit-settings-note'>" . get_string('cladminscansettingsnote', 'plagiarism_copyleaks') . "</div>" .
                 "<div style='width:180px'>" .
                 "<a class='copyleaks-settings-link' href='$settingslink' target='_blank'>" .
                 '<div class="copyleaks-settings-btn">' .

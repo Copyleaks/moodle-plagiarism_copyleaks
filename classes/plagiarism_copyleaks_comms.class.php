@@ -248,7 +248,7 @@ class plagiarism_copyleaks_comms {
                 'accessRole' => $role
             ];
             $url = $this->copyleaks_api_url() . "/api/moodle/" . $this->key . "/settings/request-access";
-            if (isset($cmid) && $cmid != "0") {
+            if (isset($cmid)) {
                 $url = $url . "/$cmid";
             }
             $result = plagiarism_copyleaks_http_client::execute(
