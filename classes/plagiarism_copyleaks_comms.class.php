@@ -394,7 +394,7 @@ class plagiarism_copyleaks_comms {
     public function get_new_course_module_guid($courseid) {
         $number = rand(100, 100000);
         $t = time();
-        return $courseid.$number.$t;
+        return $courseid . $number . $t;
     }
 
     /**
@@ -404,12 +404,9 @@ class plagiarism_copyleaks_comms {
      * @return array $breadcrumbs
      */
     public static function set_navbar_breadcrumbs($cm, $course) {
-        if (!isset($cm)) {
-            return;
-        }
         global $CFG;
         $breadcrumbs = [];
-        if ($cm) {
+        if (isset($cm)) {
             $moodlecontext = get_site();
             $moodlename = $moodlecontext->fullname;
             $coursemodulename = $cm->name;
