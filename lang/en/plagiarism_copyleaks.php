@@ -75,7 +75,9 @@ $string['clapisubmissionerror'] = 'Copyleaks has returned an error while trying 
 $string['clcheatingdetected'] = 'Cheating detected, Open report to learn more';
 $string['clcheatingdetectedtxt'] = 'Cheating detected';
 $string['clreportpagetitle'] = 'Copyleaks report';
-$string['clsettingspagetitle'] = 'Copyleaks settings';
+$string['clscansettingspagebtntxt'] = 'Copyleaks settings';
+$string['cladminscansettingsnote'] = "Edit default scan settings";
+$string['clmodulescansettingsnote'] = "Edit module scan settings";
 $string['clrepositoriespagetitle'] = 'Copyleaks repositories settings';
 $string['cldefaultrepositoriespagetitle'] = 'Copyleaks default repositories settings';
 $string['cleditrepositories'] = 'Edit repositories settings';
@@ -87,16 +89,12 @@ $string['clplagiarisescanning'] = 'Scanning for plagiarism...';
 $string['clplagiarisequeued'] = 'Scheduled for plagiarism scan at {$a}';
 $string['cldisabledformodule'] = 'Copyleaks plugin is disabled for this module.';
 $string['clnopageaccess'] = 'You dont have access to this page.';
-$string['cladminscansettingsnote'] = "Edit default scan settings";
-$string['clmodulescansettingsnote'] = "Edit module scan settings";
 $string['privacy:metadata:core_files'] = 'Copyleaks stores files that have been uploaded to Moodle to form a Copyleaks submission.';
-
 $string['privacy:metadata:plagiarism_copyleaks_files'] = 'Information that links a Moodle submission to a Copyleaks submission.';
 $string['privacy:metadata:plagiarism_copyleaks_files:userid'] = 'The ID of the user who is the owner of the submission.';
 $string['privacy:metadata:plagiarism_copyleaks_files:submitter'] = 'The ID of the user who has made the submission.';
 $string['privacy:metadata:plagiarism_copyleaks_files:similarityscore'] = 'The similarity score of the submission.';
 $string['privacy:metadata:plagiarism_copyleaks_files:lastmodified'] = 'A timestamp indicating when the user last modified their submission.';
-
 $string['privacy:metadata:plagiarism_copyleaks_client'] = 'In order to integrate with a Copyleaks, some user data needs to be exchanged with Copyleaks.';
 $string['privacy:metadata:plagiarism_copyleaks_client:module_id'] = 'The module id is sent to Copyleaks for identification purposes.';
 $string['privacy:metadata:plagiarism_copyleaks_client:module_name'] = 'The module name is sent to Copyleaks for identification purposes.';

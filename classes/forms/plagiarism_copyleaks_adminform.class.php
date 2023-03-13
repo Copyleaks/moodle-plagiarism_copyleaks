@@ -122,7 +122,7 @@ class plagiarism_copyleaks_adminform extends moodleform {
                 "<div style='width:180px'>" .
                 "<a class='copyleaks-settings-link' href='$settingslink' target='_blank'>" .
                 '<div class="copyleaks-settings-btn">' .
-                get_string('clsettingspagetitle', 'plagiarism_copyleaks') .
+                get_string('clscansettingspagebtntxt', 'plagiarism_copyleaks') .
                 '</div></a></div></div></div>'
         );
 

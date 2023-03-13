@@ -71,6 +71,7 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
             'name' => $data->name,
             'moduleName' => $data->modulename,
         );
+        
         // Save settings to Copyleaks API.
         $cl->upsert_course_module($updatedata);
 
@@ -227,7 +228,7 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
                     "<div style='width:180px'>" .
                     "<a class='copyleaks-settings-link' href='$settingslink' target='_blank'>" .
                     '<div class="copyleaks-settings-btn">' .
-                    get_string('clsettingspagetitle', 'plagiarism_copyleaks') .
+                    get_string('clscansettingspagebtntxt', 'plagiarism_copyleaks') .
                     '</div></a></div></div></div>'
             );
 

@@ -377,24 +377,13 @@ class plagiarism_copyleaks_comms {
      * @param array $data
      * @return bool
      */
-    public function upsert_course_module($data) {
-        try {
-            if (isset($this->key) && isset($this->secret)) {
-                plagiarism_copyleaks_http_client::execute(
-                    'POST',
-                    $this->copyleaks_api_url() . "/api/moodle/plugin/$this->key/upsert-module",
-                    true,
-                    json_encode($data),
-                );
-                return true;
-            } else {
-                return false;
-            }
-        } catch (Exception $e) {
-            $errormsg = get_string('cltaskfailedconnecting', 'plagiarism_copyleaks', $e->getMessage());
-            plagiarism_copyleaks_logs::add($errormsg, 'API_ERROR');
-            return false;
-        }
+    public function upsert_course_module($data) {        
+        plagiarism_copyleaks_http_client::execute(
+            'POST',
+            $this->copyleaks_api_url() . "/api/moodle/plugin/$this->key/upsert-module",
+            true,
+            json_encode($data),
+        );        
     }
 
     /**
@@ -403,18 +392,11 @@ class plagiarism_copyleaks_comms {
      * @return string
      */
     public function get_new_course_module_guid($courseid) {
-        try {
-            if (isset($this->key) && isset($this->secret)) {
-                $timestamp = time(); /* Get the current timestamp */
-                $randomstring = uniqid($courseid, true); /* Generate a unique ID based on more entropy.*/
-                $randomstring .= $timestamp; /* Append the timestamp to the random string. */
-                $randomstring = md5($randomstring); /* Hash the combined string using md5 for added security. */
-                return $randomstring . "CLS";
-            }
-        } catch (Exception $e) {
-            $errormsg = get_string('cltaskfailedconnecting', 'plagiarism_copyleaks', $e->getMessage());
-            plagiarism_copyleaks_logs::add($errormsg, 'API_ERROR');
-        }
+        $timestamp = time(); /* Get the current timestamp */
+        $randomstring = uniqid($courseid, true); /* Generate a unique ID based on more entropy.*/
+        $randomstring .= $timestamp; /* Append the timestamp to the random string. */
+        $randomstring = md5($randomstring); /* Hash the combined string using md5 for added security. */
+        return $randomstring . "CLS";
     }
 
     /**
