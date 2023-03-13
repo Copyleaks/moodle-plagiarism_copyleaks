@@ -73,7 +73,7 @@ $string['clplagiarisescanning'] = 'Recherche de plagiat...';
 $string['clpluginconfigurationtab'] = 'Configurations';
 $string['clpluginintro'] = 'Le vérificateur de plagiat Copyleaks est une solution complète et précise qui aide les enseignants et les étudiants à vérifier si leur contenu est original.<br>Pour plus d\'informations sur la configuration et l\'utilisation du plugin, veuillez vérifier <a target="_blank" href="https://lti.copyleaks.com/guides/select-moodle-integration">nos guides</a>.</br></br></br>';
 $string['clpoweredbycopyleaks'] = 'Propulsé par Copyleaks';
-$string['clreportgenspeed'] = 'Quand générer un rapport ?';
+$string['clreportgenspeed'] = 'Quand générer un rapport?';
 $string['clreportpagetitle'] = 'Copyleaks Rapport';
 $string['clscansettingspagebtntxt'] = 'Copyleaks Paramètres';
 $string['cladminscansettingsnote'] = "Modifier les paramètres de numérisation par défaut";
