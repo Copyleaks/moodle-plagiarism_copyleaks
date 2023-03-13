@@ -377,13 +377,13 @@ class plagiarism_copyleaks_comms {
      * @param array $data
      * @return bool
      */
-    public function upsert_course_module($data) {        
+    public function upsert_course_module($data) {
         plagiarism_copyleaks_http_client::execute(
             'POST',
             $this->copyleaks_api_url() . "/api/moodle/plugin/$this->key/upsert-module",
             true,
             json_encode($data),
-        );        
+        );
     }
 
     /**
@@ -392,11 +392,9 @@ class plagiarism_copyleaks_comms {
      * @return string
      */
     public function get_new_course_module_guid($courseid) {
-        $timestamp = time(); /* Get the current timestamp */
-        $randomstring = uniqid($courseid, true); /* Generate a unique ID based on more entropy.*/
-        $randomstring .= $timestamp; /* Append the timestamp to the random string. */
-        $randomstring = md5($randomstring); /* Hash the combined string using md5 for added security. */
-        return $randomstring . "CLS";
+        $number = rand(100, 100000);
+        $t = time();
+        return $courseid.$number.$t;
     }
 
     /**

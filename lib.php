@@ -63,16 +63,14 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
             return;
         }
 
+        // Save settings to Copyleaks.
         $cl = new plagiarism_copyleaks_comms();
-
         $updatedata = array(
             'tempCourseModuleId' => $data->plagiarism_copyleaks_tempcmid,
             'courseModuleId' => $data->coursemodule,
             'name' => $data->name,
             'moduleName' => $data->modulename,
         );
-        
-        // Save settings to Copyleaks API.
         $cl->upsert_course_module($updatedata);
 
         try {
@@ -224,7 +222,8 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
                 '<div class="form-group row">' .
                     '<div class="col-md-3"></div>' .
                     '<div class="col-md-9">' .
-                    "<div class='copyleaks-edit-settings-note'>" . get_string('clmodulescansettingsnote', 'plagiarism_copyleaks') . "</div>" .
+                    "<div class='copyleaks-edit-settings-note'>"
+                    . get_string('clmodulescansettingsnote', 'plagiarism_copyleaks') . "</div>" .
                     "<div style='width:180px'>" .
                     "<a class='copyleaks-settings-link' href='$settingslink' target='_blank'>" .
                     '<div class="copyleaks-settings-btn">' .

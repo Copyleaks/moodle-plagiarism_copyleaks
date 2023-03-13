@@ -131,7 +131,7 @@ if (!$isnewmodulesettings && !$isadminview && !$clmoduleenabled) {
             }
             $accesstoken = $cl->request_access_for_settings($role, $breadcrumbs, $cm->modname, $cm->name, $cmid);
 
-            $lang = $cl->get_lang();            
+            $lang = $cl->get_lang();
 
             $actionurl = "$config->plagiarism_copyleaks_apiurl/api/moodle/$config->plagiarism_copyleaks_key/settings";
             if (isset($cmid)) {
