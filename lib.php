@@ -230,19 +230,7 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
                     . "</div>" .
                     "</div>"
             );
-            $mform->addElement(
-                'html',
-                '<div class="form-group row">' .
-                    '<div class="col-md-3"></div>' .
-                    '<div class="col-md-9">' .
-                    "<div class='copyleaks-edit-settings-note'>"
-                    . get_string('clmodulescansettingsnote', 'plagiarism_copyleaks') . "</div>" .
-                    "<div style='width:180px'>" .
-                    "<a class='copyleaks-settings-link' href='$settingslink' target='_blank'>" .
-                    '<div class="copyleaks-settings-btn">' .
-                    get_string('clscansettingspagebtntxt', 'plagiarism_copyleaks') .
-                    '</div></a></div></div></div>'
-            );
+
 
             $settingsdisplayed = true;
         }
