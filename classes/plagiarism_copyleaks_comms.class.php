@@ -444,4 +444,34 @@ class plagiarism_copyleaks_comms {
         }
         return $breadcrumbs;
     }
+
+    /**
+     * @param string $settingsurlparams - assign the url to the link
+     * @param bool $isadminform - for note above the link
+     * @return string
+     */
+    public static function get_copyleaks_settings_button_link($settingsurlparams, $isadminform = false) {
+        global $CFG;
+        $settingsurl = "$CFG->wwwroot/plagiarism/copyleaks/plagiarism_copyleaks_settings.php";
+        if (!isset($settingsurlparams) || $settingsurlparams != "") {
+            $settingsurl = $settingsurl . $settingsurlparams;
+        }
+        $note =  get_string('cladminscansettingsnote', 'plagiarism_copyleaks');
+        if (!$isadminform) {
+            $note =  get_string('clmodulescansettingsnote', 'plagiarism_copyleaks');
+        }
+
+        return
+            "<div class='form-group row'>" .
+            "<div class='col-md-3'></div>" .
+            "<div class='col-md-9'>" .
+            "<div class='copyleaks-edit-settings-note'>$note</div>" .
+            html_writer::link(
+                "$settingsurl",
+                get_string('clscansettingspagebtntxt', 'plagiarism_copyleaks'),
+                array('target' => '_blank')
+            )
+            . "</div>" .
+            "</div>";
+    }
 }

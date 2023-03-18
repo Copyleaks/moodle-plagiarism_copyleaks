@@ -199,7 +199,7 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
                 $mform->setDefault('plagiarism_copyleaks_allowstudentaccess', 0);
             }
 
-            $settingslink = "$CFG->wwwroot/plagiarism/copyleaks/plagiarism_copyleaks_settings.php?";
+            $settingslinkparams = "?";
             $addparam = optional_param('add', null, PARAM_TEXT);
             $courseid = optional_param('course', 0, PARAM_INT);
             $isnewactivity = isset($addparam) && $addparam != "0";
@@ -212,26 +212,13 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
                     "$cmid"
 
                 );
-                $settingslink = $settingslink . "isnewactivity=$isnewactivity&courseid=$courseid&";
+                $settingslinkparams = $settingslinkparams . "isnewactivity=$isnewactivity&courseid=$courseid&";
             }
 
-            $settingslink = $settingslink . "cmid=$cmid&modulename=$modulename";
+            $settingslinkparams = $settingslinkparams . "cmid=$cmid&modulename=$modulename";
 
-            $mform->addElement(
-                'html',
-                "<div class='form-group row'>" .
-                    "<div class='col-md-3'></div>" .
-                    "<div class='col-md-9'>" .
-                    "<div class='copyleaks-edit-settings-note'>" . get_string('cladminscansettingsnote', 'plagiarism_copyleaks') . "</div>" .
-                    html_writer::link(
-                        "$settingslink",
-                        get_string('clscansettingspagebtntxt', 'plagiarism_copyleaks'),
-                        array('target' => '_blank')
-                    )
-                    . "</div>" .
-                    "</div>"
-            );
-
+            $btn = plagiarism_copyleaks_comms::get_copyleaks_settings_button_link($settingslinkparams);
+            $mform->addElement('html', $btn);
 
             $settingsdisplayed = true;
         }
