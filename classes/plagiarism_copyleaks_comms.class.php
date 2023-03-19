@@ -456,19 +456,18 @@ class plagiarism_copyleaks_comms {
         if (!isset($settingsurlparams) || $settingsurlparams != "") {
             $settingsurl = $settingsurl . $settingsurlparams;
         }
-        $note =  get_string('cladminscansettingsnote', 'plagiarism_copyleaks');
+        $text =  get_string('clscansettingspagebtntxt', 'plagiarism_copyleaks');
         if (!$isadminform) {
-            $note =  get_string('clmodulescansettingsnote', 'plagiarism_copyleaks');
+            $text =  get_string('clmodulescansettingstxt', 'plagiarism_copyleaks');
         }
 
         return
             "<div class='form-group row'>" .
             "<div class='col-md-3'></div>" .
             "<div class='col-md-9'>" .
-            "<div class='copyleaks-edit-settings-note'>$note</div>" .
             html_writer::link(
                 "$settingsurl",
-                get_string('clscansettingspagebtntxt', 'plagiarism_copyleaks'),
+                $text,
                 array('target' => '_blank')
             )
             . "</div>" .
