@@ -409,36 +409,35 @@ class plagiarism_copyleaks_comms {
         if (isset($cm)) {
             $moodlecontext = get_site();
             $moodlename = $moodlecontext->fullname;
-            $coursemodulename = $cm->name;
             $coursename = $course->fullname;
 
             $breadcrumbs = [
                 [
                     'url' => "$CFG->wwwroot",
-                    'name' => $moodlename
+                    'name' => $moodlename,
                 ],
                 [
                     'url' => "$CFG->wwwroot/course/view.php?id=$course->id",
-                    'name' => $coursename
+                    'name' => $coursename,
                 ],
                 [
                     'url' => "$CFG->wwwroot/mod/assign/view.php?id=$cm->id",
-                    'name' => $coursemodulename
-                ]
+                    'name' => $cm == 'new' ? 'New Activity' : $cm->name,
+                ],
             ];
         } else {
             $breadcrumbs = [
                 [
                     'url' => "$CFG->wwwroot/admin/search.php",
-                    'name' => 'Site Administration'
+                    'name' => 'Site Administration',
                 ],
                 [
                     'url' => "$CFG->wwwroot/plagiarism/copyleaks/settings.php",
-                    'name' => 'Copyleaks Plugin'
+                    'name' => 'Copyleaks Plugin',
                 ],
                 [
                     'url' => "$CFG->wwwroot/plagiarism/copyleaks/plagiarism_copyleaks_settings.php",
-                    'name' => 'Integration Settings'
+                    'name' => 'Integration Settings',
                 ],
             ];
         }
@@ -456,9 +455,9 @@ class plagiarism_copyleaks_comms {
         if (!isset($settingsurlparams) || $settingsurlparams != "") {
             $settingsurl = $settingsurl . $settingsurlparams;
         }
-        $text =  get_string('clscansettingspagebtntxt', 'plagiarism_copyleaks');
+        $text = get_string('clscansettingspagebtntxt', 'plagiarism_copyleaks');
         if (!$isadminform) {
-            $text =  get_string('clmodulescansettingstxt', 'plagiarism_copyleaks');
+            $text = get_string('clmodulescansettingstxt', 'plagiarism_copyleaks');
         }
 
         return

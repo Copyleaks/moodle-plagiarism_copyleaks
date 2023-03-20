@@ -122,7 +122,7 @@ if (!$isnewmodulesettings && !$isadminview && !$clmoduleenabled) {
             );
 
             $cl = new plagiarism_copyleaks_comms();
-            $breadcrumbs = $cl->set_navbar_breadcrumbs($cm, $course);
+            $breadcrumbs = $cl->set_navbar_breadcrumbs($isnewmodulesettings ? 'new' : $cm, $course);
             $role = 0;
             if ($isadminview) {
                 $role = 1;
