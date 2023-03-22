@@ -51,7 +51,7 @@ class plagiarism_copyleaks_http_client {
         $isauthretry = false,
         $contenttype = 'application/json'
     ) {
-        global $CFG;        
+        global $CFG;
 
         if (!class_exists('curl')) {
 

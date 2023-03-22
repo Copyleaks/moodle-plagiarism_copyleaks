@@ -111,8 +111,10 @@ class plagiarism_copyleaks_adminform extends moodleform {
             get_string('claccountsecret', 'plagiarism_copyleaks')
         );
 
-        $btn = plagiarism_copyleaks_comms::get_copyleaks_settings_button_link(null, true);
-        $mform->addElement('html', $btn);
+        if (plagiarism_copyleaks_comms::test_copyleaks_connection('admin_settings_page')) {
+            $btn = plagiarism_copyleaks_comms::get_copyleaks_settings_button_link(null, true);
+            $mform->addElement('html', $btn);
+        }
 
         $this->add_action_buttons();
     }
