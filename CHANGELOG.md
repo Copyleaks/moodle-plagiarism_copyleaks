@@ -1,3 +1,8 @@
+### Date: 		2023-March-24
+### Release:	v2023032400
+-  The Copyleaks checkboxs settings options have been relocated to the Copyleaks Iframe, which now provides a wider range of options to choose from, allowing for greater control and customization of the  Copyleaks settings.
+-  Administrators will have full control over all the settings, including the ability to lock instructors from making any changes to the default settings.
+
 ### Date: 		2023-Jan-08
 ### Release:	v2023010800
 -  For Assignment & Workshop - students must accept EULA before submission
