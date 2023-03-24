@@ -64,14 +64,16 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
         }
 
         // Save settings to Copyleaks.
-        $cl = new plagiarism_copyleaks_comms();
-        $updatedata = array(
-            'tempCourseModuleId' => $data->plagiarism_copyleaks_tempcmid,
-            'courseModuleId' => $data->coursemodule,
-            'name' => $data->name,
-            'moduleName' => $data->modulename,
-        );
-        $cl->upsert_course_module($updatedata);
+        if (isset($data->plagiarism_copyleaks_tempcmid)) {
+            $cl = new plagiarism_copyleaks_comms();
+            $updatedata = array(
+                'tempCourseModuleId' => $data->plagiarism_copyleaks_tempcmid,
+                'courseModuleId' => $data->coursemodule,
+                'name' => $data->name,
+                'moduleName' => $data->modulename,
+            );
+            $cl->upsert_course_module($updatedata);
+        }
 
         try {
             // Get copyleaks api course module settings.
