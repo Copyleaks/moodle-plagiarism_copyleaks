@@ -239,7 +239,7 @@ class plagiarism_copyleaks_comms {
      * @param boolean $isadminview Copyleaks identify admins
      * @return string a JWT to access student report only
      */
-    public function request_access_for_settings($role, $breadcrumbs, $name, $coursemodulename, $cmid) {
+    public function request_access_for_settings($role, $breadcrumbs, $name = '', $coursemodulename = '', $cmid = 0) {
         if (isset($this->key) && isset($this->secret)) {
             $reqbody = (array)[
                 'breadcrumbs' => $breadcrumbs,

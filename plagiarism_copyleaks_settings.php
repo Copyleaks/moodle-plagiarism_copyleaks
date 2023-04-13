@@ -91,11 +91,13 @@ $isinstructor = plagiarism_copyleaks_assignmodule::is_instructor($context);
 
 $errormessagestyle = 'color:red; display:flex; width:100%; justify-content:center;';
 
-$clmoduleenabled = plagiarism_copyleaks_pluginconfig::is_plugin_configured('mod_' . $cm->modname);
 
 // Check if copyleaks plugin is disabled.
-if (!$isnewmodulesettings && !$isadminview && !$clmoduleenabled) {
-    echo html_writer::div(get_string('cldisabledformodule', 'plagiarism_copyleaks'), null, array('style' => $errormessagestyle));
+if (!$isnewmodulesettings && !$isadminview) {
+    $clmoduleenabled = plagiarism_copyleaks_pluginconfig::is_plugin_configured('mod_' . $cm->modname);
+    if (!$clmoduleenabled) {
+        echo html_writer::div(get_string('cldisabledformodule', 'plagiarism_copyleaks'), null, array('style' => $errormessagestyle));
+    }
 } else {
     // Incase students not allowed to see the plagiairsm score.
     if (!$isinstructor) {
@@ -122,14 +124,24 @@ if (!$isnewmodulesettings && !$isadminview && !$clmoduleenabled) {
             );
 
             $cl = new plagiarism_copyleaks_comms();
-            $breadcrumbs = $cl->set_navbar_breadcrumbs($isnewmodulesettings ? 'new' : $cm, $course);
+            $breadcrumbs = [];
+            if (isset($cm) && !$isadminview) {
+                $breadcrumbs = $cl->set_navbar_breadcrumbs($isnewmodulesettings ? 'new' : $cm, $course);
+            } else {
+                $breadcrumbs = $cl->set_navbar_breadcrumbs(null, null);
+            }
             $role = 0;
             if ($isadminview) {
                 $role = 1;
             } else if ($isinstructor) {
                 $role = 2;
             }
-            $accesstoken = $cl->request_access_for_settings($role, $breadcrumbs, $cm->modname, $cm->name, $cmid);
+            $accesstoken = "";
+            if (isset($cm) && !$isadminview) {
+                $accesstoken = $cl->request_access_for_settings($role, $breadcrumbs, $cm->modname, $cm->name, $cmid);
+            } else {
+                $accesstoken = $cl->request_access_for_settings($role, $breadcrumbs);
+            }
 
             $lang = $cl->get_lang();
 
