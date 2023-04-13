@@ -91,13 +91,14 @@ $isinstructor = plagiarism_copyleaks_assignmodule::is_instructor($context);
 
 $errormessagestyle = 'color:red; display:flex; width:100%; justify-content:center;';
 
-
 // Check if copyleaks plugin is disabled.
-if (!$isnewmodulesettings && !$isadminview) {
+$clmoduleenabled = true;
+if (isset($cm)) {
     $clmoduleenabled = plagiarism_copyleaks_pluginconfig::is_plugin_configured('mod_' . $cm->modname);
-    if (!$clmoduleenabled) {
-        echo html_writer::div(get_string('cldisabledformodule', 'plagiarism_copyleaks'), null, array('style' => $errormessagestyle));
-    }
+}
+
+if (!$isnewmodulesettings && !$isadminview && !$clmoduleenabled) {
+    echo html_writer::div(get_string('cldisabledformodule', 'plagiarism_copyleaks'), null, array('style' => $errormessagestyle));
 } else {
     // Incase students not allowed to see the plagiairsm score.
     if (!$isinstructor) {
