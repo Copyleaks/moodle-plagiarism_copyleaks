@@ -126,23 +126,25 @@ if (!$isnewmodulesettings && !$isadminview && !$clmoduleenabled) {
 
             $cl = new plagiarism_copyleaks_comms();
             $breadcrumbs = [];
-            if (isset($cm) && !$isadminview) {
-                $breadcrumbs = $cl->set_navbar_breadcrumbs($isnewmodulesettings ? 'new' : $cm, $course);
-            } else {
-                $breadcrumbs = $cl->set_navbar_breadcrumbs(null, null);
-            }
             $role = 0;
-            if ($isadminview) {
-                $role = 1;
-            } else if ($isinstructor) {
-                $role = 2;
-            }
             $accesstoken = "";
-            if (isset($cm) && !$isadminview) {
-                $accesstoken = $cl->request_access_for_settings($role, $breadcrumbs, $cm->modname, $cm->name, $cmid);
+
+            if (!$isadminview) {
+                $role = 2;
+                $breadcrumbs = $cl->set_navbar_breadcrumbs($isnewmodulesettings ? 'new' : $cm, $course);
+                $accesstoken = $cl->request_access_for_settings(
+                    $role,
+                    $breadcrumbs,
+                    $modulename,
+                    $isnewmodulesettings ? 'new' : $cm->name,
+                    $cmid
+                );
             } else {
+                $role = 1;
+                $breadcrumbs = $cl->set_navbar_breadcrumbs(null, null);
                 $accesstoken = $cl->request_access_for_settings($role, $breadcrumbs);
             }
+
 
             $lang = $cl->get_lang();
 
