@@ -51,37 +51,6 @@ class plagiarism_copyleaks_comms {
     }
 
     /**
-     * Return the current lang code to use with Copyleaks
-     * @return string Supported Copyleaks lang code
-     */
-    public function get_lang() {
-        $defaultlangcode = 'en';
-        try {
-            $langcode = str_replace("_utf8", "", current_language());
-            $langarray = array(
-                'en' => $defaultlangcode,
-                'en_us' => $defaultlangcode,
-                'fr' => 'fr',
-                'fr_ca' => 'fr',
-                'es' => 'es',
-                'fr' => 'fr',
-                'pt' => 'pt',
-                'hi' => 'hi',
-                'zh' => 'zh',
-                'it' => 'it',
-                'ja' => 'ja',
-                'de' => 'de',
-                'tr' => 'tr',
-                'ru' => 'ru',
-                'ar' => 'ar'
-            );
-            return (isset($langarray[$langcode])) ? $langarray[$langcode] : $defaultlangcode;
-        } catch (Exception $e) {
-            return $defaultlangcode;
-        }
-    }
-
-    /**
      * Submit to Copyleaks for plagiairsm scan
      * @param string $filepath file path
      * @param string $filename file name
@@ -262,8 +231,6 @@ class plagiarism_copyleaks_comms {
         }
     }
 
-
-
     /**
      * get copyleaks api url.
      * @return string api url if exists, otherwise return null
@@ -383,92 +350,5 @@ class plagiarism_copyleaks_comms {
             true,
             json_encode($data)
         );
-    }
-
-    /**
-     * Get temp course module id .
-     * @param string $courseid
-     * @return string
-     */
-    public function get_new_course_module_guid($courseid) {
-        $number = rand(100, 100000);
-        $t = time();
-        return $courseid . $number . $t;
-    }
-
-    /**
-     * Set navbar breadcrumbs.
-     * @param mixed $cm
-     * @param mixed $course
-     * @return array $breadcrumbs
-     */
-    public static function set_navbar_breadcrumbs($cm, $course) {
-        global $CFG;
-        $breadcrumbs = [];
-        if (isset($cm)) {
-            $moodlecontext = get_site();
-            $moodlename = $moodlecontext->fullname;
-            $coursename = $course->fullname;
-
-            $breadcrumbs = [
-                [
-                    'url' => "$CFG->wwwroot",
-                    'name' => $moodlename,
-                ],
-                [
-                    'url' => "$CFG->wwwroot/course/view.php?id=$course->id",
-                    'name' => $coursename,
-                ],
-                [
-                    'url' => "$CFG->wwwroot/mod/assign/view.php?id=$cm->id",
-                    'name' => $cm == 'new' ? 'New Activity' : $cm->name,
-                ],
-            ];
-        } else {
-            $breadcrumbs = [
-                [
-                    'url' => "$CFG->wwwroot/admin/search.php",
-                    'name' => 'Site Administration',
-                ],
-                [
-                    'url' => "$CFG->wwwroot/plagiarism/copyleaks/settings.php",
-                    'name' => 'Copyleaks Plugin',
-                ],
-                [
-                    'url' => "$CFG->wwwroot/plagiarism/copyleaks/plagiarism_copyleaks_settings.php",
-                    'name' => 'Integration Settings',
-                ],
-            ];
-        }
-        return $breadcrumbs;
-    }
-
-    /**
-     * @param string $settingsurlparams - assign the url to the link
-     * @param bool $isadminform - for note above the link
-     * @return string
-     */
-    public static function get_copyleaks_settings_button_link($settingsurlparams, $isadminform = false) {
-        global $CFG;
-        $settingsurl = "$CFG->wwwroot/plagiarism/copyleaks/plagiarism_copyleaks_settings.php";
-        if (!isset($settingsurlparams) || $settingsurlparams != "") {
-            $settingsurl = $settingsurl . $settingsurlparams;
-        }
-        $text = get_string('clscansettingspagebtntxt', 'plagiarism_copyleaks');
-        if (!$isadminform) {
-            $text = get_string('clmodulescansettingstxt', 'plagiarism_copyleaks');
-        }
-
-        return
-            "<div class='form-group row'>" .
-            "<div class='col-md-3'></div>" .
-            "<div class='col-md-9'>" .
-            html_writer::link(
-                "$settingsurl",
-                $text,
-                array('target' => '_blank')
-            )
-            . "</div>" .
-            "</div>";
     }
 }

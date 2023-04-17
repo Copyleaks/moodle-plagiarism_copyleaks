@@ -23,9 +23,11 @@
 
 require(dirname(dirname(__FILE__)) . '/../config.php');
 
-require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_comms.class.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_pluginconfig.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_comms.class.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_assignmodule.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_utils.class.php');
+
 
 // Get url params.
 $cmid = required_param('cmid', PARAM_INT);
@@ -144,7 +146,7 @@ if (empty($clmoduleenabled) || empty($modulesettings['plagiarism_copyleaks_enabl
 
             $cl = new plagiarism_copyleaks_comms();
             $scanaccesstoken = $cl->request_access_for_report($plagiarismfiles->externalid, $isinstructor);
-            $lang = $cl->get_lang();
+            $lang = plagiarism_copyleaks_utils::get_lang();
             echo html_writer::tag(
                 'iframe',
                 null,

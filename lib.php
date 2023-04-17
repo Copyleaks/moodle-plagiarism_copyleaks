@@ -33,6 +33,7 @@ require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks
 require_once($CFG->dirroot . '/plagiarism/copyleaks/constants/plagiarism_copyleaks.constants.php');
 
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_assignmodule.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_utils.class.php');
 
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_comms.class.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/exceptions/plagiarism_copyleaks_authexception.class.php');
@@ -206,8 +207,7 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
             $courseid = optional_param('course', 0, PARAM_INT);
             $isnewactivity = isset($addparam) && $addparam != "0";
             if ($isnewactivity) {
-                $cl = new plagiarism_copyleaks_comms();
-                $cmid = $cl->get_new_course_module_guid("$courseid");
+                $cmid = plagiarism_copyleaks_utils::get_new_course_module_guid("$courseid");
                 $mform->addElement(
                     'hidden',
                     'plagiarism_copyleaks_tempcmid',
@@ -219,7 +219,7 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
 
             $settingslinkparams = $settingslinkparams . "cmid=$cmid&modulename=$modulename";
 
-            $btn = plagiarism_copyleaks_comms::get_copyleaks_settings_button_link($settingslinkparams);
+            $btn = plagiarism_copyleaks_utils::get_copyleaks_settings_button_link($settingslinkparams);
             $mform->addElement('html', $btn);
 
             $settingsdisplayed = true;

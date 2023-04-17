@@ -37,6 +37,8 @@ require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/exceptions/plagiaris
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/exceptions/plagiarism_copyleaks_undermaintenanceexception.class.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_logs.class.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/constants/plagiarism_copyleaks.constants.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_utils.class.php');
+
 /**
  * Copyleaks admin setup form
  */
@@ -112,7 +114,7 @@ class plagiarism_copyleaks_adminform extends moodleform {
         );
 
         if (plagiarism_copyleaks_comms::test_copyleaks_connection('admin_settings_page')) {
-            $btn = plagiarism_copyleaks_comms::get_copyleaks_settings_button_link(null, true);
+            $btn = plagiarism_copyleaks_utils::get_copyleaks_settings_button_link(null, true);
             $mform->addElement('html', $btn);
         }
 
