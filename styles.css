@@ -101,3 +101,18 @@ a.copyleaks-settings-link:hover {
     justify-content: center;
     align-items: center;
 }
+
+.copyleaks-maintanace {
+    color: white;
+    font-weight: bold;
+    font-size: 23px;
+    line-height: 81px;
+    display: flex;
+    width: 67%;
+    min-width: 500px;
+    justify-content: center;
+    height: 100px;
+    background-color: #17a1ff;
+    margin: 0 auto;
+    border-radius: 6px;
+}

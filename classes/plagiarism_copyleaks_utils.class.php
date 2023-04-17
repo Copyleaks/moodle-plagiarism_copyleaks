@@ -145,4 +145,7 @@ class plagiarism_copyleaks_utils {
       . "</div>" .
       "</div>";
   }
+  public static function get_copyleaks_under_maintanace_message() {
+    return get_string('cltaskfailedconnecting', 'plagiarism_copyleaks', get_string('clundermaintain', 'plagiarism_copyleaks'));
+  }
 }

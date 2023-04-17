@@ -55,6 +55,7 @@ $string['clreportgenspeed'] = 'When to generate report?';
 $string['clgenereportimmediately'] = 'Generate reports immediately';
 $string['clgenereportonduedate'] = 'Generate reports on due date';
 $string['cltaskfailedconnecting'] = 'connection to Copyleaks can not be established, error: {$a}';
+$string['clundermaintain'] = 'Copyleaks server is under maintanance';
 $string['clapisubmissionerror'] = 'Copyleaks has returned an error while trying to send file for submission - ';
 $string['clcheatingdetected'] = 'Cheating detected, Open report to learn more';
 $string['clcheatingdetectedtxt'] = 'Cheating detected';
