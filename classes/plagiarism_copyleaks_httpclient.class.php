@@ -127,6 +127,50 @@ class plagiarism_copyleaks_http_client {
     }
 
     /**
+     * Generic execute with retry mechanism method for AJAX calls
+     * @param string $verb - request verb
+     * @param string $url request url
+     * @param bool $requireauth is request require authentication
+     * @param any $data request data
+     * @param bool $isauthretry is authentication retry request
+     * @param string $contenttype request content type
+     * @return mixed response data (if there is any)
+     */
+    public static function execute_retry(
+        $verb,
+        $url,
+        $requireauth = false,
+        $data = null,
+        $isauthretry = false,
+        $contenttype = 'application/json'
+    ) {
+
+        $retrycnt = 0;
+        $max = count(PLAGIARISM_COPYLEAKS_RETRY);
+        $serverresult = null;
+
+        while (!isset($serverresult) && $retrycnt < $max) {
+            try {
+                sleep(PLAGIARISM_COPYLEAKS_RETRY[$retrycnt]);
+                $retrycnt = $retrycnt + 1;
+                $serverresult = plagiarism_copyleaks_http_client::execute(
+                    $verb,
+                    $url,
+                    $requireauth,
+                    $data,
+                    $isauthretry,
+                    $contenttype
+                );
+                return $serverresult;
+            } catch (Exception $e) {
+                if ($retrycnt >= $max) {
+                    throw $e;
+                }
+            }
+        }
+    }
+
+    /**
      * check if passed status code is representing success
      * @param int $statuscode
      * @return bool

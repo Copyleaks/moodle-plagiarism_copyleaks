@@ -29,6 +29,7 @@ require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_utils.class.php');
 
 
+
 // Get url params.
 $cmid = optional_param('cmid', null, PARAM_INT);
 
@@ -36,12 +37,6 @@ $courseid = optional_param('courseid', null, PARAM_INT);
 $modulename = optional_param('modulename', null, PARAM_TEXT);
 $isnewmodulesettings = optional_param('isnewactivity', false, PARAM_TEXT);
 
-
-
-if (!\plagiarism_copyleaks_comms::test_copyleaks_connection('scheduler_task')) {
-    echo plagiarism_copyleaks_utils::get_copyleaks_under_maintanace_message();
-    return;
-}
 
 $isadminview = false;
 if (!isset($cmid) || !isset($modulename)) {

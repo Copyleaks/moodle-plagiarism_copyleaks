@@ -188,7 +188,7 @@ class plagiarism_copyleaks_comms {
         }
 
         if (isset($this->key) && isset($this->secret)) {
-            $result = plagiarism_copyleaks_http_client::execute(
+            $result = plagiarism_copyleaks_http_client::execute_retry(
                 'POST',
                 $this->copyleaks_api_url() . "/api/moodle/" . $this->key .
                     "/report/" . $scanid . "/" . $isinstructor . "/request-access",
@@ -220,7 +220,7 @@ class plagiarism_copyleaks_comms {
             if (isset($cmid)) {
                 $url = $url . "/$cmid";
             }
-            $result = plagiarism_copyleaks_http_client::execute(
+            $result = plagiarism_copyleaks_http_client::execute_retry(
                 'POST',
                 $url,
                 true,

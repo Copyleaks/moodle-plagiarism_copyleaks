@@ -23,10 +23,27 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+require_once($CFG->dirroot . '/plagiarism/copyleaks/constants/plagiarism_copyleaks.constants.php');
+
+
 /**
  * Function that can be used in multiple places
  */
 class plagiarism_copyleaks_utils {
+
+  static $get_message_style = 'color: white; 
+      font-weight: bold; 
+      font-size: 23px; 
+      line-height: 81px; 
+      display: flex; 
+      width: 67%; 
+      min-width: 500px; 
+      height: 100px; 
+      background-color: #17a1ff;
+      margin: 0 auto;
+      border-radius: 6px;
+      justify-content:center';
+
 
   /**
    * Return the current lang code to use with Copyleaks
@@ -149,27 +166,7 @@ class plagiarism_copyleaks_utils {
   /**
    * @return string
    */
-  public static function get_copyleaks_under_maintanace_message() {
-    $errormsg = get_string('cltaskfailedconnecting', 'plagiarism_copyleaks', get_string('clundermaintain', 'plagiarism_copyleaks'));
-    return  html_writer::div($errormsg, null, array('style' => plagiarism_copyleaks_utils::get_message_style()));
-  }
-
-  /**
-   * @return string
-   */
-  public static function get_message_style() {
-    return '
-      color: white; 
-      font-weight: bold; 
-      font-size: 23px; 
-      line-height: 81px; 
-      display: flex; 
-      width: 67%; 
-      min-width: 500px; 
-      height: 100px; 
-      background-color: #17a1ff;
-      margin: 0 auto;
-      border-radius: 6px;
-      justify-content:center';
+  public static function get_copyleaks_under_maintanace_message($errormsg) {
+    return  html_writer::div($errormsg, null, array('style' => plagiarism_copyleaks_utils::$get_message_style));
   }
 }

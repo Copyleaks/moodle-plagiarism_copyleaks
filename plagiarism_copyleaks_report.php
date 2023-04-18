@@ -37,10 +37,6 @@ $modulename = required_param('modulename', PARAM_TEXT);
 $viewmode = optional_param('view', 'course', PARAM_TEXT);
 $errormessagestyle = 'color:red; display:flex; width:100%; justify-content:center;';
 
-if (!\plagiarism_copyleaks_comms::test_copyleaks_connection('scheduler_task')) {
-    echo plagiarism_copyleaks_utils::get_copyleaks_under_maintanace_message();
-    return;
-}
 
 // Get instance modules.
 $cm = get_coursemodule_from_id($modulename, $cmid, 0, false, MUST_EXIST);
