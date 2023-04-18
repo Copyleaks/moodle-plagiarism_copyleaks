@@ -36,11 +36,10 @@ $courseid = optional_param('courseid', null, PARAM_INT);
 $modulename = optional_param('modulename', null, PARAM_TEXT);
 $isnewmodulesettings = optional_param('isnewactivity', false, PARAM_TEXT);
 
-$errormessagestyle = 'color:red; display:flex; width:100%; justify-content:center;';
 
 
 if (!\plagiarism_copyleaks_comms::test_copyleaks_connection('scheduler_task')) {
-    echo html_writer::tag('div', plagiarism_copyleaks_utils::get_copyleaks_under_maintanace_message(), array('class' => 'copyleaks-maintanace'));
+    echo plagiarism_copyleaks_utils::get_copyleaks_under_maintanace_message();
     return;
 }
 
@@ -105,6 +104,9 @@ $clmoduleenabled = true;
 if (isset($cm)) {
     $clmoduleenabled = plagiarism_copyleaks_pluginconfig::is_plugin_configured('mod_' . $cm->modname);
 }
+
+$errormessagestyle = 'color:red; display:flex; width:100%; justify-content:center;';
+
 
 if (!$isnewmodulesettings && !$isadminview && !$clmoduleenabled) {
     echo html_writer::div(get_string('cldisabledformodule', 'plagiarism_copyleaks'), null, array('style' => $errormessagestyle));

@@ -35,6 +35,12 @@ $userid = required_param('userid', PARAM_INT);
 $identifier = required_param('identifier', PARAM_TEXT);
 $modulename = required_param('modulename', PARAM_TEXT);
 $viewmode = optional_param('view', 'course', PARAM_TEXT);
+$errormessagestyle = 'color:red; display:flex; width:100%; justify-content:center;';
+
+if (!\plagiarism_copyleaks_comms::test_copyleaks_connection('scheduler_task')) {
+    echo plagiarism_copyleaks_utils::get_copyleaks_under_maintanace_message();
+    return;
+}
 
 // Get instance modules.
 $cm = get_coursemodule_from_id($modulename, $cmid, 0, false, MUST_EXIST);
@@ -78,7 +84,6 @@ $modulesettings = $DB->get_records_menu('plagiarism_copyleaks_config', array('cm
 
 $isinstructor = plagiarism_copyleaks_assignmodule::is_instructor($context);
 
-$errormessagestyle = 'color:red; display:flex; width:100%; justify-content:center;';
 
 $clmoduleenabled = plagiarism_copyleaks_pluginconfig::is_plugin_configured('mod_' . $cm->modname);
 
