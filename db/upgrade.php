@@ -213,26 +213,48 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2022122802, 'plagiarism', 'copyleaks');
     }
 
-    if ($oldversion < 2023041900) {
-        $table = new xmldb_table('plagiarism_copyleaks_users');
+    if ($oldversion < 2023041901) {
+        $table = new xmldb_table('plagiarism_copyleaks_request');
 
         // Adding fields to table plagiarism_copyleaks_users.
-        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
-        $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', !XMLDB_UNSIGNED, XMLDB_NOTNULL, !XMLDB_SEQUENCE, null);
-        $table->add_field('user_eula_accepted', XMLDB_TYPE_INTEGER, '1', !XMLDB_UNSIGNED, !XMLDB_NOTNULL, !XMLDB_SEQUENCE, 0);
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE);
+        $table->add_field('created_date', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0');
+        $table->add_field('cmid', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, null, null, '0');
+        $table->add_field('endpoint', XMLDB_TYPE_TEXT, '255', null, XMLDB_NOTNULL);
+        $table->add_field('total_retry_attempts', XMLDB_TYPE_INTEGER, '1', XMLDB_UNSIGNED, XMLDB_NOTNULL);
+        $table->add_field('data', XMLDB_TYPE_TEXT, '255', null, XMLDB_NOTNULL, null, '');
+        $table->add_field('priority', XMLDB_TYPE_INTEGER, '1');
+        $table->add_field('status', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL);
+        $table->add_field('fail_message', XMLDB_TYPE_TEXT, '255');
+        $table->add_field('require_auth', XMLDB_TYPE_NUMBER, '1', XMLDB_UNSIGNED, XMLDB_NOTNULL);
+
+
 
         // Adding keys and indexes to table plagiarism_copyleaks_users.
         $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
-        $table->add_index('userid', XMLDB_INDEX_UNIQUE, array('userid'));
+        $table->add_index('created_date', XMLDB_INDEX_NOTUNIQUE, array('created_date'));
+        $table->add_index('priority', XMLDB_INDEX_NOTUNIQUE, array('priority'));
 
         // Conditionally launch create table for plagiarism_copyleaks_users.
         if (!$dbman->table_exists($table)) {
             $dbman->create_table($table);
         }
 
-        upgrade_plugin_savepoint(true, 2022122400, 'plagiarism', 'copyleaks');
+        upgrade_plugin_savepoint(true, 2023041901, 'plagiarism', 'copyleaks');
     }
-
 
     return true;
 }
+
+/**
+         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="data" TYPE="text" LENGTH="255" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="created_date" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="priority" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="total_retry_attempts" TYPE="int" LENGTH="1" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="status" TYPE="int" LENGTH="1" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="fail_message" TYPE="text" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="endpoint" TYPE="text" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="require_auth" TYPE="number" LENGTH="1" NOTNULL="true" SEQUENCE="false" DECIMALS="0"/>
+        <FIELD NAME="cmid" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+ */
