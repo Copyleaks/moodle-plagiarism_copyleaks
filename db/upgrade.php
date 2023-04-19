@@ -213,5 +213,26 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2022122802, 'plagiarism', 'copyleaks');
     }
 
+    if ($oldversion < 2023041900) {
+        $table = new xmldb_table('plagiarism_copyleaks_users');
+
+        // Adding fields to table plagiarism_copyleaks_users.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', !XMLDB_UNSIGNED, XMLDB_NOTNULL, !XMLDB_SEQUENCE, null);
+        $table->add_field('user_eula_accepted', XMLDB_TYPE_INTEGER, '1', !XMLDB_UNSIGNED, !XMLDB_NOTNULL, !XMLDB_SEQUENCE, 0);
+
+        // Adding keys and indexes to table plagiarism_copyleaks_users.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        $table->add_index('userid', XMLDB_INDEX_UNIQUE, array('userid'));
+
+        // Conditionally launch create table for plagiarism_copyleaks_users.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        upgrade_plugin_savepoint(true, 2022122400, 'plagiarism', 'copyleaks');
+    }
+
+
     return true;
 }
