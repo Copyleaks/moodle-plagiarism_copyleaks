@@ -61,6 +61,7 @@ $string['clreportgenspeed'] = 'Quand générer un rapport?';
 $string['clreportpagetitle'] = 'Copyleaks Rapport';
 $string['clscansettingspagebtntxt'] = 'Modifier les paramètres de numérisation';
 $string['clmodulescansettingstxt'] = "Modifier les paramètres de numérisation";
+$string['cldisablesettingstooltip'] = "Veuillez patienter jusqu'à ce que Copyleaks établisse un nouveau module";
 $string['clscoursesettings'] = 'Paramètres de fuites de copie';
 $string['clsendqueuedsubmissions'] = 'Plugin de plagiat Copyleaks - gérer les fichiers en file d\'attente';
 $string['clsendresubmissionsfiles'] = "Plugin de plagiat Copyleaks - gérer les résultats soumis à nouveau";

@@ -219,7 +219,7 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
 
             $settingslinkparams = $settingslinkparams . "cmid=$cmid&modulename=$modulename";
 
-            $btn = plagiarism_copyleaks_utils::get_copyleaks_settings_button_link($settingslinkparams);
+            $btn = plagiarism_copyleaks_utils::get_copyleaks_settings_button_link($settingslinkparams, false, $cmid);
             $mform->addElement('html', $btn);
 
             $settingsdisplayed = true;

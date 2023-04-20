@@ -21,6 +21,8 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use core\check\performance\stats;
+
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/plagiarism/copyleaks/constants/plagiarism_copyleaks.constants.php');
@@ -139,8 +141,14 @@ class plagiarism_copyleaks_utils {
    * @param bool $isadminform - for note above the link
    * @return string
    */
-  public static function get_copyleaks_settings_button_link($settingsurlparams, $isadminform = false) {
+  public static function get_copyleaks_settings_button_link($settingsurlparams, $isadminform = false, $cmid = null) {
     global $CFG;
+    $isbtndisabled = false;
+    if (!$isadminform && isset($cmid)) {
+      if (plagiarism_copyleaks_utils::is_course_module_request_queued($cmid)) {
+        $isbtndisabled = true;
+      }
+    }
     $settingsurl = "$CFG->wwwroot/plagiarism/copyleaks/plagiarism_copyleaks_settings.php";
     if (!isset($settingsurlparams) || $settingsurlparams != "") {
       $settingsurl = $settingsurl . $settingsurlparams;
@@ -150,15 +158,18 @@ class plagiarism_copyleaks_utils {
       $text = get_string('clmodulescansettingstxt', 'plagiarism_copyleaks');
     }
 
+    $content = $isbtndisabled ?
+      html_writer::div($text, null, array(
+        'style' => 'color:#8c8c8c',
+        'title' => get_string('cldisablesettingstooltip', 'plagiarism_copyleaks')
+      )) :
+      html_writer::link("$settingsurl", $text, array('target' => '_blank'));
+
     return
       "<div class='form-group row'>" .
       "<div class='col-md-3'></div>" .
       "<div class='col-md-9'>" .
-      html_writer::link(
-        "$settingsurl",
-        $text,
-        array('target' => '_blank')
-      )
+      $content
       . "</div>" .
       "</div>";
   }
@@ -168,5 +179,15 @@ class plagiarism_copyleaks_utils {
    */
   public static function get_copyleaks_under_maintanace_message($errormsg) {
     return  html_writer::div($errormsg, null, array('style' => plagiarism_copyleaks_utils::$get_message_style));
+  }
+
+  /**
+   * @param string $cmid check if the cmid is in the requests queue
+   * @return bool
+   */
+  public static function is_course_module_request_queued($cmid) {
+    global $DB;
+    $record = $DB->get_record('plagiarism_copyleaks_request', ['cmid' => $cmid]);
+    return isset($record) && $record;
   }
 }
