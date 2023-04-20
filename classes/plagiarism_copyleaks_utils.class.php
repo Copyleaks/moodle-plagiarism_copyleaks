@@ -33,161 +33,140 @@ require_once($CFG->dirroot . '/plagiarism/copyleaks/constants/plagiarism_copylea
  */
 class plagiarism_copyleaks_utils {
 
-  static $get_message_style = 'color: white; 
-      font-weight: bold; 
-      font-size: 23px; 
-      line-height: 81px; 
-      display: flex; 
-      width: 67%; 
-      min-width: 500px; 
-      height: 100px; 
-      background-color: #17a1ff;
-      margin: 0 auto;
-      border-radius: 6px;
-      justify-content:center';
-
-
-  /**
-   * Return the current lang code to use with Copyleaks
-   * @return string Supported Copyleaks lang code
-   */
-  public static function get_lang() {
-    $defaultlangcode = 'en';
-    try {
-      $langcode = str_replace("_utf8", "", current_language());
-      $langarray = array(
-        'en' => $defaultlangcode,
-        'en_us' => $defaultlangcode,
-        'fr' => 'fr',
-        'fr_ca' => 'fr',
-        'es' => 'es',
-        'fr' => 'fr',
-        'pt' => 'pt',
-        'hi' => 'hi',
-        'zh' => 'zh',
-        'it' => 'it',
-        'ja' => 'ja',
-        'de' => 'de',
-        'tr' => 'tr',
-        'ru' => 'ru',
-        'ar' => 'ar'
-      );
-      return (isset($langarray[$langcode])) ? $langarray[$langcode] : $defaultlangcode;
-    } catch (Exception $e) {
-      return $defaultlangcode;
-    }
-  }
-
-  /**
-   * Get temp course module id .
-   * @param string $courseid
-   * @return string
-   */
-  public static function get_new_course_module_guid($courseid) {
-    $number = rand(100, 100000);
-    $t = time();
-    return $courseid . $number . $t;
-  }
-
-  /**
-   * Set navbar breadcrumbs.
-   * @param mixed $cm
-   * @param mixed $course
-   * @return array $breadcrumbs
-   */
-  public static function set_navbar_breadcrumbs($cm, $course) {
-    global $CFG;
-    $breadcrumbs = [];
-    if (isset($cm)) {
-      $moodlecontext = get_site();
-      $moodlename = $moodlecontext->fullname;
-      $coursename = $course->fullname;
-
-      $breadcrumbs = [
-        [
-          'url' => "$CFG->wwwroot",
-          'name' => $moodlename,
-        ],
-        [
-          'url' => "$CFG->wwwroot/course/view.php?id=$course->id",
-          'name' => $coursename,
-        ],
-        [
-          'url' => "$CFG->wwwroot/mod/assign/view.php?id=$cm->id",
-          'name' => $cm == 'new' ? 'New Activity' : $cm->name,
-        ],
-      ];
-    } else {
-      $breadcrumbs = [
-        [
-          'url' => "$CFG->wwwroot/admin/search.php",
-          'name' => 'Site Administration',
-        ],
-        [
-          'url' => "$CFG->wwwroot/plagiarism/copyleaks/settings.php",
-          'name' => 'Copyleaks Plugin',
-        ],
-        [
-          'url' => "$CFG->wwwroot/plagiarism/copyleaks/plagiarism_copyleaks_settings.php",
-          'name' => 'Integration Settings',
-        ],
-      ];
-    }
-    return $breadcrumbs;
-  }
-
-  /**
-   * @param string $settingsurlparams - assign the url to the link
-   * @param bool $isadminform - for note above the link
-   * @return string
-   */
-  public static function get_copyleaks_settings_button_link($settingsurlparams, $isadminform = false, $cmid = null) {
-    global $CFG;
-    $isbtndisabled = false;
-    if (!$isadminform && isset($cmid)) {
-      if (plagiarism_copyleaks_utils::is_course_module_request_queued($cmid)) {
-        $isbtndisabled = true;
-      }
-    }
-    $settingsurl = "$CFG->wwwroot/plagiarism/copyleaks/plagiarism_copyleaks_settings.php";
-    if (!isset($settingsurlparams) || $settingsurlparams != "") {
-      $settingsurl = $settingsurl . $settingsurlparams;
-    }
-    $text = get_string('clscansettingspagebtntxt', 'plagiarism_copyleaks');
-    if (!$isadminform) {
-      $text = get_string('clmodulescansettingstxt', 'plagiarism_copyleaks');
+    /**
+     * Return the current lang code to use with Copyleaks
+     * @return string Supported Copyleaks lang code
+     */
+    public static function get_lang() {
+        $defaultlangcode = 'en';
+        try {
+            $langcode = str_replace("_utf8", "", current_language());
+            $langarray = array(
+                'en' => $defaultlangcode,
+                'en_us' => $defaultlangcode,
+                'fr' => 'fr',
+                'fr_ca' => 'fr',
+                'es' => 'es',
+                'fr' => 'fr',
+                'pt' => 'pt',
+                'hi' => 'hi',
+                'zh' => 'zh',
+                'it' => 'it',
+                'ja' => 'ja',
+                'de' => 'de',
+                'tr' => 'tr',
+                'ru' => 'ru',
+                'ar' => 'ar'
+            );
+            return (isset($langarray[$langcode])) ? $langarray[$langcode] : $defaultlangcode;
+        } catch (Exception $e) {
+            return $defaultlangcode;
+        }
     }
 
-    $content = $isbtndisabled ?
-      html_writer::div($text, null, array(
-        'style' => 'color:#8c8c8c',
-        'title' => get_string('cldisablesettingstooltip', 'plagiarism_copyleaks')
-      )) :
-      html_writer::link("$settingsurl", $text, array('target' => '_blank'));
+    /**
+     * Get temp course module id .
+     * @param string $courseid
+     * @return string
+     */
+    public static function get_new_course_module_guid($courseid) {
+        $number = rand(100, 100000);
+        $t = time();
+        return $courseid . $number . $t;
+    }
 
-    return
-      "<div class='form-group row'>" .
-      "<div class='col-md-3'></div>" .
-      "<div class='col-md-9'>" .
-      $content
-      . "</div>" .
-      "</div>";
-  }
+    /**
+     * Set navbar breadcrumbs.
+     * @param mixed $cm
+     * @param mixed $course
+     * @return array $breadcrumbs
+     */
+    public static function set_navbar_breadcrumbs($cm, $course) {
+        global $CFG;
+        $breadcrumbs = [];
+        if (isset($cm)) {
+            $moodlecontext = get_site();
+            $moodlename = $moodlecontext->fullname;
+            $coursename = $course->fullname;
 
-  /**
-   * @return string
-   */
-  public static function get_copyleaks_under_maintanace_message($errormsg) {
-    return  html_writer::div($errormsg, null, array('style' => plagiarism_copyleaks_utils::$get_message_style));
-  }
+            $breadcrumbs = [
+                [
+                    'url' => "$CFG->wwwroot",
+                    'name' => $moodlename,
+                ],
+                [
+                    'url' => "$CFG->wwwroot/course/view.php?id=$course->id",
+                    'name' => $coursename,
+                ],
+                [
+                    'url' => "$CFG->wwwroot/mod/assign/view.php?id=$cm->id",
+                    'name' => $cm == 'new' ? 'New Activity' : $cm->name,
+                ],
+            ];
+        } else {
+            $breadcrumbs = [
+                [
+                    'url' => "$CFG->wwwroot/admin/search.php",
+                    'name' => 'Site Administration',
+                ],
+                [
+                    'url' => "$CFG->wwwroot/plagiarism/copyleaks/settings.php",
+                    'name' => 'Copyleaks Plugin',
+                ],
+                [
+                    'url' => "$CFG->wwwroot/plagiarism/copyleaks/plagiarism_copyleaks_settings.php",
+                    'name' => 'Integration Settings',
+                ],
+            ];
+        }
+        return $breadcrumbs;
+    }
 
-  /**
-   * @param string $cmid check if the cmid is in the requests queue
-   * @return bool
-   */
-  public static function is_course_module_request_queued($cmid) {
-    global $DB;
-    $record = $DB->get_record('plagiarism_copyleaks_request', ['cmid' => $cmid]);
-    return isset($record) && $record;
-  }
+    /**
+     * @param string $settingsurlparams - assign the url to the link
+     * @param bool $isadminform - for note above the link
+     * @return string
+     */
+    public static function get_copyleaks_settings_button_link($settingsurlparams, $isadminform = false, $cmid = null) {
+        global $CFG;
+        $isbtndisabled = false;
+        if (!$isadminform && isset($cmid)) {
+            if (self::is_course_module_request_queued($cmid)) {
+                $isbtndisabled = true;
+            }
+        }
+        $settingsurl = "$CFG->wwwroot/plagiarism/copyleaks/plagiarism_copyleaks_settings.php";
+        if (!isset($settingsurlparams) || $settingsurlparams != "") {
+            $settingsurl = $settingsurl . $settingsurlparams;
+        }
+        $text = get_string('clscansettingspagebtntxt', 'plagiarism_copyleaks');
+        if (!$isadminform) {
+            $text = get_string('clmodulescansettingstxt', 'plagiarism_copyleaks');
+        }
+
+        $content = $isbtndisabled ?
+            html_writer::div($text, null, array(
+                'style' => 'color:#8c8c8c',
+                'title' => get_string('cldisablesettingstooltip', 'plagiarism_copyleaks')
+            )) :
+            html_writer::link("$settingsurl", $text, array('target' => '_blank'));
+
+        return
+            "<div class='form-group row'>" .
+            "<div class='col-md-3'></div>" .
+            "<div class='col-md-9'>" .
+            $content
+            . "</div>" .
+            "</div>";
+    }
+
+    /**
+     * @param string $cmid check if the cmid is in the requests queue
+     * @return bool
+     */
+    public static function is_course_module_request_queued($cmid) {
+        global $DB;
+        $record = $DB->get_record('plagiarism_copyleaks_request', ['cmid' => $cmid]);
+        return isset($record) && $record;
+    }
 }

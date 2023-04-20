@@ -375,7 +375,7 @@ class plagiarism_copyleaks_comms {
      * @param bool $require_auth
      * @return void
      */
-    private function queued_failed_request($cmid, $endpoint, $data, $priority, $error, $verb, $require_auth = true) {
+    private function queued_failed_request($cmid, $endpoint, $data, $priority, $error, $verb, $requireauth = true) {
         global $DB;
         $request = $DB->get_record(
             'plagiarism_copyleaks_request',
@@ -395,7 +395,7 @@ class plagiarism_copyleaks_comms {
             $request->status = plagiarism_copyleaks_request_status::FAILED;
             $request->fail_message = $error;
             $request->verb = $verb;
-            $request->require_auth = $require_auth;
+            $request->require_auth = $requireauth;
             if (!$DB->insert_record('plagiarism_copyleaks_request', $request)) {
                 \plagiarism_copyleaks_logs::add(
                     "failed to create new database record queue request for cmid: " .

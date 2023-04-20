@@ -20,7 +20,7 @@
  * @author    Gil Cohen <gilc@copyleaks.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
+defined('MOODLE_INTERNAL') || die();
 class plagiarism_copyleaks_reportstatus {
     const SCORED = 1;
     const ERROR = 2;

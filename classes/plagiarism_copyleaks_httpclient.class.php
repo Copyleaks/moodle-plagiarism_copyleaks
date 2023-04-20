@@ -151,7 +151,7 @@ class plagiarism_copyleaks_http_client {
 
         while (!isset($serverresult) && $retrycnt < $max) {
             try {
-                $serverresult = plagiarism_copyleaks_http_client::execute(
+                $serverresult = self::execute(
                     $verb,
                     $url,
                     $requireauth,

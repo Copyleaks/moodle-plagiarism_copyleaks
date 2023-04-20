@@ -48,9 +48,9 @@ class plagiarism_copyleaks_requestsqueue extends \core\task\scheduled_task {
      * Execute the task.
      */
     public function execute() {
-        // if (!\plagiarism_copyleaks_comms::test_copyleaks_connection('scheduler_task')) {
-        //     return;
-        // }
+        if (!\plagiarism_copyleaks_comms::test_copyleaks_connection('scheduler_task')) {
+            return;
+        }
 
         $this->handle_queued_requests();
     }
@@ -70,7 +70,9 @@ class plagiarism_copyleaks_requestsqueue extends \core\task\scheduled_task {
         $startqueryfrom = 0;
 
         while ($canloadmoredata) {
-            // Get all the rows, max 100, ascending by creation date first (let the old ones execute first), that have less then 5 attempts
+
+            /* Get all the rows, max 100, ascending by creation date first (let the old ones execute first),
+            that have less then 5 attempts*/
             $queuedrequests = $DB->get_records(
                 'plagiarism_copyleaks_request',
                 $conditions,
@@ -83,7 +85,7 @@ class plagiarism_copyleaks_requestsqueue extends \core\task\scheduled_task {
 
             foreach ($queuedrequests as $item) {
                 try {
-                    // Send the request to the api
+                    // Send the request to the server.
                     $url = \plagiarism_copyleaks_comms::copyleaks_api_url() . $item->endpoint;
                     \plagiarism_copyleaks_http_client::execute($item->verb, $url, $item->require_auth, $item->data);
                     $successrequestsids[] = $item->id;

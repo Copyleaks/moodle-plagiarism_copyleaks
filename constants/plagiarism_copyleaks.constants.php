@@ -56,6 +56,6 @@ $copyleaksacceptedfiles = array(
 define('PLAGIARISM_COPYLEAKS_ACCEPTED_FILES', $copyleaksacceptedfiles);
 define('DEFAULT_DATABASE_COPYLEAKSDB_ID', 'DEFAULT_DATABASE_COPYLEAKSDB_ID');
 
-// Copyleaks retry array in seconds
+// Copyleaks retry array in seconds.
 define('PLAGIARISM_COPYLEAKS_RETRY', array(2.5, 5, 10, 20, 30));
 define('PLAGIARISM_COPYLEAKS_MAX_RETRY', 5);
