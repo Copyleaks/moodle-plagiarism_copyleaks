@@ -229,12 +229,10 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         $table->add_field('fail_message', XMLDB_TYPE_TEXT, '255');
         $table->add_field('require_auth', XMLDB_TYPE_NUMBER, '1', XMLDB_UNSIGNED, XMLDB_NOTNULL);
 
-
-
         // Adding keys and indexes to table plagiarism_copyleaks_users.
         $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
         $table->add_index('created_date', XMLDB_INDEX_NOTUNIQUE, array('created_date'));
-        $table->add_index('priority', XMLDB_INDEX_NOTUNIQUE, array('priority'));
+        $table->add_index('cmid', XMLDB_INDEX_NOTUNIQUE, array('cmid'));
 
         // Conditionally launch create table for plagiarism_copyleaks_users.
         if (!$dbman->table_exists($table)) {
@@ -243,7 +241,6 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
 
         upgrade_plugin_savepoint(true, 2023041901, 'plagiarism', 'copyleaks');
     }
-
 
     return true;
 }

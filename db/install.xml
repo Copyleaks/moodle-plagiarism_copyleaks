@@ -80,7 +80,8 @@
       </KEYS>
       <INDEXES>
         <INDEX NAME="created_date" UNIQUE="false" FIELDS="created_date"/>
-        <INDEX NAME="priority" UNIQUE="false" FIELDS="priority"/>
+        <INDEX NAME="created_date" UNIQUE="false" FIELDS="created_date"/>
+        <INDEX NAME="cmid" UNIQUE="false" FIELDS="cmid"/>
       </INDEXES>
     </TABLE>
   </TABLES>
