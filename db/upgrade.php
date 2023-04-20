@@ -218,6 +218,7 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
 
         // Adding fields to table plagiarism_copyleaks_users.
         $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE);
+        $table->add_field('verb', XMLDB_TYPE_TEXT, '255', null, XMLDB_NOTNULL, null, 'POST');
         $table->add_field('created_date', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0');
         $table->add_field('cmid', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, null, null, '0');
         $table->add_field('endpoint', XMLDB_TYPE_TEXT, '255', null, XMLDB_NOTNULL);
@@ -243,18 +244,6 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2023041901, 'plagiarism', 'copyleaks');
     }
 
+
     return true;
 }
-
-/**
-         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="data" TYPE="text" LENGTH="255" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="created_date" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="priority" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="total_retry_attempts" TYPE="int" LENGTH="1" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="status" TYPE="int" LENGTH="1" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="fail_message" TYPE="text" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="endpoint" TYPE="text" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="require_auth" TYPE="number" LENGTH="1" NOTNULL="true" SEQUENCE="false" DECIMALS="0"/>
-        <FIELD NAME="cmid" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
- */

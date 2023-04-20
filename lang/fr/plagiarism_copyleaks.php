@@ -64,6 +64,7 @@ $string['clmodulescansettingstxt'] = "Modifier les paramètres de numérisation"
 $string['clscoursesettings'] = 'Paramètres de fuites de copie';
 $string['clsendqueuedsubmissions'] = 'Plugin de plagiat Copyleaks - gérer les fichiers en file d\'attente';
 $string['clsendresubmissionsfiles'] = "Plugin de plagiat Copyleaks - gérer les résultats soumis à nouveau";
+$string['clsendrequestqueue'] = "Plugin de plagiat Copyleaks - gérer les demandes de relance en file d'attente";
 $string['clstudentdisclosure'] = 'Divulgation des étudiants';
 $string['clstudentdisclosure_help'] = 'Ce texte sera affiché à tous les étudiants sur la page de téléchargement de fichiers.';
 $string['clstudentdisclosuredefault'] = '<span>En soumettant vos fichiers, vous acceptez la politique de confidentialité du service de détection de plagiat</span><a target="_blank" href="https://copyleaks.com/legal/privacypolicy">politique de confidentialité</a>';

@@ -26,3 +26,14 @@ class plagiarism_copyleaks_reportstatus {
     const ERROR = 2;
     const PENDING = 3;
 }
+
+class plagiarism_copyleaks_priority {
+    const LOW = 0;
+    const MIDIUM = 1;
+    const HIGH = 2;
+}
+
+class plagiarism_copyleaks_request_status {
+    const FAILED = 0;
+    const SUCCEEDED = 2;
+}
