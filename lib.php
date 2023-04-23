@@ -253,7 +253,8 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
 
         $config = plagiarism_copyleaks_pluginconfig::admin_config();
 
-        $isuseragreed = $DB->record_exists('plagiarism_copyleaks_users', array('userid' => $USER->id));
+        $isuseragreed = plagiarism_copyleaks_dbutils::is_user_eula_uptodate($USER->id);
+
         if (!$isuseragreed) {
             if (isset($config->plagiarism_copyleaks_studentdisclosure)) {
                 $clstudentdisclosure = $config->plagiarism_copyleaks_studentdisclosure;

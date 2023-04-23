@@ -167,18 +167,4 @@ class plagiarism_copyleaks_moduleconfig {
         }
         return false;
     }
-
-    /**
-     * Check if user accepted Copyleaks EULA
-     * @param string $userid user id to check
-     * @return bool did user accept EULA
-     */
-    public static function did_user_accept_eula($userid) {
-        global $DB;
-        $isuseragreed = $DB->record_exists("plagiarism_copyleaks_users", array('userid' => $userid));
-        if ($isuseragreed) {
-            return true;
-        }
-        return false;
-    }
 }

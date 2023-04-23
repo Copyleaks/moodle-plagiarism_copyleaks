@@ -113,9 +113,25 @@ class plagiarism_copyleaks_dbutils {
 
         $version = self::get_copyleaks_eula_version();
 
-        $usereula = $DB->get_record('plagiarism_copyleaks_eula', array('ci_user_id' => $userid));
+        $usereulaarr = $DB->get_records_select(
+            'plagiarism_copyleaks_eula',
+            '(ci_user_id = ' . $userid . ')',
+            null,
+            $DB->sql_order_by_text('date'),
+            '*',
+            0,
+            1
+        );
+        if (empty($usereulaarr)) {
+            return false;
+        }
+        $usereula = null;
+        foreach ($usereulaarr as $item) {
+            $usereula = $item;
+            break;
+        }
 
-        return $version == $usereula->version;
+        return $usereula && $version == $usereula->version;
     }
 
     /*
@@ -125,25 +141,30 @@ class plagiarism_copyleaks_dbutils {
         global $DB;
         $user = $DB->get_record('plagiarism_copyleaks_users', array('userid' => $userid));
         $curreulaversion = self::get_copyleaks_eula_version();
+
+        if (!$user) {
+            if (!$DB->insert_record('plagiarism_copyleaks_users', array('userid' => $userid))) {
+                \plagiarism_copyleaks_logs::add(
+                    "failed to insert new database record for : plagiarism_copyleaks_eula, Cannot create new user record for user $userid",
+                    "INSERT_RECORD_FAILED"
+                );
+            }
+        }
+
         $newusereula = array(
             "ci_user_id" => $userid,
             "version" => $curreulaversion,
-            "data" => time(),
-            "is_synced" => true
+            "is_synced" => false,
+            "date" => time()
         );
 
-        if (!$user) {
-            self::insert_record('plagiarism_copyleaks_users', array('userid' => $userid), "Cannot create new user record for user $userid");
-            self::insert_record('plagiarism_copyleaks_eula', $newusereula, "Cannot create new user record eula for user $userid");
-        } else {
-            $usereuladb = $DB->get_record('plagiarism_copyleaks_eula', array('ci_user_id' => $userid));
-            if (!$usereuladb) {
-                self::insert_record('plagiarism_copyleaks_eula', $newusereula, "Cannot create new user record eula for user $userid");
-            } else {
-                $usereuladb->version = $curreulaversion;
-                $usereuladb->is_synced = true;
-                self::update_record('plagiarism_copyleaks_eula', $usereuladb, "Cannot update eula recorde for user: $userid");
-            }
+        // There is a second run for 'handle_submissions' so it is best to check by the userid and the version before inserting a new one. 
+        $usereulaversion = $DB->record_exists('plagiarism_copyleaks_eula', array("ci_user_id" => $userid, "version" => $curreulaversion));
+        if (!$usereulaversion && !$DB->insert_record('plagiarism_copyleaks_eula', $newusereula)) {
+            \plagiarism_copyleaks_logs::add(
+                "failed to insert new database record for : plagiarism_copyleaks_eula, Cannot create new user record eula for user $userid",
+                "INSERT_RECORD_FAILED"
+            );
         }
     }
 
@@ -155,7 +176,7 @@ class plagiarism_copyleaks_dbutils {
         $record = $DB->get_record(
             'plagiarism_copyleaks_config',
             array(
-                'cmid' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID,
+                'cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID,
                 'name' => PLAGIARISM_COPYLEAKS_EULA_FIELD_NAME
             )
         );
@@ -163,35 +184,5 @@ class plagiarism_copyleaks_dbutils {
             return $record->value;
         }
         return null;
-    }
-
-    /**
-     * @param string $tablename
-     * @param string $customlog
-     * @param object $record
-     */
-    private static function insert_record($tablename, $record, $customlog = null) {
-        global $DB;
-        if (!$DB->insert_record($tablename, $record)) {
-            \plagiarism_copyleaks_logs::add(
-                "failed to insert new database record for : $tablename, " . $customlog,
-                "INSERT_RECORD_FAILED"
-            );
-        }
-    }
-
-    /**
-     * @param string $tablename
-     * @param string $customlog
-     * @param object $record
-     */
-    private static function update_record($tablename, $record, $customlog = null) {
-        global $DB;
-        if (!$DB->update_record($tablename, $record)) {
-            \plagiarism_copyleaks_logs::add(
-                "failed to update database record for : $tablename, " . $customlog,
-                "UPDATE_RECORD_FAILED"
-            );
-        }
     }
 }

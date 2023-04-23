@@ -72,9 +72,7 @@ class plagiarism_copyleaks_comms {
     ) {
         if (isset($this->key) && isset($this->secret)) {
             $coursemodule = get_coursemodule_from_id('', $cmid);
-            if (
-                plagiarism_copyleaks_moduleconfig::did_user_accept_eula($userid)
-            ) {
+            if (plagiarism_copyleaks_dbutils::is_user_eula_uptodate($userid)) {
                 $student = get_complete_user_data('id', $userid);
                 $paramsmerge = (array)[
                     'fileName' => $filename,
@@ -367,5 +365,18 @@ class plagiarism_copyleaks_comms {
                 $verb
             );
         }
+    }
+
+    /**
+     * Update course module temp id at Copyleaks server.
+     * @param array $data
+     */
+    public function upsert_synced_eula($data) {
+        plagiarism_copyleaks_http_client::execute(
+            'POST',
+            $this->copyleaks_api_url() . "/api/moodle/plugin/$this->key/task/sync-eula-users",
+            true,
+            json_encode($data)
+        );
     }
 }
