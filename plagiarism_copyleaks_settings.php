@@ -73,6 +73,7 @@ if ($isadminview) {
     $roles = get_user_roles($context, $USER->id);
     foreach ($roles as $role) {
         if ($role->shortname == 'student') {
+            echo html_writer::div(get_string('clnopageaccess', 'plagiarism_copyleaks'), null, array('style' => $errormessagestyle));
             return;
         }
     }
@@ -91,9 +92,12 @@ $isinstructor = plagiarism_copyleaks_assignmodule::is_instructor($context);
 
 $errormessagestyle = 'color:red; display:flex; width:100%; justify-content:center;';
 
-$clmoduleenabled = plagiarism_copyleaks_pluginconfig::is_plugin_configured('mod_' . $cm->modname);
-
 // Check if copyleaks plugin is disabled.
+$clmoduleenabled = true;
+if (isset($cm)) {
+    $clmoduleenabled = plagiarism_copyleaks_pluginconfig::is_plugin_configured('mod_' . $cm->modname);
+}
+
 if (!$isnewmodulesettings && !$isadminview && !$clmoduleenabled) {
     echo html_writer::div(get_string('cldisabledformodule', 'plagiarism_copyleaks'), null, array('style' => $errormessagestyle));
 } else {
@@ -122,14 +126,26 @@ if (!$isnewmodulesettings && !$isadminview && !$clmoduleenabled) {
             );
 
             $cl = new plagiarism_copyleaks_comms();
-            $breadcrumbs = $cl->set_navbar_breadcrumbs($isnewmodulesettings ? 'new' : $cm, $course);
+            $breadcrumbs = [];
             $role = 0;
-            if ($isadminview) {
-                $role = 1;
-            } else if ($isinstructor) {
+            $accesstoken = "";
+
+            if (!$isadminview) {
                 $role = 2;
+                $breadcrumbs = $cl->set_navbar_breadcrumbs($isnewmodulesettings ? 'new' : $cm, $course);
+                $accesstoken = $cl->request_access_for_settings(
+                    $role,
+                    $breadcrumbs,
+                    $modulename,
+                    $isnewmodulesettings ? 'new' : $cm->name,
+                    $cmid
+                );
+            } else {
+                $role = 1;
+                $breadcrumbs = $cl->set_navbar_breadcrumbs(null, null);
+                $accesstoken = $cl->request_access_for_settings($role, $breadcrumbs);
             }
-            $accesstoken = $cl->request_access_for_settings($role, $breadcrumbs, $cm->modname, $cm->name, $cmid);
+
 
             $lang = $cl->get_lang();
 
