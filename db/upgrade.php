@@ -242,5 +242,57 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2023041901, 'plagiarism', 'copyleaks');
     }
 
+    if ($oldversion < 2023041914) {
+        // Delete a column from the table.
+        $table = new xmldb_table('plagiarism_copyleaks_users');
+        $field = new xmldb_field('user_eula_accepted');
+        $dbman->drop_field($table,  $field);
+
+        // Add new eula table
+        $table = new xmldb_table('plagiarism_copyleaks_eula');
+        $table->add_field('ci_user_id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE);
+        $table->add_field('version', XMLDB_TYPE_TEXT, '10', null, XMLDB_NOTNULL, null, '');
+        $table->add_field('is_synced', XMLDB_TYPE_NUMBER, '1', XMLDB_UNSIGNED);
+        $table->add_field('date', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0');
+
+        $table->add_key('ci_user_id', XMLDB_KEY_PRIMARY, array('ci_user_id'));
+
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Insert to Config table a value of eula data.
+        $saveddefaultvalue = $DB->get_records_menu(
+            'plagiarism_copyleaks_config',
+            array('cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID),
+        );
+        $savedfield = new stdClass();
+        $savedfield->cm = PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID;
+        $savedfield->name = 'latest_eula_version';
+        $savedfield->value = '0';
+
+        if (!isset($saveddefaultvalue[$fieldname])) {
+            $savedfield->config_hash = $savedfield->cm . "_" . $savedfield->name;
+            if (!$DB->insert_record('plagiarism_copyleaks_config', $savedfield)) {
+                throw new moodle_exception(get_string('clinserterror', 'plagiarism_copyleaks'));
+            }
+        } else {
+            $savedfield->id = $DB->get_field(
+                'plagiarism_copyleaks_config',
+                'id',
+                (array(
+                    'cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID,
+                    'name' => $fieldname
+                ))
+            );
+            if (!$DB->update_record('plagiarism_copyleaks_config', $savedfield)) {
+                throw new moodle_exception(get_string('clupdateerror', 'plagiarism_copyleaks'));
+            }
+        }
+
+
+        upgrade_plugin_savepoint(true, 2023041914, 'plagiarism', 'copyleaks');
+    }
+
     return true;
 }

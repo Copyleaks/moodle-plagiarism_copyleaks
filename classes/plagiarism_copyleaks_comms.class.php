@@ -26,6 +26,7 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/plagiarism/copyleaks/lib.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_httpclient.class.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_pluginconfig.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_dbutils.class.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/enums/plagiarism_copyleaks_enums.php');
 /**
  * Used for communications between Moodle and Copyleaks
@@ -322,11 +323,12 @@ class plagiarism_copyleaks_comms {
     public function test_connection($context) {
         try {
             if (isset($this->key) && isset($this->secret)) {
-                plagiarism_copyleaks_http_client::execute(
+                $result = plagiarism_copyleaks_http_client::execute(
                     'GET',
                     $this->copyleaks_api_url() . "/api/moodle/plugin/" . $this->key . "/test-connection",
                     true
                 );
+                plagiarism_copyleaks_dbutils::update_copyleaks_eula_version($result->eulaVersion);
                 return true;
             } else {
                 return false;
@@ -355,7 +357,8 @@ class plagiarism_copyleaks_comms {
                 json_encode($data)
             );
         } catch (\Exception $e) {
-            $this->queued_failed_request(
+            plagiarism_copyleaks_dbutils::queued_failed_request(
+                $this->key,
                 $data['courseModuleId'],
                 $endpoint,
                 $data,
@@ -363,46 +366,6 @@ class plagiarism_copyleaks_comms {
                 $e->getMessage(),
                 $verb
             );
-        }
-    }
-
-    /**
-     * @param string $cmid
-     * @param string $endpoint
-     * @param array $data
-     * @param int $priority
-     * @param string $error
-     * @param bool $require_auth
-     * @return void
-     */
-    private function queued_failed_request($cmid, $endpoint, $data, $priority, $error, $verb, $requireauth = true) {
-        global $DB;
-        $request = $DB->get_record(
-            'plagiarism_copyleaks_request',
-            array(
-                'cmid' => $data["courseModuleId"],
-                'endpoint' => "/api/moodle/plugin/$this->key/upsert-module",
-            )
-        );
-        if (!$request) {
-            $request = new stdClass();
-            $request->created_date = time();
-            $request->cmid = $cmid;
-            $request->endpoint = $endpoint;
-            $request->total_retry_attempts = 0;
-            $request->data = json_encode($data);
-            $request->priority = $priority;
-            $request->status = plagiarism_copyleaks_request_status::FAILED;
-            $request->fail_message = $error;
-            $request->verb = $verb;
-            $request->require_auth = $requireauth;
-            if (!$DB->insert_record('plagiarism_copyleaks_request', $request)) {
-                \plagiarism_copyleaks_logs::add(
-                    "failed to create new database record queue request for cmid: " .
-                        $data["courseModuleId"] . ", endpoint: /api/moodle/plugin/$this->key/upsert-module",
-                    "INSERT_RECORD_FAILED"
-                );
-            }
         }
     }
 }

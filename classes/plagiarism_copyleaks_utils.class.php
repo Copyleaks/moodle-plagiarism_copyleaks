@@ -26,6 +26,8 @@ use core\check\performance\stats;
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/plagiarism/copyleaks/constants/plagiarism_copyleaks.constants.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_dbutils.class.php');
+
 
 
 /**
@@ -131,7 +133,7 @@ class plagiarism_copyleaks_utils {
         global $CFG;
         $isbtndisabled = false;
         if (!$isadminform && isset($cmid)) {
-            if (self::is_course_module_request_queued($cmid)) {
+            if (plagiarism_copyleaks_dbutils::is_course_module_request_queued($cmid)) {
                 $isbtndisabled = true;
             }
         }
@@ -158,15 +160,5 @@ class plagiarism_copyleaks_utils {
             $content
             . "</div>" .
             "</div>";
-    }
-
-    /**
-     * @param string $cmid check if the cmid is in the requests queue
-     * @return bool
-     */
-    public static function is_course_module_request_queued($cmid) {
-        global $DB;
-        $record = $DB->get_record('plagiarism_copyleaks_request', ['cmid' => $cmid]);
-        return isset($record) && $record;
     }
 }

@@ -26,6 +26,8 @@ namespace plagiarism_copyleaks\task;
 defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/plagiarism/copyleaks/constants/plagiarism_copyleaks.constants.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_logs.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_dbutils.class.php');
+
 
 /**
  * Copyleaks Plagiarism Plugin - Handle Queued Files
@@ -94,7 +96,7 @@ class plagiarism_copyleaks_sendsubmissions extends \core\task\scheduled_task {
                     continue;
                 }
 
-                if (\plagiarism_copyleaks_utils::is_course_module_request_queued($submission->cm)) {
+                if (\plagiarism_copyleaks_dbutils::is_course_module_request_queued($submission->cm)) {
                     continue;
                 }
 
