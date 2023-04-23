@@ -111,31 +111,87 @@ class plagiarism_copyleaks_dbutils {
             return false;
         }
 
-        $version = $DB->get_record(
+        $version = self::get_copyleaks_eula_version();
+
+        $usereula = $DB->get_record('plagiarism_copyleaks_eula', array('ci_user_id' => $userid));
+
+        return $version == $usereula->version;
+    }
+
+    /*
+    * @param string userid 
+    */
+    public static function update_user_eula_to_sync($userid) {
+        global $DB;
+        $user = $DB->get_record('plagiarism_copyleaks_users', array('userid' => $userid));
+        $curreulaversion = self::get_copyleaks_eula_version();
+        $newusereula = array(
+            "ci_user_id" => $userid,
+            "version" => $curreulaversion,
+            "data" => time(),
+            "is_synced" => true
+        );
+
+        if (!$user) {
+            self::insert_record('plagiarism_copyleaks_users', array('userid' => $userid), "Cannot create new user record for user $userid");
+            self::insert_record('plagiarism_copyleaks_eula', $newusereula, "Cannot create new user record eula for user $userid");
+        } else {
+            $usereuladb = $DB->get_record('plagiarism_copyleaks_eula', array('ci_user_id' => $userid));
+            if (!$usereuladb) {
+                self::insert_record('plagiarism_copyleaks_eula', $newusereula, "Cannot create new user record eula for user $userid");
+            } else {
+                $usereuladb->version = $curreulaversion;
+                $usereuladb->is_synced = true;
+                self::update_record('plagiarism_copyleaks_eula', $usereuladb, "Cannot update eula recorde for user: $userid");
+            }
+        }
+    }
+
+    /**
+     * return string
+     */
+    public static function get_copyleaks_eula_version() {
+        global $DB;
+        $record = $DB->get_record(
             'plagiarism_copyleaks_config',
             array(
                 'cmid' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID,
                 'name' => PLAGIARISM_COPYLEAKS_EULA_FIELD_NAME
             )
         );
-
-        $usereula = $DB->get_record('plagiarism_copyleaks_eula', array('userid' => $userid));
-
-        return $version->value == $usereula->version;
+        if ($record) {
+            return $record->value;
+        }
+        return null;
     }
 
-    /*
-        * @param string userid 
-        */
-    public static function update_user_eula_to_sync($userid) {
+    /**
+     * @param string $tablename
+     * @param string $customlog
+     * @param object $record
+     */
+    private static function insert_record($tablename, $record, $customlog = null) {
         global $DB;
-        $user = $DB->get_record('plagiarism_copyleaks_users', array('userid' => $userid));
-        if (!$user) {
+        if (!$DB->insert_record($tablename, $record)) {
+            \plagiarism_copyleaks_logs::add(
+                "failed to insert new database record for : $tablename, " . $customlog,
+                "INSERT_RECORD_FAILED"
+            );
         }
-        $usereula = $DB->get_record('plagiarism_copyleaks_eula', array('userid' => $userid));
+    }
 
-        $usereula->is_synced = true;
-        if (!$DB->update_recod('plagiarism_copyleaks_eula')) {
+    /**
+     * @param string $tablename
+     * @param string $customlog
+     * @param object $record
+     */
+    private static function update_record($tablename, $record, $customlog = null) {
+        global $DB;
+        if (!$DB->update_record($tablename, $record)) {
+            \plagiarism_copyleaks_logs::add(
+                "failed to update database record for : $tablename, " . $customlog,
+                "UPDATE_RECORD_FAILED"
+            );
         }
     }
 }
