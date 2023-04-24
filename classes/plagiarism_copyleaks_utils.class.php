@@ -74,7 +74,7 @@ class plagiarism_copyleaks_utils {
     public static function get_new_course_module_guid($courseid) {
         $number = rand(100, 100000);
         $t = time();
-        return $courseid . $number . $t;
+        return $courseid . $number . ($t % 10);
     }
 
     /**
@@ -90,6 +90,7 @@ class plagiarism_copyleaks_utils {
             $moodlecontext = get_site();
             $moodlename = $moodlecontext->fullname;
             $coursename = $course->fullname;
+            $cmid = $cm == 'new' ? '123' : $cm->id;
 
             $breadcrumbs = [
                 [
@@ -101,7 +102,7 @@ class plagiarism_copyleaks_utils {
                     'name' => $coursename,
                 ],
                 [
-                    'url' => "$CFG->wwwroot/mod/assign/view.php?id=$cm->id",
+                    'url' => "$CFG->wwwroot/mod/assign/view.php?id=$cmid",
                     'name' => $cm == 'new' ? 'New Activity' : $cm->name,
                 ],
             ];

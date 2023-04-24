@@ -44,13 +44,12 @@ class plagiarism_copyleaks_dbutils {
      */
     public static function queued_failed_request($key, $cmid, $endpoint, $data, $priority, $error, $verb, $requireauth = true) {
         global $DB;
-        $request = $DB->get_record(
+        $records = $DB->get_records(
             'plagiarism_copyleaks_request',
-            array(
-                'cmid' => $cmid,
-                'endpoint' => $endpoint,
-            )
+            array('cmid' => $cmid)
         );
+
+        $request = array_search($endpoint, array_column($records, 'endpoint'));
 
         if (!$request) {
             $request = new stdClass();
@@ -164,11 +163,16 @@ class plagiarism_copyleaks_dbutils {
 
         // There is a second run for 'handle_submissions' so it is
         // best to check by the userid and the version before inserting a new one.
-        $usereulaversion = $DB->record_exists(
+        $conditions = array("ci_user_id" => $userid);
+        // DO-NOT use to conditions in the array because of Moodle lowers version
+        $usereulaversion = $DB->get_records(
             'plagiarism_copyleaks_eula',
-            array("ci_user_id" => $userid, "version" => $curreulaversion)
+            $conditions
         );
-        if (!$usereulaversion && !$DB->insert_record('plagiarism_copyleaks_eula', $newusereula)) {
+
+        $isexists = array_search($curreulaversion, array_column($usereulaversion, 'version'));
+
+        if (!$isexists && !$DB->insert_record('plagiarism_copyleaks_eula', $newusereula)) {
             \plagiarism_copyleaks_logs::add(
                 "failed to insert new database record for :" .
                     "plagiarism_copyleaks_eula, Cannot create new user record eula for user $userid",

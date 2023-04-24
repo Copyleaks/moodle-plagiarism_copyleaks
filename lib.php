@@ -214,6 +214,8 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
                     "$cmid"
 
                 );
+                // Need to set type for old version
+                $mform->setType('plagiarism_copyleaks_tempcmid', PARAM_INT);
                 $settingslinkparams = $settingslinkparams . "isnewactivity=$isnewactivity&courseid=$courseid&";
             }
 

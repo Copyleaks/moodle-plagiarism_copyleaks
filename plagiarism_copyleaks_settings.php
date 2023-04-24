@@ -142,7 +142,7 @@ if (!$isnewmodulesettings && !$isadminview && !$clmoduleenabled) {
                     $role,
                     $breadcrumbs,
                     $isnewmodulesettings ? 'new' : $cm->modname,
-                    $cm->name,
+                    $isnewmodulesettings ? '' : $cm->name,
                     $cmid
                 );
             } else {

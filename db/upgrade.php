@@ -213,7 +213,7 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2022122802, 'plagiarism', 'copyleaks');
     }
 
-    if ($oldversion < 2023041917) {
+    if ($oldversion < 2023042400) {
         $table = new xmldb_table('plagiarism_copyleaks_request');
 
         // Adding fields to table plagiarism_copyleaks_users.
@@ -239,10 +239,10 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
             $dbman->create_table($table);
         }
 
-        upgrade_plugin_savepoint(true, 2023041901, 'plagiarism', 'copyleaks');
+        upgrade_plugin_savepoint(true, 2023042402, 'plagiarism', 'copyleaks');
     }
 
-    if ($oldversion < 2018051700) {
+    if ($oldversion < 2023042301) {
         // Delete a column from the table.
         $table = new xmldb_table('plagiarism_copyleaks_users');
         $field = new xmldb_field('user_eula_accepted');
@@ -268,7 +268,7 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         // Insert to Config table a value of eula data.
         $saveddefaultvalue = $DB->get_records_menu(
             'plagiarism_copyleaks_config',
-            array('cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID),
+            array('cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID)
         );
         $savedfield = new stdClass();
         $savedfield->cm = PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID;
@@ -294,7 +294,7 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
             }
         }
 
-        upgrade_plugin_savepoint(true, 2018051700, 'plagiarism', 'copyleaks');
+        upgrade_plugin_savepoint(true, 2023042401, 'plagiarism', 'copyleaks');
     }
 
     return true;
