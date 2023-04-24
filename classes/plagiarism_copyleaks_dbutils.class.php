@@ -105,7 +105,7 @@ class plagiarism_copyleaks_dbutils {
      * @param string userid check eula version by user Moodle id
      * @return bool
      */
-    public static function is_user_eula_uptodate($userid) {
+    public static function is_user_eula_uptodate($userid, $isrecursive = false) {
         global $DB;
 
         $user = $DB->get_record('plagiarism_copyleaks_users', array('userid' => $userid));
@@ -114,6 +114,15 @@ class plagiarism_copyleaks_dbutils {
         }
 
         $version = self::get_copyleaks_eula_version();
+        if ($version == '0') {
+            if (!$isrecursive) {
+                $cm = new plagiarism_copyleaks_comms();
+                $cm->test_connection('eula_version');
+                self::is_user_eula_uptodate($userid, true);
+            } else {
+                return false;
+            }
+        }
 
         $usereulaarr = $DB->get_records_select(
             'plagiarism_copyleaks_eula',
