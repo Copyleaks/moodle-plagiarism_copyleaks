@@ -326,7 +326,9 @@ class plagiarism_copyleaks_comms {
                     $this->copyleaks_api_url() . "/api/moodle/plugin/" . $this->key . "/test-connection",
                     true
                 );
-                plagiarism_copyleaks_dbutils::update_copyleaks_eula_version($result->eulaVersion);
+                if (isset($result) && isset($result->eulaVersion)) {
+                    plagiarism_copyleaks_dbutils::update_copyleaks_eula_version($result->eulaVersion);
+                }
                 return true;
             } else {
                 return false;

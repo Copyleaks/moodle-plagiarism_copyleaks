@@ -130,18 +130,14 @@ class plagiarism_copyleaks_dbutils {
             null,
             $DB->sql_order_by_text('date'),
             '*',
-            0,
-            1
+            0
         );
+
         if (empty($usereulaarr)) {
             return false;
         }
-        $usereula = null;
-        foreach ($usereulaarr as $item) {
-            $usereula = $item;
-            break;
-        }
-
+        $keys = array_keys($usereulaarr);
+        $usereula = $usereulaarr[$keys[(count($keys) - 1)]];
         return $usereula && $version == $usereula->version;
     }
 
