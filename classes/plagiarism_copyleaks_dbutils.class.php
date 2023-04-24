@@ -155,7 +155,7 @@ class plagiarism_copyleaks_dbutils {
             "ci_user_id" => $userid,
             "version" => $curreulaversion,
             "is_synced" => false,
-            "date" => time()
+            "date" => date('Y-m-d H:i:s')
         );
 
         // There is a second run for 'handle_submissions' so it is best to check by the userid and the version before inserting a new one. 
