@@ -21,18 +21,35 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
+/**
+ * This class is used as an enum in order to know what status the submissions are.
+ * @param int SCORED
+ * @param int ERROR
+ * @param int PENDING
+ */
 class plagiarism_copyleaks_reportstatus {
     const SCORED = 1;
     const ERROR = 2;
     const PENDING = 3;
 }
 
+/**
+ * This class is used as an enum in order to know the queued requests's priority. 
+ * @param int LOW
+ * @param int MIDIUM
+ * @param int HIGH
+ */
 class plagiarism_copyleaks_priority {
     const LOW = 0;
     const MIDIUM = 1;
     const HIGH = 2;
 }
 
+/**
+ * This class is used as an enum in order to know the queued requests's reuslt. 
+ * @param int FAILED
+ * @param int SUCCEEDED
+ */
 class plagiarism_copyleaks_request_status {
     const FAILED = 0;
     const SUCCEEDED = 2;

@@ -248,7 +248,7 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         $field = new xmldb_field('user_eula_accepted');
         $dbman->drop_field($table,  $field);
 
-        // Add new eula table
+        // Add new eula table.
         $table = new xmldb_table('plagiarism_copyleaks_eula');
         $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE);
         $table->add_field('ci_user_id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL);
@@ -261,12 +261,9 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         $table->add_index('is_synced', XMLDB_INDEX_NOTUNIQUE, array('is_synced'));
         $table->add_index('date', XMLDB_INDEX_NOTUNIQUE, array('date'));
 
-
-
         if (!$dbman->table_exists($table)) {
             $dbman->create_table($table);
         }
-
 
         // Insert to Config table a value of eula data.
         $saveddefaultvalue = $DB->get_records_menu(
@@ -296,7 +293,6 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
                 throw new moodle_exception(get_string('clupdateerror', 'plagiarism_copyleaks'));
             }
         }
-
 
         upgrade_plugin_savepoint(true, 2018051700, 'plagiarism', 'copyleaks');
     }

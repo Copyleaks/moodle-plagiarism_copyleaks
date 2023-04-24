@@ -62,23 +62,27 @@ class plagiarism_copyleaks_synceulausers extends \core\task\scheduled_task {
      */
     private function handle_synced_users() {
         global $DB;
-
         $canloadmoredata = true;
         $limitfrom = 0;
-
         $condition = array('is_synced' => false);
         $cl = new \plagiarism_copyleaks_comms();
 
-
-
         while ($canloadmoredata) {
             try {
-                $eulausers = $DB->get_records('plagiarism_copyleaks_eula', $condition, '', '*', $limitfrom, PLAGIARISM_COPYLEAKS_CRON_MAX_DATA_LOOP);
+                $eulausers = $DB->get_records(
+                    'plagiarism_copyleaks_eula',
+                    $condition,
+                    '',
+                    '*',
+                    $limitfrom,
+                    PLAGIARISM_COPYLEAKS_CRON_MAX_DATA_LOOP
+                );
+
                 if (count($eulausers) == 0) {
                     break;
                 }
-                $canloadmoredata = count($eulausers) == PLAGIARISM_COPYLEAKS_CRON_MAX_DATA_LOOP;
 
+                $canloadmoredata = count($eulausers) == PLAGIARISM_COPYLEAKS_CRON_MAX_DATA_LOOP;
                 $model = $this->arrange_request_model($eulausers);
                 $cl->upsert_synced_eula($model);
             } catch (\Exception $e) {
@@ -102,8 +106,8 @@ class plagiarism_copyleaks_synceulausers extends \core\task\scheduled_task {
         }
     }
 
-    /**
-     * @param $data database data of users id with version to update 
+    /*
+     * @param $data database data of users id with version to update.
      */
     private function arrange_request_model($eulausers) {
         $data = array();

@@ -89,7 +89,10 @@ class plagiarism_copyleaks_dbutils {
      */
     public static function update_copyleaks_eula_version($version) {
         global $DB;
-        $configeula = $DB->get_record('plagiarism_copyleaks_config', array('cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID, 'name' => 'latest_eula_version'));
+        $configeula = $DB->get_record(
+            'plagiarism_copyleaks_config',
+            array('cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID, 'name' => 'latest_eula_version')
+        );
         $configeula->value = $version;
         if (!$DB->update_record('plagiarism_copyleaks_config', $configeula)) {
             \plagiarism_copyleaks_logs::add(
@@ -135,7 +138,7 @@ class plagiarism_copyleaks_dbutils {
     }
 
     /*
-    * @param string userid 
+    * @param string userid
     */
     public static function upsert_eula_by_user_id($userid) {
         global $DB;
@@ -145,7 +148,8 @@ class plagiarism_copyleaks_dbutils {
         if (!$user) {
             if (!$DB->insert_record('plagiarism_copyleaks_users', array('userid' => $userid))) {
                 \plagiarism_copyleaks_logs::add(
-                    "failed to insert new database record for : plagiarism_copyleaks_eula, Cannot create new user record for user $userid",
+                    "failed to insert new database record for : " .
+                        "plagiarism_copyleaks_eula, Cannot create new user record for user $userid",
                     "INSERT_RECORD_FAILED"
                 );
             }
@@ -158,11 +162,16 @@ class plagiarism_copyleaks_dbutils {
             "date" => date('Y-m-d H:i:s')
         );
 
-        // There is a second run for 'handle_submissions' so it is best to check by the userid and the version before inserting a new one. 
-        $usereulaversion = $DB->record_exists('plagiarism_copyleaks_eula', array("ci_user_id" => $userid, "version" => $curreulaversion));
+        // There is a second run for 'handle_submissions' so it is
+        // best to check by the userid and the version before inserting a new one.
+        $usereulaversion = $DB->record_exists(
+            'plagiarism_copyleaks_eula',
+            array("ci_user_id" => $userid, "version" => $curreulaversion)
+        );
         if (!$usereulaversion && !$DB->insert_record('plagiarism_copyleaks_eula', $newusereula)) {
             \plagiarism_copyleaks_logs::add(
-                "failed to insert new database record for : plagiarism_copyleaks_eula, Cannot create new user record eula for user $userid",
+                "failed to insert new database record for :" .
+                    "plagiarism_copyleaks_eula, Cannot create new user record eula for user $userid",
                 "INSERT_RECORD_FAILED"
             );
         }
