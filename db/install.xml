@@ -89,7 +89,7 @@
         <FIELD NAME="ci_user_id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="false" SEQUENCE="false"/>
         <FIELD NAME="version" TYPE="text" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="is_synced" TYPE="number" LENGTH="1" NOTNULL="true" SEQUENCE="false" DECIMALS="0"/>
-        <FIELD NAME="date" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="date" TYPE="datetime" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>

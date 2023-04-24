@@ -77,7 +77,7 @@ class plagiarism_copyleaks_eventshandler {
         // Check the supported EULA acceptance module.
         if (plagiarism_copyleaks_moduleconfig::is_allowed_eula_acceptance($coursemodule->modname)) {
             // $this->handle_eula_acceptance($data);
-            plagiarism_copyleaks_dbutils::update_user_eula_to_sync($data["userid"]);
+            plagiarism_copyleaks_dbutils::upsert_eula_by_user_id($data["userid"]);
         }
 
         // Get course module ref.

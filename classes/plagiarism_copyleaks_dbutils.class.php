@@ -47,8 +47,8 @@ class plagiarism_copyleaks_dbutils {
         $request = $DB->get_record(
             'plagiarism_copyleaks_request',
             array(
-                'cmid' => $data["courseModuleId"],
-                'endpoint' => "/api/moodle/plugin/$key/upsert-module",
+                'cmid' => $cmid,
+                'endpoint' => $endpoint,
             )
         );
 
@@ -137,7 +137,7 @@ class plagiarism_copyleaks_dbutils {
     /*
     * @param string userid 
     */
-    public static function update_user_eula_to_sync($userid) {
+    public static function upsert_eula_by_user_id($userid) {
         global $DB;
         $user = $DB->get_record('plagiarism_copyleaks_users', array('userid' => $userid));
         $curreulaversion = self::get_copyleaks_eula_version();

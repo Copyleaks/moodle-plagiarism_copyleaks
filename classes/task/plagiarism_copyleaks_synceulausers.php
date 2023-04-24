@@ -63,14 +63,12 @@ class plagiarism_copyleaks_synceulausers extends \core\task\scheduled_task {
     private function handle_synced_users() {
         global $DB;
 
-        $eulaversion = \plagiarism_copyleaks_dbutils::get_copyleaks_eula_version();
-
-
         $canloadmoredata = true;
         $limitfrom = 0;
 
-        $condition = array('is_synced' => false, 'version' => $eulaversion);
+        $condition = array('is_synced' => false);
         $cl = new \plagiarism_copyleaks_comms();
+
 
 
         while ($canloadmoredata) {
@@ -79,13 +77,10 @@ class plagiarism_copyleaks_synceulausers extends \core\task\scheduled_task {
                 if (count($eulausers) == 0) {
                     break;
                 }
-                $usersids = array_column($eulausers, 'ci_user_id');
+                $canloadmoredata = count($eulausers) == PLAGIARISM_COPYLEAKS_CRON_MAX_DATA_LOOP;
 
-                $data = array(
-                    'usersids' => $usersids,
-                    'version' => $eulaversion
-                );
-                $cl->upsert_synced_eula($data);
+                $model = $this->arrange_request_model($eulausers);
+                $cl->upsert_synced_eula($model);
             } catch (\Exception $e) {
                 \plagiarism_copyleaks_logs::add(
                     "Update eula users tasks failed",
@@ -105,5 +100,22 @@ class plagiarism_copyleaks_synceulausers extends \core\task\scheduled_task {
 
             $limitfrom = $limitfrom + PLAGIARISM_COPYLEAKS_CRON_MAX_DATA_LOOP;
         }
+    }
+
+    /**
+     * @param $data database data of users id with version to update 
+     */
+    private function arrange_request_model($eulausers) {
+        $data = array();
+        foreach ($eulausers as $eulauser) {
+            if (isset($eulauser->date) && isset($eulauser->ci_user_id)) {
+                $data[] = array(
+                    'userid' => $eulauser->ci_user_id,
+                    'version' => $eulauser->version,
+                    'date' => $eulauser->date
+                );
+            }
+        }
+        return array('eulaUsersData' => $data);
     }
 }
