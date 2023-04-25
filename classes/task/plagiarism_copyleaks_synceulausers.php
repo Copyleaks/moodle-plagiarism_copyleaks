@@ -78,11 +78,12 @@ class plagiarism_copyleaks_synceulausers extends \core\task\scheduled_task {
                     PLAGIARISM_COPYLEAKS_CRON_MAX_DATA_LOOP
                 );
 
-                if (count($eulausers) == 0) {
+                $recordscount = count($eulausers);
+                if ($recordscount == 0) {
                     break;
                 }
 
-                $canloadmoredata = count($eulausers) == PLAGIARISM_COPYLEAKS_CRON_MAX_DATA_LOOP;
+                $canloadmoredata = $recordscount == PLAGIARISM_COPYLEAKS_CRON_MAX_DATA_LOOP;
                 $model = $this->arrange_request_model($eulausers);
                 $cl->upsert_synced_eula($model);
             } catch (\Exception $e) {
@@ -106,20 +107,21 @@ class plagiarism_copyleaks_synceulausers extends \core\task\scheduled_task {
         }
     }
 
-    /*
-     * @param $data database data of users id with version to update.
+    /**
+     * @param array $eulausers array of db records.
+     * @return mixed
      */
     private function arrange_request_model($eulausers) {
-        $data = array();
-        foreach ($eulausers as $eulauser) {
-            if (isset($eulauser->date) && isset($eulauser->ci_user_id)) {
-                $data[] = array(
-                    'userid' => $eulauser->ci_user_id,
-                    'version' => $eulauser->version,
-                    'date' => $eulauser->date
+        $data = array_map(function ($record) {
+            if (isset($record->ci_user_id)) {
+                return array(
+                    'userid' => $record->ci_user_id,
+                    'version' => $record->version,
+                    'date' => $record->date
                 );
             }
-        }
+        }, $eulausers);
+        $data = array_values($data);
         return array('eulaUsersData' => $data);
     }
 }

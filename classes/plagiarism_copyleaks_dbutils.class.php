@@ -90,7 +90,7 @@ class plagiarism_copyleaks_dbutils {
         global $DB;
         $configeula = $DB->get_record(
             'plagiarism_copyleaks_config',
-            array('cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID, 'name' => 'latest_eula_version')
+            array('cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID, 'name' => PLAGIARISM_COPYLEAKS_EULA_FIELD_NAME)
         );
         $configeula->value = $version;
         if (!$DB->update_record('plagiarism_copyleaks_config', $configeula)) {
@@ -169,7 +169,7 @@ class plagiarism_copyleaks_dbutils {
         // There is a second run for 'handle_submissions' so it is
         // best to check by the userid and the version before inserting a new one.
         $conditions = array("ci_user_id" => $userid);
-        // DO-NOT use to conditions in the array because of Moodle lowers version
+        // DO-NOT use two conditions in the array because of Moodle lowers version
         $usereulaversion = $DB->get_records(
             'plagiarism_copyleaks_eula',
             $conditions

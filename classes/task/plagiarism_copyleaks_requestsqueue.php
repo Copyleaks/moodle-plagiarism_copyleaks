@@ -65,7 +65,6 @@ class plagiarism_copyleaks_requestsqueue extends \core\task\scheduled_task {
         $successrequestsids = array();
         $failedrequests = array();
 
-        $maxrows = PLAGIARISM_COPYLEAKS_CRON_MAX_DATA_LOOP;
         $canloadmoredata = true;
         $startqueryfrom = 0;
 
@@ -79,9 +78,9 @@ class plagiarism_copyleaks_requestsqueue extends \core\task\scheduled_task {
                 'created_date ASC',
                 '*',
                 $startqueryfrom,
-                $maxrows
+                PLAGIARISM_COPYLEAKS_CRON_MAX_DATA_LOOP
             );
-            $canloadmoredata = count($queuedrequests) == $maxrows;
+            $canloadmoredata = count($queuedrequests) == PLAGIARISM_COPYLEAKS_CRON_MAX_DATA_LOOP;
 
             foreach ($queuedrequests as $item) {
                 try {
@@ -97,7 +96,7 @@ class plagiarism_copyleaks_requestsqueue extends \core\task\scheduled_task {
             }
             $this->delete_queued_request($successrequestsids);
             $this->update_queued_request($failedrequests);
-            $startqueryfrom = $startqueryfrom + $maxrows;
+            $startqueryfrom = $startqueryfrom + PLAGIARISM_COPYLEAKS_CRON_MAX_DATA_LOOP;
         }
     }
 

@@ -272,7 +272,7 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         );
         $savedfield = new stdClass();
         $savedfield->cm = PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID;
-        $savedfield->name = 'latest_eula_version';
+        $savedfield->name = PLAGIARISM_COPYLEAKS_EULA_FIELD_NAME;
         $savedfield->value = '0';
 
         if (!isset($saveddefaultvalue[$fieldname])) {

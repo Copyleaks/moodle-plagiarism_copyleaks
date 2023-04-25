@@ -162,9 +162,6 @@ class plagiarism_copyleaks_moduleconfig {
      */
     public static function is_allowed_eula_acceptance($modname) {
         $supportedeulamodules = array('assign', 'workshop');
-        if (in_array($modname, $supportedeulamodules)) {
-            return true;
-        }
-        return false;
+        return in_array($modname, $supportedeulamodules);
     }
 }
