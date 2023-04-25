@@ -213,12 +213,12 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2022122802, 'plagiarism', 'copyleaks');
     }
 
-    if ($oldversion < 2023042400) {
-        $table = new xmldb_table('plagiarism_copyleaks_request');
+    if ($oldversion < 2023042406) {
 
-        // Adding fields to table plagiarism_copyleaks_users.
+        // Adding fields to table plagiarism_copyleaks_request.
+        $table = new xmldb_table('plagiarism_copyleaks_request');
         $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE);
-        $table->add_field('verb', XMLDB_TYPE_TEXT, '255', null, XMLDB_NOTNULL, null, 'POST');
+        $table->add_field('verb', XMLDB_TYPE_TEXT, '255', null, XMLDB_NOTNULL, null);
         $table->add_field('created_date', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0');
         $table->add_field('cmid', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, null, null, '0');
         $table->add_field('endpoint', XMLDB_TYPE_TEXT, '255', null, XMLDB_NOTNULL);
@@ -229,20 +229,16 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         $table->add_field('fail_message', XMLDB_TYPE_TEXT, '255');
         $table->add_field('require_auth', XMLDB_TYPE_NUMBER, '1', XMLDB_UNSIGNED, XMLDB_NOTNULL);
 
-        // Adding keys and indexes to table plagiarism_copyleaks_users.
+        // Adding keys and indexes to table plagiarism_copyleaks_request.
         $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
         $table->add_index('created_date', XMLDB_INDEX_NOTUNIQUE, array('created_date'));
         $table->add_index('cmid', XMLDB_INDEX_NOTUNIQUE, array('cmid'));
 
-        // Conditionally launch create table for plagiarism_copyleaks_users.
+        // Conditionally launch create table for plagiarism_copyleaks_request.
         if (!$dbman->table_exists($table)) {
             $dbman->create_table($table);
         }
 
-        upgrade_plugin_savepoint(true, 2023042402, 'plagiarism', 'copyleaks');
-    }
-
-    if ($oldversion < 2023042301) {
         // Delete a column from the table.
         $table = new xmldb_table('plagiarism_copyleaks_users');
         $field = new xmldb_field('user_eula_accepted');
@@ -294,7 +290,7 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
             }
         }
 
-        upgrade_plugin_savepoint(true, 2023042401, 'plagiarism', 'copyleaks');
+        upgrade_plugin_savepoint(true, 2023042406, 'plagiarism', 'copyleaks');
     }
 
     return true;
