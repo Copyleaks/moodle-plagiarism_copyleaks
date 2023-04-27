@@ -49,9 +49,7 @@ class plagiarism_copyleaks_dbutils {
             array('cmid' => $cmid)
         );
 
-        $request = array_search($endpoint, array_column($records, 'endpoint'));
-
-        if (!$request) {
+        if (!$records) {
             $request = new stdClass();
             $request->created_date = time();
             $request->cmid = $cmid;
