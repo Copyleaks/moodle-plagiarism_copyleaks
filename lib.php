@@ -180,7 +180,11 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
             $cmid = optional_param('update', null, PARAM_INT);
             $savedvalues = $DB->get_records_menu('plagiarism_copyleaks_config', array('cm' => $cmid), '', 'name,value');
             if (count($savedvalues) > 0) {
-                $mform->setDefault('plagiarism_copyleaks_enable', $savedvalues['plagiarism_copyleaks_enable']);
+                // Add check for a new Course Module (for lower versions).
+                $mform->setDefault(
+                    'plagiarism_copyleaks_enable',
+                    isset($savedvalues['plagiarism_copyleaks_enable']) ? $savedvalues['plagiarism_copyleaks_enable'] : 0
+                );
 
                 $draftsubmit = isset($savedvalues['plagiarism_copyleaks_draftsubmit']) ?
                     $savedvalues['plagiarism_copyleaks_draftsubmit'] : 0;
