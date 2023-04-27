@@ -121,22 +121,7 @@ class plagiarism_copyleaks_dbutils {
                 return false;
             }
         }
-
-        $usereulaarr = $DB->get_records_select(
-            'plagiarism_copyleaks_eula',
-            '(ci_user_id = ' . $userid . ')',
-            null,
-            $DB->sql_order_by_text('date'),
-            '*',
-            0
-        );
-
-        if (empty($usereulaarr)) {
-            return false;
-        }
-        $keys = array_keys($usereulaarr);
-        $usereula = $usereulaarr[$keys[(count($keys) - 1)]];
-        return $usereula && $version == $usereula->version;
+        return self::is_eula_version_update_by_userid($userid, $version);
     }
 
     /*
@@ -164,18 +149,10 @@ class plagiarism_copyleaks_dbutils {
             "date" => date('Y-m-d H:i:s')
         );
 
-        // There is a second run for 'handle_submissions' so it is
-        // best to check by the userid and the version before inserting a new one.
-        $conditions = array("ci_user_id" => $userid);
-        // DO-NOT use two conditions in the array because of Moodle lowers version
-        $usereulaversion = $DB->get_records(
-            'plagiarism_copyleaks_eula',
-            $conditions
-        );
-
-        $isexists = array_search($curreulaversion, array_column($usereulaversion, 'version'));
-
-        if (!$isexists && !$DB->insert_record('plagiarism_copyleaks_eula', $newusereula)) {
+        if (
+            !self::is_eula_version_update_by_userid($userid, $curreulaversion)
+            && !$DB->insert_record('plagiarism_copyleaks_eula', $newusereula)
+        ) {
             \plagiarism_copyleaks_logs::add(
                 "failed to insert new database record for :" .
                     "plagiarism_copyleaks_eula, Cannot create new user record eula for user $userid",
@@ -200,5 +177,15 @@ class plagiarism_copyleaks_dbutils {
             return $record->value;
         }
         return null;
+    }
+
+    private static function is_eula_version_update_by_userid($userid, $version) {
+        global $DB;
+        $result =  $DB->record_exists_select(
+            "plagiarism_copyleaks_eula",
+            "ci_user_id = ? AND version = ?",
+            array($userid, $version)
+        );
+        return $result;
     }
 }

@@ -61,7 +61,6 @@ class plagiarism_copyleaks_requestsqueue extends \core\task\scheduled_task {
     private function handle_queued_requests() {
         global $DB;
 
-        $conditions = array('total_retry_attempts' => '< ' . PLAGIARISM_COPYLEAKS_MAX_RETRY);
         $successrequestsids = array();
         $failedrequests = array();
 
@@ -69,12 +68,12 @@ class plagiarism_copyleaks_requestsqueue extends \core\task\scheduled_task {
         $startqueryfrom = 0;
 
         while ($canloadmoredata) {
-
             /* Get all the rows, max 100, ascending by creation date first (let the old ones execute first),
             that have less then 5 attempts*/
-            $queuedrequests = $DB->get_records(
+            $queuedrequests = $DB->get_records_select(
                 'plagiarism_copyleaks_request',
-                $conditions,
+                'total_retry_attempts < ?',
+                array(PLAGIARISM_COPYLEAKS_MAX_RETRY),
                 'created_date ASC',
                 '*',
                 $startqueryfrom,

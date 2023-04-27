@@ -66,8 +66,10 @@ class plagiarism_copyleaks_synceulausers extends \core\task\scheduled_task {
         $limitfrom = 0;
         $condition = array('is_synced' => false);
         $cl = new \plagiarism_copyleaks_comms();
+        $useridstosync = array();
+        $maxdataloadloops = PLAGIARISM_COPYLEAKS_CRON_MAX_DATA_LOOP;
 
-        while ($canloadmoredata) {
+        while ($canloadmoredata && (--$maxdataloadloops) > 0) {
             try {
                 $eulausers = $DB->get_records(
                     'plagiarism_copyleaks_eula',
@@ -75,7 +77,7 @@ class plagiarism_copyleaks_synceulausers extends \core\task\scheduled_task {
                     '',
                     '*',
                     $limitfrom,
-                    PLAGIARISM_COPYLEAKS_CRON_MAX_DATA_LOOP
+                    PLAGIARISM_COPYLEAKS_CRON_QUERY_LIMIT
                 );
 
                 $recordscount = count($eulausers);
@@ -83,17 +85,22 @@ class plagiarism_copyleaks_synceulausers extends \core\task\scheduled_task {
                     break;
                 }
 
-                $canloadmoredata = $recordscount == PLAGIARISM_COPYLEAKS_CRON_MAX_DATA_LOOP;
+                $canloadmoredata = $recordscount == PLAGIARISM_COPYLEAKS_CRON_QUERY_LIMIT;
                 $model = $this->arrange_request_model($eulausers);
-                $cl->upsert_synced_eula($model);
+                $useridstosync = $cl->upsert_synced_eula($model);
             } catch (\Exception $e) {
                 \plagiarism_copyleaks_logs::add(
-                    "Update eula users tasks failed",
+                    "Update eula users tasks failed, " . $e->getMessage(),
                     "UPDATE_RECORD_FAILED"
                 );
             }
 
-            foreach ($eulausers as $eulauser) {
+            // Get only the users that theirs ids is return from the Copyleaks server.
+            $eulatosyncarray = array_filter($eulausers, function ($user) use ($useridstosync) {
+                return in_array($user->ci_user_id, $useridstosync);
+            });
+
+            foreach ($eulatosyncarray as $eulauser) {
                 $eulauser->is_synced = true;
                 if (!$DB->update_record('plagiarism_copyleaks_eula', $eulauser)) {
                     \plagiarism_copyleaks_logs::add(
@@ -103,7 +110,7 @@ class plagiarism_copyleaks_synceulausers extends \core\task\scheduled_task {
                 }
             }
 
-            $limitfrom = $limitfrom + PLAGIARISM_COPYLEAKS_CRON_MAX_DATA_LOOP;
+            $limitfrom = $limitfrom + PLAGIARISM_COPYLEAKS_CRON_QUERY_LIMIT;
         }
     }
 

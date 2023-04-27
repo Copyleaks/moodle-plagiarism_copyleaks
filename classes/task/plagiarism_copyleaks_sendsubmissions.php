@@ -72,10 +72,10 @@ class plagiarism_copyleaks_sendsubmissions extends \core\task\scheduled_task {
                 '',
                 '*',
                 0,
-                PLAGIARISM_COPYLEAKS_CRON_SUBMISSIONS_LIMIT
+                PLAGIARISM_COPYLEAKS_CRON_QUERY_LIMIT
             );
 
-            $canloadmoredata = count($queuedsubmissions) == PLAGIARISM_COPYLEAKS_CRON_SUBMISSIONS_LIMIT;
+            $canloadmoredata = count($queuedsubmissions) == PLAGIARISM_COPYLEAKS_CRON_QUERY_LIMIT;
 
             if (count($queuedsubmissions) > 0 && !\plagiarism_copyleaks_comms::test_copyleaks_connection('scheduler_task')) {
                 return;
