@@ -242,7 +242,9 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         // Delete a column from the table.
         $table = new xmldb_table('plagiarism_copyleaks_users');
         $field = new xmldb_field('user_eula_accepted');
-        $dbman->drop_field($table,  $field);
+        if (is_int($field->getType())) {
+            $dbman->drop_field($table,  $field);
+        }
 
         // Add new eula table.
         $table = new xmldb_table('plagiarism_copyleaks_eula');
@@ -292,6 +294,5 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
 
         upgrade_plugin_savepoint(true, 2023042406, 'plagiarism', 'copyleaks');
     }
-
     return true;
 }
