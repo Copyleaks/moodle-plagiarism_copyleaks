@@ -34,7 +34,7 @@ class plagiarism_copyleaks_reportstatus {
 }
 
 /**
- * This class is used as an enum in order to know the queued requests's priority. 
+ * This class is used as an enum in order to know the queued requests's priority.
  * @param int LOW
  * @param int MIDIUM
  * @param int HIGH
@@ -46,7 +46,7 @@ class plagiarism_copyleaks_priority {
 }
 
 /**
- * This class is used as an enum in order to know the queued requests's reuslt. 
+ * This class is used as an enum in order to know the queued requests's reuslt.
  * @param int FAILED
  * @param int SUCCEEDED
  */

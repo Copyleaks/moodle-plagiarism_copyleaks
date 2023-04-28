@@ -181,7 +181,7 @@ class plagiarism_copyleaks_dbutils {
 
     private static function is_eula_version_update_by_userid($userid, $version) {
         global $DB;
-        $result =  $DB->record_exists_select(
+        $result = $DB->record_exists_select(
             "plagiarism_copyleaks_eula",
             "ci_user_id = ? AND version = ?",
             array($userid, $version)
