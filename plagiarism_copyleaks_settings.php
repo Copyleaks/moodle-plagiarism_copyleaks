@@ -77,6 +77,7 @@ if ($isadminview) {
     $roles = get_user_roles($context, $USER->id);
     foreach ($roles as $role) {
         if ($role->shortname == 'student') {
+            echo html_writer::div(get_string('clnopageaccess', 'plagiarism_copyleaks'), null, array('style' => $errormessagestyle));
             return;
         }
     }
