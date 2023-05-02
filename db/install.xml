@@ -58,16 +58,17 @@
       <INDEXES>
         <INDEX NAME="userid" UNIQUE="true" FIELDS="userid"/>
       </INDEXES>
+    </TABLE>
 
     <TABLE NAME="plagiarism_copyleaks_request" COMMENT="info about queued requests">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="created_date" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="cmid" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="cmid" TYPE="int" LENGTH="10" NOTNULL="true"/>
         <FIELD NAME="endpoint" TYPE="text" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="verb" TYPE="text" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="total_retry_attempts" TYPE="int" LENGTH="1" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="data" TYPE="text" LENGTH="255" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="data" TYPE="text" LENGTH="255" NOTNULL="false" DEFAULT="" SEQUENCE="false"/>
         <FIELD NAME="priority" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="status" TYPE="int" LENGTH="1" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="fail_message" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
@@ -75,12 +76,11 @@
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="cmid" TYPE="foreign" FIELDS="cmid" REFTABLE="course_modules" REFFIELDS="id"/>
         <INDEX NAME="created_date" UNIQUE="false" FIELDS="created_date"/>
       </KEYS>
       <INDEXES>
         <INDEX NAME="created_date" UNIQUE="false" FIELDS="created_date"/>
-        <INDEX NAME="cmid_fk" UNIQUE="false" FIELDS="cmid"/>
+        <INDEX NAME="copyleaks_cmid" UNIQUE="false" FIELDS="cmid"/>
       </INDEXES>
     </TABLE>
 
@@ -88,13 +88,12 @@
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="ci_user_id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="false" SEQUENCE="false"/>
-        <FIELD NAME="version" TYPE="text" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="version" TYPE="text" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="is_synced" TYPE="number" LENGTH="1" NOTNULL="true" SEQUENCE="false" DECIMALS="0"/>
         <FIELD NAME="date" TYPE="datetime" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="ci_user_id_fk" TYPE="foreign" FIELDS="ci_user_id" REFTABLE="plagiarism_copyleaks_users" REFFIELDS="userid"/>
       </KEYS>
        <INDEXES>
         <INDEX NAME="ci_user_id" UNIQUE="false" FIELDS="ci_user_id"/>
