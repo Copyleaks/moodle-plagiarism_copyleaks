@@ -71,7 +71,6 @@ $string['clstudentdisclosure_help'] = 'Ce texte sera affiché à tous les étudi
 $string['clstudentdisclosuredefault'] = '<span>En soumettant vos fichiers, vous acceptez la politique de confidentialité du service de détection de plagiat</span><a target="_blank" href="https://copyleaks.com/legal/privacypolicy">politique de confidentialité</a>';
 $string['clstudentdagreedtoeula'] = '<span>Vous avez déjà accepté le service de détection de plagiat </span><a target="_blank" href="https://copyleaks.com/legal/privacypolicy">politique de confidentialité</a>';
 $string['cltaskfailedconnecting'] = 'La connexion à Copyleaks ne peut pas être établie, erreur : {$a}';
-$string['clundermaintain'] = 'Le serveur Copyleaks est en maintenance';
 $string['clupdateerror'] = 'Erreur lors de la tentative de mise à jour des enregistrements dans la base de données';
 $string['clupdatereportscores'] = 'Plugin de plagiat Copyleaks - gérer la mise à jour du score de similarité de la vérification du plagiat';
 $string['copyleaks'] = 'Copyleaks';

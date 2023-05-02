@@ -68,7 +68,7 @@ class plagiarism_copyleaks_http_client {
             )
         );
 
-        $version = 2023041910;
+        $version = 2023050200;
         $headers = (array)[
             'Content-Type' => $contenttype,
             'Plugin-Version' => "$version"
@@ -141,15 +141,15 @@ class plagiarism_copyleaks_http_client {
         $url,
         $requireauth = false,
         $data = null,
-        $isauthretry = false,
+        $isauthretry = true,
         $contenttype = 'application/json'
     ) {
 
         $retrycnt = 0;
-        $max = count(PLAGIARISM_COPYLEAKS_RETRY);
+        $maxretries = count(PLAGIARISM_COPYLEAKS_RETRY);
         $serverresult = null;
 
-        while (!isset($serverresult) && $retrycnt < $max) {
+        while (!isset($serverresult) && $retrycnt < $maxretries) {
             try {
                 $serverresult = self::execute(
                     $verb,
@@ -161,7 +161,7 @@ class plagiarism_copyleaks_http_client {
                 );
                 return $serverresult;
             } catch (Exception $e) {
-                if ($retrycnt >= $max) {
+                if ($retrycnt >= $maxretries) {
                     throw $e;
                 } else {
                     sleep(PLAGIARISM_COPYLEAKS_RETRY[$retrycnt]);

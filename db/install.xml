@@ -58,8 +58,6 @@
         <INDEX NAME="userid" UNIQUE="true" FIELDS="userid"/>
       </INDEXES>
     </TABLE>
-
-    <TABLES>
     <TABLE NAME="plagiarism_copyleaks_request" COMMENT="info about queued requests">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>

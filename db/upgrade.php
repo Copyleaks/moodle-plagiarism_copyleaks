@@ -213,7 +213,7 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2022122802, 'plagiarism', 'copyleaks');
     }
 
-    if ($oldversion < 2023041901) {
+    if ($oldversion < 2023050200) {
         $table = new xmldb_table('plagiarism_copyleaks_request');
 
         // Adding fields to table plagiarism_copyleaks_users.
@@ -239,7 +239,7 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
             $dbman->create_table($table);
         }
 
-        upgrade_plugin_savepoint(true, 2023041901, 'plagiarism', 'copyleaks');
+        upgrade_plugin_savepoint(true, 2023050200, 'plagiarism', 'copyleaks');
     }
 
     return true;

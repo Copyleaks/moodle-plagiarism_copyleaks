@@ -128,7 +128,7 @@ class plagiarism_copyleaks_comms {
                 'instances' => $submissionsinstances,
             ];
 
-            $result = plagiarism_copyleaks_http_client::execute(
+            $result = plagiarism_copyleaks_http_client::execute_retry(
                 'POST',
                 $this->copyleaks_api_url() . "/api/moodle/plugin/" . $this->key . "/task/scan-instances",
                 true,
@@ -168,7 +168,7 @@ class plagiarism_copyleaks_comms {
             $reqbody = (array)[
                 'ids' => $ids
             ];
-            plagiarism_copyleaks_http_client::execute(
+            plagiarism_copyleaks_http_client::execute_retry(
                 'POST',
                 $this->copyleaks_api_url() . "/api/moodle/plugin/" . $this->key . "/task/resubmit-scans/delete",
                 true,
@@ -287,7 +287,7 @@ class plagiarism_copyleaks_comms {
                 'secret' => $secret
             ];
 
-            $result = plagiarism_copyleaks_http_client::execute(
+            $result = plagiarism_copyleaks_http_client::execute_retry(
                 'POST',
                 $apiurl . "/api/moodle/plugin/" . $key . "/login",
                 false,
@@ -322,7 +322,7 @@ class plagiarism_copyleaks_comms {
     public function test_connection($context) {
         try {
             if (isset($this->key) && isset($this->secret)) {
-                plagiarism_copyleaks_http_client::execute(
+                plagiarism_copyleaks_http_client::execute_retry(
                     'GET',
                     $this->copyleaks_api_url() . "/api/moodle/plugin/" . $this->key . "/test-connection",
                     true
@@ -381,7 +381,7 @@ class plagiarism_copyleaks_comms {
             'plagiarism_copyleaks_request',
             array(
                 'cmid' => $data["courseModuleId"],
-                'endpoint' => "/api/moodle/plugin/$this->key/upsert-module",
+                'endpoint' => $endpoint,
             )
         );
         if (!$request) {
@@ -398,8 +398,8 @@ class plagiarism_copyleaks_comms {
             $request->require_auth = $requireauth;
             if (!$DB->insert_record('plagiarism_copyleaks_request', $request)) {
                 \plagiarism_copyleaks_logs::add(
-                    "failed to create new database record queue request for cmid: " .
-                        $data["courseModuleId"] . ", endpoint: /api/moodle/plugin/$this->key/upsert-module",
+                    "failed to create new database record for queued request for cmid: " .
+                        $data["courseModuleId"] . ", endpoint:".$endpoint,
                     "INSERT_RECORD_FAILED"
                 );
             }
