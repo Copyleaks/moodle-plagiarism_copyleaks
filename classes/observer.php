@@ -57,7 +57,6 @@ class plagiarism_copyleaks_observer {
             'plagiarism_copyleaks_request',
             array('cmid' => $cmid)
         );
-        debugging('deleted');
     }
 
     /**
