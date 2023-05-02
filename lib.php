@@ -211,7 +211,7 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
             $courseid = optional_param('course', 0, PARAM_INT);
             $isnewactivity = isset($addparam) && $addparam != "0";
             if ($isnewactivity) {
-                $cmid = plagiarism_copyleaks_utils::get_new_course_module_guid("$courseid");
+                $cmid = plagiarism_copyleaks_utils::get_copyleaks_temp_course_module_id("$courseid");
                 $mform->addElement(
                     'hidden',
                     'plagiarism_copyleaks_tempcmid',

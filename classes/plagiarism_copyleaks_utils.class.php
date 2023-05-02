@@ -14,14 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 /**
- * copyleaks_comms.class.php - used for communications between Moodle and Copyleaks
+ * plagiarism_copyleaks_utils.class.php
  * @package   plagiarism_copyleaks
- * @copyright 2021 Copyleaks
- * @author    Bayan Abuawad <bayana@copyleaks.com>
+ * @copyright 2023 Copyleaks
+ * @author    Gil Cohen <gilc@copyleaks.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-use core\check\performance\stats;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -29,9 +27,8 @@ require_once($CFG->dirroot . '/plagiarism/copyleaks/constants/plagiarism_copylea
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_dbutils.class.php');
 
 
-
 /**
- * Function that can be used in multiple places
+ * This class include functions that can be used in multiple places
  */
 class plagiarism_copyleaks_utils {
 
@@ -67,23 +64,23 @@ class plagiarism_copyleaks_utils {
     }
 
     /**
-     * Get temp course module id .
+     * Get Copyleaks temp course module id .
      * @param string $courseid
      * @return string
      */
-    public static function get_new_course_module_guid($courseid) {
+    public static function get_copyleaks_temp_course_module_id($courseid) {
         $number = rand(100, 100000);
         $t = time();
         return $courseid . $number . ($t % 10);
     }
 
     /**
-     * Set navbar breadcrumbs.
+     * Set Copyleaks page navbar breadcrumbs.
      * @param mixed $cm
      * @param mixed $course
      * @return array $breadcrumbs
      */
-    public static function set_navbar_breadcrumbs($cm, $course) {
+    public static function set_copyleaks_page_navbar_breadcrumbs($cm, $course) {
         global $CFG;
         $breadcrumbs = [];
         if (isset($cm)) {
@@ -138,10 +135,12 @@ class plagiarism_copyleaks_utils {
                 $isbtndisabled = true;
             }
         }
+
         $settingsurl = "$CFG->wwwroot/plagiarism/copyleaks/plagiarism_copyleaks_settings.php";
         if (!isset($settingsurlparams) || $settingsurlparams != "") {
             $settingsurl = $settingsurl . $settingsurlparams;
         }
+
         $text = get_string('clscansettingspagebtntxt', 'plagiarism_copyleaks');
         if (!$isadminform) {
             $text = get_string('clmodulescansettingstxt', 'plagiarism_copyleaks');

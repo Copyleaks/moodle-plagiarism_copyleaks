@@ -77,6 +77,7 @@ if ($isadminview) {
     $roles = get_user_roles($context, $USER->id);
     foreach ($roles as $role) {
         if ($role->shortname == 'student') {
+            echo html_writer::div(get_string('clnopageaccess', 'plagiarism_copyleaks'), null, array('style' => $errormessagestyle));
             return;
         }
     }
@@ -136,7 +137,7 @@ if (!$isnewmodulesettings && !$isadminview && !$clmoduleenabled) {
             $accesstoken = "";
 
             if (!$isadminview) {
-                $breadcrumbs = plagiarism_copyleaks_utils::set_navbar_breadcrumbs($isnewmodulesettings ? 'new' : $cm, $course);
+                $breadcrumbs = plagiarism_copyleaks_utils::set_copyleaks_page_navbar_breadcrumbs($isnewmodulesettings ? 'new' : $cm, $course);
                 $role = 2;
                 $accesstoken = $cl->request_access_for_settings(
                     $role,
@@ -147,7 +148,7 @@ if (!$isnewmodulesettings && !$isadminview && !$clmoduleenabled) {
                 );
             } else {
                 $role = 1;
-                $breadcrumbs = plagiarism_copyleaks_utils::set_navbar_breadcrumbs(null, null);
+                $breadcrumbs = plagiarism_copyleaks_utils::set_copyleaks_page_navbar_breadcrumbs(null, null);
                 $accesstoken = $cl->request_access_for_settings($role, $breadcrumbs, $modulename, null, $cmid);
             }
 
