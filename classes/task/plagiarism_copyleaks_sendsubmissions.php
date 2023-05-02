@@ -96,7 +96,7 @@ class plagiarism_copyleaks_sendsubmissions extends \core\task\scheduled_task {
                     continue;
                 }
 
-                if (\plagiarism_copyleaks_dbutils::is_course_module_request_queued($submission->cm)) {
+                if (\plagiarism_copyleaks_moduleconfig::is_course_module_request_queued($submission->cm)) {
                     continue;
                 }
 

@@ -23,6 +23,9 @@
 
 use core\check\performance\stats;
 
+defined('MOODLE_INTERNAL') || die();
+
+
 /**
  * module configurations helpers methods
  */
@@ -163,5 +166,15 @@ class plagiarism_copyleaks_moduleconfig {
     public static function is_allowed_eula_acceptance($modname) {
         $supportedeulamodules = array('assign', 'workshop');
         return in_array($modname, $supportedeulamodules);
+    }
+
+    /**
+     * @param string $cmid check if the cmid is in the requests queue
+     * @return bool
+     */
+    public static function is_course_module_request_queued($cmid) {
+        global $DB;
+        $record = $DB->get_record('plagiarism_copyleaks_request', ['cmid' => $cmid]);
+        return isset($record) && $record;
     }
 }

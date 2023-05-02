@@ -44,9 +44,11 @@ class plagiarism_copyleaks_dbutils {
      */
     public static function queued_failed_request($key, $cmid, $endpoint, $data, $priority, $error, $verb, $requireauth = true) {
         global $DB;
-        $records = $DB->get_records(
+        $records = $DB->get_record_select(
             'plagiarism_copyleaks_request',
-            array('cmid' => $cmid)
+            "cmid = ? AND endpoint = ?",
+            array($cmid, $endpoint)
+
         );
 
         if (!$records) {
@@ -69,16 +71,6 @@ class plagiarism_copyleaks_dbutils {
                 );
             }
         }
-    }
-
-    /**
-     * @param string $cmid check if the cmid is in the requests queue
-     * @return bool
-     */
-    public static function is_course_module_request_queued($cmid) {
-        global $DB;
-        $record = $DB->get_record('plagiarism_copyleaks_request', ['cmid' => $cmid]);
-        return isset($record) && $record;
     }
 
     /**

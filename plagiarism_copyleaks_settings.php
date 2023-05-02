@@ -137,7 +137,10 @@ if (!$isnewmodulesettings && !$isadminview && !$clmoduleenabled) {
             $accesstoken = "";
 
             if (!$isadminview) {
-                $breadcrumbs = plagiarism_copyleaks_utils::set_copyleaks_page_navbar_breadcrumbs($isnewmodulesettings ? 'new' : $cm, $course);
+                $breadcrumbs = plagiarism_copyleaks_utils::set_copyleaks_page_navbar_breadcrumbs(
+                    $isnewmodulesettings ? 'new' : $cm,
+                    $course
+                );
                 $role = 2;
                 $accesstoken = $cl->request_access_for_settings(
                     $role,

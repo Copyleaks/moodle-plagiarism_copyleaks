@@ -20,6 +20,8 @@
  * @author    Bayan Abuawad <bayana@copyleaks.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+defined('MOODLE_INTERNAL') || die();
+
 /** Copyleaks rate limit exception */
 class plagiarism_copyleaks_rate_limit_exception extends Exception {
     /**
