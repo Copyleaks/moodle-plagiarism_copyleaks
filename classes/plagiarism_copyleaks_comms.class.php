@@ -127,7 +127,7 @@ class plagiarism_copyleaks_comms {
                 'instances' => $submissionsinstances,
             ];
 
-            $result = plagiarism_copyleaks_http_client::execute(
+            $result = plagiarism_copyleaks_http_client::execute_retry(
                 'POST',
                 $this->copyleaks_api_url() . "/api/moodle/plugin/" . $this->key . "/task/scan-instances",
                 true,
@@ -148,7 +148,7 @@ class plagiarism_copyleaks_comms {
             $reqbody = (array)[
                 'cursor' => $cursor
             ];
-            $result = plagiarism_copyleaks_http_client::execute(
+            $result = plagiarism_copyleaks_http_client::execute_retry(
                 'POST',
                 $this->copyleaks_api_url() . "/api/moodle/plugin/" . $this->key . "/task/resubmit-scans",
                 true,
@@ -167,7 +167,7 @@ class plagiarism_copyleaks_comms {
             $reqbody = (array)[
                 'ids' => $ids
             ];
-            plagiarism_copyleaks_http_client::execute(
+            plagiarism_copyleaks_http_client::execute_retry(
                 'POST',
                 $this->copyleaks_api_url() . "/api/moodle/plugin/" . $this->key . "/task/resubmit-scans/delete",
                 true,
@@ -286,7 +286,7 @@ class plagiarism_copyleaks_comms {
                 'secret' => $secret
             ];
 
-            $result = plagiarism_copyleaks_http_client::execute(
+            $result = plagiarism_copyleaks_http_client::execute_retry(
                 'POST',
                 $apiurl . "/api/moodle/plugin/" . $key . "/login",
                 false,
@@ -321,7 +321,7 @@ class plagiarism_copyleaks_comms {
     public function test_connection($context) {
         try {
             if (isset($this->key) && isset($this->secret)) {
-                $result = plagiarism_copyleaks_http_client::execute(
+                $result = plagiarism_copyleaks_http_client::execute_retry(
                     'GET',
                     $this->copyleaks_api_url() . "/api/moodle/plugin/" . $this->key . "/test-connection",
                     true
