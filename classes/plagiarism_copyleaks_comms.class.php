@@ -323,7 +323,7 @@ class plagiarism_copyleaks_comms {
             if (isset($this->key) && isset($this->secret)) {
                 $result = plagiarism_copyleaks_http_client::execute_retry(
                     'GET',
-                    $this->copyleaks_api_url() . "/api/moodle/plugin/" . $this->key . "/test-connection",
+                    $this->copyleaks_api_url() . "/api/moodle/plugin/" . $this->key . "/test-connection?source=". $context,
                     true
                 );
                 if (isset($result) && isset($result->eulaVersion)) {

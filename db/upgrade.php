@@ -213,7 +213,7 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2022122802, 'plagiarism', 'copyleaks');
     }
 
-    if ($oldversion < 2023050201) {
+    if ($oldversion < 2023050500) {
         // Adding fields to table plagiarism_copyleaks_request.
         $table = new xmldb_table('plagiarism_copyleaks_request');
         $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE);
@@ -293,7 +293,7 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
             }
         }
 
-        upgrade_plugin_savepoint(true, 2023050201, 'plagiarism', 'copyleaks');
+        upgrade_plugin_savepoint(true, 2023050500, 'plagiarism', 'copyleaks');
     }
     return true;
 }

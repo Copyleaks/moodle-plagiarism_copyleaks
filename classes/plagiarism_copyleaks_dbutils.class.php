@@ -119,8 +119,7 @@ class plagiarism_copyleaks_dbutils {
         $version = self::get_copyleaks_eula_version();
         if ($version == PLAGIARISM_COPYLEAKS_DEFUALT_EULA_VERSION) {
             if (!$isrecursive) {
-                $cm = new plagiarism_copyleaks_comms();
-                $cm->test_connection('eula_version');
+                \plagiarism_copyleaks_comms::test_copyleaks_connection('is_user_eula_uptodate');
                 return self::is_user_eula_uptodate($userid, true);
             } else {
                 return false;
@@ -137,8 +136,7 @@ class plagiarism_copyleaks_dbutils {
         $user = $DB->get_record('plagiarism_copyleaks_users', array('userid' => $userid));
         $curreulaversion = self::get_copyleaks_eula_version();
         if ($curreulaversion == PLAGIARISM_COPYLEAKS_DEFUALT_EULA_VERSION && !$isrecursive) {
-            $cm = new plagiarism_copyleaks_comms();
-            $cm->test_connection('eula_version');
+            \plagiarism_copyleaks_comms::test_copyleaks_connection('upsert_eula_by_user_id');
             return self::upsert_eula_by_user_id($userid, true);
         }
 
@@ -192,7 +190,7 @@ class plagiarism_copyleaks_dbutils {
     /**
      * @param string $userid check by user id if updated.
      * @param string $version id the user id up-to-date the version
-     * @return object 
+     * @return object
      */
     private static function is_eula_version_update_by_userid($userid, $version) {
         global $DB;
