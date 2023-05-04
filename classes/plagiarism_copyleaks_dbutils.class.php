@@ -128,7 +128,7 @@ class plagiarism_copyleaks_dbutils {
             if (!$DB->insert_record('plagiarism_copyleaks_users', array('userid' => $userid))) {
                 \plagiarism_copyleaks_logs::add(
                     "failed to insert new database record for : " .
-                        "plagiarism_copyleaks_eula, Cannot create new user record for user $userid",
+                        "plagiarism_copyleaks_users, Cannot create new user record for user $userid",
                     "INSERT_RECORD_FAILED"
                 );
             }
