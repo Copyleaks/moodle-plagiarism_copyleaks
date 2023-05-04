@@ -161,6 +161,10 @@ class plagiarism_copyleaks_http_client {
                     $contenttype
                 );
                 return $serverresult;
+            } catch (plagiarism_copyleaks_under_maintenance_exception $ume) {
+                throw $ume;
+            } catch (plagiarism_copyleaks_rate_limit_exception $rle) {
+                throw $rle;
             } catch (Exception $e) {
                 if ($retrycnt >= $maxretries) {
                     throw $e;

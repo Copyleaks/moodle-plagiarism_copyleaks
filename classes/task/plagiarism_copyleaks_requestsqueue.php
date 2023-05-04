@@ -93,22 +93,28 @@ class plagiarism_copyleaks_requestsqueue extends \core\task\scheduled_task {
                     $failedrequests[] = $item;
                 }
             }
-            $this->delete_queued_request($successrequestsids);
             $this->update_queued_request($failedrequests);
             $startqueryfrom = $startqueryfrom + PLAGIARISM_COPYLEAKS_CRON_MAX_DATA_LOOP;
         }
+
+        $this->delete_queued_request($successrequestsids);
     }
 
-    private function delete_queued_request(&$successrequestsids) {
+    private function delete_queued_request($successrequestsids) {
         global $DB;
-        if (count($successrequestsids) > 0) {
-            if (!$DB->delete_records_list('plagiarism_copyleaks_request', 'id', $successrequestsids)) {
-                \plagiarism_copyleaks_logs::add(
-                    "failed to delete all success queued request",
-                    "DELETE_RECORD_FAILED"
-                );
+        $batchSize = 40;
+
+        for ($i = 0; $i < count($successrequestsids); $i += $batchSize) {
+
+            $batchIds = array_slice($successrequestsids, $i, $batchSize);
+            if (count($batchIds) > 0) {
+                if (!$DB->delete_records_list('plagiarism_copyleaks_request', 'id', $batchIds)) {
+                    \plagiarism_copyleaks_logs::add(
+                        "failed to delete all success queued request",
+                        "DELETE_RECORD_FAILED"
+                    );
+                }
             }
-            $successrequestsids = array();
         }
     }
 

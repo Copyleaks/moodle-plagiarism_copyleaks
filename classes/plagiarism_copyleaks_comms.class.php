@@ -374,7 +374,7 @@ class plagiarism_copyleaks_comms {
     /**
      * Update course module temp id at Copyleaks server.
      * @param array $data
-     * @return array all the user ids that was updated succesfully in Copyleaks server
+     * @return object all the user ids that was updated succesfully in Copyleaks server
      */
     public function upsert_synced_eula($data) {
         $result = plagiarism_copyleaks_http_client::execute(
@@ -383,6 +383,6 @@ class plagiarism_copyleaks_comms {
             true,
             json_encode($data)
         );
-        return $result->usersIds;
+        return $result;
     }
 }

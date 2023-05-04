@@ -87,7 +87,8 @@ class plagiarism_copyleaks_synceulausers extends \core\task\scheduled_task {
 
                 $canloadmoredata = $recordscount == PLAGIARISM_COPYLEAKS_CRON_QUERY_LIMIT;
                 $model = $this->arrange_request_model($eulausers);
-                $useridstosync = $cl->upsert_synced_eula($model);
+                $result = $cl->upsert_synced_eula($model);
+                $useridstosync = isset($result->usersIds) ? $result->usersIds : array();
             } catch (\Exception $e) {
                 \plagiarism_copyleaks_logs::add(
                     "Update eula users tasks failed, " . $e->getMessage(),
@@ -95,18 +96,20 @@ class plagiarism_copyleaks_synceulausers extends \core\task\scheduled_task {
                 );
             }
 
-            // Get only the users that theirs ids is return from the Copyleaks server.
-            $eulatosyncarray = array_filter($eulausers, function ($user) use ($useridstosync) {
-                return in_array($user->ci_user_id, $useridstosync);
-            });
+            if (count($useridstosync) > 0) {
+                // Get only the users that theirs ids is return from the Copyleaks server.
+                $eulatosyncarray = array_filter($eulausers, function ($user) use ($useridstosync) {
+                    return in_array($user->ci_user_id, $useridstosync);
+                });
 
-            foreach ($eulatosyncarray as $eulauser) {
-                $eulauser->is_synced = true;
-                if (!$DB->update_record('plagiarism_copyleaks_eula', $eulauser)) {
-                    \plagiarism_copyleaks_logs::add(
-                        "Failed to update synced user: $eulauser->user_id",
-                        "UPDATE_RECORD_FAILED"
-                    );
+                foreach ($eulatosyncarray as $eulauser) {
+                    $eulauser->is_synced = true;
+                    if (!$DB->update_record('plagiarism_copyleaks_eula', $eulauser)) {
+                        \plagiarism_copyleaks_logs::add(
+                            "Failed to update synced user: $eulauser->user_id",
+                            "UPDATE_RECORD_FAILED"
+                        );
+                    }
                 }
             }
 
