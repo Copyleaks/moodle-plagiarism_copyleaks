@@ -66,7 +66,7 @@ class plagiarism_copyleaks_dbutils {
             if (!$DB->insert_record('plagiarism_copyleaks_request', $request)) {
                 \plagiarism_copyleaks_logs::add(
                     "failed to create new database record queue request for cmid: " .
-                        $data["courseModuleId"] . ", endpoint: /api/moodle/plugin/$key/upsert-module",
+                        $data["courseModuleId"] . ", endpoint: $endpoint",
                     "INSERT_RECORD_FAILED"
                 );
             }
@@ -82,12 +82,25 @@ class plagiarism_copyleaks_dbutils {
             'plagiarism_copyleaks_config',
             array('cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID, 'name' => PLAGIARISM_COPYLEAKS_EULA_FIELD_NAME)
         );
-        $configeula->value = $version;
-        if (!$DB->update_record('plagiarism_copyleaks_config', $configeula)) {
-            \plagiarism_copyleaks_logs::add(
-                "Could not update eula version to: $version",
-                "UPDATE_RECORD_FAILED"
+
+        if ($configeula) {
+            $configeula->value = $version;
+            if (!$DB->update_record('plagiarism_copyleaks_config', $configeula)) {
+                \plagiarism_copyleaks_logs::add(
+                    "Could not update eula version to: $version",
+                    "UPDATE_RECORD_FAILED"
+                );
+            }
+        } else {
+            $configeula = array(
+                'cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID,
+                'name' => PLAGIARISM_COPYLEAKS_EULA_FIELD_NAME,
+                'value' => $version,
+                'config_hash' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID . "_" . PLAGIARISM_COPYLEAKS_EULA_FIELD_NAME
             );
+            if (!$DB->insert_record('plagiarism_copyleaks_config', $configeula)) {
+                throw new moodle_exception(get_string('clinserterror', 'plagiarism_copyleaks'));
+            }
         }
     }
 
@@ -108,7 +121,7 @@ class plagiarism_copyleaks_dbutils {
             if (!$isrecursive) {
                 $cm = new plagiarism_copyleaks_comms();
                 $cm->test_connection('eula_version');
-                self::is_user_eula_uptodate($userid, true);
+                return self::is_user_eula_uptodate($userid, true);
             } else {
                 return false;
             }

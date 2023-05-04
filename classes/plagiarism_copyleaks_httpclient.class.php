@@ -139,9 +139,9 @@ class plagiarism_copyleaks_http_client {
     public static function execute_retry(
         $verb,
         $url,
-        $requireauth = false,
+        $requireauth = true,
         $data = null,
-        $isauthretry = true,
+        $isauthretry = false,
         $contenttype = 'application/json'
     ) {
 

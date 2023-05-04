@@ -328,8 +328,10 @@ class plagiarism_copyleaks_comms {
                 );
                 if (isset($result) && isset($result->eulaVersion)) {
                     plagiarism_copyleaks_dbutils::update_copyleaks_eula_version($result->eulaVersion);
+                    return true;
+                } else {
+                    return false;
                 }
-                return true;
             } else {
                 return false;
             }
