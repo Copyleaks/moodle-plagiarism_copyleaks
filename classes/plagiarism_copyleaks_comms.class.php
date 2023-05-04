@@ -379,7 +379,7 @@ class plagiarism_copyleaks_comms {
     public function upsert_synced_eula($data) {
         $result = plagiarism_copyleaks_http_client::execute(
             'POST',
-            $this->copyleaks_api_url() . "/api/moodle/plugin/$this->key/task/sync-eula-users",
+            $this->copyleaks_api_url() . "/api/moodle/plugin/$this->key/task/eula-approval-sync",
             true,
             json_encode($data)
         );
