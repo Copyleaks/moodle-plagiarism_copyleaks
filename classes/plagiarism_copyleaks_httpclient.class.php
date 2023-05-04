@@ -151,6 +151,7 @@ class plagiarism_copyleaks_http_client {
 
         while (!isset($serverresult) && $retrycnt < $maxretries) {
             try {
+                sleep(PLAGIARISM_COPYLEAKS_RETRY[$retrycnt]);
                 $serverresult = self::execute(
                     $verb,
                     $url,
@@ -164,7 +165,6 @@ class plagiarism_copyleaks_http_client {
                 if ($retrycnt >= $maxretries) {
                     throw $e;
                 } else {
-                    sleep(PLAGIARISM_COPYLEAKS_RETRY[$retrycnt]);
                     $retrycnt = $retrycnt + 1;
                 }
             }

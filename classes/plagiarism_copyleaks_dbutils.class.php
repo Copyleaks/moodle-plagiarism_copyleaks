@@ -117,7 +117,7 @@ class plagiarism_copyleaks_dbutils {
         }
 
         $version = self::get_copyleaks_eula_version();
-        if ($version == '0') {
+        if ($version == PLAGIARISM_COPYLEAKS_DEFUALT_EULA_VERSION) {
             if (!$isrecursive) {
                 $cm = new plagiarism_copyleaks_comms();
                 $cm->test_connection('eula_version');
@@ -132,10 +132,15 @@ class plagiarism_copyleaks_dbutils {
     /*
     * @param string userid
     */
-    public static function upsert_eula_by_user_id($userid) {
+    public static function upsert_eula_by_user_id($userid, $isrecursive = false) {
         global $DB;
         $user = $DB->get_record('plagiarism_copyleaks_users', array('userid' => $userid));
         $curreulaversion = self::get_copyleaks_eula_version();
+        if ($curreulaversion == PLAGIARISM_COPYLEAKS_DEFUALT_EULA_VERSION && !$isrecursive) {
+            $cm = new plagiarism_copyleaks_comms();
+            $cm->test_connection('eula_version');
+            return self::upsert_eula_by_user_id($userid, true);
+        }
 
         if (!$user) {
             if (!$DB->insert_record('plagiarism_copyleaks_users', array('userid' => $userid))) {
@@ -181,9 +186,14 @@ class plagiarism_copyleaks_dbutils {
         if ($record) {
             return $record->value;
         }
-        return null;
+        return PLAGIARISM_COPYLEAKS_DEFUALT_EULA_VERSION;
     }
 
+    /**
+     * @param string $userid check by user id if updated.
+     * @param string $version id the user id up-to-date the version
+     * @return object 
+     */
     private static function is_eula_version_update_by_userid($userid, $version) {
         global $DB;
         $result = $DB->record_exists_select(
