@@ -232,7 +232,7 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
 
         $table->add_index('created_date', XMLDB_INDEX_NOTUNIQUE, array('created_date'));
-        $table->add_index('copyleaks_cm_request', XMLDB_INDEX_NOTUNIQUE, array('cmid'));
+        $table->add_index('copyleaks_cmid', XMLDB_INDEX_NOTUNIQUE, array('cmid'));
 
         // Conditionally launch create table for plagiarism_copyleaks_request.
         if (!$dbman->table_exists($table)) {
