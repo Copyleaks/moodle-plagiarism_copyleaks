@@ -48,10 +48,6 @@ class plagiarism_copyleaks_requestsqueue extends \core\task\scheduled_task {
      * Execute the task.
      */
     public function execute() {
-        if (!\plagiarism_copyleaks_comms::test_copyleaks_connection('scheduler_task')) {
-            return;
-        }
-
         $this->handle_queued_requests();
     }
 
@@ -81,6 +77,10 @@ class plagiarism_copyleaks_requestsqueue extends \core\task\scheduled_task {
             );
             $canloadmoredata = count($queuedrequests) == PLAGIARISM_COPYLEAKS_CRON_MAX_DATA_LOOP;
 
+            if (count($queuedrequests) == 0 || !\plagiarism_copyleaks_comms::test_copyleaks_connection('scheduler_task')) {
+                break;
+            }
+
             foreach ($queuedrequests as $item) {
                 try {
                     // Send the request to the server.
@@ -96,19 +96,20 @@ class plagiarism_copyleaks_requestsqueue extends \core\task\scheduled_task {
             $this->update_queued_request($failedrequests);
             $startqueryfrom = $startqueryfrom + PLAGIARISM_COPYLEAKS_CRON_MAX_DATA_LOOP;
         }
-
-        $this->delete_queued_request($successrequestsids);
+        // Delete successfully queued requests.
+        if (count($successrequestsids) > 0) {
+            $this->delete_queued_request($successrequestsids);
+        }
     }
 
     private function delete_queued_request($successrequestsids) {
         global $DB;
-        $batchSize = 40;
+        $batchsize = 100;
 
-        for ($i = 0; $i < count($successrequestsids); $i += $batchSize) {
-
-            $batchIds = array_slice($successrequestsids, $i, $batchSize);
-            if (count($batchIds) > 0) {
-                if (!$DB->delete_records_list('plagiarism_copyleaks_request', 'id', $batchIds)) {
+        for ($i = 0; $i < count($successrequestsids); $i += $batchsize) {
+            $batchids = array_slice($successrequestsids, $i, $batchsize);
+            if (count($batchids) > 0) {
+                if (!$DB->delete_records_list('plagiarism_copyleaks_request', 'id', $batchids)) {
                     \plagiarism_copyleaks_logs::add(
                         "failed to delete all success queued request",
                         "DELETE_RECORD_FAILED"

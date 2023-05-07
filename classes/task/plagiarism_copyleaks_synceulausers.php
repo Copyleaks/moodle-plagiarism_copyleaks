@@ -84,8 +84,8 @@ class plagiarism_copyleaks_synceulausers extends \core\task\scheduled_task {
                 if ($recordscount == 0) {
                     break;
                 }
-
                 $canloadmoredata = $recordscount == PLAGIARISM_COPYLEAKS_CRON_QUERY_LIMIT;
+
                 $model = $this->arrange_request_model($eulausers);
                 $result = $cl->upsert_synced_eula($model);
                 $useridstosync = isset($result->usersIds) ? $result->usersIds : array();
