@@ -1,5 +1,5 @@
 <?php
-// This file is part of Moodle - https://moodle.org/
+// This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -12,7 +12,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * Strings for component 'plagiarism_copyleaks', language 'fr', version '3.5'.
@@ -61,14 +61,17 @@ $string['clreportgenspeed'] = 'Quand générer un rapport?';
 $string['clreportpagetitle'] = 'Copyleaks Rapport';
 $string['clscansettingspagebtntxt'] = 'Modifier les paramètres de numérisation';
 $string['clmodulescansettingstxt'] = "Modifier les paramètres de numérisation";
+$string['cldisablesettingstooltip'] = "Veuillez patienter jusqu'à ce que Copyleaks établisse un nouveau module";
 $string['clscoursesettings'] = 'Paramètres de fuites de copie';
 $string['clsendqueuedsubmissions'] = 'Plugin de plagiat Copyleaks - gérer les fichiers en file d\'attente';
 $string['clsendresubmissionsfiles'] = "Plugin de plagiat Copyleaks - gérer les résultats soumis à nouveau";
+$string['clsendrequestqueue'] = "Plugin de plagiat Copyleaks - gérer les demandes de relance en file d'attente";
+$string['clupserteulausers'] = "Plugin de plagiat Copyleaks - gérer la mise à jour des utilisateurs d'acceptation eula";
 $string['clstudentdisclosure'] = 'Divulgation des étudiants';
 $string['clstudentdisclosure_help'] = 'Ce texte sera affiché à tous les étudiants sur la page de téléchargement de fichiers.';
 $string['clstudentdisclosuredefault'] = '<span>En soumettant vos fichiers, vous acceptez la politique de confidentialité du service de détection de plagiat</span><a target="_blank" href="https://copyleaks.com/legal/privacypolicy">politique de confidentialité</a>';
 $string['clstudentdagreedtoeula'] = '<span>Vous avez déjà accepté le service de détection de plagiat </span><a target="_blank" href="https://copyleaks.com/legal/privacypolicy">politique de confidentialité</a>';
-$string['cltaskfailedconnecting'] = 'la connexion à Copyleaks ne peut pas être établie, erreur : {$a}';
+$string['cltaskfailedconnecting'] = 'La connexion à Copyleaks ne peut pas être établie, erreur : {$a}';
 $string['clupdateerror'] = 'Erreur lors de la tentative de mise à jour des enregistrements dans la base de données';
 $string['clupdatereportscores'] = 'Plugin de plagiat Copyleaks - gérer la mise à jour du score de similarité de la vérification du plagiat';
 $string['copyleaks'] = 'Copyleaks';

@@ -26,6 +26,9 @@ require(dirname(dirname(__FILE__)) . '/../config.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_comms.class.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_pluginconfig.class.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_assignmodule.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_utils.class.php');
+
+
 
 // Get url params.
 $cmid = optional_param('cmid', null, PARAM_INT);
@@ -33,6 +36,7 @@ $cmid = optional_param('cmid', null, PARAM_INT);
 $courseid = optional_param('courseid', null, PARAM_INT);
 $modulename = optional_param('modulename', null, PARAM_TEXT);
 $isnewmodulesettings = optional_param('isnewactivity', false, PARAM_TEXT);
+
 
 $isadminview = false;
 if (!isset($cmid) || !isset($modulename)) {
@@ -90,13 +94,15 @@ $userid = $USER->id;
 
 $isinstructor = plagiarism_copyleaks_assignmodule::is_instructor($context);
 
-$errormessagestyle = 'color:red; display:flex; width:100%; justify-content:center;';
 
 // Check if copyleaks plugin is disabled.
 $clmoduleenabled = true;
 if (isset($cm)) {
     $clmoduleenabled = plagiarism_copyleaks_pluginconfig::is_plugin_configured('mod_' . $cm->modname);
 }
+
+$errormessagestyle = 'color:red; display:flex; width:100%; justify-content:center;';
+
 
 if (!$isnewmodulesettings && !$isadminview && !$clmoduleenabled) {
     echo html_writer::div(get_string('cldisabledformodule', 'plagiarism_copyleaks'), null, array('style' => $errormessagestyle));
@@ -131,23 +137,25 @@ if (!$isnewmodulesettings && !$isadminview && !$clmoduleenabled) {
             $accesstoken = "";
 
             if (!$isadminview) {
+                $breadcrumbs = plagiarism_copyleaks_utils::set_copyleaks_page_navbar_breadcrumbs(
+                    $isnewmodulesettings ? 'new' : $cm,
+                    $course
+                );
                 $role = 2;
-                $breadcrumbs = $cl->set_navbar_breadcrumbs($isnewmodulesettings ? 'new' : $cm, $course);
                 $accesstoken = $cl->request_access_for_settings(
                     $role,
                     $breadcrumbs,
-                    $modulename,
-                    $isnewmodulesettings ? 'new' : $cm->name,
+                    $isnewmodulesettings ? 'new' : $cm->modname,
+                    $isnewmodulesettings ? '' : $cm->name,
                     $cmid
                 );
             } else {
                 $role = 1;
-                $breadcrumbs = $cl->set_navbar_breadcrumbs(null, null);
-                $accesstoken = $cl->request_access_for_settings($role, $breadcrumbs);
+                $breadcrumbs = plagiarism_copyleaks_utils::set_copyleaks_page_navbar_breadcrumbs(null, null);
+                $accesstoken = $cl->request_access_for_settings($role, $breadcrumbs, $modulename, null, $cmid);
             }
 
-
-            $lang = $cl->get_lang();
+            $lang = plagiarism_copyleaks_utils::get_lang();
 
             $actionurl = "$config->plagiarism_copyleaks_apiurl/api/moodle/$config->plagiarism_copyleaks_key/settings";
             if (isset($cmid)) {

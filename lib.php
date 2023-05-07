@@ -33,6 +33,7 @@ require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks
 require_once($CFG->dirroot . '/plagiarism/copyleaks/constants/plagiarism_copyleaks.constants.php');
 
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_assignmodule.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_utils.class.php');
 
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_comms.class.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/exceptions/plagiarism_copyleaks_authexception.class.php');
@@ -179,7 +180,11 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
             $cmid = optional_param('update', null, PARAM_INT);
             $savedvalues = $DB->get_records_menu('plagiarism_copyleaks_config', array('cm' => $cmid), '', 'name,value');
             if (count($savedvalues) > 0) {
-                $mform->setDefault('plagiarism_copyleaks_enable', $savedvalues['plagiarism_copyleaks_enable']);
+                // Add check for a new Course Module (for lower versions).
+                $mform->setDefault(
+                    'plagiarism_copyleaks_enable',
+                    isset($savedvalues['plagiarism_copyleaks_enable']) ? $savedvalues['plagiarism_copyleaks_enable'] : 0
+                );
 
                 $draftsubmit = isset($savedvalues['plagiarism_copyleaks_draftsubmit']) ?
                     $savedvalues['plagiarism_copyleaks_draftsubmit'] : 0;
@@ -206,20 +211,21 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
             $courseid = optional_param('course', 0, PARAM_INT);
             $isnewactivity = isset($addparam) && $addparam != "0";
             if ($isnewactivity) {
-                $cl = new plagiarism_copyleaks_comms();
-                $cmid = $cl->get_new_course_module_guid("$courseid");
+                $cmid = plagiarism_copyleaks_utils::get_copyleaks_temp_course_module_id("$courseid");
                 $mform->addElement(
                     'hidden',
                     'plagiarism_copyleaks_tempcmid',
                     "$cmid"
 
                 );
+                // Need to set type for Moodle's older version.
+                $mform->setType('plagiarism_copyleaks_tempcmid', PARAM_INT);
                 $settingslinkparams = $settingslinkparams . "isnewactivity=$isnewactivity&courseid=$courseid&";
             }
 
             $settingslinkparams = $settingslinkparams . "cmid=$cmid&modulename=$modulename";
 
-            $btn = plagiarism_copyleaks_comms::get_copyleaks_settings_button_link($settingslinkparams);
+            $btn = plagiarism_copyleaks_utils::get_copyleaks_settings_button_link($settingslinkparams, false, $cmid);
             $mform->addElement('html', $btn);
 
             $settingsdisplayed = true;
@@ -253,7 +259,8 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
 
         $config = plagiarism_copyleaks_pluginconfig::admin_config();
 
-        $isuseragreed = $DB->record_exists('plagiarism_copyleaks_users', array('userid' => $USER->id));
+        $isuseragreed = plagiarism_copyleaks_dbutils::is_user_eula_uptodate($USER->id);
+
         if (!$isuseragreed) {
             if (isset($config->plagiarism_copyleaks_studentdisclosure)) {
                 $clstudentdisclosure = $config->plagiarism_copyleaks_studentdisclosure;

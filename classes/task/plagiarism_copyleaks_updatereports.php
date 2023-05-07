@@ -68,10 +68,10 @@ class plagiarism_copyleaks_updatereports extends \core\task\scheduled_task {
                 '',
                 '*',
                 0,
-                PLAGIARISM_COPYLEAKS_CRON_SUBMISSIONS_LIMIT
+                PLAGIARISM_COPYLEAKS_CRON_QUERY_LIMIT
             );
 
-            $canloadmoredata = count($submissions) == PLAGIARISM_COPYLEAKS_CRON_SUBMISSIONS_LIMIT;
+            $canloadmoredata = count($submissions) == PLAGIARISM_COPYLEAKS_CRON_QUERY_LIMIT;
 
             // Add submission ids to the request.
             foreach ($submissions as $clsubmission) {

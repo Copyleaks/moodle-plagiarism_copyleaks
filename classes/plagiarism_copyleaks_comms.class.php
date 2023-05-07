@@ -26,6 +26,8 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/plagiarism/copyleaks/lib.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_httpclient.class.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_pluginconfig.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_dbutils.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/enums/plagiarism_copyleaks_enums.php');
 /**
  * Used for communications between Moodle and Copyleaks
  */
@@ -51,37 +53,6 @@ class plagiarism_copyleaks_comms {
     }
 
     /**
-     * Return the current lang code to use with Copyleaks
-     * @return string Supported Copyleaks lang code
-     */
-    public function get_lang() {
-        $defaultlangcode = 'en';
-        try {
-            $langcode = str_replace("_utf8", "", current_language());
-            $langarray = array(
-                'en' => $defaultlangcode,
-                'en_us' => $defaultlangcode,
-                'fr' => 'fr',
-                'fr_ca' => 'fr',
-                'es' => 'es',
-                'fr' => 'fr',
-                'pt' => 'pt',
-                'hi' => 'hi',
-                'zh' => 'zh',
-                'it' => 'it',
-                'ja' => 'ja',
-                'de' => 'de',
-                'tr' => 'tr',
-                'ru' => 'ru',
-                'ar' => 'ar'
-            );
-            return (isset($langarray[$langcode])) ? $langarray[$langcode] : $defaultlangcode;
-        } catch (Exception $e) {
-            return $defaultlangcode;
-        }
-    }
-
-    /**
      * Submit to Copyleaks for plagiairsm scan
      * @param string $filepath file path
      * @param string $filename file name
@@ -101,9 +72,7 @@ class plagiarism_copyleaks_comms {
     ) {
         if (isset($this->key) && isset($this->secret)) {
             $coursemodule = get_coursemodule_from_id('', $cmid);
-            if (
-                plagiarism_copyleaks_moduleconfig::did_user_accept_eula($userid)
-            ) {
+            if (plagiarism_copyleaks_dbutils::is_user_eula_uptodate($userid)) {
                 $student = get_complete_user_data('id', $userid);
                 $paramsmerge = (array)[
                     'fileName' => $filename,
@@ -158,7 +127,7 @@ class plagiarism_copyleaks_comms {
                 'instances' => $submissionsinstances,
             ];
 
-            $result = plagiarism_copyleaks_http_client::execute(
+            $result = plagiarism_copyleaks_http_client::execute_retry(
                 'POST',
                 $this->copyleaks_api_url() . "/api/moodle/plugin/" . $this->key . "/task/scan-instances",
                 true,
@@ -179,7 +148,7 @@ class plagiarism_copyleaks_comms {
             $reqbody = (array)[
                 'cursor' => $cursor
             ];
-            $result = plagiarism_copyleaks_http_client::execute(
+            $result = plagiarism_copyleaks_http_client::execute_retry(
                 'POST',
                 $this->copyleaks_api_url() . "/api/moodle/plugin/" . $this->key . "/task/resubmit-scans",
                 true,
@@ -198,7 +167,7 @@ class plagiarism_copyleaks_comms {
             $reqbody = (array)[
                 'ids' => $ids
             ];
-            plagiarism_copyleaks_http_client::execute(
+            plagiarism_copyleaks_http_client::execute_retry(
                 'POST',
                 $this->copyleaks_api_url() . "/api/moodle/plugin/" . $this->key . "/task/resubmit-scans/delete",
                 true,
@@ -219,7 +188,7 @@ class plagiarism_copyleaks_comms {
         }
 
         if (isset($this->key) && isset($this->secret)) {
-            $result = plagiarism_copyleaks_http_client::execute(
+            $result = plagiarism_copyleaks_http_client::execute_retry(
                 'POST',
                 $this->copyleaks_api_url() . "/api/moodle/" . $this->key .
                     "/report/" . $scanid . "/" . $isinstructor . "/request-access",
@@ -251,7 +220,7 @@ class plagiarism_copyleaks_comms {
             if (isset($cmid)) {
                 $url = $url . "/$cmid";
             }
-            $result = plagiarism_copyleaks_http_client::execute(
+            $result = plagiarism_copyleaks_http_client::execute_retry(
                 'POST',
                 $url,
                 true,
@@ -261,8 +230,6 @@ class plagiarism_copyleaks_comms {
             return $result->token;
         }
     }
-
-
 
     /**
      * get copyleaks api url.
@@ -319,7 +286,7 @@ class plagiarism_copyleaks_comms {
                 'secret' => $secret
             ];
 
-            $result = plagiarism_copyleaks_http_client::execute(
+            $result = plagiarism_copyleaks_http_client::execute_retry(
                 'POST',
                 $apiurl . "/api/moodle/plugin/" . $key . "/login",
                 false,
@@ -354,12 +321,17 @@ class plagiarism_copyleaks_comms {
     public function test_connection($context) {
         try {
             if (isset($this->key) && isset($this->secret)) {
-                plagiarism_copyleaks_http_client::execute(
+                $result = plagiarism_copyleaks_http_client::execute_retry(
                     'GET',
-                    $this->copyleaks_api_url() . "/api/moodle/plugin/" . $this->key . "/test-connection",
+                    $this->copyleaks_api_url() . "/api/moodle/plugin/" . $this->key . "/test-connection?source=". $context,
                     true
                 );
-                return true;
+                if (isset($result) && isset($result->eulaVersion)) {
+                    plagiarism_copyleaks_dbutils::update_copyleaks_eula_version($result->eulaVersion);
+                    return true;
+                } else {
+                    return false;
+                }
             } else {
                 return false;
             }
@@ -377,98 +349,40 @@ class plagiarism_copyleaks_comms {
      * @param array $data
      */
     public function upsert_course_module($data) {
-        plagiarism_copyleaks_http_client::execute(
+        $endpoint = "/api/moodle/plugin/$this->key/upsert-module";
+        $verb = 'POST';
+        try {
+            plagiarism_copyleaks_http_client::execute(
+                $verb,
+                $this->copyleaks_api_url() . $endpoint,
+                true,
+                json_encode($data)
+            );
+        } catch (\Exception $e) {
+            plagiarism_copyleaks_dbutils::queued_failed_request(
+                $this->key,
+                $data['courseModuleId'],
+                $endpoint,
+                $data,
+                plagiarism_copyleaks_priority::HIGH,
+                $e->getMessage(),
+                $verb
+            );
+        }
+    }
+
+    /**
+     * Update course module temp id at Copyleaks server.
+     * @param array $data
+     * @return object all the user ids that was updated succesfully in Copyleaks server
+     */
+    public function upsert_synced_eula($data) {
+        $result = plagiarism_copyleaks_http_client::execute(
             'POST',
-            $this->copyleaks_api_url() . "/api/moodle/plugin/$this->key/upsert-module",
+            $this->copyleaks_api_url() . "/api/moodle/plugin/$this->key/task/eula-approval-sync",
             true,
             json_encode($data)
         );
-    }
-
-    /**
-     * Get temp course module id .
-     * @param string $courseid
-     * @return string
-     */
-    public function get_new_course_module_guid($courseid) {
-        $number = rand(100, 100000);
-        $t = time();
-        return $courseid . $number . $t;
-    }
-
-    /**
-     * Set navbar breadcrumbs.
-     * @param mixed $cm
-     * @param mixed $course
-     * @return array $breadcrumbs
-     */
-    public static function set_navbar_breadcrumbs($cm, $course) {
-        global $CFG;
-        $breadcrumbs = [];
-        if (isset($cm)) {
-            $moodlecontext = get_site();
-            $moodlename = $moodlecontext->fullname;
-            $coursename = $course->fullname;
-
-            $breadcrumbs = [
-                [
-                    'url' => "$CFG->wwwroot",
-                    'name' => $moodlename,
-                ],
-                [
-                    'url' => "$CFG->wwwroot/course/view.php?id=$course->id",
-                    'name' => $coursename,
-                ],
-                [
-                    'url' => "$CFG->wwwroot/mod/assign/view.php?id=$cm->id",
-                    'name' => $cm == 'new' ? 'New Activity' : $cm->name,
-                ],
-            ];
-        } else {
-            $breadcrumbs = [
-                [
-                    'url' => "$CFG->wwwroot/admin/search.php",
-                    'name' => 'Site Administration',
-                ],
-                [
-                    'url' => "$CFG->wwwroot/plagiarism/copyleaks/settings.php",
-                    'name' => 'Copyleaks Plugin',
-                ],
-                [
-                    'url' => "$CFG->wwwroot/plagiarism/copyleaks/plagiarism_copyleaks_settings.php",
-                    'name' => 'Integration Settings',
-                ],
-            ];
-        }
-        return $breadcrumbs;
-    }
-
-    /**
-     * @param string $settingsurlparams - assign the url to the link
-     * @param bool $isadminform - for note above the link
-     * @return string
-     */
-    public static function get_copyleaks_settings_button_link($settingsurlparams, $isadminform = false) {
-        global $CFG;
-        $settingsurl = "$CFG->wwwroot/plagiarism/copyleaks/plagiarism_copyleaks_settings.php";
-        if (!isset($settingsurlparams) || $settingsurlparams != "") {
-            $settingsurl = $settingsurl . $settingsurlparams;
-        }
-        $text = get_string('clscansettingspagebtntxt', 'plagiarism_copyleaks');
-        if (!$isadminform) {
-            $text = get_string('clmodulescansettingstxt', 'plagiarism_copyleaks');
-        }
-
-        return
-            "<div class='form-group row'>" .
-            "<div class='col-md-3'></div>" .
-            "<div class='col-md-9'>" .
-            html_writer::link(
-                "$settingsurl",
-                $text,
-                array('target' => '_blank')
-            )
-            . "</div>" .
-            "</div>";
+        return $result;
     }
 }

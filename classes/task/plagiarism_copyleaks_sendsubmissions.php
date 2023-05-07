@@ -26,6 +26,8 @@ namespace plagiarism_copyleaks\task;
 defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/plagiarism/copyleaks/constants/plagiarism_copyleaks.constants.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_logs.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_dbutils.class.php');
+
 
 /**
  * Copyleaks Plagiarism Plugin - Handle Queued Files
@@ -46,6 +48,7 @@ class plagiarism_copyleaks_sendsubmissions extends \core\task\scheduled_task {
         require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_submissions.class.php');
         require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_comms.class.php');
         require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_assignmodule.class.php');
+        require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_utils.class.php');
 
         $this->send_queued_submissions();
     }
@@ -69,10 +72,10 @@ class plagiarism_copyleaks_sendsubmissions extends \core\task\scheduled_task {
                 '',
                 '*',
                 0,
-                PLAGIARISM_COPYLEAKS_CRON_SUBMISSIONS_LIMIT
+                PLAGIARISM_COPYLEAKS_CRON_QUERY_LIMIT
             );
 
-            $canloadmoredata = count($queuedsubmissions) == PLAGIARISM_COPYLEAKS_CRON_SUBMISSIONS_LIMIT;
+            $canloadmoredata = count($queuedsubmissions) == PLAGIARISM_COPYLEAKS_CRON_QUERY_LIMIT;
 
             if (count($queuedsubmissions) > 0 && !\plagiarism_copyleaks_comms::test_copyleaks_connection('scheduler_task')) {
                 return;
@@ -90,6 +93,10 @@ class plagiarism_copyleaks_sendsubmissions extends \core\task\scheduled_task {
                         $submission->id,
                         'Submission type is not supported.'
                     );
+                    continue;
+                }
+
+                if (\plagiarism_copyleaks_moduleconfig::is_course_module_request_queued($submission->cm)) {
                     continue;
                 }
 

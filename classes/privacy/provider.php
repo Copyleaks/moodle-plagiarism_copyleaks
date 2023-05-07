@@ -29,6 +29,9 @@ use core_privacy\local\request\contextlist;
 use core_privacy\local\request\helper;
 use core_privacy\local\request\writer;
 
+defined('MOODLE_INTERNAL') || die();
+
+
 /** Privacy Subsystem implementation for plagiarism_copyleaks. */
 /* This plugin does export personal user data.*/
 /**

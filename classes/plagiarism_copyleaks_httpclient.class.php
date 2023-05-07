@@ -68,7 +68,7 @@ class plagiarism_copyleaks_http_client {
             )
         );
 
-        $version = 2023013105;
+        $version = 2023050700;
         $headers = (array)[
             'Content-Type' => $contenttype,
             'Plugin-Version' => "$version"
@@ -123,6 +123,55 @@ class plagiarism_copyleaks_http_client {
             throw new plagiarism_copyleaks_rate_limit_exception();
         } else {
             throw new plagiarism_copyleaks_exception($result, $statuscode);
+        }
+    }
+
+    /**
+     * Generic execute with retry mechanism method for AJAX calls
+     * @param string $verb - request verb
+     * @param string $url request url
+     * @param bool $requireauth is request require authentication
+     * @param any $data request data
+     * @param bool $isauthretry is authentication retry request
+     * @param string $contenttype request content type
+     * @return mixed response data (if there is any)
+     */
+    public static function execute_retry(
+        $verb,
+        $url,
+        $requireauth = true,
+        $data = null,
+        $isauthretry = false,
+        $contenttype = 'application/json'
+    ) {
+
+        $retrycnt = 0;
+        $maxretries = count(PLAGIARISM_COPYLEAKS_RETRY);
+        $serverresult = null;
+
+        while (!isset($serverresult) && $retrycnt < $maxretries) {
+            try {
+                sleep(PLAGIARISM_COPYLEAKS_RETRY[$retrycnt]);
+                $serverresult = self::execute(
+                    $verb,
+                    $url,
+                    $requireauth,
+                    $data,
+                    $isauthretry,
+                    $contenttype
+                );
+                return $serverresult;
+            } catch (plagiarism_copyleaks_under_maintenance_exception $ume) {
+                throw $ume;
+            } catch (plagiarism_copyleaks_rate_limit_exception $rle) {
+                throw $rle;
+            } catch (Exception $e) {
+                if ($retrycnt >= $maxretries) {
+                    throw $e;
+                } else {
+                    $retrycnt = $retrycnt + 1;
+                }
+            }
         }
     }
 

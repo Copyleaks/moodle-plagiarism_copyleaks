@@ -20,6 +20,7 @@
  * @author    Bayan Abuawad <bayana@copyleaks.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+defined('MOODLE_INTERNAL') || die();
 
 $string['pluginname']  = 'Copyleaks plagiarism plugin';
 $string['copyleaks'] = 'Copyleaks';
@@ -48,19 +49,22 @@ $string['clupdateerror'] = 'Error while trying to update records in database';
 $string['clinserterror'] = 'Error while trying to insert records to database';
 $string['clsendqueuedsubmissions'] = "Copyleaks plagiarism plugin - handle queued files";
 $string['clsendresubmissionsfiles'] = "Copyleaks plagiarism plugin - handle resubmitted results";
+$string['clsendrequestqueue'] = "Copyleaks plagiarism plugin - handle retry queued requests";
+$string['clupserteulausers'] = "Copyleaks plagiarism plugin - handle upsert eula acceptance users";
 $string['clupdatereportscores'] = "Copyleaks plagiarism plugin - handle plagiairsm check similarity score update";
 $string['cldraftsubmit'] = "Submit files only when students click the submit button";
 $string['cldraftsubmit_help'] = "This option is only available if 'Require students to click the submit button' is Yes";
 $string['clreportgenspeed'] = 'When to generate report?';
 $string['clgenereportimmediately'] = 'Generate reports immediately';
 $string['clgenereportonduedate'] = 'Generate reports on due date';
-$string['cltaskfailedconnecting'] = 'connection to Copyleaks can not be established, error: {$a}';
+$string['cltaskfailedconnecting'] = 'Connection to Copyleaks can not be established, error: {$a}';
 $string['clapisubmissionerror'] = 'Copyleaks has returned an error while trying to send file for submission - ';
 $string['clcheatingdetected'] = 'Cheating detected, Open report to learn more';
 $string['clcheatingdetectedtxt'] = 'Cheating detected';
 $string['clreportpagetitle'] = 'Copyleaks report';
 $string['clscansettingspagebtntxt'] = 'Edit scan settings';
 $string['clmodulescansettingstxt'] = "Edit scan settings";
+$string['cldisablesettingstooltip'] = "Working on syncing data to Copyleaks...";
 $string['clopenfullscreen'] = 'Open in full screen';
 $string['cllogsheading'] = 'Logs';
 $string['clpoweredbycopyleaks'] = 'Powered by Copyleaks';

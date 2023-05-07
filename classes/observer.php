@@ -52,6 +52,12 @@ class plagiarism_copyleaks_observer {
             'plagiarism_copyleaks_config',
             array('cm' => $cmid)
         );
+
+        // Delete Copyleaks module queued requests.
+        $DB->delete_records(
+            'plagiarism_copyleaks_request',
+            array('cmid' => $cmid)
+        );
     }
 
     /**
