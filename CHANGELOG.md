@@ -1,3 +1,8 @@
+### Date: 		2023-May-07
+### Release:	v2023050701
+- Add a retry mechanism for failed HTTP requests.
+- Sync EULA to Copyleaks servers.
+
 ### Date: 		2023-March-24
 ### Release:	v2023032400
 -  The Copyleaks checkboxs settings options have been relocated to the Copyleaks Iframe, which now provides a wider range of options to choose from, allowing for greater control and customization of the  Copyleaks settings.
