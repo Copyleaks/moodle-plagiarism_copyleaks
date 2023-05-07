@@ -108,7 +108,7 @@ class plagiarism_copyleaks_dbutils {
      * @param string userid check eula version by user Moodle id
      * @return bool
      */
-    public static function is_user_eula_uptodate($userid, $isrecursive = false) {
+    public static function is_user_eula_uptodate($userid) {
         global $DB;
 
         $user = $DB->get_record('plagiarism_copyleaks_users', array('userid' => $userid));
@@ -117,28 +117,16 @@ class plagiarism_copyleaks_dbutils {
         }
 
         $version = self::get_copyleaks_eula_version();
-        if ($version == PLAGIARISM_COPYLEAKS_DEFUALT_EULA_VERSION) {
-            if (!$isrecursive) {
-                \plagiarism_copyleaks_comms::test_copyleaks_connection('is_user_eula_uptodate');
-                return self::is_user_eula_uptodate($userid, true);
-            } else {
-                return false;
-            }
-        }
         return self::is_eula_version_update_by_userid($userid, $version);
     }
 
     /*
     * @param string userid
     */
-    public static function upsert_eula_by_user_id($userid, $isrecursive = false) {
+    public static function upsert_eula_by_user_id($userid) {
         global $DB;
         $user = $DB->get_record('plagiarism_copyleaks_users', array('userid' => $userid));
         $curreulaversion = self::get_copyleaks_eula_version();
-        if ($curreulaversion == PLAGIARISM_COPYLEAKS_DEFUALT_EULA_VERSION && !$isrecursive) {
-            \plagiarism_copyleaks_comms::test_copyleaks_connection('upsert_eula_by_user_id');
-            return self::upsert_eula_by_user_id($userid, true);
-        }
 
         if (!$user) {
             if (!$DB->insert_record('plagiarism_copyleaks_users', array('userid' => $userid))) {

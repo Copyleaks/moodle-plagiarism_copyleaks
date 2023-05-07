@@ -213,7 +213,7 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2022122802, 'plagiarism', 'copyleaks');
     }
 
-    if ($oldversion < 2023050500) {
+    if ($oldversion < 2023050701) {
         // Adding fields to table plagiarism_copyleaks_request.
         $table = new xmldb_table('plagiarism_copyleaks_request');
         $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE);
@@ -272,7 +272,7 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         $savedfield = new stdClass();
         $savedfield->cm = PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID;
         $savedfield->name = PLAGIARISM_COPYLEAKS_EULA_FIELD_NAME;
-        $savedfield->value = '0';
+        $savedfield->value = PLAGIARISM_COPYLEAKS_DEFUALT_EULA_VERSION;
 
         if (!isset($saveddefaultvalue[$fieldname])) {
             $savedfield->config_hash = $savedfield->cm . "_" . $savedfield->name;
@@ -293,7 +293,7 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
             }
         }
 
-        upgrade_plugin_savepoint(true, 2023050500, 'plagiarism', 'copyleaks');
+        upgrade_plugin_savepoint(true, 2023050701, 'plagiarism', 'copyleaks');
     }
     return true;
 }
