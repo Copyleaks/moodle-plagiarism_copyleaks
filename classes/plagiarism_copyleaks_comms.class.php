@@ -200,13 +200,12 @@ class plagiarism_copyleaks_comms {
     }
 
     /**
-     * request access for copyleaks report
-     * @param boolean $isinstructor Copyleaks identify instructor
+     * request access for copyleaks report.
+     * @param boolean $role Moodle user's role.
      * @param array $breadcrumbs Moodle breadcrumbs.
      * @param array $name of the activity type.
      * @param array $coursemodulename of the activity.
-     * @param boolean $isadminview Copyleaks identify admins
-     * @return string a JWT to access student report only
+     * @return string $cmid for the settings and access.
      */
     public function request_access_for_settings($role, $breadcrumbs, $name = '', $coursemodulename = '', $cmid = 0) {
         if (isset($this->key) && isset($this->secret)) {
@@ -323,7 +322,7 @@ class plagiarism_copyleaks_comms {
             if (isset($this->key) && isset($this->secret)) {
                 $result = plagiarism_copyleaks_http_client::execute_retry(
                     'GET',
-                    $this->copyleaks_api_url() . "/api/moodle/plugin/" . $this->key . "/test-connection?source=". $context,
+                    $this->copyleaks_api_url() . "/api/moodle/plugin/" . $this->key . "/test-connection?source=" . $context,
                     true
                 );
                 if (isset($result) && isset($result->eulaVersion)) {
@@ -360,7 +359,6 @@ class plagiarism_copyleaks_comms {
             );
         } catch (\Exception $e) {
             plagiarism_copyleaks_dbutils::queued_failed_request(
-                $this->key,
                 $data['courseModuleId'],
                 $endpoint,
                 $data,

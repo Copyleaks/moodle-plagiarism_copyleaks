@@ -123,6 +123,7 @@ class plagiarism_copyleaks_utils {
     }
 
     /**
+     * Get Copyleaks buttom for settings page.
      * @param string $settingsurlparams - assign the url to the link
      * @param bool $isadminform - for note above the link
      * @return string

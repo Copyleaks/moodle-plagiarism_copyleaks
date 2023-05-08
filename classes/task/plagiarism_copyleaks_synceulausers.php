@@ -118,6 +118,7 @@ class plagiarism_copyleaks_synceulausers extends \core\task\scheduled_task {
     }
 
     /**
+     * Map the db record to the request's model
      * @param array $eulausers array of db records.
      * @return mixed
      */

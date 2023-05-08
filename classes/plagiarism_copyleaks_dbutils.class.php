@@ -28,21 +28,20 @@ require_once($CFG->dirroot . '/plagiarism/copyleaks/constants/plagiarism_copylea
 
 
 /**
- * Function that can be used in multiple places
+ * Functions that can be used in multiple places
  */
 class plagiarism_copyleaks_dbutils {
 
     /**
-     * @param string $key
+     * Save the failed request to the table queue in the data base.
      * @param string $cmid
      * @param string $endpoint
      * @param array $data
      * @param int $priority
      * @param string $error
      * @param bool $require_auth
-     * @return void
      */
-    public static function queued_failed_request($key, $cmid, $endpoint, $data, $priority, $error, $verb, $requireauth = true) {
+    public static function queued_failed_request($cmid, $endpoint, $data, $priority, $error, $verb, $requireauth = true) {
         global $DB;
         $records = $DB->get_record_select(
             'plagiarism_copyleaks_request',
@@ -74,6 +73,7 @@ class plagiarism_copyleaks_dbutils {
     }
 
     /**
+     * Update current eula version.
      * @param string $version
      */
     public static function update_copyleaks_eula_version($version) {
@@ -105,7 +105,8 @@ class plagiarism_copyleaks_dbutils {
     }
 
     /**
-     * @param string userid check eula version by user Moodle id
+     * Check if the last eula of the user is the same as the last eula version.
+     * @param string userid check eula version by user Moodle id.
      * @return bool
      */
     public static function is_user_eula_uptodate($userid) {
@@ -120,9 +121,10 @@ class plagiarism_copyleaks_dbutils {
         return self::is_eula_version_update_by_userid($userid, $version);
     }
 
-    /*
-    * @param string userid
-    */
+    /**
+     * Update in Copyleaks server that the user accepted the current version.
+     * @param string userid
+     */
     public static function upsert_eula_by_user_id($userid) {
         global $DB;
         $user = $DB->get_record('plagiarism_copyleaks_users', array('userid' => $userid));
