@@ -23,34 +23,34 @@
 defined('MOODLE_INTERNAL') || die();
 /**
  * This class is used as an enum in order to know what status the submissions are.
- * @param int SCORED
- * @param int ERROR
- * @param int PENDING
  */
 class plagiarism_copyleaks_reportstatus {
+    /** @var int scored report */
     const SCORED = 1;
+    /** @var int report got error */
     const ERROR = 2;
+    /** @var int report is still pending */
     const PENDING = 3;
 }
 
 /**
  * This class is used as an enum in order to know the queued requests's priority.
- * @param int LOW
- * @param int MIDIUM
- * @param int HIGH
  */
 class plagiarism_copyleaks_priority {
+    /** @var int low proirity */
     const LOW = 0;
+    /** @var int medium proirity */
     const MIDIUM = 1;
+    /** @var int high proirity */
     const HIGH = 2;
 }
 
 /**
  * This class is used as an enum in order to know the queued requests's reuslt.
- * @param int FAILED
- * @param int SUCCEEDED
  */
 class plagiarism_copyleaks_request_status {
+    /** @var int request was failed to complete */
     const FAILED = 0;
+    /** @var int request successfuly completed */
     const SUCCEEDED = 2;
 }

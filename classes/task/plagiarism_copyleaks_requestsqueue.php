@@ -102,6 +102,10 @@ class plagiarism_copyleaks_requestsqueue extends \core\task\scheduled_task {
         }
     }
 
+    /**
+     * Delete by batches all the request that sent successfuly.
+     * @param array $successrequestsids list of requests ids to delete.
+     */
     private function delete_queued_request($successrequestsids) {
         global $DB;
         $batchsize = 100;
@@ -119,6 +123,10 @@ class plagiarism_copyleaks_requestsqueue extends \core\task\scheduled_task {
         }
     }
 
+    /**
+     * Update all the failed requests that was failed again.
+     * @param array $failedrequests array of requests recorde to update.
+     */
     private function update_queued_request(&$failedrequests) {
         global $DB;
         if (count($failedrequests) > 0) {
