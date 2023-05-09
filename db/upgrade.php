@@ -252,7 +252,7 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         $table->add_field('ci_user_id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL);
         $table->add_field('version', XMLDB_TYPE_TEXT, '10', null, XMLDB_NOTNULL);
         $table->add_field('is_synced', XMLDB_TYPE_NUMBER, '1', XMLDB_UNSIGNED);
-        $table->add_field('date', XMLDB_TYPE_DATETIME, '30', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0');
+        $table->add_field('date', XMLDB_TYPE_DATETIME, '30');
 
         $table->add_key('id', XMLDB_KEY_PRIMARY, array('id'));
 
