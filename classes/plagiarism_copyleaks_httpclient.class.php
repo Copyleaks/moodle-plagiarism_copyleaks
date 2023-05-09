@@ -68,7 +68,7 @@ class plagiarism_copyleaks_http_client {
             )
         );
 
-        $version = 2023050701;
+        $version = 2023050900;
         $headers = (array)[
             'Content-Type' => $contenttype,
             'Plugin-Version' => "$version"
