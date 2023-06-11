@@ -102,11 +102,14 @@ a.copyleaks-settings-link:hover {
 }
 
 .resubmit-button {
-    width: 86px;
+    width: 72px;
     border-radius: 4px;
     background: #17a1ff;
-    color: white;
-    font-weight: bold;
+    color: #fff;
+    font-weight: 700;
     font-size: 12px;
+    line-height: 22px;
     border: none;
+    height: 24px;
+    text-align: center;
 }

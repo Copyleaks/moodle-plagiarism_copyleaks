@@ -302,7 +302,7 @@ class plagiarism_copyleaks_submissiondisplay {
                                 $errorwrapper = '<span>' . $errorstring . '</span>';
                                 $id = optional_param('id', null, PARAM_TEXT);
                                 $courseid = $COURSE->id;
-                                $resubmiturl = "$CFG->wwwroot\plagiarism\copyleaks\plagiarism_copyleaks_resubmit_handler.class.php?scanid=$submittedfile->id&assignment=$id&action=grading&courseid=$courseid";
+                                $resubmiturl = "$CFG->wwwroot\plagiarism\copyleaks\plagiarism_copyleaks_resubmit_handler.php?scanid=$submittedfile->id&assignment=$id&action=grading&courseid=$courseid";
 
                                 $output = html_writer::tag(
                                     'div',
@@ -320,12 +320,9 @@ class plagiarism_copyleaks_submissiondisplay {
                                             array('class' => 'icon_size')
                                         )
                                         .
-
-                                        $OUTPUT->single_button(
-                                            $resubmiturl,
-                                            get_string('clresubmitfailed', 'plagiarism_copyleaks'),
-                                            array('class' => 'resubmit-button')
-                                        ),
+                                        "<div class='resubmit-button'>" .
+                                        html_writer::link("$resubmiturl", get_string('clresubmitfailed', 'plagiarism_copyleaks'), array('class' => 'resubmit-button')) .
+                                        "</div>",
                                     array('class' => 'copyleaks')
                                 );
                             }
