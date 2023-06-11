@@ -37,7 +37,7 @@ class plagiarism_copyleaks_submissiondisplay {
      * @return string displayed output
      */
     public static function output($submissionref) {
-        global $OUTPUT, $DB, $USER, $CFG;
+        global $OUTPUT, $DB, $USER, $CFG, $COURSE;
 
         if (!empty($submissionref["file"])) {
             $file = $submissionref["file"];
@@ -300,6 +300,9 @@ class plagiarism_copyleaks_submissiondisplay {
                                     . '</span>&nbsp;';
 
                                 $errorwrapper = '<span>' . $errorstring . '</span>';
+                                $id = optional_param('id', null, PARAM_TEXT);
+                                $courseid = $COURSE->id;
+                                $resubmiturl = "$CFG->wwwroot\plagiarism\copyleaks\plagiarism_copyleaks_resubmit_handler.class.php?scanid=$submittedfile->id&assignment=$id&action=grading&courseid=$courseid";
 
                                 $output = html_writer::tag(
                                     'div',
@@ -315,6 +318,13 @@ class plagiarism_copyleaks_submissiondisplay {
                                             $submittedfile->errormsg,
                                             'plagiarism_copyleaks',
                                             array('class' => 'icon_size')
+                                        )
+                                        .
+
+                                        $OUTPUT->single_button(
+                                            $resubmiturl,
+                                            get_string('clresubmitfailed', 'plagiarism_copyleaks'),
+                                            array('class' => 'resubmit-button')
                                         ),
                                     array('class' => 'copyleaks')
                                 );
@@ -388,4 +398,8 @@ class plagiarism_copyleaks_submissiondisplay {
 
         return "<br/>$output<br/>";
     }
+}
+
+function clickToRescanFile($fileId) {
+    plagiarism_copyleaks_dbutils::change_failed_scan_to_queued($fileId);
 }

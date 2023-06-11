@@ -178,6 +178,29 @@ class plagiarism_copyleaks_dbutils {
     }
 
     /**
+     * @param string scanid
+     */
+    public static function change_failed_scan_to_queued($fileid) {
+        global $DB;
+        $record = $DB->get_record(
+            'plagiarism_copyleaks_files',
+            array(
+                'id' => $fileid,
+            )
+        );
+        $record->statuscode = "queued";
+        $record->errormsg = null;
+        if ($record) {
+            if (!$DB->update_record('plagiarism_copyleaks_files', $record)) {
+                \plagiarism_copyleaks_logs::add(
+                    "Could update to resubmit: $fileid",
+                    "UPDATE_RECORD_FAILED"
+                );
+            }
+        }
+    }
+
+    /**
      * @param string $userid check by user id if updated.
      * @param string $version id the user id up-to-date the version
      * @return object

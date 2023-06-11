@@ -43,6 +43,7 @@ $string['clenablemodulefor'] = 'Activer les fuites de copie pour {$a}';
 $string['clfailtosavedata'] = 'Échec de l\'enregistrement des données Copyleaks';
 $string['clgenereportimmediately'] = 'Générez des rapports immédiatement';
 $string['clgenereportonduedate'] = 'Générer des rapports à la date d\'échéance';
+$string['clresubmitfailed'] = 'Essayer à nouveau';
 $string['clinserterror'] = 'Erreur lors de la tentative d\'insertion d\'enregistrements dans la base de données';
 $string['clinvalidkeyorsecret'] = 'Clé ou secret invalide';
 $string['cllogsheading'] = 'Journaux';
