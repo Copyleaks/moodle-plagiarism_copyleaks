@@ -21,7 +21,7 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 require(dirname(dirname(__FILE__)) . '/../config.php');
-require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_dbutils.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_submissions.class.php');
 
 global $CFG, $USER;
 $scanid = optional_param('scanid', null, PARAM_TEXT);
@@ -38,6 +38,6 @@ foreach ($roles as $role) {
     }
 }
 
-plagiarism_copyleaks_dbutils::change_failed_scan_to_queued($scanid);
+plagiarism_copyleaks_submissions::change_failed_scan_to_queued($scanid);
 $path = $CFG->wwwroot . "/mod/assign/view.php?id=$assignmentid&action=$action";
 redirect($path);

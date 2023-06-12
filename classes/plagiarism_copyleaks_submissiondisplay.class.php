@@ -396,7 +396,3 @@ class plagiarism_copyleaks_submissiondisplay {
         return "<br/>$output<br/>";
     }
 }
-
-function clickToRescanFile($fileId) {
-    plagiarism_copyleaks_dbutils::change_failed_scan_to_queued($fileId);
-}
