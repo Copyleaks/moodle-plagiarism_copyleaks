@@ -37,7 +37,7 @@ class plagiarism_copyleaks_submissiondisplay {
      * @return string displayed output
      */
     public static function output($submissionref) {
-        global $OUTPUT, $DB, $USER, $CFG, $COURSE;
+        global $OUTPUT, $DB, $USER, $CFG, $COURSE, $PAGE;
 
         if (!empty($submissionref["file"])) {
             $file = $submissionref["file"];
@@ -300,9 +300,17 @@ class plagiarism_copyleaks_submissiondisplay {
                                     . '</span>&nbsp;';
 
                                 $errorwrapper = '<span>' . $errorstring . '</span>';
-                                $id = optional_param('id', null, PARAM_TEXT);
+
+                                $currenturl = $PAGE->url->get_path();
+                                $params = $PAGE->url->params();
+                                $querystring = http_build_query($params, '', '&');
+                                $route = str_replace('/moodle', '', $currenturl);
+                                $route = $route . '?' . "$querystring";
+
+                                $cmid = $submissionref['cmid'];
                                 $courseid = $COURSE->id;
-                                $resubmiturl = "$CFG->wwwroot\plagiarism\copyleaks\plagiarism_copyleaks_resubmit_handler.php?scanid=$submittedfile->id&assignment=$id&action=grading&courseid=$courseid";
+
+                                $resubmiturl = "$CFG->wwwroot/plagiarism/copyleaks/plagiarism_copyleaks_resubmit_handler.php?fileid=$submittedfile->id&cmid=$cmid&courseid=$courseid&route=$route";
 
                                 $output = html_writer::tag(
                                     'div',

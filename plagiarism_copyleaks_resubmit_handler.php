@@ -24,13 +24,19 @@ require(dirname(dirname(__FILE__)) . '/../config.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_submissions.class.php');
 
 global $CFG, $USER;
-$scanid = optional_param('scanid', null, PARAM_TEXT);
-$action = optional_param('action', null, PARAM_TEXT);
-$assignmentid = optional_param('assignment', null, PARAM_TEXT);
+$fileid = optional_param('fileid', null, PARAM_TEXT);
+$cmid = optional_param('cmid', null, PARAM_TEXT);
 $courseid = optional_param('courseid', null, PARAM_TEXT);
+$route = optional_param('route', null, PARAM_TEXT);
+$action = optional_param('action', null, PARAM_TEXT);
+$workshopid = optional_param('id', null, PARAM_TEXT);
+
+$cm = get_coursemodule_from_id('', $cmid, $courseid);
+require_login($courseid, true, $cm);
 
 $context = context_course::instance($courseid);
 $roles = get_user_roles($context, $USER->id);
+
 foreach ($roles as $role) {
     if ($role->shortname == 'student') {
         echo html_writer::div(get_string('clnopageaccess', 'plagiarism_copyleaks'), null, array('style' => $errormessagestyle));
@@ -38,6 +44,24 @@ foreach ($roles as $role) {
     }
 }
 
-plagiarism_copyleaks_submissions::change_failed_scan_to_queued($scanid);
-$path = $CFG->wwwroot . "/mod/assign/view.php?id=$assignmentid&action=$action";
+plagiarism_copyleaks_submissions::change_failed_scan_to_queued($fileid);
+
+$path = $CFG->wwwroot . $route;
+$querypos = strpos($path, '?');
+if ($action) {
+    if ($querypos) {
+        $path = $path . "&action=$action";
+    } else {
+        $path = $path . "?action=$action";
+    }
+}
+
+if ($workshopid && $cm->modname == "workshop") {
+    if ($querypos) {
+        $path = $path . "&id=$workshopid";
+    } else {
+        $path = $path . "?id=$workshopid";
+    }
+}
+
 redirect($path);
