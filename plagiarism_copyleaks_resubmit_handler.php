@@ -24,10 +24,10 @@ require(dirname(dirname(__FILE__)) . '/../config.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_submissions.class.php');
 
 global $CFG, $USER;
-$fileid = optional_param('fileid', null, PARAM_TEXT);
-$cmid = optional_param('cmid', null, PARAM_TEXT);
-$courseid = optional_param('courseid', null, PARAM_TEXT);
-$route = optional_param('route', null, PARAM_TEXT);
+$fileid = required_param('fileid', PARAM_TEXT);
+$cmid = required_param('cmid', PARAM_TEXT);
+$courseid = required_param('courseid', PARAM_TEXT);
+$route = required_param('route', PARAM_TEXT);
 $action = optional_param('action', null, PARAM_TEXT);
 $workshopid = optional_param('id', null, PARAM_TEXT);
 

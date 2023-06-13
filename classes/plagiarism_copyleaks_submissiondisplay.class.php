@@ -298,44 +298,44 @@ class plagiarism_copyleaks_submissiondisplay {
                                     . $clplagiarised . ':&nbsp;</span>&nbsp;<span class="strong">'
                                     . get_string('clplagiarisefailed', 'plagiarism_copyleaks')
                                     . '</span>&nbsp;';
-
                                 $errorwrapper = '<span>' . $errorstring . '</span>';
+                                $outputcontent = $OUTPUT->pix_icon(
+                                    'copyleaks-logo',
+                                    $clpoweredbycopyleakstxt,
+                                    'plagiarism_copyleaks',
+                                    array('class' => 'icon_size')
+                                ) . $errorwrapper . $OUTPUT->pix_icon(
+                                    'copyleaks-error',
+                                    $submittedfile->errormsg,
+                                    'plagiarism_copyleaks',
+                                    array('class' => 'icon_size')
+                                );
 
-                                $currenturl = $PAGE->url->get_path();
-                                $params = $PAGE->url->params();
-                                $querystring = http_build_query($params, '', '&');
-                                $route = str_replace('/moodle', '', $currenturl);
-                                $route = $route . '?' . "$querystring";
+                                try {
+                                    $currenturl = $PAGE->url->get_path();
+                                    $params = $PAGE->url->params();
+                                    $querystring = http_build_query($params, '', '&');
+                                    $route = str_replace('/moodle', '', $currenturl);
+                                    $route = $route . '?' . "$querystring";
 
-                                $cmid = $submissionref['cmid'];
-                                $courseid = $COURSE->id;
+                                    $cmid = $submissionref['cmid'];
+                                    $courseid = $COURSE->id;
 
-                                $resubmiturl = "$CFG->wwwroot/plagiarism/copyleaks/plagiarism_copyleaks_resubmit_handler.php?fileid=$submittedfile->id&cmid=$cmid&courseid=$courseid&route=$route";
-
-                                $output = html_writer::tag(
-                                    'div',
-                                    $OUTPUT->pix_icon(
-                                        'copyleaks-logo',
-                                        $clpoweredbycopyleakstxt,
-                                        'plagiarism_copyleaks',
-                                        array('class' => 'icon_size')
-                                    )
-                                        . $errorwrapper
-                                        . $OUTPUT->pix_icon(
-                                            'copyleaks-error',
-                                            $submittedfile->errormsg,
-                                            'plagiarism_copyleaks',
-                                            array('class' => 'icon_size')
-                                        )
-                                        .
-                                        "<div class='resubmit-button'>" .
+                                    $resubmiturl = "$CFG->wwwroot/plagiarism/copyleaks/plagiarism_copyleaks_resubmit_handler.php?fileid=$submittedfile->id&cmid=$cmid&courseid=$courseid&route=$route";
+                                    $outputcontent .= "<div class='resubmit-button'>" .
                                         html_writer::link(
                                             "$resubmiturl",
                                             get_string('clresubmitfailed', 'plagiarism_copyleaks'),
                                             array('class' => 'resubmit-button')
                                         )
                                         .
-                                        "</div>",
+                                        "</div>";
+                                } catch (Exception $ex) {/* nothing to do. */
+                                }
+
+                                $output = html_writer::tag(
+                                    'div',
+                                    $outputcontent,
                                     array('class' => 'copyleaks')
                                 );
                             }
