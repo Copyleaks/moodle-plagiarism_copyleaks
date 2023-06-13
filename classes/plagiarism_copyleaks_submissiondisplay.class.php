@@ -329,7 +329,12 @@ class plagiarism_copyleaks_submissiondisplay {
                                         )
                                         .
                                         "<div class='resubmit-button'>" .
-                                        html_writer::link("$resubmiturl", get_string('clresubmitfailed', 'plagiarism_copyleaks'), array('class' => 'resubmit-button')) .
+                                        html_writer::link(
+                                            "$resubmiturl",
+                                            get_string('clresubmitfailed', 'plagiarism_copyleaks'),
+                                            array('class' => 'resubmit-button')
+                                        )
+                                        .
                                         "</div>",
                                     array('class' => 'copyleaks')
                                 );

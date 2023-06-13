@@ -234,7 +234,7 @@ class plagiarism_copyleaks_submissions {
         if ($record) {
             if (!$DB->update_record('plagiarism_copyleaks_files', $record)) {
                 \plagiarism_copyleaks_logs::add(
-                    "Could update to resubmit: $fileid",
+                    "failed to update to resubmit, fileid: $fileid",
                     "UPDATE_RECORD_FAILED"
                 );
             }
