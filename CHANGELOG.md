@@ -1,3 +1,7 @@
+### Date: 		2023-Sep-04
+### Release:	v2023090400
+- Added the ability to resubmit failed scans.
+
 ### Date: 		2023-May-07
 ### Release:	v2023050701
 - Add a retry mechanism for failed HTTP requests.
