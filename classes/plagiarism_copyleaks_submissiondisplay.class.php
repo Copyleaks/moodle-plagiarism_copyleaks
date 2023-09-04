@@ -26,6 +26,7 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_pluginconfig.class.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/constants/plagiarism_copyleaks.constants.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_assignmodule.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_logs.class.php');
 
 /**
  * submission display helpers methods
@@ -321,16 +322,21 @@ class plagiarism_copyleaks_submissiondisplay {
                                     $cmid = $submissionref['cmid'];
                                     $courseid = $COURSE->id;
 
-                                    $resubmiturl = "$CFG->wwwroot/plagiarism/copyleaks/plagiarism_copyleaks_resubmit_handler.php?fileid=$submittedfile->id&cmid=$cmid&courseid=$courseid&route=$route";
-                                    $outputcontent .= "<div class='resubmit-button'>" .
+                                    $resubmiturl = "$CFG->wwwroot/plagiarism/copyleaks/plagiarism_copyleaks_resubmit_handler.php".
+                                    "?fileid=$submittedfile->id&cmid=$cmid&courseid=$courseid&route=$route";
+                                    $outputcontent .= "<div class='copyleaks-resubmit-button'>" .
                                         html_writer::link(
                                             "$resubmiturl",
                                             get_string('clresubmitfailed', 'plagiarism_copyleaks'),
-                                            array('class' => 'resubmit-button')
+                                            array('class' => 'copyleaks-resubmit-button')
                                         )
                                         .
                                         "</div>";
-                                } catch (Exception $ex) {/* nothing to do. */
+                                } catch (Exception $e) {
+                                    \plagiarism_copyleaks_logs::add(
+                                        "Fail to add resubmit button - " . $e->getMessage(),
+                                        "UI_ERROR"
+                                    );
                                 }
 
                                 $output = html_writer::tag(
