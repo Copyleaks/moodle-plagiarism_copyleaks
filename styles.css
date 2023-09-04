@@ -100,3 +100,16 @@ a.copyleaks-settings-link:hover {
     justify-content: center;
     align-items: center;
 }
+
+.copyleaks-resubmit-button {
+    width: 72px;
+    border-radius: 4px;
+    background: #17a1ff;
+    color: #fff;
+    font-weight: 700;
+    font-size: 12px;
+    line-height: 22px;
+    border: none;
+    height: 24px;
+    text-align: center;
+}

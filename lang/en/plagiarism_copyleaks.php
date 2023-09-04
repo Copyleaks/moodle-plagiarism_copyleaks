@@ -43,6 +43,7 @@ $string['clallowstudentaccess'] = 'Allow students access to plagiarism reports';
 $string['clinvalidkeyorsecret'] = 'Invalid key or secret';
 $string['clfailtosavedata'] = 'Fail to save Copyleaks data';
 $string['clplagiarised'] = 'Similarity score';
+$string['clresubmitfailed'] = 'Try again';
 $string['clopenreport'] = 'Click to open Copyleaks report';
 $string['clscoursesettings'] = 'Copyleaks settings';
 $string['clupdateerror'] = 'Error while trying to update records in database';

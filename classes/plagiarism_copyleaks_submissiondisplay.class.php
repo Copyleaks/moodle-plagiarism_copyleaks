@@ -26,6 +26,7 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_pluginconfig.class.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/constants/plagiarism_copyleaks.constants.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_assignmodule.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_logs.class.php');
 
 /**
  * submission display helpers methods
@@ -37,7 +38,7 @@ class plagiarism_copyleaks_submissiondisplay {
      * @return string displayed output
      */
     public static function output($submissionref) {
-        global $OUTPUT, $DB, $USER, $CFG;
+        global $OUTPUT, $DB, $USER, $CFG, $COURSE, $PAGE;
 
         if (!empty($submissionref["file"])) {
             $file = $submissionref["file"];
@@ -298,24 +299,49 @@ class plagiarism_copyleaks_submissiondisplay {
                                     . $clplagiarised . ':&nbsp;</span>&nbsp;<span class="strong">'
                                     . get_string('clplagiarisefailed', 'plagiarism_copyleaks')
                                     . '</span>&nbsp;';
-
                                 $errorwrapper = '<span>' . $errorstring . '</span>';
+                                $outputcontent = $OUTPUT->pix_icon(
+                                    'copyleaks-logo',
+                                    $clpoweredbycopyleakstxt,
+                                    'plagiarism_copyleaks',
+                                    array('class' => 'icon_size')
+                                ) . $errorwrapper . $OUTPUT->pix_icon(
+                                    'copyleaks-error',
+                                    $submittedfile->errormsg,
+                                    'plagiarism_copyleaks',
+                                    array('class' => 'icon_size')
+                                );
+
+                                try {
+                                    $currenturl = $PAGE->url->get_path();
+                                    $params = $PAGE->url->params();
+                                    $querystring = http_build_query($params, '', '&');
+                                    $route = str_replace('/moodle', '', $currenturl);
+                                    $route = $route . '?' . "$querystring";
+
+                                    $cmid = $submissionref['cmid'];
+                                    $courseid = $COURSE->id;
+
+                                    $resubmiturl = "$CFG->wwwroot/plagiarism/copyleaks/plagiarism_copyleaks_resubmit_handler.php".
+                                    "?fileid=$submittedfile->id&cmid=$cmid&courseid=$courseid&route=$route";
+                                    $outputcontent .= "<div class='copyleaks-resubmit-button'>" .
+                                        html_writer::link(
+                                            "$resubmiturl",
+                                            get_string('clresubmitfailed', 'plagiarism_copyleaks'),
+                                            array('class' => 'copyleaks-resubmit-button')
+                                        )
+                                        .
+                                        "</div>";
+                                } catch (Exception $e) {
+                                    \plagiarism_copyleaks_logs::add(
+                                        "Fail to add resubmit button - " . $e->getMessage(),
+                                        "UI_ERROR"
+                                    );
+                                }
 
                                 $output = html_writer::tag(
                                     'div',
-                                    $OUTPUT->pix_icon(
-                                        'copyleaks-logo',
-                                        $clpoweredbycopyleakstxt,
-                                        'plagiarism_copyleaks',
-                                        array('class' => 'icon_size')
-                                    )
-                                        . $errorwrapper
-                                        . $OUTPUT->pix_icon(
-                                            'copyleaks-error',
-                                            $submittedfile->errormsg,
-                                            'plagiarism_copyleaks',
-                                            array('class' => 'icon_size')
-                                        ),
+                                    $outputcontent,
                                     array('class' => 'copyleaks')
                                 );
                             }
