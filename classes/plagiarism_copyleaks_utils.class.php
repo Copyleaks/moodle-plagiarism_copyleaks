@@ -162,4 +162,40 @@ class plagiarism_copyleaks_utils {
             . "</div>" .
             "</div>";
     }
+
+    /**
+     * For each course module type if there is its kind due date time stamp - return it, if not, return null.
+     * @param stdClass $data form data
+     * @return DateTime or null
+     */
+    public static function get_course_module_due_date($data) {
+        $dateTime = new DateTime();
+        $issetdate = false;
+
+        switch ($data->modulename) {
+            case 'workshop':
+                if ($data->completionexpected > 0) {
+                    $dateTime->setTimestamp($data->completionexpected);
+                    $issetdate = true;
+                } else if ($data->submissionend > 0) {
+                    $dateTime->setTimestamp($data->submissionend);
+                    $issetdate = true;
+                }
+                break;
+            case 'quiz':
+                if ($data->timeclose > 0) {
+                    $dateTime->setTimestamp($data->timeclose);
+                    $issetdate = true;
+                }
+                break;
+            default:
+                if ($data->duedate > 0) {
+                    $dateTime->setTimestamp($data->duedate);
+                    $issetdate = true;
+                }
+                break;
+        }
+
+        return $issetdate ? $dateTime->format('Y-m-d H:i:s') : null;
+    }
 }

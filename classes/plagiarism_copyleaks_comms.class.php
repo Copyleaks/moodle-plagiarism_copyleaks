@@ -72,6 +72,7 @@ class plagiarism_copyleaks_comms {
     ) {
         if (isset($this->key) && isset($this->secret)) {
             $coursemodule = get_coursemodule_from_id('', $cmid);
+
             if (plagiarism_copyleaks_dbutils::is_user_eula_uptodate($userid)) {
                 $student = get_complete_user_data('id', $userid);
                 $paramsmerge = (array)[
@@ -92,7 +93,9 @@ class plagiarism_copyleaks_comms {
                     'courseModuleId' => $cmid,
                     'moodleUserId' => $userid,
                     'identifier' => $identifier,
-                    'submissionType' => $submissiontype
+                    'submissionType' => $submissiontype,
+                    'courseId' => $coursemodule->course,
+                    'courseName' => (get_course($coursemodule->course))->fullname
                 ];
             }
 
@@ -374,7 +377,7 @@ class plagiarism_copyleaks_comms {
      * @param array $data
      */
     public function upsert_courses($data) {
-        $endpoint = "/api/moodle/plugin/$this->key/upsert-courses";
+        $endpoint = "/api/moodle/plugin/$this->key/task/upsert-courses";
         $verb = 'POST';
         try {
             plagiarism_copyleaks_http_client::execute(

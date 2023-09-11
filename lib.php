@@ -68,14 +68,18 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
 
         // Save settings to Copyleaks.
         $cl = new plagiarism_copyleaks_comms();
-        $course = $DB->get_record('course', array('id' => $data->course), '*', MUST_EXIST);
+        $course = get_course($data->course); //plagiarism_copyleaks_dbutils::get_course_by_id($data->course);
+        $duedate = plagiarism_copyleaks_utils::get_course_module_due_date($data);
+
         $updatedata = array(
             'tempCourseModuleId' => isset($data->plagiarism_copyleaks_tempcmid) ? $data->plagiarism_copyleaks_tempcmid : null,
             'courseModuleId' => $data->coursemodule,
             'name' => $data->name,
             'moduleName' => $data->modulename,
             'courseId' => $data->course,
-            'courseName' => $course->fullname
+            'courseName' => $course->fullname,
+            'dueDate' => $duedate
+
         );
         $cl->upsert_course_module($updatedata);
 
