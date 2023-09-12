@@ -170,7 +170,7 @@ class plagiarism_copyleaks_utils {
      */
     public static function get_course_module_duedate($cmid) {
         global $DB;
-        $dateTime = new DateTime();
+        $datetime = new DateTime();
         $issetdate = false;
 
         $coursemodule = get_coursemodule_from_id('', $cmid);
@@ -185,27 +185,27 @@ class plagiarism_copyleaks_utils {
         switch ($coursemodule->modname) {
             case 'workshop':
                 if ($data->completionexpected > 0) {
-                    $dateTime->setTimestamp($data->completionexpected);
+                    $datetime->setTimestamp($data->completionexpected);
                     $issetdate = true;
                 } else if ($data->submissionend > 0) {
-                    $dateTime->setTimestamp($data->submissionend);
+                    $datetime->setTimestamp($data->submissionend);
                     $issetdate = true;
                 }
                 break;
             case 'quiz':
                 if ($data->timeclose > 0) {
-                    $dateTime->setTimestamp($data->timeclose);
+                    $datetime->setTimestamp($data->timeclose);
                     $issetdate = true;
                 }
                 break;
             default:
                 if ($data->duedate > 0) {
-                    $dateTime->setTimestamp($data->duedate);
+                    $datetime->setTimestamp($data->duedate);
                     $issetdate = true;
                 }
                 break;
         }
 
-        return $issetdate ? $dateTime->format('Y-m-d H:i:s') : null;
+        return $issetdate ? $datetime->format('Y-m-d H:i:s') : null;
     }
 }

@@ -35,7 +35,6 @@ class plagiarism_copyleaks_coursesupdate extends \core\task\scheduled_task {
         return get_string('clupdatecourses', 'plagiarism_copyleaks');
     }
 
-
     public function execute() {
 
         $this->hendle_courses_upsert();
@@ -53,11 +52,10 @@ class plagiarism_copyleaks_coursesupdate extends \core\task\scheduled_task {
         $cl = new \plagiarism_copyleaks_comms();
         $alreadyupdatedcourses = array();
 
-
         while ($canloadmore && (--$maxdataloadloops) > 0) {
 
             // Get all course modules that activated copyleaks plugin.
-            $coursemodules =  $DB->get_records(
+            $coursemodules = $DB->get_records(
                 'plagiarism_copyleaks_config',
                 array(
                     'name' => 'plagiarism_copyleaks_enable',
@@ -85,13 +83,12 @@ class plagiarism_copyleaks_coursesupdate extends \core\task\scheduled_task {
 
             $courseobjects = array();
 
-
             // For each cm we'll find its course and add it to the request array only if not already upserted.
             foreach ($coursemodules as $record) {
-                $courseModule = get_coursemodule_from_id('', $record->cm);
+                $coursemodule = get_coursemodule_from_id('', $record->cm);
 
-                if ($courseModule) {
-                    $course = get_course($courseModule->course);
+                if ($coursemodule) {
+                    $course = get_course($coursemodule->course);
 
                     // Check if the course already upserted.
                     if ($alreadyupdatedcourses[$course->id]) {
