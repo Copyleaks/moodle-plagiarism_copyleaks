@@ -182,6 +182,10 @@ class plagiarism_copyleaks_utils {
             '*'
         );
 
+        if (!$data) {
+            return null;
+        }
+
         switch ($coursemodule->modname) {
             case 'workshop':
                 if ($data->completionexpected > 0) {
