@@ -48,50 +48,71 @@ class plagiarism_copyleaks_coursesupdate extends \core\task\scheduled_task {
         global $DB;
         $startindex = 0;
         $canloadmore = true;
-        $currentTimestamp = time();
         $maxdataloadloops = PLAGIARISM_COPYLEAKS_CRON_MAX_DATA_LOOP;
         $maxitemsperloop = PLAGIARISM_COPYLEAKS_CRON_QUERY_LIMIT;
         $cl = new \plagiarism_copyleaks_comms();
+        $alreadyupdatedcourses = array();
 
 
         while ($canloadmore && (--$maxdataloadloops) > 0) {
 
-            $courses = $DB->get_records_select(
-                'course',
-                " (enddate > ? OR enddate = ?) AND format = ?",
-                array($currentTimestamp, 0, 'topics'),
+            // Get all course modules that activated copyleaks plugin.
+            $coursemodules =  $DB->get_records(
+                'plagiarism_copyleaks_config',
+                array(
+                    'name' => 'plagiarism_copyleaks_enable',
+                    'value' => true
+                ),
                 '',
-                '*',
+                'cm',
                 $startindex,
                 $maxitemsperloop
             );
-            $coursescount = count($courses);
 
-            if ($coursescount == 0) {
-                return;
+            $coursemodulesscount = count($coursemodules);
+
+            // If there is no cm's break the loop.
+            if ($coursemodulesscount == 0) {
+                break;
             }
 
-            if ($coursescount < $maxitemsperloop) {
+            // If the amount of the course module is lower then the max records amount - can't load more.
+            if ($coursemodulesscount < $maxitemsperloop) {
                 $canloadmore = false;
             }
 
-            $startindex += $coursescount;
+            $startindex += $coursemodulesscount;
+
             $courseobjects = array();
 
-            // Loop through the courses and create objects for each course
-            foreach ($courses as $course) {
-                $mapcourse = [];
-                // Create a new stdClass object
 
-                // Set properties for the object
-                $mapcourse['id'] = $course->id;
-                $mapcourse['name'] = $course->fullname;
+            // For each cm we'll find its course and add it to the request array only if not already upserted.
+            foreach ($coursemodules as $record) {
+                $courseModule = get_coursemodule_from_id('', $record->cm);
 
-                // Add the course object to the array
-                $courseobjects[] = $mapcourse;
+                if ($courseModule) {
+                    $course = get_course($courseModule->course);
+
+                    // Check if the course already upserted.
+                    if ($alreadyupdatedcourses[$course->id]) {
+                        continue;
+                    } else {
+                        $alreadyupdatedcourses[$course->id] = true;
+                    }
+
+                    if ($course) {
+                        $courseobjects[] = array(
+                            "id" => $course->id,
+                            "name" => $course->fullname
+                        );
+                    }
+                }
             }
-            $req['courses'] = $courseobjects;
-            $cl->upsert_courses($req);
+
+            // Send the upsert request only if there is any courses.
+            if (count($courseobjects) > 0) {
+                $cl->upsert_courses(array('courses' => $courseobjects));
+            }
         }
     }
 }

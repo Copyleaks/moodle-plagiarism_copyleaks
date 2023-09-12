@@ -166,6 +166,7 @@ class plagiarism_copyleaks_utils {
 
     /**
      * @param string course module id
+     * @return Date or null
      */
     public static function get_course_module_duedate($cmid) {
         global $DB;
