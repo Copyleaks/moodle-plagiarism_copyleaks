@@ -64,8 +64,6 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
             return;
         }
 
-        global $DB;
-
         // Save settings to Copyleaks.
         $cl = new plagiarism_copyleaks_comms();
         $course = get_course($data->course);
