@@ -163,16 +163,25 @@ class plagiarism_copyleaks_utils {
             "</div>";
     }
 
+
     /**
-     * For each course module type if there is its kind due date time stamp - return it, if not, return null.
-     * @param stdClass $data form data
-     * @return DateTime or null
+     * @param string course module id
      */
-    public static function get_course_module_due_date($data) {
+    public static function get_course_module_duedate($cmid) {
+        global $DB;
         $dateTime = new DateTime();
         $issetdate = false;
 
-        switch ($data->modulename) {
+        $coursemodule = get_coursemodule_from_id('', $cmid);
+
+        $data = $DB->get_record_select(
+            $coursemodule->modname,
+            'id = ?',
+            array($coursemodule->instance),
+            '*'
+        );
+
+        switch ($coursemodule->modname) {
             case 'workshop':
                 if ($data->completionexpected > 0) {
                     $dateTime->setTimestamp($data->completionexpected);

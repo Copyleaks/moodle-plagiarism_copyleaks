@@ -72,7 +72,7 @@ class plagiarism_copyleaks_comms {
     ) {
         if (isset($this->key) && isset($this->secret)) {
             $coursemodule = get_coursemodule_from_id('', $cmid);
-
+            $duedate = plagiarism_copyleaks_utils::get_course_module_duedate($cmid);
             if (plagiarism_copyleaks_dbutils::is_user_eula_uptodate($userid)) {
                 $student = get_complete_user_data('id', $userid);
                 $paramsmerge = (array)[
@@ -85,7 +85,8 @@ class plagiarism_copyleaks_comms {
                     'userFullName' => $student->firstname . " " . $student->lastname,
                     'moduleName' => $coursemodule->name,
                     'courseId' => $coursemodule->course,
-                    'courseName' => (get_course($coursemodule->course))->fullname
+                    'courseName' => (get_course($coursemodule->course))->fullname,
+                    'duedate' => $duedate
                 ];
             } else {
                 $paramsmerge = (array)[
@@ -95,7 +96,8 @@ class plagiarism_copyleaks_comms {
                     'identifier' => $identifier,
                     'submissionType' => $submissiontype,
                     'courseId' => $coursemodule->course,
-                    'courseName' => (get_course($coursemodule->course))->fullname
+                    'courseName' => (get_course($coursemodule->course))->fullname,
+                    'duedate' => $duedate
                 ];
             }
 
