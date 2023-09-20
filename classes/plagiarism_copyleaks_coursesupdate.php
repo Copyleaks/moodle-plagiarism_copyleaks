@@ -21,29 +21,27 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace plagiarism_copyleaks\task;
 
-defined('MOODLE_INTERNAL') || die();
+// defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_comms.class.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/constants/plagiarism_copyleaks.constants.php');
 
 
 
-class plagiarism_copyleaks_coursesupdate extends \core\task\scheduled_task {
+class plagiarism_copyleaks_coursesupdate {
 
-    public function get_name() {
-        return get_string('clupdatecourses', 'plagiarism_copyleaks');
-    }
+    // public function get_name() {
+    //     return get_string('clupdatecourses', 'plagiarism_copyleaks');
+    // }
 
-    public function execute() {
-
-        $this->hendle_courses_upsert();
-    }
+    // public function execute() {
+    //     $this->hendle_courses_upsert();
+    // }
 
     /**
      * Handle Courses upsert to Copyleaks
      */
-    private function hendle_courses_upsert() {
+    public static function hendle_courses_upsert() {
         global $DB;
         $startindex = 0;
         $canloadmore = true;
