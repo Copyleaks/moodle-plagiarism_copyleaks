@@ -382,7 +382,7 @@ class plagiarism_copyleaks_comms {
         $endpoint = "/api/moodle/plugin/$this->key/task/upsert-courses";
         $verb = 'POST';
         try {
-            plagiarism_copyleaks_http_client::execute(
+            plagiarism_copyleaks_http_client::execute_retry(
                 $verb,
                 $this->copyleaks_api_url() . $endpoint,
                 true,

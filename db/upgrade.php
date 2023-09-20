@@ -295,5 +295,6 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
 
         upgrade_plugin_savepoint(true, 2023050701, 'plagiarism', 'copyleaks');
     }
+
     return true;
 }

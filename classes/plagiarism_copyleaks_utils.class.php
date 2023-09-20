@@ -163,8 +163,8 @@ class plagiarism_copyleaks_utils {
             "</div>";
     }
 
-
     /**
+     * Get course module due date.
      * @param string course module id
      * @return Date or null
      */
@@ -174,6 +174,10 @@ class plagiarism_copyleaks_utils {
         $issetdate = false;
 
         $coursemodule = get_coursemodule_from_id('', $cmid);
+
+        if (!$coursemodule) {
+            return null;
+        }
 
         $data = $DB->get_record_select(
             $coursemodule->modname,
