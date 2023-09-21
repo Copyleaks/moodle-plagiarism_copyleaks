@@ -296,12 +296,12 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2023050701, 'plagiarism', 'copyleaks');
     }
 
-    if ($oldversion < 2023092000) {
-        global $CFG;
-        require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_coursesupdate.php');
-        plagiarism_copyleaks_coursesupdate::hendle_courses_upsert();
-        upgrade_plugin_savepoint(true, 2023092000, 'plagiarism', 'copyleaks');
-    }
+    // if ($oldversion < 2023092000) {
+        // Global $CFG;
+        // require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_coursesupdate.php');
+        // plagiarism_copyleaks_coursesupdate::hendle_courses_upsert();
+        // upgrade_plugin_savepoint(true, 2023092000, 'plagiarism', 'copyleaks');
+    // }
 
     return true;
 }
