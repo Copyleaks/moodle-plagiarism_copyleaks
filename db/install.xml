@@ -100,5 +100,18 @@
         <INDEX NAME="is_synced" UNIQUE="false" FIELDS="is_synced"/>
       </INDEXES>
     </TABLE>
+
+    <TABLE NAME="plagiarism_copyleaks_bgtasks" COMMENT="Copyleaks background tasks">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="task" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="false" SEQUENCE="false"/>        
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id" />
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="task" UNIQUE="true" FIELDS="task"/>
+      </INDEXES>
+    </TABLE>
   </TABLES>
 </XMLDB>

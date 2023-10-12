@@ -70,6 +70,7 @@ $string['clsendrequestqueue'] = "Plugin de plagiat Copyleaks - gérer les demand
 $string['clsendrequestqueue'] = "Plugin de plagiat Copyleaks - gérer les demandes de relance en file d'attente";
 $string['clupdatecourses'] = "Plugin de plagiat Copyleaks - Enregistrez des cours sur Copyleaks";
 $string['clupserteulausers'] = "Plugin de plagiat Copyleaks - gérer la mise à jour des utilisateurs d'acceptation eula";
+$string['clbackgroundtask'] = "Plugin de plagiat Copyleaks - gérer les tâches en arrière-plan";
 $string['clstudentdisclosure'] = 'Divulgation des étudiants';
 $string['clstudentdisclosure_help'] = 'Ce texte sera affiché à tous les étudiants sur la page de téléchargement de fichiers.';
 $string['clstudentdisclosuredefault'] = '<span>En soumettant vos fichiers, vous acceptez la politique de confidentialité du service de détection de plagiat</span><a target="_blank" href="https://copyleaks.com/legal/privacypolicy">politique de confidentialité</a>';
