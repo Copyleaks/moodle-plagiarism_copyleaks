@@ -29,7 +29,7 @@ class plagiarism_copyleaks_synusersdata {
     /**
      * Handle users upsert to Copyleaks
      */
-    public static function sync_users_data() {
+    public static function sync_data() {
         global $DB;
         $startindex = 0;
         $canloadmore = true;

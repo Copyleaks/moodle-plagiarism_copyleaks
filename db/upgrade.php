@@ -296,7 +296,7 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2023050701, 'plagiarism', 'copyleaks');
     }
 
-    if ($oldversion < 2023092012) {
+    if ($oldversion < 2023101500) {
         $table = new xmldb_table('plagiarism_copyleaks_bgtasks');
 
         // Adding fields to table plagiarism_copyleaks_backgroundtasks.
@@ -321,7 +321,7 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
             throw new moodle_exception(get_string('clinserterror', 'plagiarism_copyleaks'));
         }
 
-        upgrade_plugin_savepoint(true, 2023092012, 'plagiarism', 'copyleaks');
+        upgrade_plugin_savepoint(true, 2023101500, 'plagiarism', 'copyleaks');
     }
 
     return true;

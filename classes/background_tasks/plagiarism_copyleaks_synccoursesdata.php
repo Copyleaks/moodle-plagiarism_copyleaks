@@ -28,7 +28,7 @@ class plagiarism_copyleaks_synccoursesdata {
     /**
      * Handle Courses upsert to Copyleaks
      */
-    public static function sync_courses_data() {
+    public static function sync_data() {
         global $DB;
         $startindex = 0;
         $canloadmore = true;

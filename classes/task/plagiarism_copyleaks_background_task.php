@@ -47,7 +47,7 @@ class plagiarism_copyleaks_background_task extends \core\task\scheduled_task {
         if (!\plagiarism_copyleaks_comms::test_copyleaks_connection('scheduler_task')) {
             return;
         }
-
+        // TODO -- ADD COUNT CHECK ON BGTASKS
         $this->handle_task_once(\plagiarism_copyleaks_background_tasks::SYNC_COURSES_DATA);
         $this->handle_task_once(\plagiarism_copyleaks_background_tasks::SYNC_USERS_DATA);
     }
@@ -82,10 +82,10 @@ class plagiarism_copyleaks_background_task extends \core\task\scheduled_task {
     private function run_task_in_background($background_task_type) {
         switch ($background_task_type) {
             case \plagiarism_copyleaks_background_tasks::SYNC_COURSES_DATA:
-                \plagiarism_copyleaks_synccoursesdata::sync_courses_data();
+                \plagiarism_copyleaks_synccoursesdata::sync_data();
                 break;
             case \plagiarism_copyleaks_background_tasks::SYNC_USERS_DATA:
-                \plagiarism_copyleaks_synusersdata::sync_users_data();
+                \plagiarism_copyleaks_synusersdata::sync_data();
                 break;
             default:
                 break;
