@@ -80,7 +80,8 @@ class plagiarism_copyleaks_synusersdata {
                     if ($userdata) {
                         $usersobjects[] = array(
                             "MPPUserId" => $userdata->id,
-                            "userName" => $userdata->firstname . " " . $userdata->lastname
+                            "userName" => plagiarism_copyleaks_dbutils::is_user_eula_uptodate($file->userid)
+                                ? $userdata->firstname . " " . $userdata->lastname : ""
                         );
                     }
                 }
