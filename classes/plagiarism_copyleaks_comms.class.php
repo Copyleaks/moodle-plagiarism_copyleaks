@@ -394,6 +394,22 @@ class plagiarism_copyleaks_comms {
         }
     }
 
+    public function save_users_data($data) {
+        $endpoint = "/api/moodle/plugin/$this->key/task/upsert-users";
+        $verb = 'POST';
+        try {
+            plagiarism_copyleaks_http_client::execute_retry(
+                $verb,
+                $this->copyleaks_api_url() . $endpoint,
+                true,
+                json_encode($data)
+            );
+        } catch (\Exception $e) {
+            $errormsg = get_string('cltaskfailedconnecting', 'plagiarism_copyleaks', $e->getMessage());
+            plagiarism_copyleaks_logs::add($errormsg, 'API_ERROR');
+        }
+    }
+
 
     /**
      * Update course module temp id at Copyleaks server.

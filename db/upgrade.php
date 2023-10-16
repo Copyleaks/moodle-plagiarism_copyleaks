@@ -296,12 +296,33 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2023050701, 'plagiarism', 'copyleaks');
     }
 
-    // if ($oldversion < 2023092000) {
-        // Global $CFG;
-        // require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_coursesupdate.php');
-        // plagiarism_copyleaks_coursesupdate::hendle_courses_upsert();
-        // upgrade_plugin_savepoint(true, 2023092000, 'plagiarism', 'copyleaks');
-    // }
+    if ($oldversion < 2023101500) {
+        $table = new xmldb_table('plagiarism_copyleaks_bgtasks');
+
+        // Adding fields to table plagiarism_copyleaks_backgroundtasks.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('task', XMLDB_TYPE_INTEGER, '10', !XMLDB_UNSIGNED, XMLDB_NOTNULL, !XMLDB_SEQUENCE, null);
+
+        // Adding keys and indexes to table plagiarism_copyleaks_backgroundtasks.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        $table->add_index('task', XMLDB_INDEX_UNIQUE, array('task'));
+
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        global $CFG;
+        require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/enums/plagiarism_copyleaks_enums.php');
+        if (!$DB->insert_record('plagiarism_copyleaks_bgtasks', array('task' => plagiarism_copyleaks_background_tasks::SYNC_USERS_DATA))) {
+            throw new moodle_exception(get_string('clinserterror', 'plagiarism_copyleaks'));
+        }
+
+        if (!$DB->insert_record('plagiarism_copyleaks_bgtasks', array('task' => plagiarism_copyleaks_background_tasks::SYNC_COURSES_DATA))) {
+            throw new moodle_exception(get_string('clinserterror', 'plagiarism_copyleaks'));
+        }
+
+        upgrade_plugin_savepoint(true, 2023101500, 'plagiarism', 'copyleaks');
+    }
 
     return true;
 }
