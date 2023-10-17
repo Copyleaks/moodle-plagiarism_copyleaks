@@ -313,13 +313,10 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
 
         global $CFG;
         require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/enums/plagiarism_copyleaks_enums.php');
-        if (!$DB->insert_record('plagiarism_copyleaks_bgtasks', array('task' => plagiarism_copyleaks_background_tasks::SYNC_USERS_DATA))) {
-            throw new moodle_exception(get_string('clinserterror', 'plagiarism_copyleaks'));
-        }
-
-        if (!$DB->insert_record('plagiarism_copyleaks_bgtasks', array('task' => plagiarism_copyleaks_background_tasks::SYNC_COURSES_DATA))) {
-            throw new moodle_exception(get_string('clinserterror', 'plagiarism_copyleaks'));
-        }
+        $DB->insert_record('plagiarism_copyleaks_bgtasks',
+                            array('task' => plagiarism_copyleaks_background_tasks::SYNC_USERS_DATA));
+        $DB->insert_record('plagiarism_copyleaks_bgtasks',
+                            array('task' => plagiarism_copyleaks_background_tasks::SYNC_COURSES_DATA));
 
         upgrade_plugin_savepoint(true, 2023101500, 'plagiarism', 'copyleaks');
     }

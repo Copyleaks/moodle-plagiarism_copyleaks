@@ -16,7 +16,7 @@
 /**
  * Copyleaks Plagiarism Plugin - Handle Resubmit Files
  * @package   plagiarism_copyleaks
- * @copyright 2022 Copyleaks
+ * @copyright 2023 Copyleaks
  * @author    Gil Cohen <gilc@copyleaks.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -55,34 +55,33 @@ class plagiarism_copyleaks_background_task extends \core\task\scheduled_task {
     }
 
     /**
-     * @param number $background_tasks - determine which task to run and log if necessary.
+     * @param number $type - determine which task to run.
      */
-    private function handle_task_once($background_task_type) {
+    private function handle_task_once($type) {
         try {
             global $DB;
-            if ($DB->get_record('plagiarism_copyleaks_bgtasks', array('task' => $background_task_type))) {
-
-                $this->run_task_in_background($background_task_type);
-                if (!($DB->delete_records('plagiarism_copyleaks_bgtasks', ['task' => $background_task_type]))) {
+            if ($DB->get_record('plagiarism_copyleaks_bgtasks', array('task' => $type))) {
+                $this->run_task_in_background($type);
+                if (!($DB->delete_records('plagiarism_copyleaks_bgtasks', ['task' => $type]))) {
                     \plagiarism_copyleaks_logs::add(
-                        "Faild to delete row in 'plagiarism_copyleaks_bgtasks'. (task: " . $background_task_type,
+                        "Faild to delete row in 'plagiarism_copyleaks_bgtasks'. (task: " . $type,
                         "DELETE_RECORD_FAILED"
                     );
                 }
             }
         } catch (\Error $e) {
             \plagiarism_copyleaks_logs::add(
-                "Faild to excute successfuly background task'. (task: " . $background_task_type,
+                "Faild to excute background task'. (task: " . $type,
                 "RUN_BACKGROUND_TASK_FAILED"
             );
         }
     }
 
     /**
-     * @param number $background_tasks - determine which task to run. 
+     * @param number $type - determine which task to run.
      */
-    private function run_task_in_background($background_task_type) {
-        switch ($background_task_type) {
+    private function run_task_in_background($type) {
+        switch ($type) {
             case \plagiarism_copyleaks_background_tasks::SYNC_COURSES_DATA:
                 \plagiarism_copyleaks_synccoursesdata::sync_data();
                 break;
