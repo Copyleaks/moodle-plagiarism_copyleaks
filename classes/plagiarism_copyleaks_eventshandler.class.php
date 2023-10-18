@@ -74,6 +74,11 @@ class plagiarism_copyleaks_eventshandler {
             return true;
         }
 
+        // Avoid queu forum post by instructors and admins.
+        if ($this->disable_instuctor_submission_to_forum($data, $coursemodule->course)) {
+            return true;
+        }
+
         // Check the supported EULA acceptance module.
         if (plagiarism_copyleaks_moduleconfig::is_allowed_eula_acceptance($coursemodule->modname)) {
             plagiarism_copyleaks_dbutils::upsert_eula_by_user_id($data["userid"]);
@@ -174,6 +179,29 @@ class plagiarism_copyleaks_eventshandler {
         }
 
         return $result;
+    }
+
+    /**
+     * Check if an instructor is submitting a post to forum.
+     * @param object $data - submissiont data
+     * @return object course id
+     */
+    private function disable_instuctor_submission_to_forum($data, $courseid) {
+        if (!($data['other']['triggeredfrom'] == "forum_add_discussion" ||
+            $data['other']['triggeredfrom'] == "forum_add_new_post" ||
+            $data['other']['triggeredfrom'] == "forum_update_post")) {
+            return false;
+        }
+
+        global $USER;
+        $context = context_course::instance($courseid);
+        $roles = get_user_roles($context, $USER->id);
+        foreach ($roles as $role) {
+            if ($role->shortname == 'student') {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
