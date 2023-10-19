@@ -226,6 +226,11 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
             $btn = plagiarism_copyleaks_utils::get_copyleaks_settings_button_link($settingslinkparams, false, $cmid);
             $mform->addElement('html', $btn);
 
+            $cm = get_coursemodule_from_id('', $cmid);
+            $isanalyticsdisabled = !plagiarism_copyleaks_moduleconfig::is_module_enabled($cm->modname, $cmid) || $isnewactivity;
+            $btn = plagiarism_copyleaks_utils::get_copyleaks_analytics_button_link($cmid,  $isanalyticsdisabled);
+            $mform->addElement('html', $btn);
+
             $settingsdisplayed = true;
         }
     }

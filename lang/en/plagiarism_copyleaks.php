@@ -64,6 +64,7 @@ $string['clcheatingdetected'] = 'Cheating detected, Open report to learn more';
 $string['clcheatingdetectedtxt'] = 'Cheating detected';
 $string['clreportpagetitle'] = 'Copyleaks report';
 $string['clscansettingspagebtntxt'] = 'Edit scan settings';
+$string['clanalyticsbtntxt'] = 'View activity analytics';
 $string['clmodulescansettingstxt'] = "Edit scan settings";
 $string['cldisablesettingstooltip'] = "Working on syncing data to Copyleaks...";
 $string['clopenfullscreen'] = 'Open in full screen';

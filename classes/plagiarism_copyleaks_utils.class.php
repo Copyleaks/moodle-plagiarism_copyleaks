@@ -125,10 +125,15 @@ class plagiarism_copyleaks_utils {
     /**
      * Get Copyleaks buttom for settings page.
      * @param string $settingsurlparams - assign the url to the link
-     * @param bool $isadminform - for note above the link
+     * @param bool $isadminform - for note above the link,
+     * @param string $cmid - course module id
      * @return string
      */
-    public static function get_copyleaks_settings_button_link($settingsurlparams, $isadminform = false, $cmid = null) {
+    public static function get_copyleaks_settings_button_link(
+        $settingsurlparams,
+        $isadminform = false,
+        $cmid = null
+    ) {
         global $CFG;
         $isbtndisabled = false;
         if (!$isadminform && isset($cmid)) {
@@ -153,12 +158,37 @@ class plagiarism_copyleaks_utils {
                 'title' => get_string('cldisablesettingstooltip', 'plagiarism_copyleaks')
             )) :
             html_writer::link("$settingsurl", $text, array('target' => '_blank'));
-
         return
             "<div class='form-group row'>" .
             "<div class='col-md-3'></div>" .
             "<div class='col-md-9'>" .
             $content
+            . "</div>" .
+            "</div>";
+    }
+
+    /**
+     * Get Copyleaks buttom for analytics page.
+     * @param string $cmid - course module id
+     * @param bool $isanalyticsdisabled - will be disable in new activity or disable config
+     * @return string
+     */
+    public static function get_copyleaks_analytics_button_link($cmid, $isanalyticsdisabled = false) {
+        global $CFG;
+
+        $analyticsurl = "$CFG->wwwroot/plagiarism/copyleaks/plagiarism_copyleaks_analytics.php" . "?cmid=" . $cmid;
+        $analyticstext = get_string('clanalyticsbtntxt', 'plagiarism_copyleaks');
+        $contentanalytics = $isanalyticsdisabled ?
+            html_writer::div($analyticstext, null, array(
+                'style' => 'color:#8c8c8c',
+                'title' => get_string('cldisablesettingstooltip', 'plagiarism_copyleaks')
+            )) :
+            html_writer::link("$analyticsurl", $analyticstext, array('target' => '_blank'));
+        return
+            "<div class='form-group row'>" .
+            "<div class='col-md-3'></div>" .
+            "<div class='col-md-9'>" .
+            $contentanalytics
             . "</div>" .
             "</div>";
     }
