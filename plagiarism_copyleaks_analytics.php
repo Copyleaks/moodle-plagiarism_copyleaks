@@ -77,6 +77,8 @@ echo html_writer::tag(
             "action='$actionurl' >" .
             "<input name='token' value='$accesstoken'>" .
             "<input name='lang' value='$lang'>" .
+            "<input name='courseId' value='$courseid'>" .
+            "<input name='courseName' value='$course->fullname'>" .
             "</form>" .
             "<script type='text/javascript'>" .
             "window.document.forms[0].submit();" .
