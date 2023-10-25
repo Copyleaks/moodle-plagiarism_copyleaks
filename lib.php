@@ -66,11 +66,18 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
 
         // Save settings to Copyleaks.
         $cl = new plagiarism_copyleaks_comms();
+        $course = get_course($data->course);
+        $duedate = plagiarism_copyleaks_utils::get_course_module_duedate($data->coursemodule);
+
         $updatedata = array(
             'tempCourseModuleId' => isset($data->plagiarism_copyleaks_tempcmid) ? $data->plagiarism_copyleaks_tempcmid : null,
             'courseModuleId' => $data->coursemodule,
             'name' => $data->name,
             'moduleName' => $data->modulename,
+            'courseId' => $data->course,
+            'courseName' => $course->fullname,
+            'dueDate' => $duedate
+
         );
         $cl->upsert_course_module($updatedata);
 
@@ -224,6 +231,11 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
             $settingslinkparams = $settingslinkparams . "cmid=$cmid&modulename=$modulename";
 
             $btn = plagiarism_copyleaks_utils::get_copyleaks_settings_button_link($settingslinkparams, false, $cmid);
+            $mform->addElement('html', $btn);
+
+            $cm = get_coursemodule_from_id('', $cmid);
+            $isanalyticsdisabled = !plagiarism_copyleaks_moduleconfig::is_module_enabled($cm->modname, $cmid) || $isnewactivity;
+            $btn = plagiarism_copyleaks_utils::get_copyleaks_analytics_button_link($cmid,  $isanalyticsdisabled);
             $mform->addElement('html', $btn);
 
             $settingsdisplayed = true;
