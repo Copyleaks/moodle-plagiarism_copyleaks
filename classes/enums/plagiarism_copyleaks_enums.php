@@ -54,3 +54,14 @@ class plagiarism_copyleaks_request_status {
     /** @var int request successfuly completed */
     const SUCCEEDED = 2;
 }
+
+
+/**
+ * This class is used as an enum in order to know what background should run only once.
+ */
+class plagiarism_copyleaks_background_tasks {
+    /** @var int an indicator to run the sync_users_data background task */
+    const SYNC_USERS_DATA = 1;
+    /** @var int an indicator to run the sync_courses_data background task */
+    const SYNC_COURSES_DATA = 2;
+}

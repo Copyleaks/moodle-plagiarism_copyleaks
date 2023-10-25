@@ -192,4 +192,58 @@ class plagiarism_copyleaks_utils {
             . "</div>" .
             "</div>";
     }
+
+    /**
+     * Get course module due date.
+     * @param string course module id
+     * @return Date or null
+     */
+    public static function get_course_module_duedate($cmid) {
+        global $DB;
+        $datetime = new DateTime();
+        $issetdate = false;
+
+        $coursemodule = get_coursemodule_from_id('', $cmid);
+
+        if (!$coursemodule) {
+            return null;
+        }
+
+        $data = $DB->get_record_select(
+            $coursemodule->modname,
+            'id = ?',
+            array($coursemodule->instance),
+            '*'
+        );
+
+        if (!$data) {
+            return null;
+        }
+
+        switch ($coursemodule->modname) {
+            case 'workshop':
+                if ($data->completionexpected > 0) {
+                    $datetime->setTimestamp($data->completionexpected);
+                    $issetdate = true;
+                } else if ($data->submissionend > 0) {
+                    $datetime->setTimestamp($data->submissionend);
+                    $issetdate = true;
+                }
+                break;
+            case 'quiz':
+                if ($data->timeclose > 0) {
+                    $datetime->setTimestamp($data->timeclose);
+                    $issetdate = true;
+                }
+                break;
+            default:
+                if ($data->duedate > 0) {
+                    $datetime->setTimestamp($data->duedate);
+                    $issetdate = true;
+                }
+                break;
+        }
+
+        return $issetdate ? $datetime->format('Y-m-d H:i:s') : null;
+    }
 }
