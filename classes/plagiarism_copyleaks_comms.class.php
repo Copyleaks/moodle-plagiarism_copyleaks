@@ -236,6 +236,25 @@ class plagiarism_copyleaks_comms {
     }
 
     /**
+     * request access for copyleaks report.
+     * @return string $cmid for the settings and access.
+     */
+    public function request_access_for_analytics($cmid) {
+        if (isset($this->key) && isset($this->secret)) {
+            $url = $this->copyleaks_api_url() . "/api/moodle/plugin/" . $this->key . "/analytics/request-access";
+            if (isset($cmid)) {
+                $url = $url . "/$cmid";
+            }
+            $result = plagiarism_copyleaks_http_client::execute(
+                'GET',
+                $url,
+                true
+            );
+            return $result->token;
+        }
+    }
+
+    /**
      * get copyleaks api url.
      * @return string api url if exists, otherwise return null
      */
