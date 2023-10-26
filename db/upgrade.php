@@ -274,7 +274,7 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         $savedfield->name = PLAGIARISM_COPYLEAKS_EULA_FIELD_NAME;
         $savedfield->value = PLAGIARISM_COPYLEAKS_DEFUALT_EULA_VERSION;
 
-        if (!isset($saveddefaultvalue[$fieldname])) {
+        if (!isset($saveddefaultvalue) && !isset($saveddefaultvalue[$fieldname])) {
             $savedfield->config_hash = $savedfield->cm . "_" . $savedfield->name;
             if (!$DB->insert_record('plagiarism_copyleaks_config', $savedfield)) {
                 throw new moodle_exception(get_string('clinserterror', 'plagiarism_copyleaks'));
@@ -296,7 +296,7 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2023050701, 'plagiarism', 'copyleaks');
     }
 
-    if ($oldversion < 2023101500) {
+    if ($oldversion < 2023102700) {
         $table = new xmldb_table('plagiarism_copyleaks_bgtasks');
 
         // Adding fields to table plagiarism_copyleaks_backgroundtasks.
@@ -318,7 +318,7 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         $DB->insert_record('plagiarism_copyleaks_bgtasks',
                             array('task' => plagiarism_copyleaks_background_tasks::SYNC_COURSES_DATA));
 
-        upgrade_plugin_savepoint(true, 2023101500, 'plagiarism', 'copyleaks');
+        upgrade_plugin_savepoint(true, 2023102700, 'plagiarism', 'copyleaks');
     }
 
     return true;
