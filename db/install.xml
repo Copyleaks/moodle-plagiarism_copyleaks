@@ -68,7 +68,7 @@
         <FIELD NAME="endpoint" TYPE="text" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="verb" TYPE="text" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="total_retry_attempts" TYPE="int" LENGTH="1" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="data" TYPE="text" LENGTH="255" NOTNULL="false" DEFAULT="" SEQUENCE="false"/>
+        <FIELD NAME="data" TYPE="text" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="priority" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="status" TYPE="int" LENGTH="1" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="fail_message" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
