@@ -68,7 +68,7 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
         $cl = new plagiarism_copyleaks_comms();
         $course = get_course($data->course);
         $duedate = plagiarism_copyleaks_utils::get_course_module_duedate($data->coursemodule);
-
+        $coursestartdate = plagiarism_copyleaks_utils::get_course_start_date($data->course);
         $updatedata = array(
             'tempCourseModuleId' => isset($data->plagiarism_copyleaks_tempcmid) ? $data->plagiarism_copyleaks_tempcmid : null,
             'courseModuleId' => $data->coursemodule,
@@ -76,7 +76,8 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
             'moduleName' => $data->modulename,
             'courseId' => $data->course,
             'courseName' => $course->fullname,
-            'dueDate' => $duedate
+            'dueDate' => $duedate,
+            'courseStartDate' => $coursestartdate
 
         );
         $cl->upsert_course_module($updatedata);

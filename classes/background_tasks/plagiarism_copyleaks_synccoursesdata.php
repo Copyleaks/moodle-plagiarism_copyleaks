@@ -24,6 +24,8 @@
 defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_comms.class.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/constants/plagiarism_copyleaks.constants.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_utils.class.php');
+
 
 class plagiarism_copyleaks_synccoursesdata {
     /**
@@ -84,9 +86,11 @@ class plagiarism_copyleaks_synccoursesdata {
                     }
 
                     if ($course) {
+                        $coursestartdate = plagiarism_copyleaks_utils::get_course_start_date($coursemodule->course);
                         $courseobjects[] = array(
                             "id" => $course->id,
-                            "name" => $course->fullname
+                            "name" => $course->fullname,
+                            "startdate" => $coursestartdate
                         );
                     }
                 }

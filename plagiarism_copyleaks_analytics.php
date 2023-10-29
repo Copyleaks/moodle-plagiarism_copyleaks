@@ -65,6 +65,8 @@ $config = plagiarism_copyleaks_pluginconfig::admin_config();
 $actionurl = "$config->plagiarism_copyleaks_apiurl/api/moodle/plugin/$config->plagiarism_copyleaks_key/analytics/$cmid/index";
 $lang = plagiarism_copyleaks_utils::get_lang();
 
+$coursestartdate = plagiarism_copyleaks_utils::get_course_start_date($courseid);
+
 echo html_writer::tag(
     'iframe',
     null,
@@ -79,6 +81,7 @@ echo html_writer::tag(
             "<input name='lang' value='$lang'>" .
             "<input name='courseId' value='$courseid'>" .
             "<input name='courseName' value='$course->fullname'>" .
+            "<input name='startdate' value='$coursestartdate'>" .
             "</form>" .
             "<script type='text/javascript'>" .
             "window.document.forms[0].submit();" .

@@ -296,7 +296,7 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2023050701, 'plagiarism', 'copyleaks');
     }
 
-    if ($oldversion < 2023102700) {
+    if ($oldversion < 2023102704) {
         $table = new xmldb_table('plagiarism_copyleaks_bgtasks');
 
         // Adding fields to table plagiarism_copyleaks_backgroundtasks.
@@ -313,12 +313,16 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
 
         global $CFG;
         require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/enums/plagiarism_copyleaks_enums.php');
-        $DB->insert_record('plagiarism_copyleaks_bgtasks',
-                            array('task' => plagiarism_copyleaks_background_tasks::SYNC_USERS_DATA));
-        $DB->insert_record('plagiarism_copyleaks_bgtasks',
-                            array('task' => plagiarism_copyleaks_background_tasks::SYNC_COURSES_DATA));
+        $DB->insert_record(
+            'plagiarism_copyleaks_bgtasks',
+            array('task' => plagiarism_copyleaks_background_tasks::SYNC_USERS_DATA)
+        );
+        $DB->insert_record(
+            'plagiarism_copyleaks_bgtasks',
+            array('task' => plagiarism_copyleaks_background_tasks::SYNC_COURSES_DATA)
+        );
 
-        upgrade_plugin_savepoint(true, 2023102700, 'plagiarism', 'copyleaks');
+        upgrade_plugin_savepoint(true, 2023102704, 'plagiarism', 'copyleaks');
     }
 
     return true;

@@ -246,4 +246,19 @@ class plagiarism_copyleaks_utils {
 
         return $issetdate ? $datetime->format('Y-m-d H:i:s') : null;
     }
+
+    /**
+     * Get course start date.
+     * @param string course id
+     * @return DateTime or null
+     */
+    public static function get_course_start_date($courseid) {
+        $course = get_course($courseid);
+        $startdatetime = new DateTime();
+        if (isset($course->startdate)) {
+            $startdatetime =  $startdatetime->setTimestamp($course->startdate);
+            return $startdatetime->format('Y-m-d');
+        }
+        null;
+    }
 }
