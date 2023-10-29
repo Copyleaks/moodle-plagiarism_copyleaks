@@ -60,7 +60,7 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         $savedfield->cm = PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID;
         $savedfield->name = $fieldname;
         $savedfield->value = 0;
-        if (!isset($saveddefaultvalue[$fieldname])) {
+        if (!isset($saveddefaultvalue) || !isset($saveddefaultvalue[$fieldname])) {
             $savedfield->config_hash = $savedfield->cm . "_" . $savedfield->name;
             if (!$DB->insert_record('plagiarism_copyleaks_config', $savedfield)) {
                 throw new moodle_exception(get_string('clinserterror', 'plagiarism_copyleaks'));
@@ -97,7 +97,7 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         $savedfield->cm = PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID;
         $savedfield->name = $fieldname;
         $savedfield->value = 1;
-        if (!isset($saveddefaultvalue[$fieldname])) {
+        if (!isset($saveddefaultvalue) || !isset($saveddefaultvalue[$fieldname])) {
             $savedfield->config_hash = $savedfield->cm . "_" . $savedfield->name;
             if (!$DB->insert_record('plagiarism_copyleaks_config', $savedfield)) {
                 throw new moodle_exception(get_string('clinserterror', 'plagiarism_copyleaks'));
@@ -134,7 +134,7 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         $savedfield->cm = PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID;
         $savedfield->name = $fieldname;
         $savedfield->value = 0;
-        if (!isset($saveddefaultvalue[$fieldname])) {
+        if (!isset($saveddefaultvalue) || !isset($saveddefaultvalue[$fieldname])) {
             $savedfield->config_hash = $savedfield->cm . "_" . $savedfield->name;
             if (!$DB->insert_record('plagiarism_copyleaks_config', $savedfield)) {
                 throw new moodle_exception(get_string('clinserterror', 'plagiarism_copyleaks'));
@@ -191,7 +191,7 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         $savedfield->cm = PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID;
         $savedfield->name = $fieldname;
         $savedfield->value = 0;
-        if (!isset($saveddefaultvalue[$fieldname])) {
+        if (!isset($saveddefaultvalue) || !isset($saveddefaultvalue[$fieldname])) {
             $savedfield->config_hash = $savedfield->cm . "_" . $savedfield->name;
             if (!$DB->insert_record('plagiarism_copyleaks_config', $savedfield)) {
                 throw new moodle_exception(get_string('clinserterror', 'plagiarism_copyleaks'));
@@ -274,7 +274,7 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         $savedfield->name = PLAGIARISM_COPYLEAKS_EULA_FIELD_NAME;
         $savedfield->value = PLAGIARISM_COPYLEAKS_DEFUALT_EULA_VERSION;
 
-        if (!isset($saveddefaultvalue) && !isset($saveddefaultvalue[$fieldname])) {
+        if (!isset($saveddefaultvalue) || !isset($saveddefaultvalue[$fieldname])) {
             $savedfield->config_hash = $savedfield->cm . "_" . $savedfield->name;
             if (!$DB->insert_record('plagiarism_copyleaks_config', $savedfield)) {
                 throw new moodle_exception(get_string('clinserterror', 'plagiarism_copyleaks'));
