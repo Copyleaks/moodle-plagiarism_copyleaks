@@ -128,7 +128,7 @@ class plagiarism_copyleaks_synceulausers extends \core\task\scheduled_task {
                 return array(
                     'userid' => $record->ci_user_id,
                     'version' => $record->version,
-                    'date' => $record->date
+                    'date' => date('Y-m-d H:i:s', $record->accepted_at)
                 );
             }
         }, $eulausers);

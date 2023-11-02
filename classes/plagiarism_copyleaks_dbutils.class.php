@@ -144,7 +144,7 @@ class plagiarism_copyleaks_dbutils {
             "ci_user_id" => $userid,
             "version" => $curreulaversion,
             "is_synced" => false,
-            "date" => date('Y-m-d H:i:s')
+            "accepted_at" => time()
         );
 
         if (
