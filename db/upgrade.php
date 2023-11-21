@@ -222,7 +222,7 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         $table->add_field('cmid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL);
         $table->add_field('endpoint', XMLDB_TYPE_TEXT, '255', null, XMLDB_NOTNULL);
         $table->add_field('total_retry_attempts', XMLDB_TYPE_INTEGER, '1', XMLDB_UNSIGNED, XMLDB_NOTNULL);
-        $table->add_field('data', XMLDB_TYPE_TEXT, '', null, XMLDB_NOTNULL, null);
+        $table->add_field('data', XMLDB_TYPE_TEXT, '', null, null, null);
         $table->add_field('priority', XMLDB_TYPE_INTEGER, '1');
         $table->add_field('status', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL);
         $table->add_field('fail_message', XMLDB_TYPE_TEXT);
@@ -242,7 +242,8 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         // Delete a column from the table.
         $table = new xmldb_table('plagiarism_copyleaks_users');
         $field = new xmldb_field('user_eula_accepted');
-        if (is_int($field->getType())) {
+
+        if ($dbman->field_exists($table, $field)) {
             $dbman->drop_field($table,  $field);
         }
 
@@ -250,15 +251,14 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         $table = new xmldb_table('plagiarism_copyleaks_eula');
         $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE);
         $table->add_field('ci_user_id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL);
-        $table->add_field('version', XMLDB_TYPE_TEXT, '10', null, XMLDB_NOTNULL);
-        $table->add_field('is_synced', XMLDB_TYPE_NUMBER, '1', XMLDB_UNSIGNED);
-        $table->add_field('date', XMLDB_TYPE_DATETIME, '30');
+        $table->add_field('version', XMLDB_TYPE_TEXT, '10', null, null);
+        $table->add_field('is_synced', XMLDB_TYPE_NUMBER, '1', XMLDB_UNSIGNED, XMLDB_NOTNULL);
+        $table->add_field('accepted_at', XMLDB_TYPE_INTEGER, '10');
 
         $table->add_key('id', XMLDB_KEY_PRIMARY, array('id'));
 
         $table->add_index('ci_user_id', XMLDB_INDEX_NOTUNIQUE, array('ci_user_id'));
         $table->add_index('is_synced', XMLDB_INDEX_NOTUNIQUE, array('is_synced'));
-        $table->add_index('date', XMLDB_INDEX_NOTUNIQUE, array('date'));
 
         if (!$dbman->table_exists($table)) {
             $dbman->create_table($table);
@@ -325,6 +325,27 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         );
 
         upgrade_plugin_savepoint(true, 2023103102, 'plagiarism', 'copyleaks');
+    }
+
+    if ($oldversion < 2023110202) {
+        $table = new xmldb_table('plagiarism_copyleaks_eula');
+        $datefield = new xmldb_field('date');
+        $datefieldidx = new xmldb_index('date', XMLDB_INDEX_NOTUNIQUE, array('date'));
+        $acceptedatfield = new xmldb_field('accepted_at', XMLDB_TYPE_INTEGER, '10');
+
+        if ($dbman->table_exists($table)) {
+            if ($dbman->index_exists($table, $datefieldidx)) {
+                $dbman->drop_index($table, $datefieldidx);
+            }
+            if ($dbman->field_exists($table, $datefield)) {
+                $dbman->drop_field($table, $datefield);
+            }
+            if (!$dbman->field_exists($table, $acceptedatfield)) {
+                $dbman->add_field($table, $acceptedatfield);
+            }
+        }
+
+        upgrade_plugin_savepoint(true, 2023110202, 'plagiarism', 'copyleaks');
     }
 
     return true;

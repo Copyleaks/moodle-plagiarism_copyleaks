@@ -1,3 +1,7 @@
+### Date: 		2023-Nov-02
+### Release:	v2023110200
+- In the EULA table, we changed the 'datetime' data type to 'int' as required by Moodle's documentation.
+
 ### Date: 		2023-Sep-04
 ### Release:	v2023090400
 - Added the ability to resubmit failed scans.
