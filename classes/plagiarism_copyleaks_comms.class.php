@@ -68,7 +68,8 @@ class plagiarism_copyleaks_comms {
         string $cmid,
         string $userid,
         string $identifier,
-        string $submissiontype
+        string $submissiontype,
+        $externalid = null
     ) {
         if (isset($this->key) && isset($this->secret)) {
             $coursemodule = get_coursemodule_from_id('', $cmid);
@@ -88,7 +89,8 @@ class plagiarism_copyleaks_comms {
                     'courseId' => $coursemodule->course,
                     'courseName' => (get_course($coursemodule->course))->fullname,
                     'duedate' => $duedate,
-                    'coursestartdate' => $coursestartdate
+                    'coursestartdate' => $coursestartdate,
+                    'oldScanId' => $externalid // In case the insrtuctor pressed "Try again" button.
                 ];
             } else {
                 $paramsmerge = (array)[
@@ -100,7 +102,8 @@ class plagiarism_copyleaks_comms {
                     'courseId' => $coursemodule->course,
                     'courseName' => (get_course($coursemodule->course))->fullname,
                     'duedate' => $duedate,
-                    'coursestartdate' => $coursestartdate
+                    'coursestartdate' => $coursestartdate,
+                    '$oldScanId' => $externalid
                 ];
             }
 

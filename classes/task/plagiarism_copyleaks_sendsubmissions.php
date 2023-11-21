@@ -241,7 +241,8 @@ class plagiarism_copyleaks_sendsubmissions extends \core\task\scheduled_task {
                         $coursemodule->id,
                         $userid,
                         $submission->identifier,
-                        $submission->submissiontype
+                        $submission->submissiontype,
+                        $submission->externalid
                     );
                     \plagiarism_copyleaks_submissions::mark_pending($submission->id);
                 } catch (\Exception $e) {
