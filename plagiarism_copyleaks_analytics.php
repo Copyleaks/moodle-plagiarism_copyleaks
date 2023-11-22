@@ -27,7 +27,7 @@ require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks
 
 global $USER, $DB;
 // Get url params.
-$cmid = optional_param('cmid', null, PARAM_INT);
+$cmid = required_param('cmid', PARAM_INT);
 
 $cm = get_coursemodule_from_id('', $cmid);
 $courseid  = $cm->course;
