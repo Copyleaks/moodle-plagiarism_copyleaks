@@ -319,7 +319,7 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2023110202, 'plagiarism', 'copyleaks');
     }
 
-    if ($oldversion < 2023112100) {
+    if ($oldversion < 2023112200) {
         $table = new xmldb_table('plagiarism_copyleaks_bgtasks');
 
         // Adding fields to table plagiarism_copyleaks_backgroundtasks.
@@ -345,7 +345,7 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
             array('task' => plagiarism_copyleaks_background_tasks::SYNC_COURSES_DATA)
         );
 
-        upgrade_plugin_savepoint(true, 2023112100, 'plagiarism', 'copyleaks');
+        upgrade_plugin_savepoint(true, 2023112200, 'plagiarism', 'copyleaks');
     }
 
     return true;
