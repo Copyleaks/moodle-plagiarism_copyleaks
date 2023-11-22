@@ -298,12 +298,33 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2023050701, 'plagiarism', 'copyleaks');
     }
 
-    if ($oldversion < 2023103102) {
+    if ($oldversion < 2023110202) {
+        $table = new xmldb_table('plagiarism_copyleaks_eula');
+        $datefield = new xmldb_field('date');
+        $datefieldidx = new xmldb_index('date', XMLDB_INDEX_NOTUNIQUE, array('date'));
+        $acceptedatfield = new xmldb_field('accepted_at', XMLDB_TYPE_INTEGER, '10');
+
+        if ($dbman->table_exists($table)) {
+            if ($dbman->index_exists($table, $datefieldidx)) {
+                $dbman->drop_index($table, $datefieldidx);
+            }
+            if ($dbman->field_exists($table, $datefield)) {
+                $dbman->drop_field($table, $datefield);
+            }
+            if (!$dbman->field_exists($table, $acceptedatfield)) {
+                $dbman->add_field($table, $acceptedatfield);
+            }
+        }
+
+        upgrade_plugin_savepoint(true, 2023110202, 'plagiarism', 'copyleaks');
+    }
+
+    if ($oldversion < 2023112100) {
         $table = new xmldb_table('plagiarism_copyleaks_bgtasks');
 
         // Adding fields to table plagiarism_copyleaks_backgroundtasks.
-        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
-        $table->add_field('task', XMLDB_TYPE_INTEGER, '10', !XMLDB_UNSIGNED, XMLDB_NOTNULL, !XMLDB_SEQUENCE, null);
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE);
+        $table->add_field('task', XMLDB_TYPE_INTEGER, '10', !XMLDB_UNSIGNED, XMLDB_NOTNULL, !XMLDB_SEQUENCE);
 
         // Adding keys and indexes to table plagiarism_copyleaks_backgroundtasks.
         $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
@@ -324,28 +345,7 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
             array('task' => plagiarism_copyleaks_background_tasks::SYNC_COURSES_DATA)
         );
 
-        upgrade_plugin_savepoint(true, 2023103102, 'plagiarism', 'copyleaks');
-    }
-
-    if ($oldversion < 2023110202) {
-        $table = new xmldb_table('plagiarism_copyleaks_eula');
-        $datefield = new xmldb_field('date');
-        $datefieldidx = new xmldb_index('date', XMLDB_INDEX_NOTUNIQUE, array('date'));
-        $acceptedatfield = new xmldb_field('accepted_at', XMLDB_TYPE_INTEGER, '10');
-
-        if ($dbman->table_exists($table)) {
-            if ($dbman->index_exists($table, $datefieldidx)) {
-                $dbman->drop_index($table, $datefieldidx);
-            }
-            if ($dbman->field_exists($table, $datefield)) {
-                $dbman->drop_field($table, $datefield);
-            }
-            if (!$dbman->field_exists($table, $acceptedatfield)) {
-                $dbman->add_field($table, $acceptedatfield);
-            }
-        }
-
-        upgrade_plugin_savepoint(true, 2023110202, 'plagiarism', 'copyleaks');
+        upgrade_plugin_savepoint(true, 2023112100, 'plagiarism', 'copyleaks');
     }
 
     return true;

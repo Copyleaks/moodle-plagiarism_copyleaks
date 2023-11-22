@@ -25,6 +25,7 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/plagiarism/copyleaks/constants/plagiarism_copyleaks.constants.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_dbutils.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_logs.class.php');
 
 
 /**
@@ -199,52 +200,60 @@ class plagiarism_copyleaks_utils {
      * @return Date or null
      */
     public static function get_course_module_duedate($cmid) {
-        global $DB;
-        $datetime = new DateTime();
-        $issetdate = false;
+        try {
+            global $DB;
+            $datetime = new DateTime();
+            $issetdate = false;
 
-        $coursemodule = get_coursemodule_from_id('', $cmid);
+            $coursemodule = get_coursemodule_from_id('', $cmid);
 
-        if (!$coursemodule) {
-            return null;
-        }
+            if (!$coursemodule) {
+                return null;
+            }
 
-        $data = $DB->get_record_select(
+            $data = $DB->get_record_select(
             $coursemodule->modname,
             'id = ?',
             array($coursemodule->instance),
             '*'
-        );
+            );
 
-        if (!$data) {
+            if (!$data) {
+                return null;
+            }
+
+            switch ($coursemodule->modname) {
+                case 'workshop':
+                    if ($data->completionexpected > 0) {
+                        $datetime->setTimestamp($data->completionexpected);
+                        $issetdate = true;
+                    } else if ($data->submissionend > 0) {
+                        $datetime->setTimestamp($data->submissionend);
+                        $issetdate = true;
+                    }
+                    break;
+                case 'quiz':
+                    if ($data->timeclose > 0) {
+                        $datetime->setTimestamp($data->timeclose);
+                        $issetdate = true;
+                    }
+                    break;
+                default:
+                    if ($data->duedate > 0) {
+                        $datetime->setTimestamp($data->duedate);
+                        $issetdate = true;
+                    }
+                    break;
+            }
+
+            return $issetdate ? $datetime->format('Y-m-d H:i:s') : null;
+        } catch (Exception $e) {
+            \plagiarism_copyleaks_logs::add(
+                "Fail to get cm due date - " . $e->getMessage(),
+                "DB_ERROR"
+            );
             return null;
         }
-
-        switch ($coursemodule->modname) {
-            case 'workshop':
-                if ($data->completionexpected > 0) {
-                    $datetime->setTimestamp($data->completionexpected);
-                    $issetdate = true;
-                } else if ($data->submissionend > 0) {
-                    $datetime->setTimestamp($data->submissionend);
-                    $issetdate = true;
-                }
-                break;
-            case 'quiz':
-                if ($data->timeclose > 0) {
-                    $datetime->setTimestamp($data->timeclose);
-                    $issetdate = true;
-                }
-                break;
-            default:
-                if ($data->duedate > 0) {
-                    $datetime->setTimestamp($data->duedate);
-                    $issetdate = true;
-                }
-                break;
-        }
-
-        return $issetdate ? $datetime->format('Y-m-d H:i:s') : null;
     }
 
     /**
@@ -253,12 +262,20 @@ class plagiarism_copyleaks_utils {
      * @return DateTime or null
      */
     public static function get_course_start_date($courseid) {
-        $course = get_course($courseid);
-        $startdatetime = new DateTime();
-        if (isset($course->startdate)) {
-            $startdatetime =  $startdatetime->setTimestamp($course->startdate);
-            return $startdatetime->format('Y-m-d');
+        try {
+            $course = get_course($courseid);
+            $startdatetime = new DateTime();
+            if (isset($course->startdate)) {
+                $startdatetime = $startdatetime->setTimestamp($course->startdate);
+                return $startdatetime->format('Y-m-d');
+            }
+            null;
+        } catch (Exception $e) {
+            \plagiarism_copyleaks_logs::add(
+                "Fail to get course start date - " . $e->getMessage(),
+                "DB_ERROR"
+            );
+            return null;
         }
-        null;
     }
 }

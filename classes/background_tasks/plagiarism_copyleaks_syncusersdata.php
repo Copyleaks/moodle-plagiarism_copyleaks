@@ -50,27 +50,28 @@ class plagiarism_copyleaks_synusersdata {
                 $maxitemsperloop
             );
 
-            $userscount = count($files);
+            $filescount = count($files);
 
-            // If there is no cm's break the loop.
-            if ($userscount == 0) {
+            // If there is no files - break the loop.
+            if ($filescount == 0) {
                 break;
             }
 
-            // If the amount of the users ids is lower then the max records amount - can't load more.
-            if ($userscount < $maxitemsperloop) {
+            // If the amount of the files is lower then the max records amount - can't load more.
+            if ($filescount < $maxitemsperloop) {
                 $canloadmore = false;
             }
 
-            $startindex += $userscount;
+            $startindex += $filescount;
 
             $usersobjects = array();
 
-            // For each userId we'll find its user data and add it to the request array.
+            // For each file we'll find its user data and add it to the request array.
             foreach ($files as $file) {
                 $userdata = get_complete_user_data('id', $file->userid);
                 if ($userdata) {
-                    // Check if the course already upserted.
+
+                    // Check if the user already upserted.
                     if ($alreadyupdatedusers[$file->userid]) {
                         continue;
                     } else {
