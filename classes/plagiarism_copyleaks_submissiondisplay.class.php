@@ -247,6 +247,12 @@ class plagiarism_copyleaks_submissiondisplay {
                                 "?cmid=$submittedfile->cm&userid=$submittedfile->userid" .
                                 "&identifier=$submittedfile->identifier&modulename=$coursemodule->modname";
 
+
+
+
+
+
+
                             $similaritystring = '&nbsp;<span class="' . $htmlclassrank . '">'
                                 . '<span></span>'
                                 . $results["score"] . '%</span>';
@@ -322,8 +328,8 @@ class plagiarism_copyleaks_submissiondisplay {
                                     $cmid = $submissionref['cmid'];
                                     $courseid = $COURSE->id;
 
-                                    $resubmiturl = "$CFG->wwwroot/plagiarism/copyleaks/plagiarism_copyleaks_resubmit_handler.php".
-                                    "?fileid=$submittedfile->id&cmid=$cmid&courseid=$courseid&route=$route";
+                                    $resubmiturl = "$CFG->wwwroot/plagiarism/copyleaks/plagiarism_copyleaks_resubmit_handler.php" .
+                                        "?fileid=$submittedfile->id&cmid=$cmid&courseid=$courseid&route=$route";
                                     $outputcontent .= "<div class='copyleaks-resubmit-button'>" .
                                         html_writer::link(
                                             "$resubmiturl",

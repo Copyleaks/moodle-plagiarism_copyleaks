@@ -113,3 +113,160 @@ a.copyleaks-settings-link:hover {
     height: 24px;
     text-align: center;
 }
+
+/* -- New design for scans view */
+.cls-mini-report {
+    font-size: 14px;
+}
+
+.cls-large-report-details {
+    width: 165px;
+    height: 75px;
+    padding: 8px;
+    border: 1px dashed #00e2a2;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.cls-details-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.cls-details-header .cls-icon {
+    display: flex;
+}
+
+.cls-details-header .cls-action {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 4px;
+}
+
+.cls-details-header .cls-action > img {
+    cursor: pointer;
+    width: 18px;
+    height: 18px;
+}
+
+.cls-details-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.cls-text-result {
+    display: flex;
+    gap: 4px;
+}
+.cls-details-content .cls-result-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.cls-details-content .cls-score-container {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 4px;
+}
+.cls-details-content .cls-result-item .score-level {
+    border-radius: 50%;
+    height: 8px;
+    width: 8px;
+    display: inline-block;
+}
+
+.score-level-high {
+    background-color: #f44336;
+}
+
+.score-level-mid {
+    background-color: #ffa503;
+}
+
+.score-level-low {
+    background-color: #008001;
+}
+
+.small-report-details {
+    width: 180px;
+    height: 82px;
+}
+
+.small-report-details.error {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 8px;
+    border: 1px dashed #d04340;
+}
+
+.small-report-details.error .content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+    width: 50%;
+}
+
+.small-report-details.error .failed {
+    color: #f44336;
+    font-size: 10px;
+}
+
+.small-report-details.error .failed span {
+    line-height: 15px;
+}
+
+.small-report-details.error .retry {
+    font-size: 14px;
+    color: #3f9af5;
+    cursor: pointer;
+}
+
+.small-report-details.in-progress {
+    padding: 8px;
+    border: 1px dashed #3f9af5;
+    width: 163px;
+    height: 45px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.small-report-details.in-progress .content {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 4px;
+}
+.small-report-details.in-progress .content img {
+    width: 14px;
+}
+
+.small-report-details.scheduled {
+    padding: 8px;
+    border: 1px dashed #6512d2;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 163px;
+    height: fit-content;
+}
+
+.small-report-details.scheduled .cls-scheduled-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.small-report-details.scheduled .content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
