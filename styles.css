@@ -120,13 +120,18 @@ a.copyleaks-settings-link:hover {
 }
 
 .cls-large-report-details {
-    width: 165px;
-    height: 75px;
-    padding: 8px;
+    width: 171px;
+    height: 85px;
+    padding: 4px;
     border: 1px dashed #00e2a2;
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 2px;
+}
+
+.cls-logo-new {
+    width: 69px !important;
+    height: 18px !important;
 }
 
 .cls-details-header {

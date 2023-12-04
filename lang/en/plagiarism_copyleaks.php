@@ -74,6 +74,21 @@ $string['clplagiarisescanning'] = 'Scanning for plagiarism...';
 $string['clplagiarisequeued'] = 'Scheduled for plagiarism scan at {$a}';
 $string['cldisabledformodule'] = 'Copyleaks plugin is disabled for this module.';
 $string['clnopageaccess'] = 'You dont have access to this page.';
+
+$string['claicontentscore'] = 'AI content score';
+$string['clplagiarismscore'] = 'Plagiarism score';
+$string['clgrammerissues'] = 'Grammar issues';
+$string['clscanfailedbtn'] = 'SCAN FAILED';
+$string['cltryagainbtn'] = 'Try Again';
+$string['clscaninprogress'] = 'Scan is in progress...';
+$string['clscheduledintime'] = 'Scheduled: in {$d} Days';
+$string['claicontentscheduled'] = 'AI content scan';
+$string['clplagiarismcontentscheduled'] = 'Plagiarism content scan';
+$string['clgrammarcontentscheduled'] = 'Grammar scan';
+$string['cldownloadreport'] = 'Download report';
+$string['clopenreport'] = 'Open report page';
+$string['clcopyreporturl'] = 'Copy report URL';
+
 $string['privacy:metadata:core_files'] = 'Copyleaks stores files that have been uploaded to Moodle to form a Copyleaks submission.';
 $string['privacy:metadata:plagiarism_copyleaks_files'] = 'Information that links a Moodle submission to a Copyleaks submission.';
 $string['privacy:metadata:plagiarism_copyleaks_files:userid'] = 'The ID of the user who is the owner of the submission.';

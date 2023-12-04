@@ -248,21 +248,51 @@ class plagiarism_copyleaks_submissiondisplay {
                                 "&identifier=$submittedfile->identifier&modulename=$coursemodule->modname";
 
 
+                            $similaritystring = '<div class="cls-large-report-details cls-mini-report"> ' .
+                                '<div class="cls-details-header"> ' .
+                                ' <div class="cls-icon">' .
+                                $cheatingdetectioncontent = $OUTPUT->pix_icon(
+                                    'copyleaks-logo-new',
+                                    null,
+                                    'plagiarism_copyleaks',
+                                    array('class' => 'cls-logo-new')
+                                ) .
+                                '</div> ' .
+                                '<div class="cls-action">' .
+                                $cheatingdetectioncontent = $OUTPUT->pix_icon(
+                                    'copyleaks-download-icon',
+                                    get_string('cldownloadreport', 'plagiarism_copyleaks'),
+                                    'plagiarism_copyleaks',
+                                    null
+                                ) .
+                                $cheatingdetectioncontent = $OUTPUT->pix_icon(
+                                    'copyleaks-open-url-icon',
+                                    get_string('clopenreport', 'plagiarism_copyleaks'),
+                                    'plagiarism_copyleaks',
+                                    null
+                                ) .
+                                $cheatingdetectioncontent = $OUTPUT->pix_icon(
+                                    'copyleaks-copy-icon',
+                                    get_string('clcopyreporturl', 'plagiarism_copyleaks'),
+                                    'plagiarism_copyleaks',
+                                    null
+                                ) .
+                                "</div> </div> </div>";
 
 
 
 
 
-                            $similaritystring = '&nbsp;<span class="' . $htmlclassrank . '">'
-                                . '<span></span>'
-                                . $results["score"] . '%</span>';
+                            // $similaritystring = '&nbsp;<span class="' . $htmlclassrank . '">'
+                            //     . '<span></span>'
+                            //     . $results["score"] . '%</span>';
 
-                            $similaritywrapper = '<a class="copyleaks-text-gray" title="'
-                                . get_string('clopenreport', 'plagiarism_copyleaks') . '" href="'
-                                . $results['reporturl'] . '" target="_blank">';
+                            // $similaritywrapper = '<a class="copyleaks-text-gray" title="'
+                            //     . get_string('clopenreport', 'plagiarism_copyleaks') . '" href="'
+                            //     . $results['reporturl'] . '" target="_blank">';
 
-                            $similaritywrapper .= get_string('clplagiarised', 'plagiarism_copyleaks') . ':'
-                                . $similaritystring . '</a>';
+                            // $similaritywrapper .= get_string('clplagiarised', 'plagiarism_copyleaks') . ':'
+                            //     . $similaritystring . '</a>';
 
                             $divcontent = $OUTPUT->pix_icon(
                                 'copyleaks-logo',
@@ -271,11 +301,7 @@ class plagiarism_copyleaks_submissiondisplay {
                                 array('class' => 'icon_size')
                             ) . $similaritywrapper;
 
-                            $output = html_writer::tag(
-                                'div',
-                                $divcontent,
-                                array('class' => 'copyleaks')
-                            );
+                            $output = $similaritystring;
 
                             if ($submittedfile->ischeatingdetected) {
                                 $cheatingdetectioncontent = $OUTPUT->pix_icon(
