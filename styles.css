@@ -120,8 +120,8 @@ a.copyleaks-settings-link:hover {
 }
 
 .cls-large-report-details {
-    width: 171px;
-    height: 85px;
+    width: 186px;
+    height: 99px;
     padding: 4px;
     border: 1px dashed #00e2a2;
     display: flex;
@@ -131,6 +131,12 @@ a.copyleaks-settings-link:hover {
 
 .cls-logo-new {
     width: 69px !important;
+    height: 18px !important;
+}
+.cls-icon-no-margin {
+    margin-right: 0 !important;
+    vertical-align: unset;
+    width: 18px !important;
     height: 18px !important;
 }
 
@@ -153,8 +159,13 @@ a.copyleaks-settings-link:hover {
 
 .cls-details-header .cls-action > img {
     cursor: pointer;
-    width: 18px;
-    height: 18px;
+    width: 18px !important;
+    height: 18px !important;
+}
+
+.cls-action form button {
+    background-color: transparent;
+    border: unset;
 }
 
 .cls-details-content {
