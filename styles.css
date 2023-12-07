@@ -126,6 +126,7 @@ a.copyleaks-settings-link:hover {
     border: 1px dashed #00e2a2;
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
     gap: 2px;
 }
 
@@ -152,9 +153,13 @@ a.copyleaks-settings-link:hover {
 
 .cls-details-header .cls-action {
     display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
+    align-items: center;
     gap: 4px;
+}
+
+.cls-details-header .cls-action a {
+    display: flex;
+    align-items: center;
 }
 
 .cls-details-header .cls-action > img {
@@ -171,7 +176,6 @@ a.copyleaks-settings-link:hover {
 .cls-details-content {
     display: flex;
     flex-direction: column;
-    gap: 4px;
 }
 .cls-text-result {
     display: flex;
@@ -186,7 +190,7 @@ a.copyleaks-settings-link:hover {
 .cls-details-content .cls-score-container {
     display: flex;
     justify-content: flex-end;
-    align-items: center;
+    align-items: baseline;
     gap: 4px;
 }
 .cls-details-content .cls-result-item .score-level {
@@ -222,17 +226,18 @@ a.copyleaks-settings-link:hover {
     border: 1px dashed #d04340;
 }
 
-.small-report-details.error .content {
+.small-report-details.error .content,
+.small-report-details.error .content a {
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 4px;
-    width: 50%;
 }
 
 .small-report-details.error .failed {
     color: #f44336;
-    font-size: 10px;
+    font-size: 12px;
+    font-weight: 600;
 }
 
 .small-report-details.error .failed span {
@@ -243,15 +248,17 @@ a.copyleaks-settings-link:hover {
     font-size: 14px;
     color: #3f9af5;
     cursor: pointer;
+    font-weight: 600;
 }
 
 .small-report-details.in-progress {
     padding: 8px;
     border: 1px dashed #3f9af5;
-    width: 163px;
-    height: 45px;
+    width: 180px;
+    height: 82px;
     display: flex;
     flex-direction: column;
+    justify-content: space-around;
     gap: 8px;
 }
 
@@ -259,7 +266,7 @@ a.copyleaks-settings-link:hover {
     display: flex;
     justify-content: flex-start;
     align-items: center;
-    gap: 4px;
+    gap: 8px;
 }
 .small-report-details.in-progress .content img {
     width: 14px;
@@ -270,9 +277,12 @@ a.copyleaks-settings-link:hover {
     border: 1px dashed #6512d2;
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    width: 163px;
+    width: fit-content;
     height: fit-content;
+}
+
+.scheduled-text {
+    text-wrap: nowrap;
 }
 
 .small-report-details.scheduled .cls-scheduled-item {

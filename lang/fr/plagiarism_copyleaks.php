@@ -83,6 +83,7 @@ $string['clplagiarismscore'] = 'Score de plagiat';
 $string['clgrammerissues'] = 'Problèmes de grammaire';
 $string['clscanfailedbtn'] = "ÉCHEC DE L'ANALYSE";
 $string['cltryagainbtn'] = 'Essayer à nouveau';
+$string['cltryagainmsg'] = "Soumettez-vous à nouveau à l'analyse Copyleaks";
 $string['clscaninprogress'] = "L'analyse est en cours...";
 $string['clscheduledintime'] = 'Prévu: dans {$d} jours';
 $string['claicontentscheduled'] = 'Analyse du contenu IA';
