@@ -494,6 +494,7 @@ class plagiarism_copyleaks_submissiondisplay {
                                 'plagiarism_copyleaks',
                                 date("F j, Y, g:i a", $submittedfile->scheduledscandate)
                             );
+                            $obj = plagiarism_copyleaks_utils::time_left_to_date(date("F j, Y, g:i a", $submittedfile->scheduledscandate));
                             $dateicon = $OUTPUT->pix_icon(
                                 'copyleaks-date-logo',
                                 $queuedtxt,

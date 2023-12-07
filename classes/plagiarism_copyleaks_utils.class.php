@@ -162,4 +162,52 @@ class plagiarism_copyleaks_utils {
             . "</div>" .
             "</div>";
     }
+
+    public static function time_left_to_date($targetDate) {
+        // Convert target date to DateTime object
+        $targetDateTime = new DateTime($targetDate);
+
+        // Get current date and time
+        $currentDateTime = new DateTime();
+
+        // Calculate the interval between the two dates
+        $interval = $currentDateTime->diff($targetDateTime);
+
+        // Initialize the result object
+        $result = new stdClass();
+
+        // Set default values
+        $result->unit = "minutes";
+        $result->value = $interval->i;
+
+        // Check if time left is under an hour
+        if ($interval->h > 0 || $interval->d > 0 || $interval->m > 0 || $interval->y > 0) {
+            // Show by hours
+            $result->unit = "hours";
+            $result->value = $interval->h;
+
+            // Check if time left is less than a day
+            if ($interval->d > 0 || $interval->m > 0 || $interval->y > 0) {
+                // Show by days
+                $result->unit = "days";
+                $result->value = $interval->d;
+
+                // Check if time left is less than a month
+                if ($interval->m > 0 || $interval->y > 0) {
+                    // Show by months
+                    $result->unit = "months";
+                    $result->value = $interval->m;
+
+                    // Check if time left is less than a year
+                    if ($interval->y > 0) {
+                        // Show by years
+                        $result->unit = "years";
+                        $result->value = $interval->y;
+                    }
+                }
+            }
+        }
+
+        return $result;
+    }
 }
