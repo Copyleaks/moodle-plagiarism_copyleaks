@@ -290,21 +290,41 @@ class plagiarism_copyleaks_submissiondisplay {
                                                     'a',
                                                     $OUTPUT->pix_icon(
                                                         'copyleaks-open-url-icon',
-                                                        get_string('cldownloadreport', 'plagiarism_copyleaks'),
+                                                        get_string('clopenreport', 'plagiarism_copyleaks'),
                                                         'plagiarism_copyleaks',
                                                         array('class' => 'cls-icon-no-margin')
                                                     ),
                                                     array('href' => $results['downloadpdfurl'], 'target' => '_blank', 'title' => get_string('clopenreport', 'plagiarism_copyleaks'))
                                                 ) .
+
                                                 html_writer::tag(
-                                                    'a',
+                                                    'div',
                                                     $OUTPUT->pix_icon(
                                                         'copyleaks-copy-icon',
-                                                        get_string('cldownloadreport', 'plagiarism_copyleaks'),
+                                                        get_string('clcopyreporturl', 'plagiarism_copyleaks'),
                                                         'plagiarism_copyleaks',
                                                         array('class' => 'cls-icon-no-margin')
-                                                    ),
-                                                    array('href' => $results['downloadpdfurl'], 'target' => '_blank', 'title' => get_string('clopenreport', 'plagiarism_copyleaks'))
+                                                    ) .
+                                                        html_writer::tag('input', '', array(
+                                                            'type' => 'hidden', 'name' => 'clsreporturl',
+                                                            'id' => 'clsreporturlinput', 'value' => $results['downloadpdfurl']
+                                                        )) .
+                                                        html_writer::tag(
+                                                            'script',
+                                                            '(function() {' .
+                                                                'document.getElementById("cls-copy-container").addEventListener("click", function() {' .
+                                                                'var hiddenInputValue = document.getElementById("clsreporturlinput").value;' .
+                                                                ' var textarea = document.createElement("textarea");' .
+                                                                ' textarea.value = hiddenInputValue;' .
+                                                                ' document.body.appendChild(textarea);' .
+                                                                'textarea.select();' .
+                                                                'document.execCommand("copy");' .
+                                                                ' document.body.removeChild(textarea);' .
+                                                                'alert("Value copied to clipboard: " + hiddenInputValue);' .
+                                                                '})})()',
+                                                            null
+                                                        ),
+                                                    array('id' => 'cls-copy-container')
                                                 ),
                                             array('class' => 'cls-action')
                                         ),
@@ -494,14 +514,18 @@ class plagiarism_copyleaks_submissiondisplay {
                                 'plagiarism_copyleaks',
                                 date("F j, Y, g:i a", $submittedfile->scheduledscandate)
                             );
-                            $obj = plagiarism_copyleaks_utils::time_left_to_date(date("F j, Y, g:i a", $submittedfile->scheduledscandate));
+
+                            $date = new DateTime();
+                            $date->setTimestamp($submittedfile->scheduledscandate);
+                            $timeleft = plagiarism_copyleaks_utils::time_left_to_date($date);
+                            $timeleftstr = plagiarism_copyleaks_utils::get_time_left_str($timeleft);
+
                             $dateicon = $OUTPUT->pix_icon(
                                 'copyleaks-date-logo',
                                 $queuedtxt,
                                 'plagiarism_copyleaks',
                                 array('class' => 'cls-icon-no-margin')
                             );
-                            $scheduledtime = '2';
                             $queuedwrapper = html_writer::tag(
                                 'div',
                                 html_writer::tag(
@@ -518,7 +542,7 @@ class plagiarism_copyleaks_submissiondisplay {
                                     ) .
                                         html_writer::tag(
                                             'div',
-                                            get_string('clscheduledintime', 'plagiarism_copyleaks', $scheduledtime),
+                                            get_string('clscheduledintime', 'plagiarism_copyleaks', $timeleftstr),
                                             array('class' => 'scheduled-text')
                                         ),
                                     array('class' => 'cls-details-header')

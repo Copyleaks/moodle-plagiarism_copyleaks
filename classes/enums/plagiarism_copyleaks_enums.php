@@ -54,3 +54,19 @@ class plagiarism_copyleaks_request_status {
     /** @var int request successfuly completed */
     const SUCCEEDED = 2;
 }
+
+/**
+ * This class is used as an enum in order to know time left from a date.
+ */
+class plagiarism_copyleaks_times {
+    /** @var int respresents a minute */
+    const Soon = 0;
+    /** @var int respresents a minute */
+    const Minutes = 1;
+    /** @var int respresents am hour */
+    const Houres = 2;
+    /** @var int respresents a day */
+    const Days = 3;
+    /** @var int respresents a month */
+    const Months = 4;
+}

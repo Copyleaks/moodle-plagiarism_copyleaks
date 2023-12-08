@@ -157,12 +157,14 @@ a.copyleaks-settings-link:hover {
     gap: 4px;
 }
 
-.cls-details-header .cls-action a {
+.cls-details-header .cls-action a,
+.cls-details-header .cls-action div {
     display: flex;
     align-items: center;
 }
 
-.cls-details-header .cls-action > img {
+.cls-details-header .cls-action > img,
+.cls-details-header .cls-action #cls-copy-container {
     cursor: pointer;
     width: 18px !important;
     height: 18px !important;

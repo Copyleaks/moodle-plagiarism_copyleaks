@@ -85,14 +85,19 @@ $string['clscanfailedbtn'] = "ÉCHEC DE L'ANALYSE";
 $string['cltryagainbtn'] = 'Essayer à nouveau';
 $string['cltryagainmsg'] = "Soumettez-vous à nouveau à l'analyse Copyleaks";
 $string['clscaninprogress'] = "L'analyse est en cours...";
-$string['clscheduledintime'] = 'Prévu: dans {$d} jours';
+$string['clscheduledintime'] = 'Prévu: {$d}';
 $string['claicontentscheduled'] = 'Analyse du contenu IA';
 $string['clplagiarismcontentscheduled'] = 'Analyse de contenu plagiat';
 $string['clgrammarcontentscheduled'] = 'Analyse de grammaire';
 $string['cldownloadreport'] = 'Télécharger le rapport';
 $string['clopenreport'] = 'Ouvrir la page du rapport';
 $string['clcopyreporturl'] = "Copier l'URL du rapport";
-
+$string['cltimesoon'] = 'bientôt';
+$string['cltimeminutes'] = 'compte-rendu';
+$string['cltimehours'] = 'heures';
+$string['cltimedays'] = 'jours';
+$string['cltimemonths'] = 'mois';
+$string['cltimemin'] = 'dans';
 
 $string['privacy:metadata:core_files'] = 'Copyleaks stocke les fichiers qui ont été téléchargés sur Moodle pour former une soumission Copyleaks.';
 $string['privacy:metadata:plagiarism_copyleaks_client'] = 'Afin de s\'intégrer à un Copyleaks, certaines données utilisateur doivent être échangées avec Copyleaks.';
