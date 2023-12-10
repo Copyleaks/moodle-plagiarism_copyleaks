@@ -259,6 +259,9 @@ class plagiarism_copyleaks_submissiondisplay {
                                 ),
                                 null
                             );
+                            $cmid = $submissionref['cmid'];
+                            $downloadpdfurl = "$CFG->wwwroot/plagiarism/copyleaks/plagiarism_copyleaks_download_report_pdf.php" .
+                                "?cmid=$cmid&userid=$submittedfile->userid&identifier=$submittedfile->identifier&modulename=$coursemodule->modname";
 
                             $similaritystring = html_writer::tag(
                                 'div',
@@ -285,7 +288,7 @@ class plagiarism_copyleaks_submissiondisplay {
                                                     'plagiarism_copyleaks',
                                                     array('class' => 'cls-icon-no-margin')
                                                 ),
-                                                array('href' => $results['downloadpdfurl'], 'target' => '_blank', 'title' => get_string('clopenreport', 'plagiarism_copyleaks'))
+                                                array('href' => $downloadpdfurl, 'target' => '_blank', 'title' => get_string('clopenreport', 'plagiarism_copyleaks'))
                                             ) .
                                                 // Open report page
                                                 html_writer::tag(
@@ -296,7 +299,7 @@ class plagiarism_copyleaks_submissiondisplay {
                                                         'plagiarism_copyleaks',
                                                         array('class' => 'cls-icon-no-margin')
                                                     ),
-                                                    array('href' => $results['downloadpdfurl'], 'target' => '_blank', 'title' => get_string('clopenreport', 'plagiarism_copyleaks'))
+                                                    array('href' => $results['reporturl'], 'target' => '_blank', 'title' => get_string('clopenreport', 'plagiarism_copyleaks'))
                                                 ) .
                                                 // Copy report URL
                                                 html_writer::tag(
@@ -383,6 +386,7 @@ class plagiarism_copyleaks_submissiondisplay {
                                 array('class' => 'cls-large-report-details cls-mini-report')
                             );
 
+                            // Copy to clipboard.
                             $urlpdf = $results['reporturl'];
                             $externalid = $submittedfile->externalid;
                             $similaritystring .= "<input type='text' style='display:none;' name='clsreporturl' id='clsreporturlinput_$externalid' value='$urlpdf'>"  .

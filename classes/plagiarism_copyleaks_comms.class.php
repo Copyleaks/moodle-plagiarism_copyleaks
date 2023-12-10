@@ -383,4 +383,18 @@ class plagiarism_copyleaks_comms {
         );
         return $result;
     }
+
+    public function request_download_report_pdf(string $scanid, string $token) {
+        $body = new stdClass();
+        $body->resultsIdsToDownload = array();
+        $result = plagiarism_copyleaks_http_client::execute(
+            'POST',
+            $this->copyleaks_api_url() . "/api/moodle/$this->key/report/$scanid/request-pdf-download",
+            true,
+            json_encode($body),
+            false,
+            'application/json',
+            $token
+        );
+    }
 }
