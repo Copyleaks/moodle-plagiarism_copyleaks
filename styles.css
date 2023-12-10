@@ -164,7 +164,7 @@ a.copyleaks-settings-link:hover {
 }
 
 .cls-details-header .cls-action > img,
-.cls-details-header .cls-action #cls-copy-container {
+.cls-details-header .cls-action .cls-copy-container {
     cursor: pointer;
     width: 18px !important;
     height: 18px !important;
@@ -297,4 +297,31 @@ a.copyleaks-settings-link:hover {
     display: flex;
     flex-direction: column;
     gap: 4px;
+}
+
+/*Loader*/
+.cls-spinner {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border: 2px solid #3f9af5;
+    border-radius: 50%;
+    border-top: 2px solid transparent;
+    border-right: 2px solid transparent;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+    50% {
+        -webkit-transform: rotate(180deg);
+        transform: rotate(180deg);
+    }
+    100% {
+        -webkit-transform: rotate(360deg);
+        transform: rotate(360deg);
+    }
 }
