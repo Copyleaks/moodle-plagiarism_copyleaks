@@ -27,6 +27,7 @@ require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks
 require_once($CFG->dirroot . '/plagiarism/copyleaks/constants/plagiarism_copyleaks.constants.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_assignmodule.class.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_logs.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_dbutils.class.php');
 
 /**
  * submission display helpers methods
@@ -231,6 +232,8 @@ class plagiarism_copyleaks_submissiondisplay {
                     $clpoweredbycopyleakstxt = get_string('clpoweredbycopyleaks', 'plagiarism_copyleaks');
                     switch ($submittedfile->statuscode) {
                         case 'success':
+                            $detectiondata = plagiarism_copyleaks_dbutils::get_config_scanning_detection($result->detectionsValues);
+
                             $scorelevelclass = '';
                             if ($submittedfile->similarityscore <= 40) {
                                 $scorelevelclass = "cl-plag-score-level-low";
@@ -274,7 +277,6 @@ class plagiarism_copyleaks_submissiondisplay {
                             $cmid = $submissionref['cmid'];
                             $downloadpdfurl = "$CFG->wwwroot/plagiarism/copyleaks/plagiarism_copyleaks_download_report_pdf.php" .
                                 "?cmid=$cmid&userid=$submittedfile->userid&identifier=$submittedfile->identifier&modulename=$coursemodule->modname";
-
                             $similaritystring = html_writer::tag(
                                 'div',
                                 html_writer::tag(
@@ -335,63 +337,68 @@ class plagiarism_copyleaks_submissiondisplay {
                                     html_writer::tag(
                                         'div',
                                         // AI score
-                                        html_writer::tag(
-                                            'div',
-                                            html_writer::tag(
-                                                'div',
-                                                get_string('claicontentscore', 'plagiarism_copyleaks'),
-                                                array('class' => 'cls-text-result')
-                                            ) .
-                                                html_writer::tag(
-                                                    'div',
-                                                    (isset($results["aiscore"]) ? html_writer::tag(
-                                                        'span',
-                                                        '',
-                                                        array('class' => "score-level $aiscorelevel")
-                                                    ) . $results["aiscore"] : 'N/A'),
-                                                    array('class' => 'cls-score-container')
-                                                ),
-                                            array('class' => 'cls-result-item')
-                                        ) .
-                                            // Plagiarism score
+                                        ($detectiondata[PLAGIARISM_COPYLEAKS_SCAN_AI_FIELD_NAME] ?
                                             html_writer::tag(
                                                 'div',
                                                 html_writer::tag(
                                                     'div',
-                                                    get_string('clplagiarismscore', 'plagiarism_copyleaks'),
+                                                    get_string('claicontentscore', 'plagiarism_copyleaks'),
                                                     array('class' => 'cls-text-result')
                                                 ) .
-                                                    // Cheat detection alert
-                                                    ($submittedfile->ischeatingdetected ? $cheatdetectionicon : '') .
+                                                    html_writer::tag(
+                                                        'div',
+                                                        (isset($results["aiscore"]) ? html_writer::tag(
+                                                            'span',
+                                                            '',
+                                                            array('class' => "score-level $aiscorelevel")
+                                                        ) . $results["aiscore"] : 'N/A'),
+                                                        array('class' => 'cls-score-container')
+                                                    ),
+                                                array('class' => 'cls-result-item')
+                                            ) : '') .
+                                            // Plagiarism score
+                                            ($detectiondata[PLAGIARISM_COPYLEAKS_SCAN_PLAGIARISM_FIELD_NAME] ?
+                                                html_writer::tag(
+                                                    'div',
+                                                    html_writer::tag(
+                                                        'div',
+                                                        get_string('clplagiarismscore', 'plagiarism_copyleaks'),
+                                                        array('class' => 'cls-text-result')
+                                                    ) .
+                                                        // Cheat detection alert
+                                                        ($submittedfile->ischeatingdetected ? $cheatdetectionicon : '') .
+                                                        html_writer::tag(
+                                                            'div',
+                                                            (isset($results["score"]) ? html_writer::tag(
+                                                                'span',
+                                                                '',
+                                                                array('class' => "score-level $scorelevelclass")
+                                                            ) . $results["score"] : 'N/A'),
+                                                            array('class' => 'cls-score-container')
+                                                        ),
+                                                    array('class' => 'cls-result-item')
+                                                )  : '') .
+                                            // Grammer cases
+                                            (
+                                                ($detectiondata[PLAGIARISM_COPYLEAKS_DETECT_GRAMMER_FIELD_NAME] ?
                                                     html_writer::tag(
                                                         'div',
                                                         html_writer::tag(
-                                                            'span',
-                                                            '',
-                                                            array('class' => "score-level $scorelevelclass")
-                                                        ) . $results["score"],
-                                                        array('class' => 'cls-score-container')
-                                                    ),
-                                                array('class' => 'cls-result-item')
-                                            ) .
-                                            // Grammer cases
-                                            html_writer::tag(
-                                                'div',
-                                                html_writer::tag(
-                                                    'div',
-                                                    get_string('clgrammerissues', 'plagiarism_copyleaks'),
-                                                    array('class' => 'cls-text-result')
-                                                ) .
-                                                    html_writer::tag(
-                                                        'div',
-                                                        ($results["grammercases"] ? html_writer::tag(
-                                                            'span',
-                                                            '',
-                                                            array('class' => "score-level $scorelevelclass")
-                                                        ) . $results["grammercases"] : 'N/A'),
-                                                        array('class' => 'cls-score-container')
-                                                    ),
-                                                array('class' => 'cls-result-item')
+                                                            'div',
+                                                            get_string('clgrammerissues', 'plagiarism_copyleaks'),
+                                                            array('class' => 'cls-text-result')
+                                                        ) .
+                                                            html_writer::tag(
+                                                                'div',
+                                                                ($results["grammercases"] ? html_writer::tag(
+                                                                    'span',
+                                                                    '',
+                                                                    array('class' => "score-level $scorelevelclass")
+                                                                ) . $results["grammercases"] : 'N/A'),
+                                                                array('class' => 'cls-score-container')
+                                                            ),
+                                                        array('class' => 'cls-result-item')
+                                                    ) : '')
                                             ),
                                         array('class' => 'cls-details-content')
                                     ),

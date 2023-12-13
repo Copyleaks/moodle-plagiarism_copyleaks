@@ -319,7 +319,7 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2023110202, 'plagiarism', 'copyleaks');
     }
 
-    if ($oldversion < 2023121200) {
+    if ($oldversion < 2023121201) {
         // Add AI score and grammer cases to plagiarism_copyleaks_files.
         $table = new xmldb_table('plagiarism_copyleaks_files');
         $aifield = new xmldb_field('aiscore', XMLDB_TYPE_NUMBER, '10', null, null, null, null, 'similarityscore');
@@ -334,8 +334,40 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
             }
         }
 
+        $scandetections = array(
+            PLAGIARISM_COPYLEAKS_DETECT_GRAMMER_FIELD_NAME,
+            PLAGIARISM_COPYLEAKS_SCAN_PLAGIARISM_FIELD_NAME,
+            PLAGIARISM_COPYLEAKS_SCAN_AI_FIELD_NAME
+        );
+
+        foreach ($scandetections as $option) {
+            // Update saved default copyleaks settings.
+            $newfield = new stdClass();
+            $newfield->cm = PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID;
+            $newfield->name = $option;
+            $newfield->value = 0;
+            if (!isset($saveddefaultvalue) || !isset($saveddefaultvalue[$fieldname])) {
+                $newfield->config_hash = $newfield->cm . "_" . $newfield->name;
+                if (!$DB->insert_record('plagiarism_copyleaks_config', $newfield)) {
+                    throw new moodle_exception(get_string('clinserterror', 'plagiarism_copyleaks'));
+                }
+            } else {
+                $newfield->id = $DB->get_field(
+                    'plagiarism_copyleaks_config',
+                    'id',
+                    (array(
+                        'cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID,
+                        'name' => $fieldname
+                    ))
+                );
+                if (!$DB->update_record('plagiarism_copyleaks_config', $newfield)) {
+                    throw new moodle_exception(get_string('clupdateerror', 'plagiarism_copyleaks'));
+                }
+            }
+        }
+
         // Copyleaks savepoint reached.
-        upgrade_plugin_savepoint(true, 2023121200, 'plagiarism', 'copyleaks');
+        upgrade_plugin_savepoint(true, 2023121201, 'plagiarism', 'copyleaks');
     }
 
     return true;

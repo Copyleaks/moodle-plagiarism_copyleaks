@@ -121,12 +121,12 @@ a.copyleaks-settings-link:hover {
 
 .cls-large-report-details {
     width: 186px;
-    height: 99px;
+    height: fit-content;
     padding: 4px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    gap: 2px;
+    gap: 8px;
     border-left: 3px solid #3f9af5;
     padding-left: 8px;
 }
@@ -287,6 +287,7 @@ a.copyleaks-settings-link:hover {
     flex-direction: column;
     width: fit-content;
     height: fit-content;
+    gap: 4px;
 }
 
 .scheduled-text {
