@@ -222,13 +222,13 @@ class plagiarism_copyleaks_utils {
                 $retstr  .= get_string('cltimeminutes', 'plagiarism_copyleaks');
                 break;
             case plagiarism_copyleaks_times::Houres:
-                $retstr  .=  $timeobj->value . ' ' . get_string('cltimehours', 'plagiarism_copyleaks');
+                $retstr  .= get_string('cltimehours', 'plagiarism_copyleaks');
                 break;
             case plagiarism_copyleaks_times::Days:
-                $retstr  .= $timeobj->value . ' ' . get_string('cltimedays', 'plagiarism_copyleaks');
+                $retstr  .= get_string('cltimedays', 'plagiarism_copyleaks');
                 break;
             case plagiarism_copyleaks_times::Months:
-                $retstr  .=  $timeobj->value . ' ' . get_string('cltimemonths', 'plagiarism_copyleaks');
+                $retstr  .= get_string('cltimemonths', 'plagiarism_copyleaks');
                 break;
             default:
                 return get_string('cltimesoon', 'plagiarism_copyleaks');

@@ -123,11 +123,12 @@ a.copyleaks-settings-link:hover {
     width: 186px;
     height: 99px;
     padding: 4px;
-    border: 1px dashed #00e2a2;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     gap: 2px;
+    border-left: 3px solid #3f9af5;
+    padding-left: 8px;
 }
 
 .cls-logo-new {
@@ -225,10 +226,11 @@ a.copyleaks-settings-link:hover {
 .small-report-details.error {
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: start;
     flex-direction: column;
     gap: 8px;
-    border: 1px dashed #d04340;
+    border-left: 3px solid #f44336;
+    padding-left: 8px;
 }
 
 .small-report-details.error .cls-content,
@@ -258,7 +260,8 @@ a.copyleaks-settings-link:hover {
 
 .small-report-details.in-progress {
     padding: 8px;
-    border: 1px dashed #3f9af5;
+    border-left: 3px solid #3f9af5;
+    padding-left: 8px;
     width: 180px;
     height: 82px;
     display: flex;
@@ -279,7 +282,7 @@ a.copyleaks-settings-link:hover {
 
 .small-report-details.scheduled {
     padding: 8px;
-    border: 1px dashed #6512d2;
+    border-left: 3px solid #3f9af5;
     display: flex;
     flex-direction: column;
     width: fit-content;

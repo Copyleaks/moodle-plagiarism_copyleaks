@@ -443,18 +443,28 @@ class plagiarism_copyleaks_submissiondisplay {
                                         html_writer::tag(
                                             'div',
                                             $OUTPUT->pix_icon(
-                                                'copyleaks-alert-icon',
-                                                $submittedfile->errormsg,
+                                                'copyleaks-logo-new',
+                                                $clpoweredbycopyleakstxt,
                                                 'plagiarism_copyleaks',
-                                                array('class' => 'cls-icon-no-margin')
-                                            ) .
-                                                html_writer::tag(
-                                                    'span',
-                                                    get_string('clscanfailedbtn', 'plagiarism_copyleaks'),
-                                                    null
-                                                ),
-                                            array('class' => 'failed cls-content')
+                                                array('class' => 'cls-logo-new')
+                                            ),
+                                            null
                                         ) .
+                                            html_writer::tag(
+                                                'div',
+                                                $OUTPUT->pix_icon(
+                                                    'copyleaks-alert-icon',
+                                                    $submittedfile->errormsg,
+                                                    'plagiarism_copyleaks',
+                                                    array('class' => 'cls-icon-no-margin')
+                                                ) .
+                                                    html_writer::tag(
+                                                        'span',
+                                                        get_string('clscanfailedbtn', 'plagiarism_copyleaks'),
+                                                        null
+                                                    ),
+                                                array('class' => 'failed cls-content')
+                                            ) .
                                             // Retry buttom
                                             html_writer::tag(
                                                 'div',
