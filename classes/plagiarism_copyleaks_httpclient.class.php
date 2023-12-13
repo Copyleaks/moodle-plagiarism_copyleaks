@@ -49,8 +49,7 @@ class plagiarism_copyleaks_http_client {
         $requireauth = false,
         $data = null,
         $isauthretry = false,
-        $contenttype = 'application/json',
-        $token = null
+        $contenttype = 'application/json'
     ) {
         global $CFG;
 
@@ -76,14 +75,11 @@ class plagiarism_copyleaks_http_client {
         ];
 
         if ($requireauth) {
-            $cljwttoken = $token;
-            if (empty($cljwttoken) || $cljwttoken == null)
-                $cljwttoken = plagiarism_copyleaks_comms::login_to_copyleaks();
+            $cljwttoken = plagiarism_copyleaks_comms::login_to_copyleaks();
             $authorization = "Authorization: Bearer $cljwttoken";
             $pluginversion = "Plugin-Version: $version";
             $headers = array('Content-Type: ' . $contenttype, $authorization, $pluginversion);
         }
-
 
         $c->setHeader($headers);
 

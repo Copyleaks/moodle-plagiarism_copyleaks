@@ -98,10 +98,36 @@ if (empty($clmoduleenabled) || empty($modulesettings['plagiarism_copyleaks_enabl
             $cl = new plagiarism_copyleaks_comms();
             $scanaccesstoken = $cl->request_access_for_report($plagiarismfiles->externalid, $isinstructor);
             $lang = plagiarism_copyleaks_utils::get_lang();
-            $cl->request_download_report_pdf($plagiarismfiles->externalid, $scanaccesstoken);
+            $isdownloadpage = 1;
+            echo html_writer::tag(
+                'iframe',
+                null,
+                array(
+                    'title' => 'Copyleaks Report',
+                    'srcdoc' =>
+                    "<form target='_self'" .
+                        "method='POST'" .
+                        "style='display: none;'" .
+                        "action='$config->plagiarism_copyleaks_apiurl/api/moodle/$config->plagiarism_copyleaks_key" .
+                        "/report/$plagiarismfiles->externalid/download-pdf-page'>" .
+                        "<input name='token' value='$scanaccesstoken'>" .
+                        "<input name='lang' value='$lang'>" .
+                        "<input name='isDownloadPage' value='$isdownloadpage'>" .
+                        "</form>" .
+                        "<script type='text/javascript'>" .
+                        "window.document.forms[0].submit();" .
+                        "</script>",
+                    'style' => 'width: 100%; height: 100%; margin: 0px; padding: 0px; border: none;'
+                )
+            );
         } else {
             echo html_writer::div(get_string('clnopageaccess', 'plagiarism_copyleaks'), null, array('style' => $errormessagestyle));
         }
     }
     // echo 'Downloading report pdf...';
 }
+
+
+echo html_writer::script(
+    "window.document.body.style.margin=0;"
+);
