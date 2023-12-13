@@ -319,5 +319,24 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2023110202, 'plagiarism', 'copyleaks');
     }
 
+    if ($oldversion < 2023121200) {
+        // Add AI score and grammer cases to plagiarism_copyleaks_files.
+        $table = new xmldb_table('plagiarism_copyleaks_files');
+        $aifield = new xmldb_field('aiscore', XMLDB_TYPE_NUMBER, '10', null, null, null, null, 'similarityscore');
+        $grammerfield = new xmldb_field('grammercases', XMLDB_TYPE_NUMBER, '10', null, null, null, null, 'aiscore');
+
+        if ($dbman->table_exists($table)) {
+            if (!$dbman->field_exists($table, $aifield)) {
+                $dbman->add_field($table, $aifield);
+            }
+            if (!$dbman->field_exists($table, $grammerfield)) {
+                $dbman->add_field($table, $grammerfield);
+            }
+        }
+
+        // Copyleaks savepoint reached.
+        upgrade_plugin_savepoint(true, 2023121200, 'plagiarism', 'copyleaks');
+    }
+
     return true;
 }

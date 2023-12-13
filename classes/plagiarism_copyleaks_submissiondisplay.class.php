@@ -233,14 +233,26 @@ class plagiarism_copyleaks_submissiondisplay {
                         case 'success':
                             $scorelevelclass = '';
                             if ($submittedfile->similarityscore <= 40) {
-                                $scorelevelclass = "score-level-low";
+                                $scorelevelclass = "cl-plag-score-level-low";
                             } else if ($submittedfile->similarityscore <= 80) {
-                                $scorelevelclass = "score-level-mid";
+                                $scorelevelclass = "cl-plag-score-level-mid";
                             } else {
-                                $scorelevelclass = "score-level-high";
+                                $scorelevelclass = "cl-plag-score-level-high";
                             }
 
+                            $aiscorelevel = '';
+                            if ($submittedfile->aiscore <= 40) {
+                                $aiscorelevel = "cl-ai-score-level-low";
+                            } else if ($submittedfile->aiscore <= 80) {
+                                $aiscorelevel = "cl-ai-score-level-mid";
+                            } else {
+                                $aiscorelevel = "cl-ai-score-level-high";
+                            }
+
+
                             $results["score"] = $submittedfile->similarityscore;
+                            $results["aiscore"] = $submittedfile->aiscore;
+                            $results["grammercases"] = $submittedfile->grammercases;
 
                             $results['reporturl'] =
                                 "$CFG->wwwroot/plagiarism/copyleaks/plagiarism_copyleaks_report.php" .
@@ -332,11 +344,11 @@ class plagiarism_copyleaks_submissiondisplay {
                                             ) .
                                                 html_writer::tag(
                                                     'div',
-                                                    html_writer::tag(
+                                                    (isset($results["aiscore"]) ? html_writer::tag(
                                                         'span',
                                                         '',
-                                                        array('class' => "score-level $scorelevelclass")
-                                                    ) . $results["score"],
+                                                        array('class' => "score-level $aiscorelevel")
+                                                    ) . $results["aiscore"] : 'N/A'),
                                                     array('class' => 'cls-score-container')
                                                 ),
                                             array('class' => 'cls-result-item')
@@ -376,7 +388,7 @@ class plagiarism_copyleaks_submissiondisplay {
                                                             'span',
                                                             '',
                                                             array('class' => "score-level $scorelevelclass")
-                                                        ) . $results["score"] : 'N/A'),
+                                                        ) . $results["grammercases"] : 'N/A'),
                                                         array('class' => 'cls-score-container')
                                                     ),
                                                 array('class' => 'cls-result-item')
@@ -416,9 +428,13 @@ class plagiarism_copyleaks_submissiondisplay {
 
                                 $cmid = $submissionref['cmid'];
                                 $courseid = $COURSE->id;
+                                $sid = optional_param('sid', null, PARAM_TEXT);
+                                $action = optional_param('action', null, PARAM_TEXT);
+                                $returnaction = optional_param('returnaction', null, PARAM_TEXT);
+                                $pluginparam = optional_param('plugin', null, PARAM_TEXT);
 
                                 $resubmiturl = "$CFG->wwwroot/plagiarism/copyleaks/plagiarism_copyleaks_resubmit_handler.php" .
-                                    "?fileid=$submittedfile->id&cmid=$cmid&courseid=$courseid&route=$route";
+                                    "?fileid=$submittedfile->id&cmid=$cmid&courseid=$courseid&route=$route&sid=$sid&action=$action&returnaction=$returnaction&plugin=$pluginparam";
 
                                 try {
 
@@ -437,8 +453,9 @@ class plagiarism_copyleaks_submissiondisplay {
                                                     get_string('clscanfailedbtn', 'plagiarism_copyleaks'),
                                                     null
                                                 ),
-                                            array('class' => 'failed content')
+                                            array('class' => 'failed cls-content')
                                         ) .
+                                            // Retry buttom
                                             html_writer::tag(
                                                 'div',
                                                 html_writer::tag(
@@ -456,7 +473,7 @@ class plagiarism_copyleaks_submissiondisplay {
                                                         ),
                                                     array('href' => $resubmiturl)
                                                 ),
-                                                array('class' => 'retry content')
+                                                array('class' => 'retry cls-content')
                                             ),
                                         array('class' => 'small-report-details error cls-mini-report')
                                     );
@@ -500,7 +517,7 @@ class plagiarism_copyleaks_submissiondisplay {
                                                 get_string('clscaninprogress', 'plagiarism_copyleaks'),
                                                 null
                                             ),
-                                        array('class' => 'content')
+                                        array('class' => 'cls-content')
                                     ),
                                 array('class' => 'small-report-details cls-mini-report in-progress')
                             );
@@ -578,7 +595,7 @@ class plagiarism_copyleaks_submissiondisplay {
                                                 ) . $dateicon,
                                                 array('class' => 'cls-scheduled-item')
                                             ),
-                                        array('class' => 'content')
+                                        array('class' => 'cls-content')
                                     ),
                                 array('class' => 'small-report-details cls-mini-report scheduled')
                             );

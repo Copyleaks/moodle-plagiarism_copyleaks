@@ -123,6 +123,8 @@ class plagiarism_copyleaks_resubmittedreports extends \core\task\scheduled_task 
                 if ($curr->status == \plagiarism_copyleaks_reportstatus::SCORED) {
                     $currentresult->externalid = $curr->newScanId;
                     $currentresult->similarityscore = $curr->plagiarismScore;
+                    $currentresult->aiscore = isset($curr->aiscore) ? $curr->aiscore : null;
+                    $currentresult->grammercases = isset($curr->grammercases) ? $curr->grammercases : null;
                     $currentresult->lastmodified = $timestamp;
                     $isupdated = true;
                     /* Update in the DB */

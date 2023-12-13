@@ -202,15 +202,18 @@ a.copyleaks-settings-link:hover {
     display: inline-block;
 }
 
-.score-level-high {
+.cl-plag-score-level-high,
+.cl-ai-score-level-high {
     background-color: #f44336;
 }
 
-.score-level-mid {
+.cl-plag-score-level-mid,
+.cl-ai-score-level-mid {
     background-color: #ffa503;
 }
 
-.score-level-low {
+.cl-plag-score-level-low,
+.cl-ai-score-level-low {
     background-color: #008001;
 }
 
@@ -228,8 +231,8 @@ a.copyleaks-settings-link:hover {
     border: 1px dashed #d04340;
 }
 
-.small-report-details.error .content,
-.small-report-details.error .content a {
+.small-report-details.error .cls-content,
+.small-report-details.error .cls-content a {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -264,13 +267,13 @@ a.copyleaks-settings-link:hover {
     gap: 8px;
 }
 
-.small-report-details.in-progress .content {
+.small-report-details.in-progress .cls-content {
     display: flex;
     justify-content: flex-start;
     align-items: center;
     gap: 8px;
 }
-.small-report-details.in-progress .content img {
+.small-report-details.in-progress .cls-content img {
     width: 14px;
 }
 
@@ -293,7 +296,7 @@ a.copyleaks-settings-link:hover {
     align-items: center;
 }
 
-.small-report-details.scheduled .content {
+.small-report-details.scheduled .cls-content {
     display: flex;
     flex-direction: column;
     gap: 4px;
