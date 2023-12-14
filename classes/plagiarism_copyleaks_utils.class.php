@@ -167,44 +167,44 @@ class plagiarism_copyleaks_utils {
      * @param DateTime $targetdate - given date to know how much time left to the date.
      */
     public static function time_left_to_date($targetdate) {
-        // Convert target date to DateTime object
+        // Convert target date to DateTime object.
         $targetdatetime = $targetdate;
 
-        // Get current date and time
+        // Get current date and time.
         $currentdatetime = new DateTime();
 
-        // Initialize the result object
+        // Initialize the result object.
         $result = new stdClass();
 
         if ($targetdate < $currentdatetime) {
-            $result->timetype = plagiarism_copyleaks_times::Soon;
+            $result->timetype = plagiarism_copyleaks_times::SOON;
             $result->value = 0;
             return $result;
         }
 
-        // Calculate the interval between the two dates
+        // Calculate the interval between the two dates.
         $interval = $currentdatetime->diff($targetdatetime);
 
-        // Set default values
-        $result->timetype = plagiarism_copyleaks_times::Minutes;
+        // Set default values.
+        $result->timetype = plagiarism_copyleaks_times::MINUTES;
         $result->value = $interval->i;
 
-        // Check if time left is under an hour
+        // Check if time left is under an hour.
         if ($interval->h > 0 || $interval->d > 0 || $interval->m > 0 || $interval->y > 0) {
-            // Show by hours
-            $result->timetype = plagiarism_copyleaks_times::Houres;
+            // Show by hours.
+            $result->timetype = plagiarism_copyleaks_times::HOURES;
             $result->value = $interval->h;
 
-            // Check if time left is less than a day
+            // Check if time left is less than a day.
             if ($interval->d > 0 || $interval->m > 0 || $interval->y > 0) {
-                // Show by days
-                $result->timetype = plagiarism_copyleaks_times::Days;
+                // Show by days.
+                $result->timetype = plagiarism_copyleaks_times::DAYS;
                 $result->value = $interval->d;
 
-                // Check if time left is less than a month
+                // Check if time left is less than a month.
                 if ($interval->m > 0 || $interval->y > 0) {
-                    // Show by months
-                    $result->timetype = plagiarism_copyleaks_times::Months;
+                    // Show by months.
+                    $result->timetype = plagiarism_copyleaks_times::MONTHS;
                     $result->value = $interval->m;
                 }
             }
@@ -218,16 +218,16 @@ class plagiarism_copyleaks_utils {
     public static function get_time_left_str($timeobj) {
         $retstr = get_string('cltimemin', 'plagiarism_copyleaks') . ' ' . $timeobj->value . ' ';
         switch ($timeobj->timetype) {
-            case plagiarism_copyleaks_times::Minutes:
+            case plagiarism_copyleaks_times::MINUTES:
                 $retstr  .= get_string('cltimeminutes', 'plagiarism_copyleaks');
                 break;
-            case plagiarism_copyleaks_times::Houres:
+            case plagiarism_copyleaks_times::HOURES:
                 $retstr  .= get_string('cltimehours', 'plagiarism_copyleaks');
                 break;
-            case plagiarism_copyleaks_times::Days:
+            case plagiarism_copyleaks_times::DAYS:
                 $retstr  .= get_string('cltimedays', 'plagiarism_copyleaks');
                 break;
-            case plagiarism_copyleaks_times::Months:
+            case plagiarism_copyleaks_times::MONTHS:
                 $retstr  .= get_string('cltimemonths', 'plagiarism_copyleaks');
                 break;
             default:

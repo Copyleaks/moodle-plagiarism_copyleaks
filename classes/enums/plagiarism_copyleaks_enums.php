@@ -60,13 +60,13 @@ class plagiarism_copyleaks_request_status {
  */
 class plagiarism_copyleaks_times {
     /** @var int respresents a minute */
-    const Soon = 0;
+    const SOON = 0;
     /** @var int respresents a minute */
-    const Minutes = 1;
+    const MINUTES = 1;
     /** @var int respresents am hour */
-    const Houres = 2;
+    const HOURES = 2;
     /** @var int respresents a day */
-    const Days = 3;
+    const DAYS = 3;
     /** @var int respresents a month */
-    const Months = 4;
+    const MONTHS = 4;
 }
