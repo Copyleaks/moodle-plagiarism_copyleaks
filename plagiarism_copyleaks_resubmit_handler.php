@@ -59,8 +59,6 @@ if ($action) {
     }
 }
 
-
-
 if ($workshopid && $cm->modname == "workshop") {
     if ($querypos) {
         $path = $path . "&id=$workshopid";
