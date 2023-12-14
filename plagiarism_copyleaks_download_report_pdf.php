@@ -124,4 +124,9 @@ if (empty($clmoduleenabled) || empty($modulesettings['plagiarism_copyleaks_enabl
             echo html_writer::div(get_string('clnopageaccess', 'plagiarism_copyleaks'), null, array('style' => $errormessagestyle));
         }
     }
+    // echo 'Downloading report pdf...';
 }
+
+echo html_writer::script(
+    "window.document.body.style.margin=0;"
+);
