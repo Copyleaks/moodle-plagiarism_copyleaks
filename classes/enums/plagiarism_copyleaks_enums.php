@@ -55,7 +55,6 @@ class plagiarism_copyleaks_request_status {
     const SUCCEEDED = 2;
 }
 
-
 /**
  * This class is used as an enum in order to know what background should run only once.
  */
@@ -64,4 +63,19 @@ class plagiarism_copyleaks_background_tasks {
     const SYNC_USERS_DATA = 1;
     /** @var int an indicator to run the sync_courses_data background task */
     const SYNC_COURSES_DATA = 2;
+}
+/**
+ * This class is used as an enum in order to know time left from a date.
+ */
+class plagiarism_copyleaks_times {
+    /** @var int respresents a minute */
+    const SOON = 0;
+    /** @var int respresents a minute */
+    const MINUTES = 1;
+    /** @var int respresents am hour */
+    const HOURES = 2;
+    /** @var int respresents a day */
+    const DAYS = 3;
+    /** @var int respresents a month */
+    const MONTHS = 4;
 }

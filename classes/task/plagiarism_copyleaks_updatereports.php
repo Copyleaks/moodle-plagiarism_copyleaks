@@ -100,7 +100,6 @@ class plagiarism_copyleaks_updatereports extends \core\task\scheduled_task {
                     if (!\plagiarism_copyleaks_comms::test_copyleaks_connection('scheduler_task')) {
                         return;
                     }
-
                     $copyleakscomms = new \plagiarism_copyleaks_comms();
                     $scaninstances = $copyleakscomms->get_plagiarism_scans_instances($submissionsinstances);
                     if (count($scaninstances) > 0) {
@@ -120,6 +119,9 @@ class plagiarism_copyleaks_updatereports extends \core\task\scheduled_task {
                                 if ($clscaninstance->status == 1) {
                                     $currentsubmission->statuscode = 'success';
                                     $currentsubmission->similarityscore = round($clscaninstance->plagiarismScore, 1);
+                                    $currentsubmission->aiscore = isset($clscaninstance->aiScore) ?
+                                        round($clscaninstance->aiScore, 1) : null;
+                                    $currentsubmission->grammercases = $clscaninstance->grammerCases;
                                     $currentsubmission->ischeatingdetected = $clscaninstance->isCheatingDetected;
                                     if (!$DB->update_record('plagiarism_copyleaks_files', $currentsubmission)) {
                                         \plagiarism_copyleaks_logs::add(

@@ -113,3 +113,224 @@ a.copyleaks-settings-link:hover {
     height: 24px;
     text-align: center;
 }
+
+/* -- New design for scans view */
+.cls-mini-report {
+    font-size: 14px;
+}
+
+.cls-large-report-details {
+    width: 186px;
+    height: fit-content;
+    padding: 4px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 8px;
+    border-left: 3px solid #3f9af5;
+    padding-left: 8px;
+}
+
+.cls-logo-new {
+    width: 69px !important;
+    height: 18px !important;
+}
+.cls-icon-no-margin {
+    margin-right: 0 !important;
+    vertical-align: unset;
+    width: 18px !important;
+    height: 18px !important;
+}
+
+.cls-details-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.cls-details-header .cls-icon {
+    display: flex;
+}
+
+.cls-details-header .cls-action {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.cls-details-header .cls-action a,
+.cls-details-header .cls-action div {
+    display: flex;
+    align-items: center;
+}
+
+.cls-details-header .cls-action > img,
+.cls-details-header .cls-action .cls-copy-container {
+    cursor: pointer;
+    width: 18px !important;
+    height: 18px !important;
+}
+
+.cls-action form button {
+    background-color: transparent;
+    border: unset;
+}
+
+.cls-details-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.cls-text-result {
+    display: flex;
+    gap: 4px;
+}
+.cls-details-content .cls-result-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    line-height: 14px;
+}
+
+.cls-details-content .cls-score-container {
+    display: flex;
+    justify-content: flex-end;
+    align-items: baseline;
+    gap: 4px;
+}
+.cls-details-content .cls-result-item .score-level {
+    border-radius: 50%;
+    height: 8px;
+    width: 8px;
+    display: inline-block;
+}
+
+.cl-plag-score-level-high,
+.cl-ai-score-level-high {
+    background-color: #f44336;
+}
+
+.cl-plag-score-level-mid,
+.cl-ai-score-level-mid {
+    background-color: #ffa503;
+}
+
+.cl-plag-score-level-low,
+.cl-ai-score-level-low {
+    background-color: #008001;
+}
+
+.small-report-details {
+    width: 180px;
+    height: 82px;
+}
+
+.small-report-details.error {
+    display: flex;
+    justify-content: center;
+    align-items: start;
+    flex-direction: column;
+    gap: 8px;
+    border-left: 3px solid #f44336;
+    padding-left: 8px;
+}
+
+.small-report-details.error .cls-content,
+.small-report-details.error .cls-content a {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+}
+
+.small-report-details.error .failed {
+    color: #f44336;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.small-report-details.error .failed span {
+    line-height: 15px;
+}
+
+.small-report-details.error .retry {
+    font-size: 14px;
+    color: #3f9af5;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.small-report-details.in-progress {
+    padding: 8px;
+    border-left: 3px solid #3f9af5;
+    padding-left: 8px;
+    width: 180px;
+    height: 59px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    gap: 8px;
+}
+
+.small-report-details.in-progress .cls-content {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 8px;
+}
+.small-report-details.in-progress .cls-content img {
+    width: 14px;
+}
+
+.small-report-details.scheduled {
+    padding: 8px;
+    border-left: 3px solid #3f9af5;
+    display: flex;
+    flex-direction: column;
+    width: fit-content;
+    height: fit-content;
+    gap: 4px;
+}
+
+.scheduled-text {
+    text-wrap: nowrap;
+}
+
+.small-report-details.scheduled .cls-scheduled-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.small-report-details.scheduled .cls-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+/*Loader*/
+.cls-spinner {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border: 2px solid #3f9af5;
+    border-radius: 50%;
+    border-top: 2px solid transparent;
+    border-right: 2px solid transparent;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+    50% {
+        -webkit-transform: rotate(180deg);
+        transform: rotate(180deg);
+    }
+    100% {
+        -webkit-transform: rotate(360deg);
+        transform: rotate(360deg);
+    }
+}

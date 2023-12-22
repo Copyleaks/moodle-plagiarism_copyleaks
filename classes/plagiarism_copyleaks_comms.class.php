@@ -355,6 +355,8 @@ class plagiarism_copyleaks_comms {
                     $this->copyleaks_api_url() . "/api/moodle/plugin/" . $this->key . "/test-connection?source=" . $context,
                     true
                 );
+                plagiarism_copyleaks_dbutils::update_config_scanning_detection($result->detectionsValues);
+
                 if (isset($result) && isset($result->eulaVersion)) {
                     plagiarism_copyleaks_dbutils::update_copyleaks_eula_version($result->eulaVersion);
                     return true;

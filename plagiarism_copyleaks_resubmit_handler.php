@@ -30,6 +30,9 @@ $courseid = required_param('courseid', PARAM_TEXT);
 $route = required_param('route', PARAM_TEXT);
 $action = optional_param('action', null, PARAM_TEXT);
 $workshopid = optional_param('id', null, PARAM_TEXT);
+$sid = optional_param('sid', null, PARAM_TEXT);
+$pluginparam = optional_param('plugin', null, PARAM_TEXT);
+$returnaction = optional_param('returnaction', null, PARAM_TEXT);
 
 $cm = get_coursemodule_from_id('', $cmid, $courseid);
 require_login($courseid, true, $cm);
@@ -62,6 +65,18 @@ if ($workshopid && $cm->modname == "workshop") {
     } else {
         $path = $path . "?id=$workshopid";
     }
+}
+
+if ($sid) {
+    $path .= "&sid=$sid";
+}
+
+if ($returnaction) {
+    $path .= "&returnaction=$returnaction";
+}
+
+if ($pluginparam) {
+    $path .= "&plugin=$pluginparam";
 }
 
 redirect($path);
