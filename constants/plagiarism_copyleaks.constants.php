@@ -63,4 +63,4 @@ define('PLAGIARISM_COPYLEAKS_DEFUALT_EULA_VERSION', '2023032700');
 define('PLAGIARISM_COPYLEAKS_EULA_FIELD_NAME', 'plagiarism_copyleaks_latesteulaversion ');
 define('PLAGIARISM_COPYLEAKS_SCAN_AI_FIELD_NAME', 'plagiarism_copyleaks_enable_ai_detection');
 define('PLAGIARISM_COPYLEAKS_SCAN_PLAGIARISM_FIELD_NAME', 'plagiarism_copyleaks_enable_plagiarism_detection');
-define('PLAGIARISM_COPYLEAKS_DETECT_GRAMMER_FIELD_NAME', 'plagiarism_copyleaks_enable_grammer_detection ');
+define('PLAGIARISM_COPYLEAKS_DETECT_GRAMMER_FIELD_NAME', 'plagiarism_copyleaks_enable_grammer_detection');

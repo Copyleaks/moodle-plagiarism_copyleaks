@@ -319,9 +319,15 @@ class plagiarism_copyleaks_utils {
 
                 // Check if time left is less than a month.
                 if ($interval->m > 0 || $interval->y > 0) {
-                    // Show by months.
-                    $result->timetype = plagiarism_copyleaks_times::MONTHS;
-                    $result->value = $interval->m;
+                    if ($interval->y > 0) {
+                        // Show by year.
+                        $result->timetype = plagiarism_copyleaks_times::MONTHS;
+                        $result->value = $interval->y * 12;
+                    } else {
+                        // Show by months.
+                        $result->timetype = plagiarism_copyleaks_times::MONTHS;
+                        $result->value = $interval->m;
+                    }
                 }
             }
         }
