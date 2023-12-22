@@ -319,7 +319,7 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2023110202, 'plagiarism', 'copyleaks');
     }
 
-    if ($oldversion < 2021122200) {
+    if ($oldversion < 2023122201) {
         $table = new xmldb_table('plagiarism_copyleaks_bgtasks');
 
         // Adding fields to table plagiarism_copyleaks_backgroundtasks.
@@ -365,6 +365,13 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
             PLAGIARISM_COPYLEAKS_SCAN_AI_FIELD_NAME
         );
 
+        $saveddefaultvalue = $DB->get_records_menu(
+            'plagiarism_copyleaks_config',
+            array('cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID),
+            '',
+            'name,value'
+        );
+
         foreach ($scandetections as $option) {
             // Update saved default copyleaks settings.
             $newfield = new stdClass();
@@ -392,7 +399,7 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         }
 
         // Copyleaks savepoint reached.
-        upgrade_plugin_savepoint(true, 2023122200, 'plagiarism', 'copyleaks');
+        upgrade_plugin_savepoint(true, 2023122201, 'plagiarism', 'copyleaks');
     }
 
     return true;
