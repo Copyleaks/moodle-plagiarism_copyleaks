@@ -319,7 +319,7 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2023110202, 'plagiarism', 'copyleaks');
     }
 
-    if ($oldversion < 2023122201) {
+    if ($oldversion < 2023123100) {
         $table = new xmldb_table('plagiarism_copyleaks_bgtasks');
 
         // Adding fields to table plagiarism_copyleaks_backgroundtasks.
@@ -345,22 +345,22 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
             array('task' => plagiarism_copyleaks_background_tasks::SYNC_COURSES_DATA)
         );
 
-        // Add AI score and grammer cases to plagiarism_copyleaks_files.
+        // Add AI score and grammar cases to plagiarism_copyleaks_files.
         $table = new xmldb_table('plagiarism_copyleaks_files');
         $aifield = new xmldb_field('aiscore', XMLDB_TYPE_NUMBER, '10', null, null, null, null, 'similarityscore');
-        $grammerfield = new xmldb_field('grammercases', XMLDB_TYPE_NUMBER, '10', null, null, null, null, 'aiscore');
+        $grammarfield = new xmldb_field('grammarcases', XMLDB_TYPE_NUMBER, '10', null, null, null, null, 'aiscore');
 
         if ($dbman->table_exists($table)) {
             if (!$dbman->field_exists($table, $aifield)) {
                 $dbman->add_field($table, $aifield);
             }
-            if (!$dbman->field_exists($table, $grammerfield)) {
-                $dbman->add_field($table, $grammerfield);
+            if (!$dbman->field_exists($table, $grammarfield)) {
+                $dbman->add_field($table, $grammarfield);
             }
         }
 
         $scandetections = array(
-            PLAGIARISM_COPYLEAKS_DETECT_GRAMMER_FIELD_NAME,
+            PLAGIARISM_COPYLEAKS_DETECT_GRAMMAR_FIELD_NAME,
             PLAGIARISM_COPYLEAKS_SCAN_PLAGIARISM_FIELD_NAME,
             PLAGIARISM_COPYLEAKS_SCAN_AI_FIELD_NAME
         );
@@ -378,7 +378,7 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
             $newfield->cm = PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID;
             $newfield->name = $option;
             $newfield->value = 0;
-            if (!isset($saveddefaultvalue) || !isset($saveddefaultvalue[$fieldname])) {
+            if (!isset($saveddefaultvalue) || !isset($saveddefaultvalue[$option])) {
                 $newfield->config_hash = $newfield->cm . "_" . $newfield->name;
                 if (!$DB->insert_record('plagiarism_copyleaks_config', $newfield)) {
                     throw new moodle_exception(get_string('clinserterror', 'plagiarism_copyleaks'));
@@ -399,7 +399,7 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         }
 
         // Copyleaks savepoint reached.
-        upgrade_plugin_savepoint(true, 2023122201, 'plagiarism', 'copyleaks');
+        upgrade_plugin_savepoint(true, 2023123100, 'plagiarism', 'copyleaks');
     }
 
     return true;

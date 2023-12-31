@@ -258,7 +258,7 @@ class plagiarism_copyleaks_submissiondisplay {
                             // Submitted file results.
                             $results["score"] = $submittedfile->similarityscore;
                             $results["aiscore"] = $submittedfile->aiscore;
-                            $results["grammercases"] = $submittedfile->grammercases;
+                            $results["grammarcases"] = $submittedfile->grammarcases;
                             $results['reporturl'] =
                                 "$CFG->wwwroot/plagiarism/copyleaks/plagiarism_copyleaks_report.php" .
                                 "?cmid=$submittedfile->cm&userid=$submittedfile->userid" .
@@ -323,22 +323,22 @@ class plagiarism_copyleaks_submissiondisplay {
                                         ),
                                     array('class' => 'cls-result-item')
                                 ) : '');
-                            // Grammer details.
-                            $grammerdetails = ($detectiondata[PLAGIARISM_COPYLEAKS_DETECT_GRAMMER_FIELD_NAME] ?
+                            // Grammar details.
+                            $grammardetails = ($detectiondata[PLAGIARISM_COPYLEAKS_DETECT_GRAMMAR_FIELD_NAME] ?
                                 html_writer::tag(
                                     'div',
                                     html_writer::tag(
                                         'div',
-                                        get_string('clgrammerissues', 'plagiarism_copyleaks'),
+                                        get_string('clgrammarissues', 'plagiarism_copyleaks'),
                                         array('class' => 'cls-text-result')
                                     ) .
                                         html_writer::tag(
                                             'div',
-                                            ($results["grammercases"] ? html_writer::tag(
+                                            ($results["grammarcases"] ? html_writer::tag(
                                                 'span',
                                                 '',
                                                 array('class' => "score-level $scorelevelclass")
-                                            ) . $results["grammercases"] : 'N/A'),
+                                            ) . $results["grammarcases"] : 'N/A'),
                                             array('class' => 'cls-score-container')
                                         ),
                                     array('class' => 'cls-result-item')
@@ -408,10 +408,10 @@ class plagiarism_copyleaks_submissiondisplay {
                                         ),
                                     array('class' => 'cls-details-header')
                                 ) .
-                                    // Detection details - AI & PLAGIARISM & GRAMMER.
+                                    // Detection details - AI & PLAGIARISM & GRAMMaR.
                                     html_writer::tag(
                                         'div',
-                                        $aidetails . $plagiarismdetails . $grammerdetails,
+                                        $aidetails . $plagiarismdetails . $grammardetails,
                                         array('class' => 'cls-details-content')
                                     ),
                                 array('class' => 'cls-large-report-details cls-mini-report')
@@ -430,7 +430,6 @@ class plagiarism_copyleaks_submissiondisplay {
                                 'copyText.setSelectionRange(0, 99999);' .
                                 'copyText.style.display = "none";' .
                                 'navigator.clipboard.writeText(copyText.value);' .
-                                'alert("Copied Report URL");' .
                                 "}</script>";
 
                             $output .= html_writer::tag(
@@ -601,8 +600,8 @@ class plagiarism_copyleaks_submissiondisplay {
                                     ) . $dateicon,
                                     array('class' => 'cls-scheduled-item')
                                 ) : '');
-                            // Grammer Schedule Content.
-                            $grammerscheduleddetails = ($detectiondata[PLAGIARISM_COPYLEAKS_DETECT_GRAMMER_FIELD_NAME] ?
+                            // Grammar Schedule Content.
+                            $grammarscheduleddetails = ($detectiondata[PLAGIARISM_COPYLEAKS_DETECT_GRAMMAR_FIELD_NAME] ?
                                 html_writer::tag(
                                     'div',
                                     html_writer::tag(
@@ -636,7 +635,7 @@ class plagiarism_copyleaks_submissiondisplay {
                                 ) .
                                     html_writer::tag(
                                         'div',
-                                        $aischeduleddetails . $plagiarismscheduleddetails . $grammerscheduleddetails,
+                                        $aischeduleddetails . $plagiarismscheduleddetails . $grammarscheduleddetails,
                                         array('class' => 'cls-content')
                                     ),
                                 array('class' => 'small-report-details cls-mini-report scheduled')
