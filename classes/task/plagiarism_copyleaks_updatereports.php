@@ -118,7 +118,8 @@ class plagiarism_copyleaks_updatereports extends \core\task\scheduled_task {
                                 $currentsubmission->externalid = $clscaninstance->scanId;
                                 if ($clscaninstance->status == 1) {
                                     $currentsubmission->statuscode = 'success';
-                                    $currentsubmission->similarityscore = round($clscaninstance->plagiarismScore, 1);
+                                    $currentsubmission->similarityscore = isset($clscaninstance->plagiarismScore) ?
+                                        round($clscaninstance->plagiarismScore, 1) : null;
                                     $currentsubmission->aiscore = isset($clscaninstance->aiScore) ?
                                         round($clscaninstance->aiScore, 1) : null;
                                     $currentsubmission->grammercases = $clscaninstance->grammerCases;
