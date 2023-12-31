@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 /**
- * Copyleaks Plagiarism Plugin - Handle Resubmit Files
+ * Copyleaks Plagiarism Plugin
  * @package   plagiarism_copyleaks
  * @copyright 2023 Copyleaks
  * @author    Gil Cohen <gilc@copyleaks.com>

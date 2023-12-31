@@ -335,19 +335,21 @@ class plagiarism_copyleaks_comms {
     /**
      * Test if server can communicate with Copyleaks.
      * @param string $context
+     * @param bool $updateconfig
      * @return bool
      */
-    public static function test_copyleaks_connection($context) {
+    public static function test_copyleaks_connection($context, $updateconfig=false) {
         $cl = new plagiarism_copyleaks_comms();
-        return $cl->test_connection($context);
+        return $cl->test_connection($context, $updateconfig);
     }
 
     /**
      * Test if server can communicate with Copyleaks.
      * @param string $context
+     * @param bool $updateconfig
      * @return bool
      */
-    public function test_connection($context) {
+    public function test_connection($context, $updateconfig=false) {
         try {
             if (isset($this->key) && isset($this->secret)) {
                 $result = plagiarism_copyleaks_http_client::execute_retry(
@@ -355,7 +357,10 @@ class plagiarism_copyleaks_comms {
                     $this->copyleaks_api_url() . "/api/moodle/plugin/" . $this->key . "/test-connection?source=" . $context,
                     true
                 );
-                plagiarism_copyleaks_dbutils::update_config_scanning_detection($result->detectionsValues);
+
+                if ($updateconfig) {
+                    plagiarism_copyleaks_dbutils::update_config_scanning_detection($result->detectionsValues);
+                }
 
                 if (isset($result) && isset($result->eulaVersion)) {
                     plagiarism_copyleaks_dbutils::update_copyleaks_eula_version($result->eulaVersion);
