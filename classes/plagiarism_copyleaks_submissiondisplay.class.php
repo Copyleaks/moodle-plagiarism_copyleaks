@@ -27,6 +27,7 @@ require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks
 require_once($CFG->dirroot . '/plagiarism/copyleaks/constants/plagiarism_copyleaks.constants.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_assignmodule.class.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_logs.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_dbutils.class.php');
 
 /**
  * submission display helpers methods
@@ -231,107 +232,282 @@ class plagiarism_copyleaks_submissiondisplay {
                     $clpoweredbycopyleakstxt = get_string('clpoweredbycopyleaks', 'plagiarism_copyleaks');
                     switch ($submittedfile->statuscode) {
                         case 'success':
+                            // Detection data - wich detection to display.
+                            $detectiondata = plagiarism_copyleaks_dbutils::get_config_scanning_detection($result->detectionsValues);
 
+                            // Plagiarism Score level class.
+                            $scorelevelclass = '';
                             if ($submittedfile->similarityscore <= 40) {
-                                $htmlclassrank = "low";
+                                $scorelevelclass = "cls-plag-score-level-low";
                             } else if ($submittedfile->similarityscore <= 80) {
-                                $htmlclassrank = "middle";
+                                $scorelevelclass = "cls-plag-score-level-mid";
                             } else {
-                                $htmlclassrank = "high";
+                                $scorelevelclass = "cls-plag-score-level-high";
                             }
 
-                            $results["score"] = $submittedfile->similarityscore;
+                            // AI Score level class.
+                            $aiscorelevel = '';
+                            if ($submittedfile->aiscore <= 40) {
+                                $aiscorelevel = "cls-ai-score-level-low";
+                            } else if ($submittedfile->aiscore <= 80) {
+                                $aiscorelevel = "cls-ai-score-level-mid";
+                            } else {
+                                $aiscorelevel = "cls-ai-score-level-high";
+                            }
 
+                            // Submitted file results.
+                            $results["score"] = $submittedfile->similarityscore;
+                            $results["aiscore"] = $submittedfile->aiscore;
+                            $results["grammarcases"] = $submittedfile->grammarcases;
                             $results['reporturl'] =
                                 "$CFG->wwwroot/plagiarism/copyleaks/plagiarism_copyleaks_report.php" .
                                 "?cmid=$submittedfile->cm&userid=$submittedfile->userid" .
                                 "&identifier=$submittedfile->identifier&modulename=$coursemodule->modname";
 
-                            $similaritystring = '&nbsp;<span class="' . $htmlclassrank . '">'
-                                . '<span></span>'
-                                . $results["score"] . '%</span>';
+                            // Download PDF URL.
+                            $downloadpdfurl = "$CFG->wwwroot/plagiarism/copyleaks/plagiarism_copyleaks_download_report_pdf.php" .
+                                "?cmid=$submittedfile->cm&userid=$submittedfile->userid&identifier=$submittedfile->identifier" .
+                                "&modulename=$coursemodule->modname";
 
-                            $similaritywrapper = '<a class="copyleaks-text-gray" title="'
-                                . get_string('clopenreport', 'plagiarism_copyleaks') . '" href="'
-                                . $results['reporturl'] . '" target="_blank">';
-
-                            $similaritywrapper .= get_string('clplagiarised', 'plagiarism_copyleaks') . ':'
-                                . $similaritystring . '</a>';
-
-                            $divcontent = $OUTPUT->pix_icon(
-                                'copyleaks-logo',
-                                $clpoweredbycopyleakstxt,
-                                'plagiarism_copyleaks',
-                                array('class' => 'icon_size')
-                            ) . $similaritywrapper;
-
-                            $output = html_writer::tag(
+                            // Cheat detection details.
+                            $cheatdetectionicon = html_writer::tag(
                                 'div',
-                                $divcontent,
-                                array('class' => 'copyleaks')
-                            );
-
-                            if ($submittedfile->ischeatingdetected) {
-                                $cheatingdetectioncontent = $OUTPUT->pix_icon(
-                                    'copyleaks-warn',
+                                $OUTPUT->pix_icon(
+                                    'copyleaks-alert-icon',
                                     get_string('clcheatingdetected', 'plagiarism_copyleaks'),
                                     'plagiarism_copyleaks',
-                                    array('class' => 'icon_size')
-                                ) . '<a class="copyleaks-text-warn" title="'
-                                    . get_string('clcheatingdetected', 'plagiarism_copyleaks')
-                                    . '" href="'
-                                    . $results['reporturl'] . '" target="_blank">'
-                                    . get_string('clcheatingdetectedtxt', 'plagiarism_copyleaks')
-                                    . '</a>';
-                                $output .= html_writer::tag(
-                                    'div',
-                                    $cheatingdetectioncontent,
-                                    array('class' => 'copyleaks')
-                                );
-                            }
+                                    array('class' => 'cls-icon-no-margin')
+                                ),
+                                null
+                            );
 
+                            // AI details.
+                            $aidetails = ($detectiondata[PLAGIARISM_COPYLEAKS_SCAN_AI_FIELD_NAME] ?
+                                html_writer::tag(
+                                    'div',
+                                    html_writer::tag(
+                                        'div',
+                                        get_string('claicontentscore', 'plagiarism_copyleaks'),
+                                        array('class' => 'cls-text-result')
+                                    ) .
+                                        html_writer::tag(
+                                            'div',
+                                            (isset($results["aiscore"]) ? html_writer::tag(
+                                                'span',
+                                                '',
+                                                array('class' => "score-level $aiscorelevel")
+                                            ) . $results["aiscore"] : 'N/A'),
+                                            array('class' => 'cls-score-container')
+                                        ),
+                                    array('class' => 'cls-result-item')
+                                ) : '');
+                            // Plagiarism details.
+                            $plagiarismdetails = ($detectiondata[PLAGIARISM_COPYLEAKS_SCAN_PLAGIARISM_FIELD_NAME] ?
+                                html_writer::tag(
+                                    'div',
+                                    html_writer::tag(
+                                        'div',
+                                        get_string('clplagiarismscore', 'plagiarism_copyleaks'),
+                                        array('class' => 'cls-text-result')
+                                    ) .
+                                        // Cheat detection alert.
+                                        ($submittedfile->ischeatingdetected ? $cheatdetectionicon : '') .
+                                        html_writer::tag(
+                                            'div',
+                                            (isset($results["score"]) ? html_writer::tag(
+                                                'span',
+                                                '',
+                                                array('class' => "score-level $scorelevelclass")
+                                            ) . $results["score"] : 'N/A'),
+                                            array('class' => 'cls-score-container')
+                                        ),
+                                    array('class' => 'cls-result-item')
+                                ) : '');
+                            // Grammar details.
+                            $grammardetails = ($detectiondata[PLAGIARISM_COPYLEAKS_DETECT_GRAMMAR_FIELD_NAME] ?
+                                html_writer::tag(
+                                    'div',
+                                    html_writer::tag(
+                                        'div',
+                                        get_string('clgrammarissues', 'plagiarism_copyleaks'),
+                                        array('class' => 'cls-text-result')
+                                    ) .
+                                        html_writer::tag(
+                                            'div',
+                                            ($results["grammarcases"] ? html_writer::tag(
+                                                'span',
+                                                '',
+                                                array('class' => "score-level $scorelevelclass")
+                                            ) . $results["grammarcases"] : 'N/A'),
+                                            array('class' => 'cls-score-container')
+                                        ),
+                                    array('class' => 'cls-result-item')
+                                ) : '');
+                            $idx = (int)$submittedfile->id;
+                            // Item results content.
+                            $similaritystring = html_writer::tag(
+                                'div',
+                                html_writer::tag(
+                                    'div',
+                                    html_writer::tag(
+                                        'div',
+                                        $OUTPUT->pix_icon(
+                                            'copyleaks-logo-new',
+                                            $clpoweredbycopyleakstxt,
+                                            'plagiarism_copyleaks',
+                                            array('class' => 'cls-logo-new')
+                                        ),
+                                        array('class' => 'cls-icon')
+                                    ) .
+                                        html_writer::tag(
+                                            'div',
+                                            // Download report.
+                                            html_writer::tag(
+                                                'a',
+                                                $OUTPUT->pix_icon(
+                                                    'copyleaks-download-icon',
+                                                    get_string('cldownloadreport', 'plagiarism_copyleaks'),
+                                                    'plagiarism_copyleaks',
+                                                    array('class' => 'cls-icon-no-margin')
+                                                ),
+                                                array(
+                                                    'href' => $downloadpdfurl, 'target' => '_blank',
+                                                    'title' => get_string('clopenreport', 'plagiarism_copyleaks')
+                                                )
+                                            ) .
+                                                // Open report page.
+                                                html_writer::tag(
+                                                    'a',
+                                                    $OUTPUT->pix_icon(
+                                                        'copyleaks-open-url-icon',
+                                                        get_string('clopenreport', 'plagiarism_copyleaks'),
+                                                        'plagiarism_copyleaks',
+                                                        array('class' => 'cls-icon-no-margin')
+                                                    ),
+                                                    array(
+                                                        'href' => $results['reporturl'], 'target' => '_blank',
+                                                        'title' => get_string('clopenreport', 'plagiarism_copyleaks')
+                                                    )
+                                                ) .
+                                                // Copy report URL.
+                                                html_writer::tag(
+                                                    'div',
+                                                    $OUTPUT->pix_icon(
+                                                        'copyleaks-copy-icon',
+                                                        get_string('clcopyreporturl', 'plagiarism_copyleaks'),
+                                                        'plagiarism_copyleaks',
+                                                        array('class' => 'cls-icon-no-margin')
+                                                    ),
+                                                    array(
+                                                        'id' => "cls-copy-container_" . $submittedfile->identifier,
+                                                        'class' => "cls-copy-container",
+                                                        "onclick" => "cl_copy_to_clipboard$idx()"
+                                                    )
+                                                ),
+                                            array('class' => 'cls-action')
+                                        ),
+                                    array('class' => 'cls-details-header')
+                                ) .
+                                    // Detection details - AI & PLAGIARISM & GRAMMaR.
+                                    html_writer::tag(
+                                        'div',
+                                        $aidetails . $plagiarismdetails . $grammardetails,
+                                        array('class' => 'cls-details-content')
+                                    ),
+                                array('class' => 'cls-large-report-details cls-mini-report')
+                            );
+
+                            // Copy to clipboard.
+                            $urlpdf = $results['reporturl'];
+                            $identifier = $submittedfile->identifier;
+                            $similaritystring .=
+                                "<input type='text' style='display:none;' name='clsreporturl'" .
+                                "id='clsreporturlinput_$identifier' value='$urlpdf'>"  .
+                                "<script>function cl_copy_to_clipboard$idx() {" .
+                                "var copyText = document.getElementById('clsreporturlinput_$identifier');" .
+                                'copyText.style.display = "block";' .
+                                'copyText.select();' .
+                                'copyText.setSelectionRange(0, 99999);' .
+                                'copyText.style.display = "none";' .
+                                'navigator.clipboard.writeText(copyText.value);' .
+                                "}</script>";
+
+                            $output .= html_writer::tag(
+                                'div',
+                                $similaritystring,
+                                array('class' => 'copyleaks')
+                            );
                             break;
                         case 'error':
                             if ($isinstructor) {
+                                $currenturl = $PAGE->url->get_path();
+                                $params = $PAGE->url->params();
+                                $querystring = http_build_query($params, '', '&');
+                                $route = str_replace('/moodle', '', $currenturl);
+                                $route = $route . '?' . "$querystring";
 
-                                $clplagiarised = get_string('clplagiarised', 'plagiarism_copyleaks');
-                                $errorstring = '&nbsp;<span class="copyleaks-text-gray">'
-                                    . $clplagiarised . ':&nbsp;</span>&nbsp;<span class="strong">'
-                                    . get_string('clplagiarisefailed', 'plagiarism_copyleaks')
-                                    . '</span>&nbsp;';
-                                $errorwrapper = '<span>' . $errorstring . '</span>';
-                                $outputcontent = $OUTPUT->pix_icon(
-                                    'copyleaks-logo',
-                                    $clpoweredbycopyleakstxt,
-                                    'plagiarism_copyleaks',
-                                    array('class' => 'icon_size')
-                                ) . $errorwrapper . $OUTPUT->pix_icon(
-                                    'copyleaks-error',
-                                    $submittedfile->errormsg,
-                                    'plagiarism_copyleaks',
-                                    array('class' => 'icon_size')
-                                );
+                                $cmid = $submissionref['cmid'];
+                                $courseid = $COURSE->id;
+                                $sid = optional_param('sid', null, PARAM_TEXT);
+                                $action = optional_param('action', null, PARAM_TEXT);
+                                $returnaction = optional_param('returnaction', null, PARAM_TEXT);
+                                $pluginparam = optional_param('plugin', null, PARAM_TEXT);
+
+                                $resubmiturl = "$CFG->wwwroot/plagiarism/copyleaks/plagiarism_copyleaks_resubmit_handler.php" .
+                                    "?fileid=$submittedfile->id&cmid=$cmid&courseid=$courseid" .
+                                    "&route=$route&sid=$sid&action=$action&returnaction=$returnaction&plugin=$pluginparam";
 
                                 try {
-                                    $currenturl = $PAGE->url->get_path();
-                                    $params = $PAGE->url->params();
-                                    $querystring = http_build_query($params, '', '&');
-                                    $route = str_replace('/moodle', '', $currenturl);
-                                    $route = $route . '?' . "$querystring";
 
-                                    $cmid = $submissionref['cmid'];
-                                    $courseid = $COURSE->id;
-
-                                    $resubmiturl = "$CFG->wwwroot/plagiarism/copyleaks/plagiarism_copyleaks_resubmit_handler.php".
-                                    "?fileid=$submittedfile->id&cmid=$cmid&courseid=$courseid&route=$route";
-                                    $outputcontent .= "<div class='copyleaks-resubmit-button'>" .
-                                        html_writer::link(
-                                            "$resubmiturl",
-                                            get_string('clresubmitfailed', 'plagiarism_copyleaks'),
-                                            array('class' => 'copyleaks-resubmit-button')
-                                        )
-                                        .
-                                        "</div>";
+                                    $outputcontent = html_writer::tag(
+                                        'div',
+                                        html_writer::tag(
+                                            'div',
+                                            $OUTPUT->pix_icon(
+                                                'copyleaks-logo-new',
+                                                $clpoweredbycopyleakstxt,
+                                                'plagiarism_copyleaks',
+                                                array('class' => 'cls-logo-new')
+                                            ),
+                                            null
+                                        ) .
+                                            html_writer::tag(
+                                                'div',
+                                                $OUTPUT->pix_icon(
+                                                    'copyleaks-alert-icon',
+                                                    $submittedfile->errormsg,
+                                                    'plagiarism_copyleaks',
+                                                    array('class' => 'cls-icon-no-margin')
+                                                ) .
+                                                    html_writer::tag(
+                                                        'span',
+                                                        get_string('clscanfailedbtn', 'plagiarism_copyleaks'),
+                                                        null
+                                                    ),
+                                                array('class' => 'failed cls-content')
+                                            ) .
+                                            // Retry buttom.
+                                            html_writer::tag(
+                                                'div',
+                                                html_writer::tag(
+                                                    'a',
+                                                    $OUTPUT->pix_icon(
+                                                        'copyleaks-retry-icon',
+                                                        null,
+                                                        'plagiarism_copyleaks',
+                                                        array('class' => 'cls-icon-no-margin')
+                                                    ) .
+                                                        html_writer::tag(
+                                                            'span',
+                                                            get_string('cltryagainbtn', 'plagiarism_copyleaks'),
+                                                            null
+                                                        ),
+                                                    array('href' => $resubmiturl)
+                                                ),
+                                                array('class' => 'retry cls-content')
+                                            ),
+                                        array('class' => 'cls-small-report-details error cls-mini-report')
+                                    );
                                 } catch (Exception $e) {
                                     \plagiarism_copyleaks_logs::add(
                                         "Fail to add resubmit button - " . $e->getMessage(),
@@ -347,61 +523,127 @@ class plagiarism_copyleaks_submissiondisplay {
                             }
                             break;
                         case 'pending':
-                            $clplagiarised = get_string('clplagiarised', 'plagiarism_copyleaks');
-
-                            $pendingstring = '&nbsp;<span class="copyleaks-text-gray">'
-                                . $clplagiarised . ':&nbsp;</span>';
-
-                            $pendingwrapper = '<span title="' . get_string('clplagiarisescanning', 'plagiarism_copyleaks') . '">'
-                                . $pendingstring . '</span>';
-
+                            $outputcontent = html_writer::tag(
+                                'div',
+                                html_writer::tag(
+                                    'div',
+                                    $OUTPUT->pix_icon(
+                                        'copyleaks-logo-new',
+                                        $clpoweredbycopyleakstxt,
+                                        'plagiarism_copyleaks',
+                                        array('class' => 'cls-icon-no-margin', 'class' => 'cls-logo-new')
+                                    ),
+                                    array('class' => 'cls-icon')
+                                ) .
+                                    html_writer::tag(
+                                        'div',
+                                        // Spinner.
+                                        html_writer::tag(
+                                            'div',
+                                            '',
+                                            array('class' => 'cls-spinner')
+                                        ) .
+                                            html_writer::tag(
+                                                'span',
+                                                get_string('clscaninprogress', 'plagiarism_copyleaks'),
+                                                null
+                                            ),
+                                        array('class' => 'cls-content')
+                                    ),
+                                array('class' => 'cls-small-report-details cls-mini-report in-progress')
+                            );
                             $output = html_writer::tag(
                                 'div',
-                                $OUTPUT->pix_icon(
-                                    'copyleaks-logo',
-                                    $clpoweredbycopyleakstxt,
-                                    'plagiarism_copyleaks',
-                                    array('class' => 'icon_size')
-                                )
-                                    . $pendingwrapper
-                                    . $OUTPUT->pix_icon(
-                                        'copyleaks-loading',
-                                        get_string('clplagiarisescanning', 'plagiarism_copyleaks'),
-                                        'plagiarism_copyleaks',
-                                        array('class' => 'icon_size')
-                                    ),
+                                $outputcontent,
                                 array('class' => 'copyleaks')
                             );
                             break;
                         case 'queued':
-                            $clplagiarised = get_string('clplagiarised', 'plagiarism_copyleaks');
-
-                            $queuedstring = '&nbsp;<span class="copyleaks-text-gray">'
-                                . $clplagiarised . ':&nbsp;</span>';
-
                             $queuedtxt = get_string(
                                 'clplagiarisequeued',
                                 'plagiarism_copyleaks',
                                 date("F j, Y, g:i a", $submittedfile->scheduledscandate)
                             );
 
-                            $queuedwrapper = '<span title="' . $queuedtxt . '">' . $queuedstring . '</span>';
+                            $date = new DateTime();
+                            $date->setTimestamp($submittedfile->scheduledscandate);
+                            $timeleft = plagiarism_copyleaks_utils::time_left_to_date($date);
+                            $timeleftstr = plagiarism_copyleaks_utils::get_time_left_str($timeleft);
+
+                            $dateicon = $OUTPUT->pix_icon(
+                                'copyleaks-date-logo',
+                                $queuedtxt,
+                                'plagiarism_copyleaks',
+                                array('class' => 'cls-icon-no-margin')
+                            );
+                            // Detection data - wich detection to display.
+                            $detectiondata = plagiarism_copyleaks_dbutils::get_config_scanning_detection($result->detectionsValues);
+
+                            // AI Schedule Content.
+                            $aischeduleddetails = ($detectiondata[PLAGIARISM_COPYLEAKS_SCAN_AI_FIELD_NAME] ? html_writer::tag(
+                                'div',
+                                html_writer::tag(
+                                    'div',
+                                    get_string('claicontentscheduled', 'plagiarism_copyleaks'),
+                                    array('class' => 'cls-text-result')
+                                ) . $dateicon,
+                                array('class' => 'cls-scheduled-item')
+                            ) : '');
+                            // Plagiarism Schedule Content.
+                            $plagiarismscheduleddetails = ($detectiondata[PLAGIARISM_COPYLEAKS_SCAN_PLAGIARISM_FIELD_NAME] ?
+                                html_writer::tag(
+                                    'div',
+                                    html_writer::tag(
+                                        'div',
+                                        get_string('clplagiarismcontentscheduled', 'plagiarism_copyleaks'),
+                                        array('class' => 'cls-text-result')
+                                    ) . $dateicon,
+                                    array('class' => 'cls-scheduled-item')
+                                ) : '');
+                            // Grammar Schedule Content.
+                            $grammarscheduleddetails = ($detectiondata[PLAGIARISM_COPYLEAKS_DETECT_GRAMMAR_FIELD_NAME] ?
+                                html_writer::tag(
+                                    'div',
+                                    html_writer::tag(
+                                        'div',
+                                        get_string('clgrammarcontentscheduled', 'plagiarism_copyleaks'),
+                                        array('class' => 'cls-text-result')
+                                    ) . $dateicon,
+                                    array('class' => 'cls-scheduled-item')
+                                ) : '');
+
+                            $queuedwrapper = html_writer::tag(
+                                'div',
+                                html_writer::tag(
+                                    'div',
+                                    html_writer::tag(
+                                        'div',
+                                        $OUTPUT->pix_icon(
+                                            'copyleaks-logo-new',
+                                            $clpoweredbycopyleakstxt,
+                                            'plagiarism_copyleaks',
+                                            array('class' => 'cls-icon-no-margin', 'class' => 'cls-logo-new')
+                                        ),
+                                        array('class' => 'cls-icon')
+                                    ) .
+                                        html_writer::tag(
+                                            'div',
+                                            get_string('clscheduledintime', 'plagiarism_copyleaks', $timeleftstr),
+                                            array('class' => 'cls-scheduled-text')
+                                        ),
+                                    array('class' => 'cls-details-header')
+                                ) .
+                                    html_writer::tag(
+                                        'div',
+                                        $aischeduleddetails . $plagiarismscheduleddetails . $grammarscheduleddetails,
+                                        array('class' => 'cls-content')
+                                    ),
+                                array('class' => 'cls-small-report-details cls-mini-report scheduled')
+                            );
 
                             $output = html_writer::tag(
                                 'div',
-                                $OUTPUT->pix_icon(
-                                    'copyleaks-logo',
-                                    $clpoweredbycopyleakstxt,
-                                    'plagiarism_copyleaks',
-                                    array('class' => 'icon_size')
-                                )
-                                    . $queuedwrapper
-                                    . $OUTPUT->pix_icon(
-                                        'copyleaks-scheduled',
-                                        $queuedtxt,
-                                        'plagiarism_copyleaks',
-                                        array('class' => 'icon_size')
-                                    ),
+                                $queuedwrapper,
                                 array('class' => 'copyleaks')
                             );
                             break;

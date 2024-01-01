@@ -25,6 +25,7 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/plagiarism/copyleaks/constants/plagiarism_copyleaks.constants.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_dbutils.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_logs.class.php');
 
 
 /**
@@ -125,10 +126,15 @@ class plagiarism_copyleaks_utils {
     /**
      * Get Copyleaks buttom for settings page.
      * @param string $settingsurlparams - assign the url to the link
-     * @param bool $isadminform - for note above the link
+     * @param bool $isadminform - for note above the link,
+     * @param string $cmid - course module id
      * @return string
      */
-    public static function get_copyleaks_settings_button_link($settingsurlparams, $isadminform = false, $cmid = null) {
+    public static function get_copyleaks_settings_button_link(
+        $settingsurlparams,
+        $isadminform = false,
+        $cmid = null
+    ) {
         global $CFG;
         $isbtndisabled = false;
         if (!$isadminform && isset($cmid)) {
@@ -153,7 +159,6 @@ class plagiarism_copyleaks_utils {
                 'title' => get_string('cldisablesettingstooltip', 'plagiarism_copyleaks')
             )) :
             html_writer::link("$settingsurl", $text, array('target' => '_blank'));
-
         return
             "<div class='form-group row'>" .
             "<div class='col-md-3'></div>" .
@@ -161,5 +166,195 @@ class plagiarism_copyleaks_utils {
             $content
             . "</div>" .
             "</div>";
+    }
+
+    /**
+     * Get Copyleaks buttom for analytics page.
+     * @param string $cmid - course module id
+     * @param bool $isanalyticsdisabled - will be disable in new activity or disable config
+     * @return string
+     */
+    public static function get_copyleaks_analytics_button_link($cmid, $isanalyticsdisabled = false) {
+        global $CFG;
+
+        $analyticsurl = "$CFG->wwwroot/plagiarism/copyleaks/plagiarism_copyleaks_analytics.php" . "?cmid=" . $cmid;
+        $analyticstext = get_string('clanalyticsbtntxt', 'plagiarism_copyleaks');
+        $contentanalytics = $isanalyticsdisabled ?
+            html_writer::div($analyticstext, null, array(
+                'style' => 'color:#8c8c8c',
+                'title' => get_string('cldisablesettingstooltip', 'plagiarism_copyleaks')
+            )) :
+            html_writer::link("$analyticsurl", $analyticstext, array('target' => '_blank'));
+        return
+            "<div class='form-group row'>" .
+            "<div class='col-md-3'></div>" .
+            "<div class='col-md-9'>" .
+            $contentanalytics
+            . "</div>" .
+            "</div>";
+    }
+
+    /**
+     * Get course module due date.
+     * @param string course module id
+     * @return Date or null
+     */
+    public static function get_course_module_duedate($cmid) {
+        try {
+            global $DB;
+            $datetime = new DateTime();
+            $issetdate = false;
+
+            $coursemodule = get_coursemodule_from_id('', $cmid);
+
+            if (!$coursemodule) {
+                return null;
+            }
+
+            $data = $DB->get_record_select(
+            $coursemodule->modname,
+            'id = ?',
+            array($coursemodule->instance),
+            '*'
+            );
+
+            if (!$data) {
+                return null;
+            }
+
+            switch ($coursemodule->modname) {
+                case 'workshop':
+                    if ($data->completionexpected > 0) {
+                        $datetime->setTimestamp($data->completionexpected);
+                        $issetdate = true;
+                    } else if ($data->submissionend > 0) {
+                        $datetime->setTimestamp($data->submissionend);
+                        $issetdate = true;
+                    }
+                    break;
+                case 'quiz':
+                    if ($data->timeclose > 0) {
+                        $datetime->setTimestamp($data->timeclose);
+                        $issetdate = true;
+                    }
+                    break;
+                default:
+                    if ($data->duedate > 0) {
+                        $datetime->setTimestamp($data->duedate);
+                        $issetdate = true;
+                    }
+                    break;
+            }
+
+            return $issetdate ? $datetime->format('Y-m-d H:i:s') : null;
+        } catch (Exception $e) {
+            \plagiarism_copyleaks_logs::add(
+                "Fail to get cm due date - " . $e->getMessage(),
+                "DB_ERROR"
+            );
+            return null;
+        }
+    }
+
+    /**
+     * Get course start date.
+     * @param string course id
+     * @return DateTime or null
+     */
+    public static function get_course_start_date($courseid) {
+        try {
+            $course = get_course($courseid);
+            $startdatetime = new DateTime();
+            if (isset($course->startdate)) {
+                $startdatetime = $startdatetime->setTimestamp($course->startdate);
+                return $startdatetime->format('Y-m-d');
+            }
+            null;
+        } catch (Exception $e) {
+            \plagiarism_copyleaks_logs::add(
+                "Fail to get course start date - " . $e->getMessage(),
+                "DB_ERROR"
+            );
+            return null;
+        }
+    }
+
+    /**
+     * @param DateTime $targetdate - given date to know how much time left to the date.
+     */
+    public static function time_left_to_date($targetdate) {
+        // Convert target date to DateTime object.
+        $targetdatetime = $targetdate;
+
+        // Get current date and time.
+        $currentdatetime = new DateTime();
+
+        // Initialize the result object.
+        $result = new stdClass();
+
+        if ($targetdate < $currentdatetime) {
+            $result->timetype = plagiarism_copyleaks_times::SOON;
+            $result->value = 0;
+            return $result;
+        }
+
+        // Calculate the interval between the two dates.
+        $interval = $currentdatetime->diff($targetdatetime);
+
+        // Set default values.
+        $result->timetype = plagiarism_copyleaks_times::MINUTES;
+        $result->value = $interval->i;
+
+        // Check if time left is under an hour.
+        if ($interval->h > 0 || $interval->d > 0 || $interval->m > 0 || $interval->y > 0) {
+            // Show by hours.
+            $result->timetype = plagiarism_copyleaks_times::HOURES;
+            $result->value = $interval->h;
+
+            // Check if time left is less than a day.
+            if ($interval->d > 0 || $interval->m > 0 || $interval->y > 0) {
+                // Show by days.
+                $result->timetype = plagiarism_copyleaks_times::DAYS;
+                $result->value = $interval->d;
+
+                // Check if time left is less than a month.
+                if ($interval->m > 0 || $interval->y > 0) {
+                    if ($interval->y > 0) {
+                        // Show by year.
+                        $result->timetype = plagiarism_copyleaks_times::MONTHS;
+                        $result->value = $interval->y * 12;
+                    } else {
+                        // Show by months.
+                        $result->timetype = plagiarism_copyleaks_times::MONTHS;
+                        $result->value = $interval->m;
+                    }
+                }
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * @param stdClass $value - contains the enum time type and its value
+     */
+    public static function get_time_left_str($timeobj) {
+        $retstr = get_string('cltimemin', 'plagiarism_copyleaks') . ' ' . $timeobj->value . ' ';
+        switch ($timeobj->timetype) {
+            case plagiarism_copyleaks_times::MINUTES:
+                $retstr  .= get_string('cltimeminutes', 'plagiarism_copyleaks');
+                break;
+            case plagiarism_copyleaks_times::HOURES:
+                $retstr  .= get_string('cltimehours', 'plagiarism_copyleaks');
+                break;
+            case plagiarism_copyleaks_times::DAYS:
+                $retstr  .= get_string('cltimedays', 'plagiarism_copyleaks');
+                break;
+            case plagiarism_copyleaks_times::MONTHS:
+                $retstr  .= get_string('cltimemonths', 'plagiarism_copyleaks');
+                break;
+            default:
+                return get_string('cltimesoon', 'plagiarism_copyleaks');
+        }
+        return $retstr;
     }
 }

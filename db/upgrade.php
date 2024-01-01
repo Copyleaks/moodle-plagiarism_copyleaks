@@ -319,5 +319,88 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2023110202, 'plagiarism', 'copyleaks');
     }
 
+    if ($oldversion < 2024010100) {
+        $table = new xmldb_table('plagiarism_copyleaks_bgtasks');
+
+        // Adding fields to table plagiarism_copyleaks_backgroundtasks.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE);
+        $table->add_field('task', XMLDB_TYPE_INTEGER, '10', !XMLDB_UNSIGNED, XMLDB_NOTNULL, !XMLDB_SEQUENCE);
+
+        // Adding keys and indexes to table plagiarism_copyleaks_backgroundtasks.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        $table->add_index('task', XMLDB_INDEX_UNIQUE, array('task'));
+
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        global $CFG;
+        require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/enums/plagiarism_copyleaks_enums.php');
+        $DB->insert_record(
+            'plagiarism_copyleaks_bgtasks',
+            array('task' => plagiarism_copyleaks_background_tasks::SYNC_USERS_DATA)
+        );
+        $DB->insert_record(
+            'plagiarism_copyleaks_bgtasks',
+            array('task' => plagiarism_copyleaks_background_tasks::SYNC_COURSES_DATA)
+        );
+
+        // Add AI score and grammar cases to plagiarism_copyleaks_files.
+        $table = new xmldb_table('plagiarism_copyleaks_files');
+        $aifield = new xmldb_field('aiscore', XMLDB_TYPE_NUMBER, '10', null, null, null, null, 'similarityscore');
+        $grammarfield = new xmldb_field('grammarcases', XMLDB_TYPE_NUMBER, '10', null, null, null, null, 'aiscore');
+
+        if ($dbman->table_exists($table)) {
+            if (!$dbman->field_exists($table, $aifield)) {
+                $dbman->add_field($table, $aifield);
+            }
+            if (!$dbman->field_exists($table, $grammarfield)) {
+                $dbman->add_field($table, $grammarfield);
+            }
+        }
+
+        $scandetections = array(
+            PLAGIARISM_COPYLEAKS_DETECT_GRAMMAR_FIELD_NAME,
+            PLAGIARISM_COPYLEAKS_SCAN_PLAGIARISM_FIELD_NAME,
+            PLAGIARISM_COPYLEAKS_SCAN_AI_FIELD_NAME
+        );
+
+        $saveddefaultvalue = $DB->get_records_menu(
+            'plagiarism_copyleaks_config',
+            array('cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID),
+            '',
+            'name,value'
+        );
+
+        foreach ($scandetections as $option) {
+            // Update saved default copyleaks settings.
+            $newfield = new stdClass();
+            $newfield->cm = PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID;
+            $newfield->name = $option;
+            $newfield->value = 0;
+            if (!isset($saveddefaultvalue) || !isset($saveddefaultvalue[$option])) {
+                $newfield->config_hash = $newfield->cm . "_" . $newfield->name;
+                if (!$DB->insert_record('plagiarism_copyleaks_config', $newfield)) {
+                    throw new moodle_exception(get_string('clinserterror', 'plagiarism_copyleaks'));
+                }
+            } else {
+                $newfield->id = $DB->get_field(
+                    'plagiarism_copyleaks_config',
+                    'id',
+                    (array(
+                        'cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID,
+                        'name' => $fieldname
+                    ))
+                );
+                if (!$DB->update_record('plagiarism_copyleaks_config', $newfield)) {
+                    throw new moodle_exception(get_string('clupdateerror', 'plagiarism_copyleaks'));
+                }
+            }
+        }
+
+        // Copyleaks savepoint reached.
+        upgrade_plugin_savepoint(true, 2024010100, 'plagiarism', 'copyleaks');
+    }
+
     return true;
 }

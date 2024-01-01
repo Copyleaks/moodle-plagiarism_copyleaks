@@ -191,4 +191,59 @@ class plagiarism_copyleaks_dbutils {
         );
         return $result;
     }
+
+    /**
+     * @param object $detectiondata - detections value flags to detect.
+     */
+    public static function update_config_scanning_detection($detectiondata) {
+        global $DB;
+        $scandetections = array(
+            PLAGIARISM_COPYLEAKS_DETECT_GRAMMAR_FIELD_NAME,
+            PLAGIARISM_COPYLEAKS_SCAN_AI_FIELD_NAME,
+            PLAGIARISM_COPYLEAKS_SCAN_PLAGIARISM_FIELD_NAME
+        );
+        $savedvalues = array(
+            $detectiondata->showGrammar,
+            $detectiondata->showAI,
+            $detectiondata->showPlagiarism
+        );
+        $idx = 0;
+        foreach ($scandetections as $fieldname) {
+            $field = $DB->get_record(
+                'plagiarism_copyleaks_config',
+                array(
+                    'cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID,
+                    'name' => $fieldname
+                )
+            );
+            $field->value = $savedvalues[$idx++];
+            if (!$DB->update_record('plagiarism_copyleaks_config', $field)) {
+                throw new moodle_exception(get_string('clupdateerror', 'plagiarism_copyleaks'));
+            }
+        }
+    }
+
+    /**
+     * Get the scan detection configuration.
+     */
+    public static function get_config_scanning_detection() {
+        global $DB;
+        $scandetections = array(
+            PLAGIARISM_COPYLEAKS_DETECT_GRAMMAR_FIELD_NAME,
+            PLAGIARISM_COPYLEAKS_SCAN_AI_FIELD_NAME,
+            PLAGIARISM_COPYLEAKS_SCAN_PLAGIARISM_FIELD_NAME
+        );
+        $detectiondata = array();
+        foreach ($scandetections as $fieldname) {
+            $field = $DB->get_record(
+                'plagiarism_copyleaks_config',
+                array(
+                    'cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID,
+                    'name' => $fieldname
+                )
+            );
+            $detectiondata[$fieldname] = $field->value == "1";
+        }
+        return $detectiondata;
+    }
 }

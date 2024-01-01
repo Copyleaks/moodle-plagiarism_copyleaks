@@ -68,10 +68,13 @@ class plagiarism_copyleaks_comms {
         string $cmid,
         string $userid,
         string $identifier,
-        string $submissiontype
+        string $submissiontype,
+        $externalid = null
     ) {
         if (isset($this->key) && isset($this->secret)) {
             $coursemodule = get_coursemodule_from_id('', $cmid);
+            $duedate = plagiarism_copyleaks_utils::get_course_module_duedate($cmid);
+            $coursestartdate = plagiarism_copyleaks_utils::get_course_start_date($coursemodule->course);
             if (plagiarism_copyleaks_dbutils::is_user_eula_uptodate($userid)) {
                 $student = get_complete_user_data('id', $userid);
                 $paramsmerge = (array)[
@@ -84,7 +87,10 @@ class plagiarism_copyleaks_comms {
                     'userFullName' => $student->firstname . " " . $student->lastname,
                     'moduleName' => $coursemodule->name,
                     'courseId' => $coursemodule->course,
-                    'courseName' => (get_course($coursemodule->course))->fullname
+                    'courseName' => (get_course($coursemodule->course))->fullname,
+                    'duedate' => $duedate,
+                    'coursestartdate' => $coursestartdate,
+                    'oldScanId' => $externalid // In case the insrtuctor pressed "Try again" button.
                 ];
             } else {
                 $paramsmerge = (array)[
@@ -92,7 +98,12 @@ class plagiarism_copyleaks_comms {
                     'courseModuleId' => $cmid,
                     'moodleUserId' => $userid,
                     'identifier' => $identifier,
-                    'submissionType' => $submissiontype
+                    'submissionType' => $submissiontype,
+                    'courseId' => $coursemodule->course,
+                    'courseName' => (get_course($coursemodule->course))->fullname,
+                    'duedate' => $duedate,
+                    'coursestartdate' => $coursestartdate,
+                    '$oldScanId' => $externalid
                 ];
             }
 
@@ -231,6 +242,25 @@ class plagiarism_copyleaks_comms {
     }
 
     /**
+     * request access for copyleaks report.
+     * @return string $cmid for the settings and access.
+     */
+    public function request_access_for_analytics($cmid) {
+        if (isset($this->key) && isset($this->secret)) {
+            $url = $this->copyleaks_api_url() . "/api/moodle/plugin/" . $this->key . "/analytics/request-access";
+            if (isset($cmid)) {
+                $url = $url . "/$cmid";
+            }
+            $result = plagiarism_copyleaks_http_client::execute(
+                'GET',
+                $url,
+                true
+            );
+            return $result->token;
+        }
+    }
+
+    /**
      * get copyleaks api url.
      * @return string api url if exists, otherwise return null
      */
@@ -305,19 +335,21 @@ class plagiarism_copyleaks_comms {
     /**
      * Test if server can communicate with Copyleaks.
      * @param string $context
+     * @param bool $updateconfig
      * @return bool
      */
-    public static function test_copyleaks_connection($context) {
+    public static function test_copyleaks_connection($context, $updateconfig=false) {
         $cl = new plagiarism_copyleaks_comms();
-        return $cl->test_connection($context);
+        return $cl->test_connection($context, $updateconfig);
     }
 
     /**
      * Test if server can communicate with Copyleaks.
      * @param string $context
+     * @param bool $updateconfig
      * @return bool
      */
-    public function test_connection($context) {
+    public function test_connection($context, $updateconfig=false) {
         try {
             if (isset($this->key) && isset($this->secret)) {
                 $result = plagiarism_copyleaks_http_client::execute_retry(
@@ -325,6 +357,11 @@ class plagiarism_copyleaks_comms {
                     $this->copyleaks_api_url() . "/api/moodle/plugin/" . $this->key . "/test-connection?source=" . $context,
                     true
                 );
+
+                if ($updateconfig) {
+                    plagiarism_copyleaks_dbutils::update_config_scanning_detection($result->detectionsValues);
+                }
+
                 if (isset($result) && isset($result->eulaVersion)) {
                     plagiarism_copyleaks_dbutils::update_copyleaks_eula_version($result->eulaVersion);
                     return true;
@@ -368,6 +405,43 @@ class plagiarism_copyleaks_comms {
             );
         }
     }
+
+    /**
+     * Update courses at Copyleaks server.
+     * @param array $data
+     */
+    public function upsert_courses($data) {
+        $endpoint = "/api/moodle/plugin/$this->key/task/upsert-courses";
+        $verb = 'POST';
+        try {
+            plagiarism_copyleaks_http_client::execute_retry(
+                $verb,
+                $this->copyleaks_api_url() . $endpoint,
+                true,
+                json_encode($data)
+            );
+        } catch (\Exception $e) {
+            $errormsg = get_string('cltaskfailedconnecting', 'plagiarism_copyleaks', $e->getMessage());
+            plagiarism_copyleaks_logs::add($errormsg, 'API_ERROR');
+        }
+    }
+
+    public function save_users_data($data) {
+        $endpoint = "/api/moodle/plugin/$this->key/task/upsert-users";
+        $verb = 'POST';
+        try {
+            plagiarism_copyleaks_http_client::execute_retry(
+                $verb,
+                $this->copyleaks_api_url() . $endpoint,
+                true,
+                json_encode($data)
+            );
+        } catch (\Exception $e) {
+            $errormsg = get_string('cltaskfailedconnecting', 'plagiarism_copyleaks', $e->getMessage());
+            plagiarism_copyleaks_logs::add($errormsg, 'API_ERROR');
+        }
+    }
+
 
     /**
      * Update course module temp id at Copyleaks server.
