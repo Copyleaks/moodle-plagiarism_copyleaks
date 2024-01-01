@@ -205,27 +205,27 @@ a.copyleaks-settings-link:hover {
     display: inline-block;
 }
 
-.cl-plag-score-level-high,
-.cl-ai-score-level-high {
+.cls-plag-score-level-high,
+.cls-ai-score-level-high {
     background-color: #f44336;
 }
 
-.cl-plag-score-level-mid,
-.cl-ai-score-level-mid {
+.cls-plag-score-level-mid,
+.cls-ai-score-level-mid {
     background-color: #ffa503;
 }
 
-.cl-plag-score-level-low,
-.cl-ai-score-level-low {
+.cls-plag-score-level-low,
+.cls-ai-score-level-low {
     background-color: #008001;
 }
 
-.small-report-details {
+.cls-small-report-details {
     width: 180px;
     height: 82px;
 }
 
-.small-report-details.error {
+.cls-small-report-details.error {
     display: flex;
     justify-content: center;
     align-items: start;
@@ -235,32 +235,32 @@ a.copyleaks-settings-link:hover {
     padding-left: 8px;
 }
 
-.small-report-details.error .cls-content,
-.small-report-details.error .cls-content a {
+.cls-small-report-details.error .cls-content,
+.cls-small-report-details.error .cls-content a {
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 4px;
 }
 
-.small-report-details.error .failed {
+.cls-small-report-details.error .failed {
     color: #f44336;
     font-size: 12px;
     font-weight: 600;
 }
 
-.small-report-details.error .failed span {
+.cls-small-report-details.error .failed span {
     line-height: 15px;
 }
 
-.small-report-details.error .retry {
+.cls-small-report-details.error .retry {
     font-size: 14px;
     color: #3f9af5;
     cursor: pointer;
     font-weight: 600;
 }
 
-.small-report-details.in-progress {
+.cls-small-report-details.in-progress {
     padding: 8px;
     border-left: 3px solid #3f9af5;
     padding-left: 8px;
@@ -272,17 +272,17 @@ a.copyleaks-settings-link:hover {
     gap: 8px;
 }
 
-.small-report-details.in-progress .cls-content {
+.cls-small-report-details.in-progress .cls-content {
     display: flex;
     justify-content: flex-start;
     align-items: center;
     gap: 8px;
 }
-.small-report-details.in-progress .cls-content img {
+.cls-small-report-details.in-progress .cls-content img {
     width: 14px;
 }
 
-.small-report-details.scheduled {
+.cls-small-report-details.scheduled {
     padding: 8px;
     border-left: 3px solid #3f9af5;
     display: flex;
@@ -292,17 +292,17 @@ a.copyleaks-settings-link:hover {
     gap: 4px;
 }
 
-.scheduled-text {
+.cls-scheduled-text {
     text-wrap: nowrap;
 }
 
-.small-report-details.scheduled .cls-scheduled-item {
+.cls-small-report-details.scheduled .cls-scheduled-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
-.small-report-details.scheduled .cls-content {
+.cls-small-report-details.scheduled .cls-content {
     display: flex;
     flex-direction: column;
     gap: 4px;

@@ -238,21 +238,21 @@ class plagiarism_copyleaks_submissiondisplay {
                             // Plagiarism Score level class.
                             $scorelevelclass = '';
                             if ($submittedfile->similarityscore <= 40) {
-                                $scorelevelclass = "cl-plag-score-level-low";
+                                $scorelevelclass = "cls-plag-score-level-low";
                             } else if ($submittedfile->similarityscore <= 80) {
-                                $scorelevelclass = "cl-plag-score-level-mid";
+                                $scorelevelclass = "cls-plag-score-level-mid";
                             } else {
-                                $scorelevelclass = "cl-plag-score-level-high";
+                                $scorelevelclass = "cls-plag-score-level-high";
                             }
 
                             // AI Score level class.
                             $aiscorelevel = '';
                             if ($submittedfile->aiscore <= 40) {
-                                $aiscorelevel = "cl-ai-score-level-low";
+                                $aiscorelevel = "cls-ai-score-level-low";
                             } else if ($submittedfile->aiscore <= 80) {
-                                $aiscorelevel = "cl-ai-score-level-mid";
+                                $aiscorelevel = "cls-ai-score-level-mid";
                             } else {
-                                $aiscorelevel = "cl-ai-score-level-high";
+                                $aiscorelevel = "cls-ai-score-level-high";
                             }
 
                             // Submitted file results.
@@ -506,7 +506,7 @@ class plagiarism_copyleaks_submissiondisplay {
                                                 ),
                                                 array('class' => 'retry cls-content')
                                             ),
-                                        array('class' => 'small-report-details error cls-mini-report')
+                                        array('class' => 'cls-small-report-details error cls-mini-report')
                                     );
                                 } catch (Exception $e) {
                                     \plagiarism_copyleaks_logs::add(
@@ -550,7 +550,7 @@ class plagiarism_copyleaks_submissiondisplay {
                                             ),
                                         array('class' => 'cls-content')
                                     ),
-                                array('class' => 'small-report-details cls-mini-report in-progress')
+                                array('class' => 'cls-small-report-details cls-mini-report in-progress')
                             );
                             $output = html_writer::tag(
                                 'div',
@@ -629,7 +629,7 @@ class plagiarism_copyleaks_submissiondisplay {
                                         html_writer::tag(
                                             'div',
                                             get_string('clscheduledintime', 'plagiarism_copyleaks', $timeleftstr),
-                                            array('class' => 'scheduled-text')
+                                            array('class' => 'cls-scheduled-text')
                                         ),
                                     array('class' => 'cls-details-header')
                                 ) .
@@ -638,7 +638,7 @@ class plagiarism_copyleaks_submissiondisplay {
                                         $aischeduleddetails . $plagiarismscheduleddetails . $grammarscheduleddetails,
                                         array('class' => 'cls-content')
                                     ),
-                                array('class' => 'small-report-details cls-mini-report scheduled')
+                                array('class' => 'cls-small-report-details cls-mini-report scheduled')
                             );
 
                             $output = html_writer::tag(
