@@ -212,10 +212,10 @@ class plagiarism_copyleaks_utils {
             }
 
             $data = $DB->get_record_select(
-            $coursemodule->modname,
-            'id = ?',
-            array($coursemodule->instance),
-            '*'
+                $coursemodule->modname,
+                'id = ?',
+                array($coursemodule->instance),
+                '*'
             );
 
             if (!$data) {
@@ -224,10 +224,10 @@ class plagiarism_copyleaks_utils {
 
             switch ($coursemodule->modname) {
                 case 'workshop':
-                    if ($data->completionexpected > 0) {
+                    if (isset($data->completionexpected) && $data->completionexpected > 0) {
                         $datetime->setTimestamp($data->completionexpected);
                         $issetdate = true;
-                    } else if ($data->submissionend > 0) {
+                    } else if (isset($data->submissionend) && $data->submissionend > 0) {
                         $datetime->setTimestamp($data->submissionend);
                         $issetdate = true;
                     }

@@ -233,7 +233,7 @@ class plagiarism_copyleaks_submissiondisplay {
                     switch ($submittedfile->statuscode) {
                         case 'success':
                             // Detection data - wich detection to display.
-                            $detectiondata = plagiarism_copyleaks_dbutils::get_config_scanning_detection($result->detectionsValues);
+                            $detectiondata = plagiarism_copyleaks_dbutils::get_config_scanning_detection();
 
                             // Plagiarism Score level class.
                             $scorelevelclass = '';
@@ -577,7 +577,7 @@ class plagiarism_copyleaks_submissiondisplay {
                                 array('class' => 'cls-icon-no-margin')
                             );
                             // Detection data - wich detection to display.
-                            $detectiondata = plagiarism_copyleaks_dbutils::get_config_scanning_detection($result->detectionsValues);
+                            $detectiondata = plagiarism_copyleaks_dbutils::get_config_scanning_detection();
 
                             // AI Schedule Content.
                             $aischeduleddetails = ($detectiondata[PLAGIARISM_COPYLEAKS_SCAN_AI_FIELD_NAME] ? html_writer::tag(
