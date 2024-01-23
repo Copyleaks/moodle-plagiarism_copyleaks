@@ -60,7 +60,6 @@ class plagiarism_copyleaks_resubmittedreports extends \core\task\scheduled_task 
         global $DB;
 
         $copyleakscomms = new \plagiarism_copyleaks_comms();
-        $cursor = '';
         $canloadmoredata = true;
 
         while ($canloadmoredata) {
@@ -69,12 +68,11 @@ class plagiarism_copyleaks_resubmittedreports extends \core\task\scheduled_task 
             }
 
             $succeedids = [];
-            $response = $copyleakscomms->get_resubmit_reports_ids($cursor);
+            $response = $copyleakscomms->get_resubmit_reports_ids();
             if (!is_object($response) || !isset($response->resubmitted) || count($response->resubmitted) == 0) {
                 break;
             }
 
-            $cursor = $response->cursor;
             $resubmittedmodel = $response->resubmitted;
             $canloadmoredata = $response->canLoadMore;
             $oldids = array_column($resubmittedmodel, 'oldScanId');
