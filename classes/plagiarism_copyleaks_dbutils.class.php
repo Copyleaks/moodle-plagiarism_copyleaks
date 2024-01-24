@@ -216,9 +216,18 @@ class plagiarism_copyleaks_dbutils {
                     'name' => $fieldname
                 )
             );
-            $field->value = $savedvalues[$idx++];
-            if (!$DB->update_record('plagiarism_copyleaks_config', $field)) {
-                throw new moodle_exception(get_string('clupdateerror', 'plagiarism_copyleaks'));
+            if (!$field || !isset($field)) {
+                $newfield = new stdClass();
+                $newfield->cm = PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID;
+                $newfield->name = $fieldname;
+                $newfield->value = $savedvalues[$idx++];
+                if (!$DB->insert_record('plagiarism_copyleaks_config', $newfield)) {
+                    throw new moodle_exception(get_string('clupdateerror', 'plagiarism_copyleaks'));
+                }
+            } else {
+                if (!$DB->update_record('plagiarism_copyleaks_config', $field)) {
+                    throw new moodle_exception(get_string('clupdateerror', 'plagiarism_copyleaks'));
+                }
             }
         }
     }
