@@ -151,15 +151,19 @@ class plagiarism_copyleaks_comms {
 
     /**
      * Get resubmit reports ids from lms server
+     * @param string $cursor Copyleaks db cursor
      * @return object $result an array of resubmitted ids and new ids that rescanned
      */
     public function get_resubmit_reports_ids() {
         if (isset($this->key) && isset($this->secret)) {
-
+            $reqbody = (array)[
+                'cursor' => ''
+            ];
             $result = plagiarism_copyleaks_http_client::execute_retry(
-                'GET',
+                'POST',
                 $this->copyleaks_api_url() . "/api/moodle/plugin/" . $this->key . "/task/resubmit-scans",
                 true,
+                json_encode($reqbody)
             );
             return $result;
         }
