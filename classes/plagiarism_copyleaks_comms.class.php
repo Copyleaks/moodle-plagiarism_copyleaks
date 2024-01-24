@@ -154,10 +154,10 @@ class plagiarism_copyleaks_comms {
      * @param string $cursor Copyleaks db cursor
      * @return object $result an array of resubmitted ids and new ids that rescanned
      */
-    public function get_resubmit_reports_ids($cursor) {
+    public function get_resubmit_reports_ids() {
         if (isset($this->key) && isset($this->secret)) {
             $reqbody = (array)[
-                'cursor' => $cursor
+                'cursor' => ''
             ];
             $result = plagiarism_copyleaks_http_client::execute_retry(
                 'POST',
@@ -338,7 +338,7 @@ class plagiarism_copyleaks_comms {
      * @param bool $updateconfig
      * @return bool
      */
-    public static function test_copyleaks_connection($context, $updateconfig=false) {
+    public static function test_copyleaks_connection($context, $updateconfig = false) {
         $cl = new plagiarism_copyleaks_comms();
         return $cl->test_connection($context, $updateconfig);
     }
@@ -349,7 +349,7 @@ class plagiarism_copyleaks_comms {
      * @param bool $updateconfig
      * @return bool
      */
-    public function test_connection($context, $updateconfig=false) {
+    public function test_connection($context, $updateconfig = false) {
         try {
             if (isset($this->key) && isset($this->secret)) {
                 $result = plagiarism_copyleaks_http_client::execute_retry(
