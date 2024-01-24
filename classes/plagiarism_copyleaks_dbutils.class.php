@@ -225,6 +225,7 @@ class plagiarism_copyleaks_dbutils {
                     throw new moodle_exception(get_string('clupdateerror', 'plagiarism_copyleaks'));
                 }
             } else {
+                $field->value = $savedvalues[$idx++];
                 if (!$DB->update_record('plagiarism_copyleaks_config', $field)) {
                     throw new moodle_exception(get_string('clupdateerror', 'plagiarism_copyleaks'));
                 }
