@@ -1,0 +1,19 @@
+{
+    "name": "copyleaks/plagiarism-copyleaks",
+    "type": "plugin",
+    "authors": [
+        {
+            "name": "Gil Cohen",
+            "email": "gilc@copyleaks.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "mikey179/vfsstream": "^2.0@dev"
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "plagiarism\\copyleaks\\tests\\": "plagiarism/copyleaks/tests/"
+        }
+    }
+}
