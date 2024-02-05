@@ -8,12 +8,16 @@
         }
     ],
     "minimum-stability": "dev",
-    "require": {
-        "mikey179/vfsstream": "^2.0@dev"
-    },
     "autoload-dev": {
         "psr-4": {
-            "plagiarism\\copyleaks\\tests\\": "plagiarism/copyleaks/tests/"
+            "tests\\": "tests"
         }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "9.6.x-dev",
+        "mikey179/vfsstream": "1.6.*"
+    },
+    "scripts": {
+        "test": "phpunit -c phpunit.xml"
     }
 }

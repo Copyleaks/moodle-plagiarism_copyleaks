@@ -1,0 +1,1 @@
+{"version":1,"defects":{"copyleaks_submission_test::test_plagiarism_copyleaks":4},"times":{"plagiarism_copyleaks_locallib_test::test_plagiarism_copyleaks":14.933999999999999,"copyleaks_submission_test::test_plagiarism_copyleaks":180.327}}

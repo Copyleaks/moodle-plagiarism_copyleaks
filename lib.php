@@ -88,10 +88,10 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
 
             plagiarism_copyleaks_moduleconfig::set_module_config(
                 $data->coursemodule,
-                $data->plagiarism_copyleaks_enable,
+                isset($data->plagiarism_copyleaks_enable) ? $data->plagiarism_copyleaks_enable : 0,
                 isset($data->plagiarism_copyleaks_draftsubmit) ? $data->plagiarism_copyleaks_draftsubmit : 0,
                 isset($data->plagiarism_copyleaks_reportgen) ? $data->plagiarism_copyleaks_reportgen : 0,
-                $data->plagiarism_copyleaks_allowstudentaccess
+                isset($data->plagiarism_copyleaks_allowstudentaccess) ? $data->plagiarism_copyleaks_allowstudentaccess : 0
             );
         } catch (plagiarism_copyleaks_exception $ex) {
             $errormessage = get_string('clfailtosavedata', 'plagiarism_copyleaks');
