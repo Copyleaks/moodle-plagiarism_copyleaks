@@ -47,6 +47,7 @@ class copyleaks_forum_test extends copyleaks_base_test_lib {
 
         // Act.
         $submissiondata = $this->post_to_forum();
+        $this->queue_submission_to_copyleaks($submissiondata['pathnamehash'], $submissiondata['itemid'], 'assessable_submitted', 'forum');
 
         $this->assertNotNull(plagiarism_copyleaks_test_lib::get_copyleaks_file($submissiondata['pathnamehash']));
         plagiarism_copyleaks_test_lib::execute_send_submission_task();

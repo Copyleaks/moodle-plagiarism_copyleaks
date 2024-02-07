@@ -21,8 +21,6 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use core_calendar\local\event\container;
-
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/forms/plagiarism_copyleaks_adminform.class.php');
@@ -32,7 +30,6 @@ require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_comms.class.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_comms.class.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/tests/generators/lib.php');
-
 
 class copyleaks_base_test_lib extends advanced_testcase {
     protected $user;
@@ -94,8 +91,6 @@ class copyleaks_base_test_lib extends advanced_testcase {
 
         $this->getDataGenerator()->enrol_user($this->user->id, $this->activity->cmid);
     }
-
-
 
     /**
      * @param string $contextid - the context of the submission.
@@ -233,30 +228,66 @@ class copyleaks_base_test_lib extends advanced_testcase {
     }
 
     protected function post_to_forum() {
-        // $content = 'Post content example !!';
-        // $filename = 'myassignmnent.txt';
-        // $fakepost = (object) array('id' => 123, 'message' => 'Yay!', 'discussion' => 100);
-        // $cm = get_coursemodule_from_instance('forum', $this->activity->id);
+        $filecontent = 'This is the message';
+        $component = 'mod_forum';
+        $filearea = 'attachment';
+        $filename = 'example.txt';
 
-        // $fs = get_file_storage();
-        // $dummy = (object) array(
-        //     'contextid' => $this->context->id,
-        //     'component' => 'mod_forum',
-        //     'filearea' => 'attachment',
-        //     'itemid' => $fakepost->id,
-        //     'filepath' => '/',
-        //     'filename' => $filename
-        // );
-
-        // $fs->create_file_from_string($dummy, $content);
-
-        // forum_trigger_content_uploaded_event($fakepost, $cm, $content);
+        $now = time();
         $forumgenerator = $this->getDataGenerator()->get_plugin_generator('mod_forum');
-        $post1 = $forumgenerator->create_content($this->activity);
+        $forumgenparams = [
+            'course' => $this->course->id,
+            'userid' => $this->user->id,
+            'forum' => $this->activity->id,
+        ];
+        $forumgenparams['timestart'] = $now;
+        $discussion = $forumgenerator->create_discussion((object) $forumgenparams);
+        $post = $forumgenerator->create_post((object) [
+            'discussion' => $discussion->id,
+            'parent' => 0,
+            'userid' => $this->user->id,
+            'created' => $now,
+            'modified' => $now,
+            'subject' => 'This is the subject',
+            'message' => $filecontent,
+            'messagetrust' => 1,
+            'attachment' => 0,
+            'totalscore' => 0,
+            'mailnow' => 0,
+            'deleted' => 0
+        ]);
+
+        $pathnamehash = file_storage::get_pathname_hash($this->context->id, $component, $filearea, $post->id, '/', $filename);
+        $hashcontent = \file_storage::hash_from_string($filecontent);
+
+        $filestorage = get_file_storage();
+
+        file_save_draft_area_files(time(), $this->context->id, $component, $filearea, $post->id, null, null);
+
+        $file1 = $filestorage->create_file_from_string(
+            [
+                'contextid' => $this->context->id,
+                'component' => 'mod_forum',
+                'filearea'  => 'attachment',
+                'itemid'    => $post->id,
+                'filepath'  => '/',
+                'filename'  => $filename,
+                'contenthash' => $hashcontent,
+                'pathnamehash' => $pathnamehash,
+            ],
+            $filecontent
+        );
+
+        $this->assertInstanceOf('stored_file', $file1);
+
+        $fileref = $filestorage->get_file_by_hash($pathnamehash);
+        $this->assertTrue(isset($fileref));
+        $filecontent = $fileref->get_content();
+        $this->assertTrue(isset($filecontent));
 
         return array(
-            'pathnamehash' => sha1("Message for discussion 1"),
-            'itemid' => $post1->id
+            'pathnamehash' => $pathnamehash,
+            'itemid' => $post->id
         );
     }
 
