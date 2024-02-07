@@ -28,14 +28,15 @@ global $CFG;
 require_once($CFG->dirroot . '/plagiarism/copyleaks/lib.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/tests/generators/lib.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_dbutils.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/tests/classes/copyleaks_base_test_lib.php');
 
-class copyleaks_submission_test extends plagiarism_copyleaks_test_lib {
+class copyleaks_assignment_test extends copyleaks_base_test_lib {
 
     public function setUp(): void {
         $this->construct_copyleaks_parent_test();
     }
 
-    public function test_plagiarism_copyleaks() {
+    public function test_assignment_submission() {
         // Arrange.
         $this->resetAfterTest();
         $this->assertTrue(plagiarism_copyleaks_moduleconfig::is_module_enabled('assign', $this->activity->cmid));
@@ -44,6 +45,9 @@ class copyleaks_submission_test extends plagiarism_copyleaks_test_lib {
         // Act.
         $submissiondata = $this->insert_file_record();
         $this->queue_submission_to_copyleaks($submissiondata['pathnamehash'], $submissiondata['itemid'], 'file_uploaded', 'assign');
+
+        $this->assertNotNull(plagiarism_copyleaks_test_lib::get_copyleaks_file($submissiondata['pathnamehash']));
+        plagiarism_copyleaks_test_lib::execute_send_submission_task();
 
         // Assert.
         $this->assert_copyleaks_result($submissiondata['pathnamehash']);
