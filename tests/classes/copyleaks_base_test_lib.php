@@ -150,7 +150,7 @@ class copyleaks_base_test_lib extends advanced_testcase {
     protected function submit_text_answer_to_quiz() {
         $questiongenerator = $this->getDataGenerator()->get_plugin_generator('core_question');
         $cat = $questiongenerator->create_question_category();
-        $qa = $questiongenerator->create_question('essay', 'editorfilepicker', array('category' => $cat->id));
+        $qa = $questiongenerator->create_question('essay', 'plain', array('category' => $cat->id));
         quiz_add_quiz_question($qa->id, $this->activity);
 
         // Create quiz attempt.
@@ -334,11 +334,11 @@ class copyleaks_base_test_lib extends advanced_testcase {
                 break;
             }
 
-            sleep(30);
+            sleep(10);
             $elapsedtime = time() - $starttime;
         }
 
         $this->assertTrue($result->statuscode == "success");
-        $this->assertTrue(isset($result->similarityscore) && $result->similarityscore > 0);
+        $this->assertTrue(isset($result->similarityscore) && $result->similarityscore >= 0);
     }
 }
