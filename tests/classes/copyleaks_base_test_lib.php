@@ -30,8 +30,11 @@ require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_comms.class.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_comms.class.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/tests/generators/lib.php');
+require_once($CFG->dirroot . '/mod/assign/tests/generator.php');
 
 class copyleaks_base_test_lib extends advanced_testcase {
+    use mod_assign_test_generator;
+
     protected $user;
     protected  $course;
     protected  $activity;
@@ -72,11 +75,10 @@ class copyleaks_base_test_lib extends advanced_testcase {
     /**
      * Create new assignment for the submission and enroll the user member to the assignment's course.
      */
-    protected function create_activity_and_enroll_user($activitytype) {
+    protected function create_activity_and_enroll_user($activitytype, $enableplugin = true) {
         $this->activity = $this->getDataGenerator()->create_module(
             $activitytype,
             [
-                'course' => $this->course->id,
                 'course' => $this->course->id,
                 'grade' => 100.0, 'sumgrades' => 1
             ],
@@ -87,7 +89,9 @@ class copyleaks_base_test_lib extends advanced_testcase {
             ]
         );
 
-        plagiarism_copyleaks_test_lib::enable_copyleaks_plugin_for_module($this->activity->cmid);
+        if ($enableplugin) {
+            plagiarism_copyleaks_test_lib::enable_copyleaks_plugin_for_module($this->activity->cmid);
+        }
 
         $this->getDataGenerator()->enrol_user($this->user->id, $this->activity->cmid);
     }
@@ -289,6 +293,17 @@ class copyleaks_base_test_lib extends advanced_testcase {
             'pathnamehash' => $pathnamehash,
             'itemid' => $post->id
         );
+    }
+
+    protected function submit_by_teacher() {
+        $teacher = $this->getDataGenerator()->create_and_enrol($this->course, 'editingteacher');
+
+        $roleid = create_role('Dummy role', 'dummyrole', 'dummy role description');
+        assign_capability('mod/assign:editothersubmission', CAP_ALLOW, $roleid, $this->context->id);
+        role_assign($roleid, $teacher->id, $this->context->id);
+        accesslib_clear_all_caches_for_unit_testing();
+
+        $this->add_submission($this->user, $this->activity, 'Student submission text');
     }
 
     /**

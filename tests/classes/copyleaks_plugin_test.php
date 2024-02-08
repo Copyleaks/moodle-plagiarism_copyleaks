@@ -22,7 +22,6 @@
  */
 
 defined('MOODLE_INTERNAL') || die();
-// define('CLI_SCRIPT', false);
 
 global $CFG;
 require_once($CFG->dirroot . '/plagiarism/copyleaks/lib.php');
@@ -30,53 +29,39 @@ require_once($CFG->dirroot . '/plagiarism/copyleaks/tests/generators/lib.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_dbutils.class.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/tests/classes/copyleaks_base_test_lib.php');
 
-class copyleaks_assignment_test extends copyleaks_base_test_lib {
+class copyleaks_plugin_test extends copyleaks_base_test_lib {
 
     public function setUp(): void {
-        $this->construct_copyleaks_parent_test();
+        $this->construct_copyleaks_parent_test('assign', true, false);
     }
 
-    public function test_assignment_submission() {
-        // Arrange.
+
+    public function test_plugin_dectivated_when_submit() {
         $this->resetAfterTest();
-        $this->assertTrue(plagiarism_copyleaks_moduleconfig::is_module_enabled('assign', $this->activity->cmid));
-        $this->assertTrue(plagiarism_copyleaks_dbutils::is_user_eula_uptodate($this->user->id));
+
+        $this->assertFalse(plagiarism_copyleaks_pluginconfig::is_plugin_configured('assign'));
+        $this->assertFalse(plagiarism_copyleaks_moduleconfig::is_module_enabled('assign', $this->activity->cmid));
 
         // Act.
         $submissiondata = $this->insert_file_record();
         $this->queue_submission_to_copyleaks($submissiondata['pathnamehash'], $submissiondata['itemid'], 'file_uploaded', 'assign');
 
-        $this->assertNotNull(plagiarism_copyleaks_test_lib::get_copyleaks_file($submissiondata['pathnamehash']));
-        plagiarism_copyleaks_test_lib::execute_send_submission_task();
-
-        // Assert.
-        $this->assert_copyleaks_result($submissiondata['pathnamehash']);
+        $this->assertFalse(plagiarism_copyleaks_test_lib::get_copyleaks_file($submissiondata['pathnamehash']));
     }
 
-    /**
-     * Ensure that a teacher with the editothersubmission capability can submit on behalf of a student.
-     */
-    public function test_teacher_submit_behalf_student() {
+    public function test_plugin_dectivated_for_activity_when_submit() {
         $this->resetAfterTest();
-        $this->assertTrue(plagiarism_copyleaks_moduleconfig::is_module_enabled('assign', $this->activity->cmid));
-        $this->assertTrue(plagiarism_copyleaks_dbutils::is_user_eula_uptodate($this->user->id));
+        $this->construct_copyleaks_parent_test('assign', true, true);
 
-        $teacher = $this->getDataGenerator()->create_and_enrol($this->course, 'editingteacher');
-
-        $roleid = create_role('Dummy role', 'dummyrole', 'dummy role description');
-        assign_capability('mod/assign:editothersubmission', CAP_ALLOW, $roleid, $this->context->id);
-        role_assign($roleid, $teacher->id, $this->context->id);
-
-        $this->setUser($teacher);
+        $newactivity = $this->getDataGenerator()->create_module('assign', array('course' => $this->course->id));
+        $this->activity = $newactivity;
+        $this->assertTrue(plagiarism_copyleaks_pluginconfig::is_plugin_configured('assign'));
+        $this->assertFalse(plagiarism_copyleaks_moduleconfig::is_module_enabled('assign', $this->activity->cmid));
 
         // Act.
         $submissiondata = $this->insert_file_record();
         $this->queue_submission_to_copyleaks($submissiondata['pathnamehash'], $submissiondata['itemid'], 'file_uploaded', 'assign');
 
-        $this->assertNotNull(plagiarism_copyleaks_test_lib::get_copyleaks_file($submissiondata['pathnamehash']));
-        plagiarism_copyleaks_test_lib::execute_send_submission_task();
-
-        // Assert.
-        $this->assert_copyleaks_result($submissiondata['pathnamehash']);
+        $this->assertFalse(plagiarism_copyleaks_test_lib::get_copyleaks_file($submissiondata['pathnamehash']));
     }
 }
