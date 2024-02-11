@@ -43,7 +43,7 @@ class copyleaks_assignment_test extends copyleaks_base_test_lib {
         $this->assertTrue(plagiarism_copyleaks_dbutils::is_user_eula_uptodate($this->user->id));
 
         // Act.
-        $submissiondata = $this->insert_file_record();
+        $submissiondata = $this->submit_to_assignment();
         $this->queue_submission_to_copyleaks($submissiondata['pathnamehash'], $submissiondata['itemid'], 'file_uploaded', 'assign');
 
         $this->assertNotNull(plagiarism_copyleaks_test_lib::get_copyleaks_file($submissiondata['pathnamehash']));
@@ -70,7 +70,7 @@ class copyleaks_assignment_test extends copyleaks_base_test_lib {
         $this->setUser($teacher);
 
         // Act.
-        $submissiondata = $this->insert_file_record();
+        $submissiondata = $this->submit_to_assignment();
         $this->queue_submission_to_copyleaks($submissiondata['pathnamehash'], $submissiondata['itemid'], 'file_uploaded', 'assign');
 
         $this->assertNotNull(plagiarism_copyleaks_test_lib::get_copyleaks_file($submissiondata['pathnamehash']));

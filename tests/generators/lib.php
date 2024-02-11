@@ -64,11 +64,16 @@ class plagiarism_copyleaks_test_lib extends advanced_testcase {
      * Activate Copyleaks plugin by course module id.
      * @param string $cmid - course module id.
      */
-    public static function enable_copyleaks_plugin_for_module($cmid) {
-        plagiarism_copyleaks_moduleconfig::set_module_config($cmid, 1, 0, 0, 1);
+    public static function enable_copyleaks_plugin_for_module($cmid, $toenable = true) {
+        plagiarism_copyleaks_moduleconfig::set_module_config($cmid, $toenable, 0, 0, $toenable);
     }
 
 
+    /**
+     * Get saved file data by its identifier from Copyleaks files table
+     * @param string $identifier;
+     * @return stdClass - the saved file data record.
+     */
     public static function get_copyleaks_file($identifier) {
         global $DB;
         return $DB->get_record(

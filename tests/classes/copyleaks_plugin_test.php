@@ -30,38 +30,56 @@ require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks
 require_once($CFG->dirroot . '/plagiarism/copyleaks/tests/classes/copyleaks_base_test_lib.php');
 
 class copyleaks_plugin_test extends copyleaks_base_test_lib {
+    private $activitytype = 'assign';
 
     public function setUp(): void {
-        $this->construct_copyleaks_parent_test('assign', true, false);
     }
-
 
     public function test_plugin_dectivated_when_submit() {
         $this->resetAfterTest();
+        $this->construct_copyleaks_parent_test($this->activitytype, true, false);
 
-        $this->assertFalse(plagiarism_copyleaks_pluginconfig::is_plugin_configured('assign'));
-        $this->assertFalse(plagiarism_copyleaks_moduleconfig::is_module_enabled('assign', $this->activity->cmid));
+        $this->assertFalse(plagiarism_copyleaks_pluginconfig::is_plugin_configured($this->activitytype));
+        $this->assertFalse(plagiarism_copyleaks_moduleconfig::is_module_enabled($this->activitytype, $this->activity->cmid));
 
         // Act.
-        $submissiondata = $this->insert_file_record();
-        $this->queue_submission_to_copyleaks($submissiondata['pathnamehash'], $submissiondata['itemid'], 'file_uploaded', 'assign');
+        $submissiondata = $this->submit_to_assignment();
+        $this->queue_submission_to_copyleaks($submissiondata['pathnamehash'], $submissiondata['itemid'], 'file_uploaded', $this->activitytype);
 
         $this->assertFalse(plagiarism_copyleaks_test_lib::get_copyleaks_file($submissiondata['pathnamehash']));
     }
 
     public function test_plugin_dectivated_for_activity_when_submit() {
         $this->resetAfterTest();
-        $this->construct_copyleaks_parent_test('assign', true, true);
+        $this->construct_copyleaks_parent_test($this->activitytype);
 
-        $newactivity = $this->getDataGenerator()->create_module('assign', array('course' => $this->course->id));
-        $this->activity = $newactivity;
-        $this->assertTrue(plagiarism_copyleaks_pluginconfig::is_plugin_configured('assign'));
-        $this->assertFalse(plagiarism_copyleaks_moduleconfig::is_module_enabled('assign', $this->activity->cmid));
+        $this->create_activity_and_enroll_user($this->activitytype, false);
+        $this->assertTrue(plagiarism_copyleaks_pluginconfig::is_plugin_configured('mod_' . $this->activitytype));
+        $this->assertFalse(plagiarism_copyleaks_moduleconfig::is_module_enabled($this->activitytype, $this->activity->cmid));
 
         // Act.
-        $submissiondata = $this->insert_file_record();
-        $this->queue_submission_to_copyleaks($submissiondata['pathnamehash'], $submissiondata['itemid'], 'file_uploaded', 'assign');
+        $submissiondata = $this->submit_to_assignment();
+        $this->queue_submission_to_copyleaks($submissiondata['pathnamehash'], $submissiondata['itemid'], 'file_uploaded', $this->activitytype);
 
         $this->assertFalse(plagiarism_copyleaks_test_lib::get_copyleaks_file($submissiondata['pathnamehash']));
+    }
+
+    public function test_eula_not_accepted_and_submit() {
+        $this->resetAfterTest();
+        $this->construct_copyleaks_parent_test($this->activitytype, false);
+
+        $this->assertTrue(plagiarism_copyleaks_pluginconfig::is_plugin_configured('mod_' . $this->activitytype));
+        $this->assertTrue(plagiarism_copyleaks_moduleconfig::is_module_enabled($this->activitytype, $this->activity->cmid));
+        $this->assertFalse(plagiarism_copyleaks_dbutils::is_user_eula_uptodate($this->user->id));
+
+        $submissiondata = $this->submit_to_assignment();
+        $this->queue_submission_to_copyleaks($submissiondata['pathnamehash'], $submissiondata['itemid'], 'file_uploaded', $this->activitytype);
+
+        // The submission handler should update the eula version and submit the file.
+        $this->assertTrue(plagiarism_copyleaks_dbutils::is_user_eula_uptodate($this->user->id));
+        $this->assertNotNull(plagiarism_copyleaks_test_lib::get_copyleaks_file($submissiondata['pathnamehash']));
+        plagiarism_copyleaks_test_lib::execute_send_submission_task();
+
+        $this->assert_copyleaks_result($submissiondata['pathnamehash']);
     }
 }

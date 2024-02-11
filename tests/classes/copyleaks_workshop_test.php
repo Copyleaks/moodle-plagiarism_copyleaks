@@ -46,7 +46,7 @@ class copyleaks_workshop_test extends copyleaks_base_test_lib {
         $this->assertTrue(plagiarism_copyleaks_dbutils::is_user_eula_uptodate($this->user->id));
 
         // Act.
-        $submissiondata = $this->create_workshop_submission();
+        $submissiondata = $this->submit_to_workshop();
 
         $this->assertNotNull(plagiarism_copyleaks_test_lib::get_copyleaks_file($submissiondata['pathnamehash']));
         plagiarism_copyleaks_test_lib::execute_send_submission_task();

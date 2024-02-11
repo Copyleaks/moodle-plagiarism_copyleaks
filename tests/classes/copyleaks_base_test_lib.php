@@ -36,8 +36,8 @@ class copyleaks_base_test_lib extends advanced_testcase {
     use mod_assign_test_generator;
 
     protected $user;
-    protected  $course;
-    protected  $activity;
+    protected $course;
+    protected $activity;
     protected $context;
 
     /**
@@ -64,11 +64,18 @@ class copyleaks_base_test_lib extends advanced_testcase {
      * @param boolean $accepteula - should the user accept Copyleaks EULA.
      */
     protected function create_user($accepteula = false) {
+        global $DB;
+
         $this->user = $this->getDataGenerator()->create_user();
         $this->setUser($this->user);
 
         if ($accepteula) {
             plagiarism_copyleaks_dbutils::upsert_eula_by_user_id($this->user->id);
+        } else {
+            $eula = $DB->get_record('plagiarism_copyleaks_eula', array('ci_user_id' => $this->user->id));
+            if ($eula && isset($eula->version)) {
+                $this->assertTrue(!$DB->delete_records('plagiarism_copyleaks_eula', array('ci_user_id' => '')));
+            }
         }
     }
 
@@ -89,9 +96,7 @@ class copyleaks_base_test_lib extends advanced_testcase {
             ]
         );
 
-        if ($enableplugin) {
-            plagiarism_copyleaks_test_lib::enable_copyleaks_plugin_for_module($this->activity->cmid);
-        }
+        plagiarism_copyleaks_test_lib::enable_copyleaks_plugin_for_module($this->activity->cmid, $enableplugin);
 
         $this->getDataGenerator()->enrol_user($this->user->id, $this->activity->cmid);
     }
@@ -101,7 +106,7 @@ class copyleaks_base_test_lib extends advanced_testcase {
      * @param string $userid - the user submitter.
      * @return array of path name hash and the item id  
      */
-    protected function insert_file_record() {
+    protected function submit_to_assignment() {
         $filename = 'file2.txt';
         $filearea = 'submission_files';
         $component = 'assignsubmission_file';
@@ -151,7 +156,10 @@ class copyleaks_base_test_lib extends advanced_testcase {
         );
     }
 
-    protected function submit_text_answer_to_quiz() {
+    /**
+     * Submit text to Quiz module
+     */
+    protected function submit_to_quiz() {
         $questiongenerator = $this->getDataGenerator()->get_plugin_generator('core_question');
         $cat = $questiongenerator->create_question_category();
         $qa = $questiongenerator->create_question('essay', 'plain', array('category' => $cat->id));
@@ -182,8 +190,10 @@ class copyleaks_base_test_lib extends advanced_testcase {
         );
     }
 
-
-    protected function create_workshop_submission() {
+    /**
+     * Submit text to Workshop module
+     */
+    protected function submit_to_workshop() {
         // Switch phase.
         $title = 'Submission title';
         $content = 'Submission contents';
@@ -201,15 +211,10 @@ class copyleaks_base_test_lib extends advanced_testcase {
             'filepath'  => '/',
             'filename'  => $filenameimg,
         );
-        $fs->create_file_from_string($filerecordinline, 'image contents (not really)');
+        $fs->create_file_from_string($filerecordinline, $content);
 
         // Create a file in a draft area for regular attachments.
         $draftidattach = file_get_unused_draft_itemid();
-        $filerecordattach = $filerecordinline;
-        $attachfilename = 'attachment.txt';
-        $filerecordattach['filename'] = $attachfilename;
-        $filerecordattach['itemid'] = $draftidattach;
-        $fs->create_file_from_string($filerecordattach, 'simple text attachment');
 
         // Switch to submission phase.
         $cm = get_coursemodule_from_instance('workshop', $this->activity->id);
@@ -231,6 +236,9 @@ class copyleaks_base_test_lib extends advanced_testcase {
         );
     }
 
+    /**
+     * Post to Forum module.
+     */
     protected function post_to_forum() {
         $filecontent = 'This is the message';
         $component = 'mod_forum';

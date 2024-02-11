@@ -43,7 +43,7 @@ class copyleaks_quiz_test extends copyleaks_base_test_lib {
         $this->assertTrue(plagiarism_copyleaks_dbutils::is_user_eula_uptodate($this->user->id));
 
         // Act.
-        $submissiondata = $this->submit_text_answer_to_quiz();
+        $submissiondata = $this->submit_to_quiz();
         plagiarism_copyleaks_test_lib::execute_send_submission_task();
 
         // Assert.
