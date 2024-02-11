@@ -22,15 +22,14 @@
  */
 
 defined('MOODLE_INTERNAL') || die();
-// define('CLI_SCRIPT', false);
 
 global $CFG;
 require_once($CFG->dirroot . '/plagiarism/copyleaks/lib.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/tests/generators/lib.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_dbutils.class.php');
-require_once($CFG->dirroot . '/plagiarism/copyleaks/tests/classes/copyleaks_base_test_lib.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/tests/classes/plagiarism_copyleaks_base_test_lib.php');
 
-class copyleaks_assignment_test extends copyleaks_base_test_lib {
+class plagiarism_copyleaks_assignment_test extends plagiarism_copyleaks_base_test_lib {
 
     public function setUp(): void {
         $this->construct_copyleaks_parent_test();

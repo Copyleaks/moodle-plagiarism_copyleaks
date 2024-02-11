@@ -27,9 +27,9 @@ global $CFG;
 require_once($CFG->dirroot . '/plagiarism/copyleaks/lib.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/tests/generators/lib.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_dbutils.class.php');
-require_once($CFG->dirroot . '/plagiarism/copyleaks/tests/classes/copyleaks_base_test_lib.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/tests/classes/plagiarism_copyleaks_base_test_lib.php');
 
-class copyleaks_plugin_test extends copyleaks_base_test_lib {
+class plagiarism_copyleaks_plugin_test extends plagiarism_copyleaks_base_test_lib {
     private $activitytype = 'assign';
 
     public function setUp(): void {

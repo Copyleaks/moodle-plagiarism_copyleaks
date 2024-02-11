@@ -21,6 +21,7 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/forms/plagiarism_copyleaks_adminform.class.php');
@@ -31,10 +32,10 @@ require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_comms.class.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/tests/generators/lib.php');
 require_once($CFG->dirroot . '/mod/assign/tests/generator.php');
+require_once($CFG->dirroot . '/mod/forum/tests/generator/lib.php');
+require_once($CFG->dirroot . '/question/tests/generator/lib.php');
 
-class copyleaks_base_test_lib extends advanced_testcase {
-    use mod_assign_test_generator;
-
+class plagiarism_copyleaks_base_test_lib extends advanced_testcase {
     protected $user;
     protected $course;
     protected $activity;
@@ -160,7 +161,7 @@ class copyleaks_base_test_lib extends advanced_testcase {
      * Submit text to Quiz module
      */
     protected function submit_to_quiz() {
-        $questiongenerator = $this->getDataGenerator()->get_plugin_generator('core_question');
+        $questiongenerator = new core_question_generator($this->getDataGenerator());
         $cat = $questiongenerator->create_question_category();
         $qa = $questiongenerator->create_question('essay', 'plain', array('category' => $cat->id));
         quiz_add_quiz_question($qa->id, $this->activity);
@@ -246,7 +247,8 @@ class copyleaks_base_test_lib extends advanced_testcase {
         $filename = 'example.txt';
 
         $now = time();
-        $forumgenerator = $this->getDataGenerator()->get_plugin_generator('mod_forum');
+
+        $forumgenerator = new mod_forum_generator($this->getDataGenerator());
         $forumgenparams = [
             'course' => $this->course->id,
             'userid' => $this->user->id,

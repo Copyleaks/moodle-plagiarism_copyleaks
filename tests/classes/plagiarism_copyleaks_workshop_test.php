@@ -22,32 +22,30 @@
  */
 
 defined('MOODLE_INTERNAL') || die();
-// define('CLI_SCRIPT', false);
 
 global $CFG;
 require_once($CFG->dirroot . '/plagiarism/copyleaks/lib.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/tests/generators/lib.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_dbutils.class.php');
-require_once($CFG->dirroot . '/plagiarism/copyleaks/tests/classes/copyleaks_base_test_lib.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/tests/classes/plagiarism_copyleaks_base_test_lib.php');
 
-class copyleaks_forum_test extends copyleaks_base_test_lib {
+class plagiarism_copyleaks_workshop_test extends plagiarism_copyleaks_base_test_lib {
 
     public function setUp(): void {
         global $DB;
-        $this->construct_copyleaks_parent_test('forum');
+        $this->construct_copyleaks_parent_test('workshop');
         $studentrole = $DB->get_record('role', array('shortname' => 'student'));
         $this->getDataGenerator()->enrol_user($this->user->id, $this->course->id, $studentrole->id, 'manual');
     }
 
-    public function test_forum_text_submission() {
+    public function test_workshop_text_submission() {
         // Arrange.
         $this->resetAfterTest();
-        $this->assertTrue(plagiarism_copyleaks_moduleconfig::is_module_enabled('forum', $this->activity->cmid));
+        $this->assertTrue(plagiarism_copyleaks_moduleconfig::is_module_enabled('workshop', $this->activity->cmid));
         $this->assertTrue(plagiarism_copyleaks_dbutils::is_user_eula_uptodate($this->user->id));
 
         // Act.
-        $submissiondata = $this->post_to_forum();
-        $this->queue_submission_to_copyleaks($submissiondata['pathnamehash'], $submissiondata['itemid'], 'assessable_submitted', 'forum');
+        $submissiondata = $this->submit_to_workshop();
 
         $this->assertNotNull(plagiarism_copyleaks_test_lib::get_copyleaks_file($submissiondata['pathnamehash']));
         plagiarism_copyleaks_test_lib::execute_send_submission_task();
