@@ -388,22 +388,22 @@ class plagiarism_copyleaks_submissiondisplay {
                                                         'href' => $results['reporturl'], 'target' => '_blank',
                                                         'title' => get_string('clopenreport', 'plagiarism_copyleaks')
                                                     )
-                                                ) .
-                                                // Copy report URL.
-                                                html_writer::tag(
-                                                    'div',
-                                                    $OUTPUT->pix_icon(
-                                                        'copyleaks-copy-icon',
-                                                        get_string('clcopyreporturl', 'plagiarism_copyleaks'),
-                                                        'plagiarism_copyleaks',
-                                                        array('class' => 'cls-icon-no-margin')
-                                                    ),
-                                                    array(
-                                                        'id' => "cls-copy-container_" . $submittedfile->identifier,
-                                                        'class' => "cls-copy-container",
-                                                        "onclick" => "cl_copy_to_clipboard$idx()"
-                                                    )
-                                                ),
+                                                ) . ($coursemodule->modname != "forum" ?
+                                                    // Copy report URL.
+                                                    html_writer::tag(
+                                                        'div',
+                                                        $OUTPUT->pix_icon(
+                                                            'copyleaks-copy-icon',
+                                                            get_string('clcopyreporturl', 'plagiarism_copyleaks'),
+                                                            'plagiarism_copyleaks',
+                                                            array('class' => 'cls-icon-no-margin')
+                                                        ),
+                                                        array(
+                                                            'id' => "cls-copy-container_" . $submittedfile->identifier,
+                                                            'class' => "cls-copy-container",
+                                                            "onclick" => "cl_copy_to_clipboard$idx()"
+                                                        )
+                                                    ) : ''),
                                             array('class' => 'cls-action')
                                         ),
                                     array('class' => 'cls-details-header')
@@ -416,21 +416,23 @@ class plagiarism_copyleaks_submissiondisplay {
                                     ),
                                 array('class' => 'cls-large-report-details cls-mini-report')
                             );
+                            if ($coursemodule->modname != "forum") {
 
-                            // Copy to clipboard.
-                            $urlpdf = $results['reporturl'];
-                            $identifier = $submittedfile->identifier;
-                            $similaritystring .=
-                                "<input type='text' style='display:none;' name='clsreporturl'" .
-                                "id='clsreporturlinput_$identifier' value='$urlpdf'>"  .
-                                "<script>function cl_copy_to_clipboard$idx() {" .
-                                "var copyText = document.getElementById('clsreporturlinput_$identifier');" .
-                                'copyText.style.display = "block";' .
-                                'copyText.select();' .
-                                'copyText.setSelectionRange(0, 99999);' .
-                                'copyText.style.display = "none";' .
-                                'navigator.clipboard.writeText(copyText.value);' .
-                                "}</script>";
+                                // Copy to clipboard.
+                                $urlpdf = $results['reporturl'];
+                                $identifier = $submittedfile->identifier;
+                                $similaritystring .=
+                                    "<input type='text' style='display:none;' name='clsreporturl'" .
+                                    "id='clsreporturlinput_$identifier' value='$urlpdf'>"  .
+                                    "<script>function cl_copy_to_clipboard$idx() {" .
+                                    "var copyText = document.getElementById('clsreporturlinput_$identifier');" .
+                                    'copyText.style.display = "block";' .
+                                    'copyText.select();' .
+                                    'copyText.setSelectionRange(0, 99999);' .
+                                    'copyText.style.display = "none";' .
+                                    'navigator.clipboard.writeText(copyText.value);' .
+                                    "}</script>";
+                            }
 
                             $output .= html_writer::tag(
                                 'div',
