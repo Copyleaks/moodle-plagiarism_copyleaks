@@ -50,7 +50,7 @@ class plagiarism_copyleaks_synceulausers extends \core\task\scheduled_task {
      * Execute the task.
      */
     public function execute() {
-        if (!\plagiarism_copyleaks_comms::test_copyleaks_connection('scheduler_task')) {
+        if (!\plagiarism_copyleaks_comms::test_copyleaks_connection('scheduler_task', true)) {
             return;
         }
 

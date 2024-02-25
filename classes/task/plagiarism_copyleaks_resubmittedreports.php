@@ -63,7 +63,7 @@ class plagiarism_copyleaks_resubmittedreports extends \core\task\scheduled_task 
         $canloadmoredata = true;
 
         while ($canloadmoredata) {
-            if (!\plagiarism_copyleaks_comms::test_copyleaks_connection('scheduler_task', true)) {
+            if (!\plagiarism_copyleaks_comms::test_copyleaks_connection('scheduler_task')) {
                 return;
             }
 
