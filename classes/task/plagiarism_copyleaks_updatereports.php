@@ -97,7 +97,7 @@ class plagiarism_copyleaks_updatereports extends \core\task\scheduled_task {
             if (count($submissionsinstances) > 0) {
                 try {
 
-                    if (!\plagiarism_copyleaks_comms::test_copyleaks_connection('scheduler_task')) {
+                    if (!\plagiarism_copyleaks_comms::test_copyleaks_connection('scheduler_task', true)) {
                         return;
                     }
                     $copyleakscomms = new \plagiarism_copyleaks_comms();
