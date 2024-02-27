@@ -122,8 +122,10 @@ class plagiarism_copyleaks_updatereports extends \core\task\scheduled_task {
                                         round($clscaninstance->plagiarismScore, 1) : null;
                                     $currentsubmission->aiscore = isset($clscaninstance->aiScore) ?
                                         round($clscaninstance->aiScore, 1) : null;
-                                    $currentsubmission->grammarcases = isset($clscaninstance->grammarCases) ?
-                                        $clscaninstance->grammarCases : null;
+                                    $currentsubmission->writingfeedbackscore = isset($clscaninstance->writingFeedbackScore) ?
+                                        $clscaninstance->writingFeedbackScore : null;
+                                    $currentsubmission->writingfeedbackissues = isset($clscaninstance->writingFeedbackIssues) ?
+                                        $clscaninstance->writingFeedbackIssues : null;
                                     $currentsubmission->ischeatingdetected = $clscaninstance->isCheatingDetected;
                                     if (!$DB->update_record('plagiarism_copyleaks_files', $currentsubmission)) {
                                         \plagiarism_copyleaks_logs::add(

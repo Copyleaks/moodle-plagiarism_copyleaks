@@ -16,7 +16,8 @@
         <FIELD NAME="statuscode" TYPE="char" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="similarityscore" TYPE="number" LENGTH="10" NOTNULL="false" SEQUENCE="false" DECIMALS="0"/>
         <FIELD NAME="aiscore" TYPE="number" LENGTH="10" NOTNULL="false" SEQUENCE="false" DECIMALS="0"/>
-        <FIELD NAME="grammarcases" TYPE="number" LENGTH="10" NOTNULL="false" SEQUENCE="false" DECIMALS="0"/>
+        <FIELD NAME="writingfeedbackscore" TYPE="number" LENGTH="10" NOTNULL="false" SEQUENCE="false" DECIMALS="0"/>
+        <FIELD NAME="writingfeedbackissues" TYPE="number" LENGTH="10" NOTNULL="false" SEQUENCE="false" DECIMALS="0"/>
         <FIELD NAME="lastmodified" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="submissiontype" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="errormsg" TYPE="text" NOTNULL="false" SEQUENCE="false"/>

@@ -402,5 +402,81 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2024010100, 'plagiarism', 'copyleaks');
     }
 
+    if ($oldversion < 2024022700) {
+        $table = new xmldb_table('plagiarism_copyleaks_files');
+        $writingfeedbackscorefield = new xmldb_field('writingfeedbackscore', XMLDB_TYPE_NUMBER, '10', null, null, null, null, 'aiscore');
+        $writingfeedbackissuesfield = new xmldb_field('writingfeedbackissues', XMLDB_TYPE_NUMBER, '10', null, null, null, null, 'writingfeedbackscore');
+        $grammarfield = new xmldb_field('grammarcases', XMLDB_TYPE_NUMBER, '10', null, null, null, null);
+
+        if ($dbman->table_exists($table)) {
+            // Drop grammar cases column.
+            if ($dbman->field_exists($table, 'grammarcases')) {
+                $dbman->drop_field($table, $grammarfield);
+            }
+            // Add writing feedback score field to files table.
+            if (!$dbman->field_exists($table, $writingfeedbackscorefield)) {
+                $dbman->add_field($table, $writingfeedbackscorefield);
+            }
+            // Add writing feedback issues field to files table.
+            if (!$dbman->field_exists($table, $writingfeedbackissuesfield)) {
+                $dbman->add_field($table, $writingfeedbackissuesfield);
+            }
+        }
+
+        // Delete config enable grammar.
+        if (!$DB->delete_records(
+            'plagiarism_copyleaks_config',
+            array(
+                'cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID,
+                'name' => PLAGIARISM_COPYLEAKS_DETECT_GRAMMAR_FIELD_NAME
+            ),
+            IGNORE_MISSING
+        )) {
+            throw new moodle_exception(get_string('clupdateerror', 'plagiarism_copyleaks'));
+        }
+
+        // Add config of writing feedback score & issues 
+        $writingfeedbackdetections = array(
+            PLAGIARISM_COPYLEAKS_DETECT_WF_SCORE_FIELD_NAME,
+            PLAGIARISM_COPYLEAKS_DETECT_WF_ISSUES_FIELD_NAME,
+        );
+
+        $saveddefaultvalue = $DB->get_records_menu(
+            'plagiarism_copyleaks_config',
+            array('cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID),
+            '',
+            'name,value'
+        );
+
+        foreach ($writingfeedbackdetections as $option) {
+            // Update saved default copyleaks settings.
+            $newfield = new stdClass();
+            $newfield->cm = PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID;
+            $newfield->name = $option;
+            $newfield->value = 0;
+            if (!isset($saveddefaultvalue) || !isset($saveddefaultvalue[$option])) {
+                $newfield->config_hash = $newfield->cm . "_" . $newfield->name;
+                if (!$DB->insert_record('plagiarism_copyleaks_config', $newfield)) {
+                    throw new moodle_exception(get_string('clinserterror', 'plagiarism_copyleaks'));
+                }
+            } else {
+                $newfield->id = $DB->get_field(
+                    'plagiarism_copyleaks_config',
+                    'id',
+                    (array(
+                        'cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID,
+                        'name' => $fieldname
+                    ))
+                );
+                if (!$DB->update_record('plagiarism_copyleaks_config', $newfield)) {
+                    throw new moodle_exception(get_string('clupdateerror', 'plagiarism_copyleaks'));
+                }
+            }
+        }
+
+        // Copyleaks savepoint reached.
+        upgrade_plugin_savepoint(true, 2024022700, 'plagiarism', 'copyleaks');
+    }
+
     return true;
 }

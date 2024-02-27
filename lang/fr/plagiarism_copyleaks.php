@@ -83,6 +83,7 @@ $string['pluginname'] = 'Plugin de plagiat Copyleaks';
 $string['claicontentscore'] = 'Score du contenu IA';
 $string['clplagiarismscore'] = 'Score de plagiat';
 $string['clgrammarissues'] = 'Problèmes de grammaire';
+$string['clgrammarscore'] = 'Score de grammaire';
 $string['clscanfailedbtn'] = "ÉCHEC DE L'ANALYSE";
 $string['cltryagainbtn'] = 'Essayer à nouveau';
 $string['cltryagainmsg'] = "Soumettez-vous à nouveau à l'analyse Copyleaks";
