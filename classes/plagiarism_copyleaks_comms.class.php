@@ -103,7 +103,7 @@ class plagiarism_copyleaks_comms {
                     'courseName' => (get_course($coursemodule->course))->fullname,
                     'duedate' => $duedate,
                     'coursestartdate' => $coursestartdate,
-                    '$oldScanId' => $externalid
+                    'oldScanId' => $externalid
                 ];
             }
 
