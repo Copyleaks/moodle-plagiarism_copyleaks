@@ -307,7 +307,7 @@ class plagiarism_copyleaks_submissiondisplay {
                                                 'span',
                                                 '',
                                                 array('class' => "score-level $aiscorelevel")
-                                            ) . $results["aiscore"] : 'N/A'),
+                                            ) . $results["aiscore"]  . '%' : 'N/A'),
                                             array('class' => 'cls-score-container')
                                         ),
                                     array('class' => 'cls-result-item')
@@ -329,7 +329,7 @@ class plagiarism_copyleaks_submissiondisplay {
                                                 'span',
                                                 '',
                                                 array('class' => "score-level $scorelevelclass")
-                                            ) . $results["score"] : 'N/A'),
+                                            ) . $results["score"]  . '%' : 'N/A'),
                                             array('class' => 'cls-score-container')
                                         ),
                                     array('class' => 'cls-result-item')
@@ -349,7 +349,7 @@ class plagiarism_copyleaks_submissiondisplay {
                                                 'span',
                                                 '',
                                                 array('class' => "score-level $writingfeedbackscorelevel")
-                                            ) . $results["writingfeedbackscore"] : 'N/A'),
+                                            ) . $results["writingfeedbackscore"]  . '%' : 'N/A'),
                                             array('class' => 'cls-score-container')
                                         ),
                                     array('class' => 'cls-result-item')
