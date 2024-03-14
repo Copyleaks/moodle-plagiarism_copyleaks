@@ -442,7 +442,13 @@ class plagiarism_copyleaks_eventshandler {
         }
 
         // Scan immediately.
-        $scheduledscandate = strtotime('- 1 minutes');
+        $scheduledscandate = 0;
+        if ($coursemodule->modname == "quiz") {
+            $scheduledscandate = strtotime('+ 2 minutes');
+        } else {
+            $scheduledscandate = strtotime('- 1 minutes');
+        }
+
         if (isset($cmdata->duedate)) {
             // Get module settings.
             $clmoduleconfig = $DB->get_records_menu(
