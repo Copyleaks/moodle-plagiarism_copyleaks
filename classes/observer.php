@@ -135,4 +135,129 @@ class plagiarism_copyleaks_observer {
         $plugin = new plagiarism_copyleaks_eventshandler('quiz_submitted', 'quiz');
         $plugin->handle_submissions($eventdata);
     }
+
+    /**
+     * comment on submission event handler.
+     * @param \core\event\comment_created $event
+     */
+    public static function mod_assign_comment_event_created(
+        \core\event\comment_created $event
+    ) {
+        $eventdata = $event->get_data();
+        echo '';
+    }
+
+    /**
+     * comment on submission event handler.
+     * @param core\event\comment_deleted $event
+     */
+    public static function mod_data_comment_event_created(
+        mod_data\event\comment_created $event
+    ) {
+        $eventdata = $event->get_data();
+        echo '';
+    }
+
+    /**
+     * comment on submission event handler.
+     * @param core\event\comment_deleted $event
+     */
+    public static function mod_assign_comment_event_deleted(
+        core\event\comment_deleted $event
+    ) {
+        $eventdata = $event->get_data();
+        echo '';
+    }
+
+    /**
+     * comment on submission event handler.
+     * @param mod_assign\event\submission_graded $event
+     */
+    public static function mod_assign_graded_event(
+        mod_assign\event\submission_graded $event
+    ) {
+        $eventdata = $event->get_data();
+        echo '';
+    }
+
+    /**
+     * comment on submission event handler.
+     * @param mod_assign\event\attempt_regraded $event
+     */
+    public static function mod_quiz_regraded_event(
+        mod_quiz\event\attempt_regraded $event
+    ) {
+        $eventdata = $event->get_data();
+        echo '';
+    }
+
+
+    /**
+     * comment on submission event handler.
+     * @param mod_quiz\event\question_manually_graded $event
+     */
+    public static function mod_quiz_question_manually_graded(
+        mod_quiz\event\question_manually_graded $event
+    ) {
+        $eventdata = $event->get_data();
+        global $DB;
+        // Getting the updated grade for the whole quiz 
+        $quizattempt = $DB->get_record('quiz_attempts', array('uniqueid' => $eventdata['other']['attemptid']));
+        $quizquestgrade = $DB->get_record('quiz_grades', array(
+            'quiz' => $eventdata['other']['quizid'],
+            'userid' => $quizattempt->userid
+        ));
+        echo '';
+    }
+
+    /**
+     * comment on submission event handler.
+     * @param mod_workshop\event\assessment_evaluated $event
+     */
+    public static function mod_workshop_phase_switched(
+        mod_workshop\event\phase_switched $event
+    ) {
+        $eventdata = $event->get_data();
+        if ($eventdata['other']['workshopphase'] == workshop::PHASE_CLOSED) {
+
+            echo '';
+        }
+        echo '';
+    }
+
+    /**
+     * comment on submission event handler.
+     * @param mod_workshop\event\assessment_evaluated $event
+     */
+    public static function mod_workshop_assessment_evaluated(
+        mod_workshop\event\assessment_evaluated $event
+    ) {
+        $eventdata = $event->get_data();
+
+        echo '';
+    }
+
+    /**
+     * comment on submission event handler.
+     * @param mod_workshop\event\assessment_evaluated $event
+     */
+    public static function mod_workshop_assessment_reevaluated(
+        mod_workshop\event\assessment_reevaluated $event
+    ) {
+        $eventdata = $event->get_data();
+
+        echo '';
+    }
+
+    /**
+     * comment on submission event handler.
+     * @param mod_workshop\event\submission_assessed $event
+     */
+    public static function mod_workshop_submission_assessed(
+        mod_workshop\event\submission_assessed $event
+    ) {
+        $eventdata = $event->get_data();
+
+        echo '';
+    }
 }

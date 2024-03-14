@@ -55,5 +55,45 @@ $observers = array(
     array(
         'eventname' => '\core\event\user_deleted',
         'callback'  => 'plagiarism_copyleaks_observer::core_event_user_deletion'
-    )
+    ),
+    array(
+        'eventname' => '\core\event\comment_created',
+        'callback'  => 'plagiarism_copyleaks_observer::mod_assign_comment_event_created'
+    ),
+    array(
+        'eventname' => 'core\event\comment_deleted',
+        'callback'  => 'plagiarism_copyleaks_observer::mod_assign_comment_event_deleted'
+    ),
+    array(
+        'eventname' => 'mod_data\event\comment_created',
+        'callback'  => 'plagiarism_copyleaks_observer::mod_data_comment_event_created'
+    ),
+    array(
+        'eventname' => 'mod_assign\event\submission_graded',
+        'callback'  => 'plagiarism_copyleaks_observer::mod_assign_graded_event'
+    ),
+    array(
+        'eventname' => 'mod_quiz\event\attempt_regraded',
+        'callback'  => 'plagiarism_copyleaks_observer::mod_quiz_graded_event'
+    ),
+    array(
+        'eventname' => 'mod_quiz\event\question_manually_graded',
+        'callback'  => 'plagiarism_copyleaks_observer::mod_quiz_question_manually_graded'
+    ),
+    array(
+        'eventname' => 'mod_workshop\event\phase_switched',
+        'callback'  => 'plagiarism_copyleaks_observer::mod_workshop_phase_switched'
+    ),
+    array(
+        'eventname' => 'mod_workshop\event\assessment_evaluated',
+        'callback'  => 'plagiarism_copyleaks_observer::mod_workshop_assessment_evaluated'
+    ),
+    array(
+        'eventname' => 'mod_workshop\event\assessment_reevaluated',
+        'callback'  => 'plagiarism_copyleaks_observer::mod_workshop_assessment_reevaluated'
+    ),
+    array(
+        'eventname' => 'mod_workshop\event\submission_assessed',
+        'callback'  => 'plagiarism_copyleaks_observer::mod_workshop_submission_assessed'
+    ),
 );
