@@ -265,6 +265,15 @@ class plagiarism_copyleaks_submissiondisplay {
                                 $writingfeedbackscorelevel = "cls-wf-score-level-low";
                             }
 
+                            $writingfeedbackcorrectionlevel = '';
+                            if ($submittedfile->writingfeedbackscore <= 40) {
+                                $writingfeedbackcorrectionlevel = "cls-wf-score-level-high";
+                            } else if ($submittedfile->writingfeedbackscore <= 80) {
+                                $writingfeedbackcorrectionlevel = "cls-wf-score-level-mid";
+                            } else {
+                                $writingfeedbackcorrectionlevel = "cls-wf-score-level-low";
+                            }
+
                             // Submitted file results.
                             $results["score"] = $submittedfile->similarityscore;
                             $results["aiscore"] = $submittedfile->aiscore;
@@ -365,7 +374,12 @@ class plagiarism_copyleaks_submissiondisplay {
                                     ) .
                                         html_writer::tag(
                                             'div',
-                                            ($results["writingfeedbackissues"] ?  $results["writingfeedbackissues"] : 'N/A'),
+                                            ($results["writingfeedbackissues"] ?
+                                                html_writer::tag(
+                                                    'span',
+                                                    '',
+                                                    array('class' => "score-level $writingfeedbackcorrectionlevel")
+                                                ) . $results["writingfeedbackissues"] : 'N/A'),
                                             array('class' => 'cls-score-container')
                                         ),
                                     array('class' => 'cls-result-item')

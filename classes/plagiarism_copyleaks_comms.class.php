@@ -354,7 +354,8 @@ class plagiarism_copyleaks_comms {
             if (isset($this->key) && isset($this->secret)) {
                 $result = plagiarism_copyleaks_http_client::execute_retry(
                     'GET',
-                    $this->copyleaks_api_url() . "/api/moodle/plugin/" . $this->key . "/test-connection?source=" . $context,
+                    $this->copyleaks_api_url() . "/api/moodle/plugin/" .
+                        $this->key . "/test-connection?source=" . $context . "&checkBalance=$updateconfig",
                     true
                 );
 
