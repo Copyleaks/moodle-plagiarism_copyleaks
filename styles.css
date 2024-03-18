@@ -120,7 +120,7 @@ a.copyleaks-settings-link:hover {
 }
 
 .cls-large-report-details {
-    width: 186px;
+    width: 194px;
     height: fit-content;
     padding: 4px;
     display: flex;
@@ -194,9 +194,10 @@ a.copyleaks-settings-link:hover {
 
 .cls-details-content .cls-score-container {
     display: flex;
-    justify-content: flex-end;
+    justify-content: flex-start;
     align-items: baseline;
     gap: 4px;
+    width: 46px;
 }
 .cls-details-content .cls-result-item .score-level {
     border-radius: 50%;
