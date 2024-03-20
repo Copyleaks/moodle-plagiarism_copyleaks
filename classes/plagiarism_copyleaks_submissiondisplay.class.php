@@ -374,7 +374,7 @@ class plagiarism_copyleaks_submissiondisplay {
                                     ) .
                                         html_writer::tag(
                                             'div',
-                                            ($results["writingfeedbackissues"] ?
+                                            (isset($results["writingfeedbackissues"]) ?
                                                 html_writer::tag(
                                                     'span',
                                                     '',
