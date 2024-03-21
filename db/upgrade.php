@@ -402,7 +402,7 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2024010100, 'plagiarism', 'copyleaks');
     }
 
-    if ($oldversion < 2024032000) {
+    if ($oldversion < 2024032100) {
         $table = new xmldb_table('plagiarism_copyleaks_files');
         $writingfeedbackscorefield = new xmldb_field('writingfeedbackscore', XMLDB_TYPE_NUMBER, '10', null, null, null, null, 'aiscore');
         $writingfeedbackissuesfield = new xmldb_field('writingfeedbackissues', XMLDB_TYPE_NUMBER, '10', null, null, null, null, 'writingfeedbackscore');
@@ -475,7 +475,7 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         }
 
         // Copyleaks savepoint reached.
-        upgrade_plugin_savepoint(true, 2024032000, 'plagiarism', 'copyleaks');
+        upgrade_plugin_savepoint(true, 2024032100, 'plagiarism', 'copyleaks');
     }
 
     return true;
