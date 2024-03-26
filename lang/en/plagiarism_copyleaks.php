@@ -79,7 +79,7 @@ $string['clnopageaccess'] = 'You dont have access to this page.';
 
 $string['claicontentscore'] = 'AI content score';
 $string['clplagiarismscore'] = 'Plagiarism score';
-$string['clgrammarissues'] = 'Grammar issues';
+$string['clwritingfeedbackissues'] = 'Writing corrections';
 $string['clscanfailedbtn'] = 'SCAN FAILED';
 $string['cltryagainbtn'] = 'Try Again';
 $string['cltryagainmsg'] = 'Submit again to Copyleaks scan';
@@ -87,7 +87,7 @@ $string['clscaninprogress'] = 'Scan is in progress...';
 $string['clscheduledintime'] = 'Scheduled: {$a}';
 $string['claicontentscheduled'] = 'AI content scan';
 $string['clplagiarismcontentscheduled'] = 'Plagiarism scan';
-$string['clgrammarcontentscheduled'] = 'Grammar scan';
+$string['clwritingfeedbackcontentscheduled'] = 'Writing correctionss';
 $string['cldownloadreport'] = 'Download PDF report';
 $string['clopenreport'] = 'Open report page';
 $string['clcopyreporturl'] = 'Copy the report page link to the clipboard';
