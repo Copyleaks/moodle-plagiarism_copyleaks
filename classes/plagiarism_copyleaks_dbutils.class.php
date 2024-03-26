@@ -198,13 +198,11 @@ class plagiarism_copyleaks_dbutils {
     public static function update_config_scanning_detection($detectiondata) {
         global $DB;
         $scandetections = array(
-            PLAGIARISM_COPYLEAKS_DETECT_WF_SCORE_FIELD_NAME,
             PLAGIARISM_COPYLEAKS_DETECT_WF_ISSUES_FIELD_NAME,
             PLAGIARISM_COPYLEAKS_SCAN_AI_FIELD_NAME,
             PLAGIARISM_COPYLEAKS_SCAN_PLAGIARISM_FIELD_NAME
         );
         $savedvalues = array(
-            $detectiondata->showWritingFeedbackScore,
             $detectiondata->showWritingFeedbackIssues,
             $detectiondata->showAI,
             $detectiondata->showPlagiarism
@@ -241,7 +239,6 @@ class plagiarism_copyleaks_dbutils {
     public static function get_config_scanning_detection() {
         global $DB;
         $scandetections = array(
-            PLAGIARISM_COPYLEAKS_DETECT_WF_SCORE_FIELD_NAME,
             PLAGIARISM_COPYLEAKS_DETECT_WF_ISSUES_FIELD_NAME,
             PLAGIARISM_COPYLEAKS_SCAN_AI_FIELD_NAME,
             PLAGIARISM_COPYLEAKS_SCAN_PLAGIARISM_FIELD_NAME

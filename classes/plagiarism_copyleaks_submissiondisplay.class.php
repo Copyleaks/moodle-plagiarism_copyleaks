@@ -255,29 +255,18 @@ class plagiarism_copyleaks_submissiondisplay {
                                 $aiscorelevel = "cls-ai-score-level-high";
                             }
 
-                            // Writing Feedback Score level class.
-                            $writingfeedbackscorelevel = '';
-                            if ($submittedfile->writingfeedbackscore <= 40) {
-                                $writingfeedbackscorelevel = "cls-wf-score-level-high";
-                            } else if ($submittedfile->writingfeedbackscore <= 80) {
-                                $writingfeedbackscorelevel = "cls-wf-score-level-mid";
-                            } else {
-                                $writingfeedbackscorelevel = "cls-wf-score-level-low";
-                            }
-
                             $writingfeedbackcorrectionlevel = '';
-                            if ($submittedfile->writingfeedbackscore <= 40) {
-                                $writingfeedbackcorrectionlevel = "cls-wf-score-level-high";
-                            } else if ($submittedfile->writingfeedbackscore <= 80) {
+                            if ($submittedfile->writingfeedbackissues <= 10) {
+                                $writingfeedbackcorrectionlevel = "cls-wf-score-level-low";
+                            } else if ($submittedfile->writingfeedbackissues <= 20) {
                                 $writingfeedbackcorrectionlevel = "cls-wf-score-level-mid";
                             } else {
-                                $writingfeedbackcorrectionlevel = "cls-wf-score-level-low";
+                                $writingfeedbackcorrectionlevel = "cls-wf-score-level-high";
                             }
 
                             // Submitted file results.
                             $results["score"] = $submittedfile->similarityscore;
                             $results["aiscore"] = $submittedfile->aiscore;
-                            $results["writingfeedbackscore"] = $submittedfile->writingfeedbackscore;
                             $results["writingfeedbackissues"] = $submittedfile->writingfeedbackissues;
                             $results['reporturl'] =
                                 "$CFG->wwwroot/plagiarism/copyleaks/plagiarism_copyleaks_report.php" .
@@ -343,26 +332,7 @@ class plagiarism_copyleaks_submissiondisplay {
                                         ),
                                     array('class' => 'cls-result-item')
                                 ) : '');
-                            // Writing Feedbacl score.
-                            $writingfeedbackscoredata = ($detectiondata[PLAGIARISM_COPYLEAKS_DETECT_WF_SCORE_FIELD_NAME] ?
-                                html_writer::tag(
-                                    'div',
-                                    html_writer::tag(
-                                        'div',
-                                        get_string('clwritingfeedbackscore', 'plagiarism_copyleaks'),
-                                        array('class' => 'cls-text-result')
-                                    ) .
-                                        html_writer::tag(
-                                            'div',
-                                            (isset($results["writingfeedbackscore"]) ? html_writer::tag(
-                                                'span',
-                                                '',
-                                                array('class' => "score-level $writingfeedbackscorelevel")
-                                            ) . $results["writingfeedbackscore"]  . '%' : 'N/A'),
-                                            array('class' => 'cls-score-container')
-                                        ),
-                                    array('class' => 'cls-result-item')
-                                ) : '');
+
                             // Writing Feedbacl issues.
                             $writingfeedbackissuesdata = ($detectiondata[PLAGIARISM_COPYLEAKS_DETECT_WF_ISSUES_FIELD_NAME] ?
                                 html_writer::tag(
@@ -454,7 +424,7 @@ class plagiarism_copyleaks_submissiondisplay {
                                     // Detection details - AI & PLAGIARISM & GRAMMaR.
                                     html_writer::tag(
                                         'div',
-                                        $aidetails . $plagiarismdetails . $writingfeedbackscoredata . $writingfeedbackissuesdata,
+                                        $aidetails . $plagiarismdetails . $writingfeedbackissuesdata,
                                         array('class' => 'cls-details-content')
                                     ),
                                 array('class' => 'cls-large-report-details cls-mini-report')
@@ -646,8 +616,7 @@ class plagiarism_copyleaks_submissiondisplay {
                                     array('class' => 'cls-scheduled-item')
                                 ) : '');
                             // Grammar Schedule Content.
-                            $writingfeedbackcheduleddetails = ($detectiondata[PLAGIARISM_COPYLEAKS_DETECT_WF_SCORE_FIELD_NAME]
-                                || $detectiondata[PLAGIARISM_COPYLEAKS_DETECT_WF_ISSUES_FIELD_NAME] ?
+                            $writingfeedbackcheduleddetails = ($detectiondata[PLAGIARISM_COPYLEAKS_DETECT_WF_ISSUES_FIELD_NAME] ?
                                 html_writer::tag(
                                     'div',
                                     html_writer::tag(

@@ -79,8 +79,7 @@ $string['clnopageaccess'] = 'You dont have access to this page.';
 
 $string['claicontentscore'] = 'AI content score';
 $string['clplagiarismscore'] = 'Plagiarism score';
-$string['clwritingfeedbackissues'] = 'Writing correctionss';
-$string['clwritingfeedbackscore'] = 'Writing score';
+$string['clwritingfeedbackissues'] = 'Writing corrections';
 $string['clscanfailedbtn'] = 'SCAN FAILED';
 $string['cltryagainbtn'] = 'Try Again';
 $string['cltryagainmsg'] = 'Submit again to Copyleaks scan';

@@ -85,7 +85,6 @@ $string['clplagiarismscore'] = 'Score de plagiat';
 $string['clgrammarissues'] = 'Problèmes de grammaire';
 $string['clwritingfeedbackissues'] = 'Rédaction de corrections';
 $string['clwritingfeedbackcontentscheduled'] = 'Rédaction de corrections';
-$string['clgrammarscore'] = 'Score de grammaire';
 $string['clscanfailedbtn'] = "ÉCHEC DE L'ANALYSE";
 $string['cltryagainbtn'] = 'Essayer à nouveau';
 $string['cltryagainmsg'] = "Soumettez-vous à nouveau à l'analyse Copyleaks";

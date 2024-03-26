@@ -122,7 +122,6 @@ class plagiarism_copyleaks_resubmittedreports extends \core\task\scheduled_task 
                     $currentresult->externalid = $curr->newScanId;
                     $currentresult->similarityscore = isset($curr->plagiarismScore) ? $curr->plagiarismScore : null;
                     $currentresult->aiscore = isset($curr->aiscore) ? $curr->aiscore : null;
-                    $currentresult->writingfeedbackscore = isset($curr->writingFeedbackScore) ? $curr->writingFeedbackScore : null;
                     $currentresult->writingfeedbackissues = isset($curr->writingFeedbackIssues) ? $curr->writingFeedbackIssues : null;
                     $currentresult->lastmodified = $timestamp;
                     $isupdated = true;

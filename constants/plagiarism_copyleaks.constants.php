@@ -64,5 +64,4 @@ define('PLAGIARISM_COPYLEAKS_EULA_FIELD_NAME', 'plagiarism_copyleaks_latesteulav
 define('PLAGIARISM_COPYLEAKS_SCAN_AI_FIELD_NAME', 'plagiarism_copyleaks_enable_ai_detection');
 define('PLAGIARISM_COPYLEAKS_SCAN_PLAGIARISM_FIELD_NAME', 'plagiarism_copyleaks_enable_plagiarism_detection');
 define('PLAGIARISM_COPYLEAKS_DETECT_GRAMMAR_FIELD_NAME', 'plagiarism_copyleaks_enable_grammar_detection');
-define('PLAGIARISM_COPYLEAKS_DETECT_WF_SCORE_FIELD_NAME', 'plagiarism_copyleaks_enable_wf_score_detection');
 define('PLAGIARISM_COPYLEAKS_DETECT_WF_ISSUES_FIELD_NAME', 'plagiarism_copyleaks_enable_wf_issues_detection');
