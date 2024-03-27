@@ -207,20 +207,17 @@ a.copyleaks-settings-link:hover {
 }
 
 .cls-plag-score-level-high,
-.cls-ai-score-level-high,
-.cls-wf-score-level-high {
+.cls-ai-score-level-high {
     background-color: #f44336;
 }
 
 .cls-plag-score-level-mid,
-.cls-ai-score-level-mid,
-.cls-wf-score-level-mid {
+.cls-ai-score-level-mid {
     background-color: #ffa503;
 }
 
 .cls-plag-score-level-low,
-.cls-ai-score-level-low,
-.cls-wf-score-level-low {
+.cls-ai-score-level-low {
     background-color: #008001;
 }
 

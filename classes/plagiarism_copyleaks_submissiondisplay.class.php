@@ -255,15 +255,6 @@ class plagiarism_copyleaks_submissiondisplay {
                                 $aiscorelevel = "cls-ai-score-level-high";
                             }
 
-                            $writingfeedbackcorrectionlevel = '';
-                            if ($submittedfile->writingfeedbackissues <= 10) {
-                                $writingfeedbackcorrectionlevel = "cls-wf-score-level-low";
-                            } else if ($submittedfile->writingfeedbackissues <= 20) {
-                                $writingfeedbackcorrectionlevel = "cls-wf-score-level-mid";
-                            } else {
-                                $writingfeedbackcorrectionlevel = "cls-wf-score-level-high";
-                            }
-
                             // Submitted file results.
                             $results["score"] = $submittedfile->similarityscore;
                             $results["aiscore"] = $submittedfile->aiscore;
