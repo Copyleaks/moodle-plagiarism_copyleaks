@@ -445,7 +445,7 @@ class plagiarism_copyleaks_eventshandler {
         $scheduledscandate = 0;
         if ($coursemodule->modname == "quiz") {
             // We had to add this delay for a bug fix on quiz.
-            $scheduledscandate = strtotime('+ 2 minutes');
+            $scheduledscandate = strtotime('+ 5 minutes');
         } else {
             $scheduledscandate = strtotime('- 1 minutes');
         }
