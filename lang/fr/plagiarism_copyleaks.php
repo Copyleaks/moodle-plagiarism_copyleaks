@@ -82,7 +82,6 @@ $string['pluginname'] = 'Plugin de plagiat Copyleaks';
 
 $string['claicontentscore'] = 'Score du contenu IA';
 $string['clplagiarismscore'] = 'Score de plagiat';
-$string['clgrammarissues'] = 'Problèmes de grammaire';
 $string['clwritingfeedbackissues'] = 'Rédaction de corrections';
 $string['clwritingfeedbackcontentscheduled'] = 'Rédaction de corrections';
 $string['clscanfailedbtn'] = "ÉCHEC DE L'ANALYSE";
@@ -92,7 +91,6 @@ $string['clscaninprogress'] = "L'analyse est en cours...";
 $string['clscheduledintime'] = 'Prévu: {$d}';
 $string['claicontentscheduled'] = 'Analyse du contenu IA';
 $string['clplagiarismcontentscheduled'] = 'Analyse du plagiat';
-$string['clgrammarcontentscheduled'] = 'Analyse de grammaire';
 $string['cldownloadreport'] = 'Télécharger le rapport PDF';
 $string['clopenreport'] = 'Ouvrir la page du rapport';
 $string['clcopyreporturl'] = "Copiez le lien de la page du rapport dans le presse-papiers";
