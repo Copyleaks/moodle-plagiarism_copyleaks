@@ -1,4 +1,8 @@
-### [v2023110200] - 2024-01-01
+### [v2024040200] - 2024-Apr-02
+- Support Writing Assistance
+<br>
+
+### [v2023110200] - 2024-Jan-01
 - New Design for score view.
 - Support up to 50MB for submitted files.
 - Collecting more data for analytics usage.
