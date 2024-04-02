@@ -443,7 +443,7 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         $newfield->cm = PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID;
         $newfield->name = PLAGIARISM_COPYLEAKS_DETECT_WF_ISSUES_FIELD_NAME;
         $newfield->value = 0;
-        if (!isset($saveddefaultvalue) || !isset($saveddefaultvalue[$option])) {
+        if (!isset($saveddefaultvalue) || !isset($saveddefaultvalue[PLAGIARISM_COPYLEAKS_DETECT_WF_ISSUES_FIELD_NAME])) {
             $newfield->config_hash = $newfield->cm . "_" . $newfield->name;
             if (!$DB->insert_record('plagiarism_copyleaks_config', $newfield)) {
                 throw new moodle_exception(get_string('clinserterror', 'plagiarism_copyleaks'));
