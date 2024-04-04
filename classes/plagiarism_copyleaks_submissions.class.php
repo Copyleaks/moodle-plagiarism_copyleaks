@@ -23,6 +23,7 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_logs.class.php');
@@ -238,6 +239,31 @@ class plagiarism_copyleaks_submissions {
                     "UPDATE_RECORD_FAILED"
                 );
             }
+        }
+    }
+
+    /**
+     * @param object $submission - will update the submission reference.
+     * @param string $errormessage
+     */
+    public static function handle_submission_error(&$submission, $errormessage = '') {
+        global $DB;
+        if (isset($submission->retrycnt) && $submission->retrycnt > PLAGIARISM_COPYLEAKS_MAX_AUTO_RETRY) {
+            $submission->errormsg =  $errormessage;
+            $submission->statuscode = "error";;
+            \plagiarism_copyleaks_logs::add($errormessage . " (fileid: " . $submission->id . ") - ", "HANDLE_SUBMISSION_ERROR");
+        } else {
+            $submission->retrycnt += 1;
+            $submission->scheduledscandate = strtotime('+ 2 minutes');
+            $submission->statuscode = 'queued';
+        }
+
+        if (!$DB->update_record('plagiarism_copyleaks_files', $submission)) {
+            $logtxt = empty($submission->errormsg) ? 'retry count' : 'error';
+            \plagiarism_copyleaks_logs::add(
+                "failed to update submission $logtxt, fileid: " . $submission->id,
+                "UPDATE_RECORD_FAILED"
+            );
         }
     }
 }
