@@ -340,29 +340,22 @@ class plagiarism_copyleaks_utils {
      */
     public static function get_time_left_str($timeobj) {
         $retstr = get_string('cltimemin', 'plagiarism_copyleaks') . ' ' . $timeobj->value . ' ';
-        $timeinterval = '';
         switch ($timeobj->timetype) {
             case plagiarism_copyleaks_times::MINUTES:
-                $timeinterval = get_string('cltimeminutes', 'plagiarism_copyleaks');
+                $retstr  .= get_string('cltimeminutes', 'plagiarism_copyleaks');
                 break;
             case plagiarism_copyleaks_times::HOURES:
-                $timeinterval = get_string('cltimehours', 'plagiarism_copyleaks');
+                $retstr  .= get_string('cltimehours', 'plagiarism_copyleaks');
                 break;
             case plagiarism_copyleaks_times::DAYS:
-                $timeinterval =  get_string('cltimedays', 'plagiarism_copyleaks');
+                $retstr  .= get_string('cltimedays', 'plagiarism_copyleaks');
                 break;
             case plagiarism_copyleaks_times::MONTHS:
-                $timeinterval = get_string('cltimemonths', 'plagiarism_copyleaks');
+                $retstr  .= get_string('cltimemonths', 'plagiarism_copyleaks');
                 break;
             default:
                 return get_string('cltimesoon', 'plagiarism_copyleaks');
         }
-
-        // Check if the value is 1, remove the 's' from the end of the string.
-        if ($timeobj->value == 1) {
-            $timeinterval = substr($timeinterval, 0, -1);
-        }
-        $retstr  .= $timeinterval;
         return $retstr;
     }
 }
