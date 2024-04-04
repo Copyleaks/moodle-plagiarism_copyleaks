@@ -83,6 +83,7 @@ class plagiarism_copyleaks_sendsubmissions extends \core\task\scheduled_task {
 
             foreach ($queuedsubmissions as $submission) {
                 $submittedtextcontent = "";
+                $submissionprevretry = isset($submission->retrycnt) ? $submission->retrycnt : 0;
                 // Check if submission type is supported.
                 $subtype = $submission->submissiontype;
                 if (!in_array(
@@ -150,7 +151,8 @@ class plagiarism_copyleaks_sendsubmissions extends \core\task\scheduled_task {
                         );
                         $submittedtextcontent = $txtsubmissionref->onlinetext;
                     } else {
-                        $errormessage = 'Content not found for the submission.';
+                        $this->handle_submission_content_not_found($submission);
+                        continue;
                     }
 
                     $filename = 'online_text_'
@@ -174,7 +176,7 @@ class plagiarism_copyleaks_sendsubmissions extends \core\task\scheduled_task {
 
                         $submittedtextcontent = html_to_text(strip_tags($forumpost->message));
                     } else {
-                        $errormessage = 'Content not found for the submission.';
+                        $this->handle_submission_content_not_found($submission);
                     }
                 } else if ($submission->submissiontype == 'quiz_answer') {
 
@@ -196,7 +198,7 @@ class plagiarism_copyleaks_sendsubmissions extends \core\task\scheduled_task {
                             . $coursemodule->instance . "_"
                             . $submission->itemid . '.txt';
                     } else {
-                        $errormessage = 'Content not found for the submission.';
+                        $this->handle_submission_content_not_found($submission);
                     }
                 } else {
                     // In case $submission->submissiontype == 'file'.
@@ -204,20 +206,25 @@ class plagiarism_copyleaks_sendsubmissions extends \core\task\scheduled_task {
                     $fileref = $filestorage->get_file_by_hash($submission->identifier);
 
                     if (!$fileref) {
-                        $errormessage = 'File/Content not found for the submission.';
+                        $this->handle_submission_content_not_found($submission, 'File/');
                     } else {
                         try {
                             $filename = $fileref->get_filename();
                             $submittedtextcontent = $fileref->get_content();
                         } catch (\Exception $e) {
-                            $errormessage = 'File/Content not found for the submission.';
+                            $this->handle_submission_content_not_found($submission, 'File/');
                         }
                     }
                 }
 
-                // If $errormessage is not empty, then there was an error.
-                if (isset($errormessage)) {
-                    \plagiarism_copyleaks_submissions::mark_error($submission->id,  $errormessage);
+                // If  $submission->errormsg is not empty, then there was an error.
+                if (isset($submission->errormsg)) {
+                    \plagiarism_copyleaks_submissions::mark_error($submission->id,  $submission->errormsg);
+                    continue;
+                }
+
+                // If the submission retry counter is greater than the previous retry counter, then skip the submission.
+                if ($submission->retrycnt > $submissionprevretry) {
                     continue;
                 }
 
@@ -330,5 +337,22 @@ class plagiarism_copyleaks_sendsubmissions extends \core\task\scheduled_task {
         } while (!touch($file));
 
         return $file;
+    }
+
+    /**
+     * @param object $submission - will update the submission reference.
+     * @param string $errorprefix
+     */
+    private function handle_submission_content_not_found(&$submission, $errorprefix = '') {
+        global $DB;
+        if (isset($submission->retrycnt) && $submission->retrycnt > PLAGIARISM_COPYLEAKS_MAX_AUTO_RETRY) {
+            $errormessage = $errorprefix . 'Content not found for the submission.';
+            $submission->errormsg =  $errormessage;
+        } else {
+            $submission->retrycnt += 1;
+            $submission->scheduledscandate = strtotime('+ 5 minutes');
+            $submission->statuscode = 'queued';
+        }
+        $DB->update_record('plagiarism_copyleaks_files', $submission);
     }
 }

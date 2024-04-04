@@ -466,5 +466,21 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2024040200, 'plagiarism', 'copyleaks');
     }
 
+
+    if ($oldversion < 2024040402) {
+        $table = new xmldb_table('plagiarism_copyleaks_files');
+        $retrycntfield = new xmldb_field('retrycnt', XMLDB_TYPE_NUMBER, '2', null, null, null, null, 'ischeatingdetected');
+
+        if ($dbman->table_exists($table)) {
+            // Add retry counter field to files table.
+            if (!$dbman->field_exists($table, $retrycntfield)) {
+                $dbman->add_field($table, $retrycntfield);
+            }
+        }
+
+        // Copyleaks savepoint reached.
+        upgrade_plugin_savepoint(true, 2024040402, 'plagiarism', 'copyleaks');
+    }
+
     return true;
 }

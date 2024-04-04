@@ -292,18 +292,19 @@ class plagiarism_copyleaks_utils {
         // Initialize the result object.
         $result = new stdClass();
 
-        if ($targetdate < $currentdatetime) {
-            $result->timetype = plagiarism_copyleaks_times::SOON;
-            $result->value = 0;
-            return $result;
-        }
-
         // Calculate the interval between the two dates.
         $interval = $currentdatetime->diff($targetdatetime);
 
         // Set default values.
         $result->timetype = plagiarism_copyleaks_times::MINUTES;
         $result->value = $interval->i;
+
+        if ($targetdate < $currentdatetime || $result->value < 1) {
+            $result->timetype = plagiarism_copyleaks_times::SOON;
+            $result->value = 0;
+            return $result;
+        }
+
 
         // Check if time left is under an hour.
         if ($interval->h > 0 || $interval->d > 0 || $interval->m > 0 || $interval->y > 0) {
@@ -339,22 +340,29 @@ class plagiarism_copyleaks_utils {
      */
     public static function get_time_left_str($timeobj) {
         $retstr = get_string('cltimemin', 'plagiarism_copyleaks') . ' ' . $timeobj->value . ' ';
+        $timeinterval = '';
         switch ($timeobj->timetype) {
             case plagiarism_copyleaks_times::MINUTES:
-                $retstr  .= get_string('cltimeminutes', 'plagiarism_copyleaks');
+                $timeinterval = get_string('cltimeminutes', 'plagiarism_copyleaks');
                 break;
             case plagiarism_copyleaks_times::HOURES:
-                $retstr  .= get_string('cltimehours', 'plagiarism_copyleaks');
+                $timeinterval = get_string('cltimehours', 'plagiarism_copyleaks');
                 break;
             case plagiarism_copyleaks_times::DAYS:
-                $retstr  .= get_string('cltimedays', 'plagiarism_copyleaks');
+                $timeinterval =  get_string('cltimedays', 'plagiarism_copyleaks');
                 break;
             case plagiarism_copyleaks_times::MONTHS:
-                $retstr  .= get_string('cltimemonths', 'plagiarism_copyleaks');
+                $timeinterval = get_string('cltimemonths', 'plagiarism_copyleaks');
                 break;
             default:
                 return get_string('cltimesoon', 'plagiarism_copyleaks');
         }
+
+        // Check if the value is 1, remove the 's' from the end of the string.
+        if ($timeobj->value == 1) {
+            $timeinterval = substr($timeinterval, 0, -1);
+        }
+        $retstr  .= $timeinterval;
         return $retstr;
     }
 }
