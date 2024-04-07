@@ -23,6 +23,7 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_logs.class.php');
@@ -132,13 +133,19 @@ class plagiarism_copyleaks_submissions {
      * @param string $fileid submission id
      * @param string $errormsg error message (optional)
      */
-    public static function mark_error($fileid, $errormsg = null) {
+    public static function mark_error($fileid, $errormsg = null, $failedafterretry = false) {
         global $DB;
 
         $file = new stdClass();
         $file->id = $fileid;
         $file->statuscode = 'error';
         $file->lastmodified = time();
+        $errorlog = "MARK_ERROR_SUBMISSION";
+
+        if ($failedafterretry) {
+            $file->retrycnt = 0;
+            $errorlog = "SUBMISSION_MAX_RETRY_FAILED";
+        }
 
         if (!empty($errormsg)) {
             $file->errormsg = $errormsg;
@@ -150,7 +157,7 @@ class plagiarism_copyleaks_submissions {
                 "UPDATE_RECORD_FAILED"
             );
         } else {
-            \plagiarism_copyleaks_logs::add($errormsg . " (fileid: " . $fileid . ") - ", "MARK_ERROR_SUBMISSION");
+            \plagiarism_copyleaks_logs::add($errormsg . " (fileid: " . $fileid . ") - ", $errorlog);
         }
 
         return true;
@@ -238,6 +245,34 @@ class plagiarism_copyleaks_submissions {
                     "UPDATE_RECORD_FAILED"
                 );
             }
+        }
+    }
+
+    /**
+     * @param object $submission - will update the submission reference.
+     * @param string $errormessage
+     */
+    public static function handle_submission_error(&$submission, $errormessage = '') {
+        global $DB;
+        if (isset($submission->retrycnt) && $submission->retrycnt > PLAGIARISM_COPYLEAKS_MAX_AUTO_RETRY) {
+            self::mark_error($submission->id, $errormessage, true);
+            return;
+        }
+
+        if (!isset($submission->retrycnt)) {
+            $submission->retrycnt = 0;
+        }
+
+        $submission->retrycnt += 1;
+        $submission->scheduledscandate = strtotime('+ 5 minutes');
+        $submission->statuscode = 'queued';
+
+        if (!$DB->update_record('plagiarism_copyleaks_files', $submission)) {
+            $logtxt = empty($submission->errormsg) ? 'retry count' : 'error';
+            \plagiarism_copyleaks_logs::add(
+                "failed to update submission $logtxt, fileid: " . $submission->id,
+                "UPDATE_RECORD_FAILED"
+            );
         }
     }
 }

@@ -292,18 +292,19 @@ class plagiarism_copyleaks_utils {
         // Initialize the result object.
         $result = new stdClass();
 
-        if ($targetdate < $currentdatetime) {
-            $result->timetype = plagiarism_copyleaks_times::SOON;
-            $result->value = 0;
-            return $result;
-        }
-
         // Calculate the interval between the two dates.
         $interval = $currentdatetime->diff($targetdatetime);
 
         // Set default values.
         $result->timetype = plagiarism_copyleaks_times::MINUTES;
         $result->value = $interval->i;
+
+        if ($targetdate < $currentdatetime || $result->value < 1) {
+            $result->timetype = plagiarism_copyleaks_times::SOON;
+            $result->value = 0;
+            return $result;
+        }
+
 
         // Check if time left is under an hour.
         if ($interval->h > 0 || $interval->d > 0 || $interval->m > 0 || $interval->y > 0) {
