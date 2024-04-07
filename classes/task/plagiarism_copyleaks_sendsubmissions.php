@@ -102,7 +102,7 @@ class plagiarism_copyleaks_sendsubmissions extends \core\task\scheduled_task {
 
                 // Check if course module exists.
                 $coursemodule = get_coursemodule_from_id('', $submission->cm);
-                if (!empty($coursemodule)) {
+                if (empty($coursemodule)) {
                     \plagiarism_copyleaks_submissions::handle_submission_error($submission, "Course Module wasnt found for this record.");
                     continue;
                 }
@@ -123,6 +123,7 @@ class plagiarism_copyleaks_sendsubmissions extends \core\task\scheduled_task {
                 // Handle submission data according to the submission type.
                 if ($submission->submissiontype == 'text_content') {
                     $moduledata = $DB->get_record($coursemodule->modname, array('id' => $coursemodule->instance));
+
                     if ($coursemodule->modname == 'workshop') {
                         $workshopsubmission = $DB->get_record(
                             'workshop_submissions',

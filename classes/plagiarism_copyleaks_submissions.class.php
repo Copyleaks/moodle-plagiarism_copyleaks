@@ -133,13 +133,19 @@ class plagiarism_copyleaks_submissions {
      * @param string $fileid submission id
      * @param string $errormsg error message (optional)
      */
-    public static function mark_error($fileid, $errormsg = null) {
+    public static function mark_error($fileid, $errormsg = null, $failedafterretry = false) {
         global $DB;
 
         $file = new stdClass();
         $file->id = $fileid;
         $file->statuscode = 'error';
         $file->lastmodified = time();
+        $errorlog = "MARK_ERROR_SUBMISSION";
+
+        if ($failedafterretry) {
+            $file->retrycnt = 0;
+            $errorlog = "SUBMISSION_MAX_RETRY_FAILED";
+        }
 
         if (!empty($errormsg)) {
             $file->errormsg = $errormsg;
@@ -151,7 +157,7 @@ class plagiarism_copyleaks_submissions {
                 "UPDATE_RECORD_FAILED"
             );
         } else {
-            \plagiarism_copyleaks_logs::add($errormsg . " (fileid: " . $fileid . ") - ", "MARK_ERROR_SUBMISSION");
+            \plagiarism_copyleaks_logs::add($errormsg . " (fileid: " . $fileid . ") - ", $errorlog);
         }
 
         return true;
@@ -249,14 +255,17 @@ class plagiarism_copyleaks_submissions {
     public static function handle_submission_error(&$submission, $errormessage = '') {
         global $DB;
         if (isset($submission->retrycnt) && $submission->retrycnt > PLAGIARISM_COPYLEAKS_MAX_AUTO_RETRY) {
-            $submission->errormsg =  $errormessage;
-            $submission->statuscode = "error";;
-            \plagiarism_copyleaks_logs::add($errormessage . " (fileid: " . $submission->id . ") - ", "HANDLE_SUBMISSION_ERROR");
-        } else {
-            $submission->retrycnt += 1;
-            $submission->scheduledscandate = strtotime('+ 2 minutes');
-            $submission->statuscode = 'queued';
+            self::mark_error($submission->id, $errormessage, true);
+            return;
         }
+
+        if (!isset($submission->retrycnt)) {
+            $submission->retrycnt = 0;
+        }
+
+        $submission->retrycnt += 1;
+        $submission->scheduledscandate = strtotime('+ 5 minutes');
+        $submission->statuscode = 'queued';
 
         if (!$DB->update_record('plagiarism_copyleaks_files', $submission)) {
             $logtxt = empty($submission->errormsg) ? 'retry count' : 'error';
