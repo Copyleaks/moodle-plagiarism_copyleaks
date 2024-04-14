@@ -469,7 +469,7 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
 
     if ($oldversion < 2024040701) {
         $table = new xmldb_table('plagiarism_copyleaks_files');
-        $retrycntfield = new xmldb_field('retrycnt', XMLDB_TYPE_NUMBER, '2', null, null, null, null, 'ischeatingdetected');
+        $retrycntfield = new xmldb_field('retrycnt', XMLDB_TYPE_INTEGER, '2', null, null, null, null, 'ischeatingdetected');
 
         if ($dbman->table_exists($table)) {
             // Add retry counter field to files table.
