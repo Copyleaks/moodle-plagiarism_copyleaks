@@ -466,7 +466,7 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2024040200, 'plagiarism', 'copyleaks');
     }
 
-    if ($oldversion < 20240401400) {
+    if ($oldversion < 2024041500) {
         $table = new xmldb_table('plagiarism_copyleaks_files');
         $retrycntfield = new xmldb_field('retrycnt', XMLDB_TYPE_INTEGER, '2', null, null, null, null, 'ischeatingdetected');
 
@@ -480,7 +480,7 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         }
 
         // Copyleaks savepoint reached.
-        upgrade_plugin_savepoint(true, 20240401400, 'plagiarism', 'copyleaks');
+        upgrade_plugin_savepoint(true, 2024041500, 'plagiarism', 'copyleaks');
     }
 
     return true;
