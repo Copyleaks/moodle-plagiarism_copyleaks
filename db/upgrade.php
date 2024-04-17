@@ -466,9 +466,9 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2024040200, 'plagiarism', 'copyleaks');
     }
 
-    if ($oldversion < 20240401400) {
+    if ($oldversion < 2024041700) {
         $table = new xmldb_table('plagiarism_copyleaks_files');
-        $retrycntfield = new xmldb_field('retrycnt', XMLDB_TYPE_INTEGER, '2', null, null, null, null, 'ischeatingdetected');
+        $retrycntfield = new xmldb_field('retrycnt', XMLDB_TYPE_INTEGER, '2', null, null, null, 0, 'ischeatingdetected');
 
         if ($dbman->table_exists($table)) {
             // Add retry counter field to files table.
@@ -476,26 +476,12 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
                 $dbman->add_field($table, $retrycntfield);
             } else {
                 $dbman->change_field_type($table, $retrycntfield);
-            }
-        }
-
-        // Copyleaks savepoint reached.
-        upgrade_plugin_savepoint(true, 20240401400, 'plagiarism', 'copyleaks');
-    }
-
-    if ($oldversion < 20240401600) {
-        $table = new xmldb_table('plagiarism_copyleaks_files');
-        $retrycntfield = new xmldb_field('retrycnt', XMLDB_TYPE_INTEGER, '2', null, null, null, 0, 'ischeatingdetected');
-
-        if ($dbman->table_exists($table)) {
-            // Add retry counter field to files table.
-            if ($dbman->field_exists($table, $retrycntfield)) {
                 $dbman->change_field_default($table, $retrycntfield);
             }
         }
 
         // Copyleaks savepoint reached.
-        upgrade_plugin_savepoint(true, 20240401600, 'plagiarism', 'copyleaks');
+        upgrade_plugin_savepoint(true, 2024041700, 'plagiarism', 'copyleaks');
     }
 
     return true;
