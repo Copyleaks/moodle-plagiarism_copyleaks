@@ -178,15 +178,17 @@ class plagiarism_copyleaks_sendsubmissions extends \core\task\scheduled_task {
                         $errormessage = 'Content not found for the submission.';
                     }
                 } else if ($submission->submissiontype == 'quiz_answer') {
-
-                    require_once($CFG->dirroot . '/mod/quiz/locallib.php');
-                    $quizattempt = \quiz_attempt::create($submission->itemid);
-                    foreach ($quizattempt->get_slots() as $slot) {
-                        $questionattempt = $quizattempt->get_question_attempt($slot);
-                        if ($submission->identifier == sha1($questionattempt->get_response_summary())) {
-                            $submittedtextcontent = $questionattempt->get_response_summary();
-                            break;
+                    try {
+                        require_once($CFG->dirroot . '/mod/quiz/locallib.php');
+                        $quizattempt = \quiz_attempt::create($submission->itemid);
+                        foreach ($quizattempt->get_slots() as $slot) {
+                            $questionattempt = $quizattempt->get_question_attempt($slot);
+                            if ($submission->identifier == sha1($questionattempt->get_response_summary())) {
+                                $submittedtextcontent = $questionattempt->get_response_summary();
+                                break;
+                            }
                         }
+                    } catch (\Exception $e) {
                     }
 
                     if (!empty($submittedtextcontent)) {
