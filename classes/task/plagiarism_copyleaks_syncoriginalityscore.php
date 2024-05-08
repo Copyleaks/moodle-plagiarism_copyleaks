@@ -23,8 +23,6 @@
 
 namespace plagiarism_copyleaks\task;
 
-use stdClass;
-
 defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/plagiarism/copyleaks/constants/plagiarism_copyleaks.constants.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/enums/plagiarism_copyleaks_enums.php');
@@ -101,7 +99,7 @@ class plagiarism_copyleaks_syncoriginalityscore extends \core\task\scheduled_tas
                     continue;
                 }
 
-                /* Get the copyleaks db entity with the old id */
+                /* Get the copyleaks db entity with the external id */
                 foreach ($reports as $element) {
                     if ($element->scanId == $currentresult->externalid && $currentresult->statuscode == "success") {
                         $currentresult->similarityscore = isset($element->plagiarismScore) ? $element->plagiarismScore : null;
