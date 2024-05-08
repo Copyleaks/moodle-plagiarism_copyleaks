@@ -48,22 +48,23 @@ class plagiarism_copyleaks_syncoriginalityscore extends \core\task\scheduled_tas
         global $CFG;
         require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_comms.class.php');
 
-        $this->handle_sync_scores();
+        $this->handle_scores_sync();
     }
 
     /**
      * Handle and change the score of resubmitted files.
      */
-    private function handle_sync_scores() {
+    private function handle_scores_sync() {
         global $DB;
 
         $copyleakscomms = new \plagiarism_copyleaks_comms();
         $canloadmoredata = true;
 
+        if (!\plagiarism_copyleaks_comms::test_copyleaks_connection('scheduler_task')) {
+            return;
+        }
+
         while ($canloadmoredata) {
-            if (!\plagiarism_copyleaks_comms::test_copyleaks_connection('scheduler_task')) {
-                return;
-            }
 
             $succeedids = [];
             $response = $copyleakscomms->sync_originality_report_scores();
@@ -107,7 +108,7 @@ class plagiarism_copyleaks_syncoriginalityscore extends \core\task\scheduled_tas
                         $currentresult->lastmodified = time();
                         if (!$DB->update_record('plagiarism_copyleaks_files',  $currentresult)) {
                             \plagiarism_copyleaks_logs::add(
-                                "Sync score failed for scan id: " . $element->scanId,
+                                "Sync plagiarism score failed for scan id: " . $element->scanId,
                                 "UPDATE_RECORD_FAILED"
                             );
                         } else {
