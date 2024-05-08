@@ -459,4 +459,38 @@ class plagiarism_copyleaks_comms {
         );
         return $result;
     }
+
+    /**
+     * Get all originality report ids with the updated scores
+     * @param string $cursor Copyleaks db cursor
+     * @return object $result an array of ids and its updated scores
+     */
+    public function sync_originality_report_scores() {
+        if (isset($this->key) && isset($this->secret)) {
+            return plagiarism_copyleaks_http_client::execute_retry(
+                'GET',
+                $this->copyleaks_api_url() . "/api/moodle/plugin/" . $this->key . "/task/sync-reports-scores",
+                true,
+            );
+        }
+    }
+
+
+    /**
+     * send request to delete synces id to copyleaks server
+     * @param array $ids Copyleaks report scan ids
+     */
+    public function delete_synces_report_ids(array $ids) {
+        if (isset($this->key) && isset($this->secret)) {
+            $reqbody = (array)[
+                'ids' => $ids
+            ];
+            plagiarism_copyleaks_http_client::execute_retry(
+                'POST',
+                $this->copyleaks_api_url() . "/api/moodle/plugin/" . $this->key . "/task/synced-scans/delete",
+                true,
+                json_encode($reqbody)
+            );
+        }
+    }
 }
