@@ -89,7 +89,7 @@ class plagiarism_copyleaks_eventshandler {
         if ($coursemodule->modname != 'assign') {
             $cmdata->submissiondrafts = 0;
         }
-
+adsasdasdasda
         // Initialise module config.
         $clmoduleconfig = plagiarism_copyleaks_moduleconfig::get_module_config($coursemodule->id);
 
