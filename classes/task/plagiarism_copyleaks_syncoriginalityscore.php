@@ -103,6 +103,7 @@ class plagiarism_copyleaks_syncoriginalityscore extends \core\task\scheduled_tas
                 foreach ($reports as $element) {
                     if ($element->scanId == $currentresult->externalid && $currentresult->statuscode == "success") {
                         $currentresult->similarityscore = isset($element->plagiarismScore) ? $element->plagiarismScore : null;
+                        $currentresult->writingfeedbackissues = isset($element->writingFeedbackIssues) ? $element->writingFeedbackIssues : null;
                         $currentresult->lastmodified = time();
                         if (!$DB->update_record('plagiarism_copyleaks_files',  $currentresult)) {
                             \plagiarism_copyleaks_logs::add(
