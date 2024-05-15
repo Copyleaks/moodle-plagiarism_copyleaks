@@ -103,7 +103,10 @@ class plagiarism_copyleaks_sendsubmissions extends \core\task\scheduled_task {
                 // Check if course module exists.
                 $coursemodule = get_coursemodule_from_id('', $submission->cm);
                 if (empty($coursemodule)) {
-                    \plagiarism_copyleaks_submissions::handle_submission_error($submission, "Course Module wasnt found for this record.");
+                    \plagiarism_copyleaks_submissions::handle_submission_error(
+                        $submission,
+                        "Course Module wasnt found for this record."
+                    );
                     continue;
                 }
 

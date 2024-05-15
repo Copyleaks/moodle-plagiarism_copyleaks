@@ -305,7 +305,6 @@ class plagiarism_copyleaks_utils {
             return $result;
         }
 
-
         // Check if time left is under an hour.
         if ($interval->h > 0 || $interval->d > 0 || $interval->m > 0 || $interval->y > 0) {
             // Show by hours.

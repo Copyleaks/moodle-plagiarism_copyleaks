@@ -404,7 +404,15 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
 
     if ($oldversion < 2024040200) {
         $table = new xmldb_table('plagiarism_copyleaks_files');
-        $writingfeedbackissuesfield = new xmldb_field('writingfeedbackissues', XMLDB_TYPE_NUMBER, '10', null, null, null, null, 'aiscore');
+        $writingfeedbackissuesfield = new xmldb_field(
+            'writingfeedbackissues',
+            XMLDB_TYPE_NUMBER,
+            '10',
+            null,
+            null,
+            null,
+            null,
+            'aiscore');
         $grammarfield = new xmldb_field('grammarcases', XMLDB_TYPE_NUMBER, '10', null, null, null, null);
 
         if ($dbman->table_exists($table)) {

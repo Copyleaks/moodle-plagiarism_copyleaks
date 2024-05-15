@@ -29,7 +29,7 @@ require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/enums/plagiarism_cop
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_logs.class.php');
 
 /**
- * Copyleaks Plagiarism Plugin - Handle Resubmit Files
+ * Copyleaks Plagiarism Plugin - Handle sync originality score
  */
 class plagiarism_copyleaks_syncoriginalityscore extends \core\task\scheduled_task {
     /**
@@ -50,7 +50,7 @@ class plagiarism_copyleaks_syncoriginalityscore extends \core\task\scheduled_tas
     }
 
     /**
-     * Handle and change the score of resubmitted files.
+     * Handle and change the score accordingly.
      */
     private function handle_scores_sync() {
         global $DB;
@@ -65,7 +65,7 @@ class plagiarism_copyleaks_syncoriginalityscore extends \core\task\scheduled_tas
         while ($canloadmoredata) {
 
             $succeedids = [];
-            $response = $copyleakscomms->sync_originality_report_scores();
+            $response = $copyleakscomms->get_unsynced_scans_scores();
             if (!is_object($response) || !isset($response->data) || count($response->data) == 0) {
                 break;
             }
@@ -103,7 +103,8 @@ class plagiarism_copyleaks_syncoriginalityscore extends \core\task\scheduled_tas
                 foreach ($reports as $element) {
                     if ($element->scanId == $currentresult->externalid && $currentresult->statuscode == "success") {
                         $currentresult->similarityscore = isset($element->plagiarismScore) ? $element->plagiarismScore : null;
-                        $currentresult->writingfeedbackissues = isset($element->writingFeedbackIssues) ? $element->writingFeedbackIssues : null;
+                        $currentresult->writingfeedbackissues =
+                            isset($element->writingFeedbackIssues) ? $element->writingFeedbackIssues : null;
                         $currentresult->lastmodified = time();
                         if (!$DB->update_record('plagiarism_copyleaks_files',  $currentresult)) {
                             \plagiarism_copyleaks_logs::add(
@@ -119,7 +120,7 @@ class plagiarism_copyleaks_syncoriginalityscore extends \core\task\scheduled_tas
             }
 
             if (count($succeedids) > 0) {
-                $copyleakscomms->delete_synces_report_ids($succeedids);
+                $copyleakscomms->delete_synced_scans_by_ids($succeedids);
             }
         }
     }
