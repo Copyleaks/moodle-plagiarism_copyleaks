@@ -346,7 +346,6 @@ class plagiarism_copyleaks_submissiondisplay {
                                     array('class' => 'cls-result-item')
                                 ) : '');
 
-
                             $idx = (int)$submittedfile->id;
                             // Item results content.
                             $similaritystring = html_writer::tag(

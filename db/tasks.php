@@ -79,4 +79,13 @@ $tasks = array(
         'dayofweek' => '1',
         'month' => '*'
     ),
+    array(
+        'classname' => 'plagiarism_copyleaks\task\plagiarism_copyleaks_syncoriginalityscore',
+        'blocking' => 0,
+        'minute' => '*/1',
+        'hour' => '*',
+        'day' => '*',
+        'dayofweek' => '*',
+        'month' => '*'
+    ),
 );

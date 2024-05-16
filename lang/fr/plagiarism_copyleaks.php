@@ -67,6 +67,7 @@ $string['cldisablesettingstooltip'] = "Veuillez patienter jusqu'à ce que Copyle
 $string['clscoursesettings'] = 'Paramètres de fuites de copie';
 $string['clsendqueuedsubmissions'] = 'Plugin de plagiat Copyleaks - gérer les fichiers en file d\'attente';
 $string['clsendresubmissionsfiles'] = "Plugin de plagiat Copyleaks - gérer les résultats soumis à nouveau";
+$string['clsyncoriginalityscore'] = "Plugin de plagiat Copyleaks - gérer la synchronisation des scores de plagiat";
 $string['clsendrequestqueue'] = "Plugin de plagiat Copyleaks - gérer les demandes de relance en file d'attente";
 $string['clupserteulausers'] = "Plugin de plagiat Copyleaks - gérer la mise à jour des utilisateurs d'acceptation eula";
 $string['clbackgroundtask'] = "Plugin de plagiat Copyleaks - gérer les tâches en arrière-plan";
