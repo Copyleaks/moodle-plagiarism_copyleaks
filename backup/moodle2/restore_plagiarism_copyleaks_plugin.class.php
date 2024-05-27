@@ -21,15 +21,13 @@ require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_comms.class.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/enums/plagiarism_copyleaks_enums.php');
 
-class restore_plagiarism_copyleaks_plugin extends restore_plagiarism_plugin
-{
+class restore_plagiarism_copyleaks_plugin extends restore_plagiarism_plugin {
 
 
   /**
    * Return the paths of the module data along with the function used for restoring that data.
    */
-  protected function define_module_plugin_structure()
-  {
+  protected function define_module_plugin_structure() {
     $paths = array();
     $paths[] = new restore_path_element('copyleaks_config', $this->get_pathfor('copyleaks_configs/copyleaks_config'));
 
@@ -40,8 +38,7 @@ class restore_plagiarism_copyleaks_plugin extends restore_plagiarism_plugin
    * Restore the Copyleaks configs for this module,
    * This will only be done only if the module is from the same site it was backed up from.
    */
-  public function process_copyleaks_config($data)
-  {
+  public function process_copyleaks_config($data) {
     global $DB;
 
     if ($this->task->is_samesite()) {
@@ -60,8 +57,7 @@ class restore_plagiarism_copyleaks_plugin extends restore_plagiarism_plugin
    * duplicate the course module data on Copyleaks servers.
    * This will only be done only if the module is from the same site it was backed up from.
    */
-  public function after_restore_module()
-  {
+  public function after_restore_module() {
     global $DB;
 
     $plan = $this->task->get_info();
@@ -81,34 +77,8 @@ class restore_plagiarism_copyleaks_plugin extends restore_plagiarism_plugin
         );
 
         if ($plan->type === "course") {
-          if ($DB->record_exists('plagiarism_copyleaks_bgtasks', array('courseid' => $courseid))) {
-            $record = $DB->get_record('plagiarism_copyleaks_bgtasks', array('courseid' => $courseid));
-            $payload = json_decode($record->payload, true);
-
-            $payload[] = $moduledata;
-
-            $record->payload = json_encode($payload);
-            $record->executiontime = strtotime('+ 2 minutes');
-            $DB->update_record('plagiarism_copyleaks_bgtasks', $record);
-          } else {
-            // Record does not exist, create a new one
-            $payload = json_encode([$moduledata]);
-            $newbgtaskrecord = array(
-              'task' => plagiarism_copyleaks_background_tasks::DUPLICATE_COURSES_DATA,
-              'payload' => $payload,
-              'executiontime' => strtotime('+ 2 minutes'),
-              'courseid' => $courseid,
-            );
-            $DB->insert_record('plagiarism_copyleaks_bgtasks', $newbgtaskrecord);
-          }
-
-          $configdata = array(
-            'name' => 'plagiarism_copyleaks_pendingduplication',
-            'cm' => $coursemoduleid,
-            'value' => '1',
-            'config_hash' => $coursemoduleid . "_plagiarism_copyleaks_pendingduplication",
-          );
-          $DB->insert_record('plagiarism_copyleaks_config', $configdata);
+          // Add course module duplication data to 'plagiarism_copyleaks_cm_duplicate'.
+          //...
         } else if ($plan->type === "activity") {
           $cl = new plagiarism_copyleaks_comms();
           $coursemodules[] = $moduledata;
