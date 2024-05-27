@@ -27,23 +27,25 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/background_tasks/plagiarism_copyleaks_synccoursesdata.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/background_tasks/plagiarism_copyleaks_syncusersdata.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/background_tasks/plagiarism_copyleaks_dupliactecoursesdata.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/enums/plagiarism_copyleaks_enums.php');
 
 /**
  * Copyleaks Plagiarism Plugin - Handle Resubmit Files
  */
-class plagiarism_copyleaks_background_task extends \core\task\scheduled_task {
+class plagiarism_copyleaks_background_task extends \core\task\scheduled_task
+{
     /**
      * Get scheduler name, this will be shown to admins on schedulers dashboard.
      */
-    public function get_name() {
+    public function get_name(){
         return get_string('clbackgroundtask', 'plagiarism_copyleaks');
     }
 
     /**
      * Execute the task.
      */
-    public function execute() {
+    public function execute(){
         if (!\plagiarism_copyleaks_comms::test_copyleaks_connection('scheduler_task', true)) {
             return;
         }
@@ -51,23 +53,26 @@ class plagiarism_copyleaks_background_task extends \core\task\scheduled_task {
         if ($DB->count_records('plagiarism_copyleaks_bgtasks') > 0) {
             $this->handle_task_once(\plagiarism_copyleaks_background_tasks::SYNC_COURSES_DATA);
             $this->handle_task_once(\plagiarism_copyleaks_background_tasks::SYNC_USERS_DATA);
+            $this->handle_task_once(\plagiarism_copyleaks_background_tasks::DUPLICATE_COURSES_DATA);
         }
     }
 
     /**
      * @param number $type - determine which task to run.
      */
-    private function handle_task_once($type) {
+    private function handle_task_once($type){
         try {
             global $DB;
             if ($DB->get_record('plagiarism_copyleaks_bgtasks', array('task' => $type))) {
                 $this->run_task_in_background($type);
+            if($type !=\plagiarism_copyleaks_background_tasks::DUPLICATE_COURSES_DATA){
                 if (!($DB->delete_records('plagiarism_copyleaks_bgtasks', ['task' => $type]))) {
                     \plagiarism_copyleaks_logs::add(
                         "Faild to delete row in 'plagiarism_copyleaks_bgtasks'. (task: " . $type,
                         "DELETE_RECORD_FAILED"
                     );
                 }
+            }
             }
         } catch (\Error $e) {
             \plagiarism_copyleaks_logs::add(
@@ -80,13 +85,16 @@ class plagiarism_copyleaks_background_task extends \core\task\scheduled_task {
     /**
      * @param number $type - determine which task to run.
      */
-    private function run_task_in_background($type) {
+    private function run_task_in_background($type){
         switch ($type) {
             case \plagiarism_copyleaks_background_tasks::SYNC_COURSES_DATA:
                 \plagiarism_copyleaks_synccoursesdata::sync_data();
                 break;
             case \plagiarism_copyleaks_background_tasks::SYNC_USERS_DATA:
                 \plagiarism_copyleaks_synusersdata::sync_data();
+                break;
+            case \plagiarism_copyleaks_background_tasks::DUPLICATE_COURSES_DATA:
+                \plagiarism_copyleaks_duplicatecoursesdata::duplicate_data();
                 break;
             default:
                 break;

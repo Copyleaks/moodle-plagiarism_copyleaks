@@ -466,7 +466,7 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2024040200, 'plagiarism', 'copyleaks');
     }
 
-    if ($oldversion < 2024041700) {
+    if ($oldversion < 2024041710) {
         $table = new xmldb_table('plagiarism_copyleaks_files');
         $retrycntfield = new xmldb_field('retrycnt', XMLDB_TYPE_INTEGER, '2', null, null, null, 0, 'ischeatingdetected');
 
@@ -480,8 +480,38 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
             }
         }
 
+        // bgtasks table
+        $table = new xmldb_table('plagiarism_copyleaks_bgtasks');
+        $payloadfield = new xmldb_field('payload', XMLDB_TYPE_TEXT, null, null, null, null, null);
+        $executiontimefield = new xmldb_field('executiontime', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        $courseidfield = new xmldb_field('courseid', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        $taskfieldidx = new xmldb_index('task', XMLDB_INDEX_UNIQUE, array('task'));
+
+        if ($dbman->table_exists($table)) {
+         
+            if (!$dbman->field_exists($table, $payloadfield)) {
+                $dbman->add_field($table, $payloadfield);
+            }
+
+            if (!$dbman->field_exists($table, $executiontimefield)) {
+                $dbman->add_field($table, $executiontimefield);
+            }
+
+            if (!$dbman->field_exists($table, $courseidfield)) {
+                $dbman->add_field($table, $courseidfield);
+            } 
+
+            if ($dbman->index_exists($table, $taskfieldidx)) {
+                $dbman->drop_index($table, $taskfieldidx);
+            }
+
+            $taskfieldidx = new xmldb_index('task', XMLDB_INDEX_NOTUNIQUE, array('task'));
+            $dbman->add_index($table, $taskfieldidx);
+           
+        }
+
         // Copyleaks savepoint reached.
-        upgrade_plugin_savepoint(true, 2024041700, 'plagiarism', 'copyleaks');
+        upgrade_plugin_savepoint(true, 2024041710, 'plagiarism', 'copyleaks');
     }
 
     return true;

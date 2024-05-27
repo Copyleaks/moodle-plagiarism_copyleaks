@@ -106,13 +106,16 @@
     <TABLE NAME="plagiarism_copyleaks_bgtasks" COMMENT="Copyleaks background tasks">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="task" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="false" SEQUENCE="false"/>        
+        <FIELD NAME="task" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="false" SEQUENCE="false"/>  
+        <FIELD NAME="payload" TYPE="text" NOTNULL="false" SEQUENCE="false"/>  
+        <FIELD NAME="executiontime" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id" />
       </KEYS>
       <INDEXES>
-        <INDEX NAME="task" UNIQUE="true" FIELDS="task"/>
+        <INDEX NAME="copyleaks_task" UNIQUE="false" FIELDS="task"/>
       </INDEXES>
     </TABLE>
   </TABLES>
