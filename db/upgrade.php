@@ -466,7 +466,7 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2024040200, 'plagiarism', 'copyleaks');
     }
 
-    if ($oldversion < 2024041710) {
+    if ($oldversion < 2024041700) {
         $table = new xmldb_table('plagiarism_copyleaks_files');
         $retrycntfield = new xmldb_field('retrycnt', XMLDB_TYPE_INTEGER, '2', null, null, null, 0, 'ischeatingdetected');
 
@@ -480,38 +480,32 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
             }
         }
 
-        // bgtasks table
-        $table = new xmldb_table('plagiarism_copyleaks_bgtasks');
-        $payloadfield = new xmldb_field('payload', XMLDB_TYPE_TEXT, null, null, null, null, null);
-        $executiontimefield = new xmldb_field('executiontime', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
-        $courseidfield = new xmldb_field('courseid', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
-        $taskfieldidx = new xmldb_index('task', XMLDB_INDEX_UNIQUE, array('task'));
+        // Copyleaks savepoint reached.
+        upgrade_plugin_savepoint(true, 2024041700, 'plagiarism', 'copyleaks');
+    }
 
-        if ($dbman->table_exists($table)) {
-         
-            if (!$dbman->field_exists($table, $payloadfield)) {
-                $dbman->add_field($table, $payloadfield);
-            }
+    if ($oldversion < 2024041711) {
+        $table = new xmldb_table('plagiarism_copyleaks_cm_copy');
 
-            if (!$dbman->field_exists($table, $executiontimefield)) {
-                $dbman->add_field($table, $executiontimefield);
-            }
+        // Adding fields to table plagiarism_copyleaks_cm_copy.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('course_id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('original_cm_id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('new_cm_id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('status', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, null);
 
-            if (!$dbman->field_exists($table, $courseidfield)) {
-                $dbman->add_field($table, $courseidfield);
-            } 
 
-            if ($dbman->index_exists($table, $taskfieldidx)) {
-                $dbman->drop_index($table, $taskfieldidx);
-            }
+        // Adding keys and indexes to table plagiarism_copyleaks_cm_copy.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        $table->add_index('new_cm_id', XMLDB_INDEX_NOTUNIQUE, array('new_cm_id'));
+        $table->add_index('status', XMLDB_INDEX_NOTUNIQUE, array('status'));
 
-            $taskfieldidx = new xmldb_index('task', XMLDB_INDEX_NOTUNIQUE, array('task'));
-            $dbman->add_index($table, $taskfieldidx);
-           
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
         }
 
         // Copyleaks savepoint reached.
-        upgrade_plugin_savepoint(true, 2024041710, 'plagiarism', 'copyleaks');
+        upgrade_plugin_savepoint(true, 2024041711, 'plagiarism', 'copyleaks');
     }
 
     return true;

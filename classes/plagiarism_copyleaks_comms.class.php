@@ -408,25 +408,22 @@ class plagiarism_copyleaks_comms {
         }
     }
 
-     /**
-     * duplicate restored course module data at Copyleaks server.
+    /**
+     * duplicate course modules data at Copyleaks server.
      * @param array $data
      */
-    public function duplicate_course_module($data) {
-        $endpoint = "/api/moodle/plugin/$this->key/duplicate-module";
-        $verb = 'POST';
-        try {
-            plagiarism_copyleaks_http_client::execute(
-                $verb,
-                $this->copyleaks_api_url() . $endpoint,
-                true,
-                json_encode($data)
-            );
-        } catch (\Exception $e) {
-            // TODO: check if this is the correct error message.
-            $errormsg = get_string('cltaskfailedconnecting', 'plagiarism_copyleaks', $e->getMessage());
-            plagiarism_copyleaks_logs::add($errormsg, 'API_ERROR');
-        }
+    public function duplicate_course_modules($data){
+        // $endpoint = "/api/moodle/plugin/$this->key/duplicate-modules";
+        // $verb = 'POST';
+
+        // $result =  plagiarism_copyleaks_http_client::execute(
+        //     $verb,
+        //     $this->copyleaks_api_url() . $endpoint,
+        //     true,
+        //     json_encode($data)
+        // );
+
+        // return $result;
     }
 
     /**
@@ -464,7 +461,6 @@ class plagiarism_copyleaks_comms {
             plagiarism_copyleaks_logs::add($errormsg, 'API_ERROR');
         }
     }
-
 
     /**
      * Update course module temp id at Copyleaks server.
