@@ -73,6 +73,15 @@ $tasks = array(
     array(
         'classname' => 'plagiarism_copyleaks\task\plagiarism_copyleaks_background_task',
         'blocking' => 0,
+        'minute' => '0',
+        'hour' => '12',
+        'day' => '*',
+        'dayofweek' => '1',
+        'month' => '*'
+    ),
+    array(
+        'classname' => 'plagiarism_copyleaks\task\plagiarism_copyleaks_cm_duplicate',
+        'blocking' => 0,
         'minute' => '*/1',
         'hour' => '*',
         'day' => '*',

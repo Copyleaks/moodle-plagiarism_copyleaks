@@ -21,6 +21,7 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
+
 /**
  * This class is used as an enum in order to know what status the submissions are.
  */
@@ -63,9 +64,8 @@ class plagiarism_copyleaks_background_tasks {
     const SYNC_USERS_DATA = 1;
     /** @var int an indicator to run the sync_courses_data background task */
     const SYNC_COURSES_DATA = 2;
-    /** @var int an indicator to run the duplicate_courses_data background task */
-    const DUPLICATE_COURSES_DATA = 3;
 }
+
 /**
  * This class is used as an enum in order to know time left from a date.
  */
@@ -80,4 +80,16 @@ class plagiarism_copyleaks_times {
     const DAYS = 3;
     /** @var int respresents a month */
     const MONTHS = 4;
+}
+
+/**
+ * This class is used as an enum in order to know the status of course module duplication 
+ */
+class plagiarism_copyleaks_cm_duplication_status {
+    /** @var int course module queued and awaiting duplication. */
+    const QUEUED = 1;
+    /** @var int duplication process is currently in progress */
+    const PENDING = 2;
+    /** @var int duplication process has been successfully completed. */
+    const COMPLETE = 3;
 }

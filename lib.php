@@ -142,7 +142,7 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin
 
             $cmid = optional_param('update', null, PARAM_INT);
             // if the module is peding duplication 
-            if ($DB->record_exists('plagiarism_copyleaks_config', array('cm' => $cmid,'name'=>'plagiarism_copyleaks_pendingduplication'))) {
+            if ($DB->record_exists('plagiarism_copyleaks_cm_copy', array('new_cm_id' => $cmid))) {
                 //we need a lang string for pedning duplication.
                 $mform->addElement('html', '<div>' . 'Pending Duplication!' . '</div>');
 

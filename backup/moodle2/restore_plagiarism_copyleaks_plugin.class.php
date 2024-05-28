@@ -14,16 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+
 defined('MOODLE_INTERNAL') || die();
-
-// Get helper methods.
-require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_moduleconfig.class.php');
-require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_comms.class.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/enums/plagiarism_copyleaks_enums.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_comms.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_moduleconfig.class.php');
 
-class restore_plagiarism_copyleaks_plugin extends restore_plagiarism_plugin
-{
 
+class restore_plagiarism_copyleaks_plugin extends restore_plagiarism_plugin{
 
   /**
    * Return the paths of the module data along with the function used for restoring that data.
@@ -50,8 +48,8 @@ class restore_plagiarism_copyleaks_plugin extends restore_plagiarism_plugin
       $data->cm = $this->task->get_moduleid();
       $data->value = $data->value;
       $data->config_hash = $data->cm . "_" . $data->name;
-      //plagiarism_copyleaks_allowstudentaccess
-      $DB->insert_record('plagiarism_copyleaks_config', $data);
+
+      $DB->insert_record('plagiarism_copyleaks_config', $data); //need to handle insertion errors 
     }
   }
 
@@ -64,55 +62,32 @@ class restore_plagiarism_copyleaks_plugin extends restore_plagiarism_plugin
   {
     global $DB;
 
-    $plan = $this->task->get_info();
     if ($this->task->is_samesite()) {
-      $coursemoduleid = $this->task->get_moduleid();
-      if (plagiarism_copyleaks_moduleconfig::is_module_enabled($this->task->get_modulename(), $coursemoduleid)) {
-        $oldcoursemoduleid = $this->task->get_old_moduleid();
+      $newcmid = $this->task->get_moduleid();
+      if (\plagiarism_copyleaks_moduleconfig::is_module_enabled($this->task->get_modulename(), $newcmid)) {
+        $plan = $this->task->get_info();
         $courseid = $this->task->get_courseid();
-        // cached course modinfo (use it or use  get_coursemodule_from_id "uses 2 db querys")
-        $cm = get_fast_modinfo($courseid)->get_cm($oldcoursemoduleid);
-
-        $moduledata = array(
-          'coursemoduleid' => $coursemoduleid,
-          'oldcoursemoduleId' => $oldcoursemoduleid,
-          'courseid' => $courseid,
-          'createddate' => $cm->added,
-        );
+        $originalcmid = $this->task->get_old_moduleid();
 
         if ($plan->type === "course") {
-          if ($DB->record_exists('plagiarism_copyleaks_bgtasks', array('courseid' => $courseid))) {
-            $record = $DB->get_record('plagiarism_copyleaks_bgtasks', array('courseid' => $courseid));
-            $payload = json_decode($record->payload, true);
-
-            $payload[] = $moduledata;
-
-            $record->payload = json_encode($payload);
-            $record->executiontime = strtotime('+ 2 minutes');
-            $DB->update_record('plagiarism_copyleaks_bgtasks', $record);
-          } else {
-            // Record does not exist, create a new one
-            $payload = json_encode([$moduledata]);
-            $newbgtaskrecord = array(
-              'task' => plagiarism_copyleaks_background_tasks::DUPLICATE_COURSES_DATA,
-              'payload' => $payload,
-              'executiontime' => strtotime('+ 2 minutes'),
-              'courseid' => $courseid,
-            );
-            $DB->insert_record('plagiarism_copyleaks_bgtasks', $newbgtaskrecord);
-          }
-
-          $configdata = array(
-            'name' => 'plagiarism_copyleaks_pendingduplication',
-            'cm' => $coursemoduleid,
-            'value' => '1',
-            'config_hash' => $coursemoduleid . "_plagiarism_copyleaks_pendingduplication",
+          $moduledata = array(
+            'course_id' => $courseid,
+            'original_cm_id' => $originalcmid,
+            'new_cm_id' => $newcmid,
+            'status' => plagiarism_copyleaks_cm_duplication_status::QUEUED,
           );
-          $DB->insert_record('plagiarism_copyleaks_config', $configdata);
+          $DB->insert_record('plagiarism_copyleaks_cm_copy', $moduledata); //need to handle insertion errors
         } else if ($plan->type === "activity") {
           $cl = new plagiarism_copyleaks_comms();
-          $coursemodules[] = $moduledata;
-          $cl->duplicate_course_module(array('coursemodules' => $coursemodules));
+          $cm = get_coursemodule_from_id('', $newcmid);
+
+          $coursemodules[] = array(
+            'coursemoduleid' => $newcmid,
+            'oldcoursemoduleid' => $originalcmid,
+            'courseid' => $courseid,
+            'createddate' => $cm->added,
+          );
+          $cl->duplicate_course_modules(array('coursemodules' => $coursemodules));
         }
       }
     }
