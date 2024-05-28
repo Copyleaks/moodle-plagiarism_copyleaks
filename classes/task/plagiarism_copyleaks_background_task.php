@@ -27,6 +27,7 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/background_tasks/plagiarism_copyleaks_synccoursesdata.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/background_tasks/plagiarism_copyleaks_syncusersdata.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/background_tasks/plagiarism_copyleaks_dupliactecoursesdata.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/enums/plagiarism_copyleaks_enums.php');
 
 /**
@@ -52,6 +53,7 @@ class plagiarism_copyleaks_background_task extends \core\task\scheduled_task
         if ($DB->count_records('plagiarism_copyleaks_bgtasks') > 0) {
             $this->handle_task_once(\plagiarism_copyleaks_background_tasks::SYNC_COURSES_DATA);
             $this->handle_task_once(\plagiarism_copyleaks_background_tasks::SYNC_USERS_DATA);
+            $this->handle_task_once(\plagiarism_copyleaks_background_tasks::DUPLICATE_COURSES_DATA);
         }
     }
 
@@ -63,12 +65,14 @@ class plagiarism_copyleaks_background_task extends \core\task\scheduled_task
             global $DB;
             if ($DB->get_record('plagiarism_copyleaks_bgtasks', array('task' => $type))) {
                 $this->run_task_in_background($type);
+            if($type !=\plagiarism_copyleaks_background_tasks::DUPLICATE_COURSES_DATA){
                 if (!($DB->delete_records('plagiarism_copyleaks_bgtasks', ['task' => $type]))) {
                     \plagiarism_copyleaks_logs::add(
                         "Faild to delete row in 'plagiarism_copyleaks_bgtasks'. (task: " . $type,
                         "DELETE_RECORD_FAILED"
                     );
                 }
+            }
             }
         } catch (\Error $e) {
             \plagiarism_copyleaks_logs::add(
@@ -88,6 +92,9 @@ class plagiarism_copyleaks_background_task extends \core\task\scheduled_task
                 break;
             case \plagiarism_copyleaks_background_tasks::SYNC_USERS_DATA:
                 \plagiarism_copyleaks_synusersdata::sync_data();
+                break;
+            case \plagiarism_copyleaks_background_tasks::DUPLICATE_COURSES_DATA:
+                \plagiarism_copyleaks_duplicatecoursesdata::duplicate_data();
                 break;
             default:
                 break;
