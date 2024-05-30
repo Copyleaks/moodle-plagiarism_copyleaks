@@ -411,19 +411,18 @@ class plagiarism_copyleaks_comms {
     /**
      * duplicate course modules data at Copyleaks server.
      * @param array $data
+     * @return mixed
      */
-    public function duplicate_course_modules($data){
-        // $endpoint = "/api/moodle/plugin/$this->key/duplicate-modules";
-        // $verb = 'POST';
-
-        // $result =  plagiarism_copyleaks_http_client::execute(
-        //     $verb,
-        //     $this->copyleaks_api_url() . $endpoint,
-        //     true,
-        //     json_encode($data)
-        // );
-
-        // return $result;
+    public function duplicate_course_modules($data) {
+        $endpoint = "/api/moodle/plugin/$this->key/duplicate-modules";
+        $verb = 'POST';
+        $response = plagiarism_copyleaks_http_client::execute(
+            $verb,
+            $this->copyleaks_api_url() . $endpoint,
+            true,
+            json_encode($data)
+        );
+        return $response;
     }
 
     /**

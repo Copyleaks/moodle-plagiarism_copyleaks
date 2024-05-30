@@ -123,6 +123,7 @@
         <FIELD NAME="original_cm_id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/> 
         <FIELD NAME="new_cm_id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="status" TYPE="int" LENGTH="1" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="errormsg" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id" />

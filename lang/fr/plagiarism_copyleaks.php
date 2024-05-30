@@ -77,6 +77,7 @@ $string['clstudentdagreedtoeula'] = '<span>Vous avez déjà accepté le service 
 $string['cltaskfailedconnecting'] = 'La connexion à Copyleaks ne peut pas être établie, erreur : {$a}';
 $string['clupdateerror'] = 'Erreur lors de la tentative de mise à jour des enregistrements dans la base de données';
 $string['clupdatereportscores'] = 'Plugin de plagiat Copyleaks - gérer la mise à jour du score de similarité de la vérification du plagiat';
+$string['clduplicatecoursemodules'] = "Plugin de plagiat Copyleaks - gérer la duplication des modules de cours";
 $string['copyleaks'] = 'Copyleaks';
 $string['pluginname'] = 'Plugin de plagiat Copyleaks';
 

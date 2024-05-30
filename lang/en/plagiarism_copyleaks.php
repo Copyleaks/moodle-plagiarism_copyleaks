@@ -54,6 +54,7 @@ $string['clsendrequestqueue'] = "Copyleaks plagiarism plugin - handle retry queu
 $string['clupserteulausers'] = "Copyleaks plagiarism plugin - handle upsert eula acceptance users";
 $string['clbackgroundtask'] = "Copyleaks plagiarism plugin - handle tasks in background";
 $string['clupdatereportscores'] = "Copyleaks plagiarism plugin - handle plagiairsm check similarity score update";
+$string['clduplicatecoursemodules'] = "Copyleaks plagiarism plugin - Handle Course Modules duplication";
 $string['cldraftsubmit'] = "Submit files only when students click the submit button";
 $string['cldraftsubmit_help'] = "This option is only available if 'Require students to click the submit button' is Yes";
 $string['clreportgenspeed'] = 'When to generate report?';

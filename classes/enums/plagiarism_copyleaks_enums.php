@@ -88,8 +88,6 @@ class plagiarism_copyleaks_times {
 class plagiarism_copyleaks_cm_duplication_status {
     /** @var int course module queued and awaiting duplication. */
     const QUEUED = 1;
-    /** @var int duplication process is currently in progress */
-    const PENDING = 2;
-    /** @var int duplication process has been successfully completed. */
-    const COMPLETE = 3;
+    /** @var int duplication process failed */
+    const ERROR = 2;
 }

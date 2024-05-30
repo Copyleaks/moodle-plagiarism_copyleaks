@@ -13,6 +13,13 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+/**
+ * Copyleaks Plagiarism Plugin - Handle backup operations
+ * @package   plagiarism_copyleaks
+ * @copyright 2021 Copyleaks
+ * @author    Shade Amasha <shadea@copyleaks.com>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 
 defined('MOODLE_INTERNAL') || die();
 

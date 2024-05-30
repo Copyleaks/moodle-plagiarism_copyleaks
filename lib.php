@@ -31,6 +31,7 @@ require_once($CFG->dirroot . '/plagiarism/lib.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_pluginconfig.class.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_moduleconfig.class.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/constants/plagiarism_copyleaks.constants.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/enums/plagiarism_copyleaks_enums.php');
 
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_assignmodule.class.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_utils.class.php');
@@ -44,15 +45,13 @@ require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks
 /**
  * Contains Plagiarism plugin specific functions called by Modules.
  */
-class plagiarism_plugin_copyleaks extends plagiarism_plugin
-{
+class plagiarism_plugin_copyleaks extends plagiarism_plugin {
     /**
      * hook to allow plagiarism specific information to be displayed beside a submission
      * @param array $linkarray contains all relevant information for the plugin to generate a link
      * @return string displayed output
      */
-    public function get_links($linkarray)
-    {
+    public function get_links($linkarray) {
         return plagiarism_copyleaks_submissiondisplay::output($linkarray);
     }
 
@@ -60,48 +59,62 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin
      * hook to save plagiarism specific settings on a module settings page
      * @param stdClass $data form data
      */
-    public function save_form_elements($data)
-    {
+    public function save_form_elements($data) {
+        global $DB;
         // Check if plugin is configured and enabled.
         if (empty($data->modulename) || !plagiarism_copyleaks_pluginconfig::is_plugin_configured('mod_' . $data->modulename)) {
             return;
         }
 
-        // Save settings to Copyleaks.
-        $cl = new plagiarism_copyleaks_comms();
-        $course = get_course($data->course);
-        $duedate = plagiarism_copyleaks_utils::get_course_module_duedate($data->coursemodule);
-        $coursestartdate = plagiarism_copyleaks_utils::get_course_start_date($data->course);
-        $updatedata = array(
-            'tempCourseModuleId' => isset($data->plagiarism_copyleaks_tempcmid) ? $data->plagiarism_copyleaks_tempcmid : null,
-            'courseModuleId' => $data->coursemodule,
-            'name' => $data->name,
-            'moduleName' => $data->modulename,
-            'courseId' => $data->course,
-            'courseName' => $course->fullname,
-            'dueDate' => $duedate,
-            'courseStartDate' => $coursestartdate
+        // If the record exists with status:ERROR, delete it. 
+        if ($DB->record_exists(
+            'plagiarism_copyleaks_cm_copy',
+            array('new_cm_id' => $data->coursemodule, 'status' => plagiarism_copyleaks_cm_duplication_status::ERROR)
+        )) {
+            $DB->delete_records('plagiarism_copyleaks_cm_copy', array('new_cm_id' => $data->coursemodule));
+        }
 
-        );
-        $cl->upsert_course_module($updatedata);
+        // Save settings to Copyleaks (only if the course module is not pending duplication).
+        if (!$DB->record_exists(
+            'plagiarism_copyleaks_cm_copy',
+            array('new_cm_id' => $data->coursemodule, 'status' => plagiarism_copyleaks_cm_duplication_status::QUEUED)
+        )) {
 
-        try {
-            // Get copyleaks api course module settings.
             $cl = new plagiarism_copyleaks_comms();
+            $course = get_course($data->course);
+            $duedate = plagiarism_copyleaks_utils::get_course_module_duedate($data->coursemodule);
+            $coursestartdate = plagiarism_copyleaks_utils::get_course_start_date($data->course);
+            $updatedata = array(
+                'tempCourseModuleId' => isset($data->plagiarism_copyleaks_tempcmid) ? $data->plagiarism_copyleaks_tempcmid : null,
+                'courseModuleId' => $data->coursemodule,
+                'name' => $data->name,
+                'moduleName' => $data->modulename,
+                'courseId' => $data->course,
+                'courseName' => $course->fullname,
+                'dueDate' => $duedate,
+                'courseStartDate' => $coursestartdate
 
-            plagiarism_copyleaks_moduleconfig::set_module_config(
-                $data->coursemodule,
-                $data->plagiarism_copyleaks_enable,
-                isset($data->plagiarism_copyleaks_draftsubmit) ? $data->plagiarism_copyleaks_draftsubmit : 0,
-                isset($data->plagiarism_copyleaks_reportgen) ? $data->plagiarism_copyleaks_reportgen : 0,
-                $data->plagiarism_copyleaks_allowstudentaccess
             );
-        } catch (plagiarism_copyleaks_exception $ex) {
-            $errormessage = get_string('clfailtosavedata', 'plagiarism_copyleaks');
-            plagiarism_copyleaks_logs::add($errormessage . ': ' . $ex->getMessage(), 'API_ERROR');
-            throw new moodle_exception($errormessage);
-        } catch (plagiarism_copyleaks_auth_exception $ex) {
-            throw new moodle_exception(get_string('clinvalidkeyorsecret', 'plagiarism_copyleaks'));
+            $cl->upsert_course_module($updatedata);
+
+            try {
+                // Get copyleaks api course module settings.
+                $cl = new plagiarism_copyleaks_comms();
+
+                plagiarism_copyleaks_moduleconfig::set_module_config(
+                    $data->coursemodule,
+                    $data->plagiarism_copyleaks_enable,
+                    isset($data->plagiarism_copyleaks_draftsubmit) ? $data->plagiarism_copyleaks_draftsubmit : 0,
+                    isset($data->plagiarism_copyleaks_reportgen) ? $data->plagiarism_copyleaks_reportgen : 0,
+                    $data->plagiarism_copyleaks_allowstudentaccess
+                );
+            } catch (plagiarism_copyleaks_exception $ex) {
+                $errormessage = get_string('clfailtosavedata', 'plagiarism_copyleaks');
+                plagiarism_copyleaks_logs::add($errormessage . ': ' . $ex->getMessage(), 'API_ERROR');
+                throw new moodle_exception($errormessage);
+            } catch (plagiarism_copyleaks_auth_exception $ex) {
+                throw new moodle_exception(get_string('clinvalidkeyorsecret', 'plagiarism_copyleaks'));
+            }
         }
     }
 
@@ -115,9 +128,9 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin
      * @param stdClass $context
      * @param string $modulename
      */
-    public function get_form_elements_module($mform, $context, $modulename = "")
-    {
-        global $DB, $CFG;
+    public function get_form_elements_module($mform, $context, $modulename = "") {
+        global $DB, $CFG, $OUTPUT;
+
         // This is a bit of a hack and untidy way to ensure the form elements aren't displayed,
         // twice. This won't be needed once this method goes away.
         // TODO: Remove once this method goes away.
@@ -141,12 +154,34 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin
             );
 
             $cmid = optional_param('update', null, PARAM_INT);
-            // if the module is peding duplication 
-            if ($DB->record_exists('plagiarism_copyleaks_cm_copy', array('new_cm_id' => $cmid))) {
-                //we need a lang string for pedning duplication.
-                $mform->addElement('html', '<div>' . 'Pending Duplication!' . '</div>');
+            $cmduplicationrecord = $DB->get_record('plagiarism_copyleaks_cm_copy', array('new_cm_id' => $cmid));
+            if ($cmduplicationrecord && $cmduplicationrecord->status == plagiarism_copyleaks_cm_duplication_status::QUEUED) {
+                $pendingduplication = html_writer::tag(
+                    'div',
+                    $OUTPUT->pix_icon(
+                        'copyleaks-spinner',
+                        null,
+                        'plagiarism_copyleaks',
+                        array('class' => 'cls-icon-no-margin')
+                    ) . '&nbsp;Pending Duplication',
+                    array('class' => 'copyleaks-text-gray', 'style' => 'display: flex; align-items: center;')
+                );
+                $mform->addElement('html', $pendingduplication . '<br>');
 
             } else {
+                if ($cmduplicationrecord && $cmduplicationrecord->status == plagiarism_copyleaks_cm_duplication_status::ERROR) {
+                    $duplicationerror = html_writer::tag(
+                        'div',
+                        $OUTPUT->pix_icon(
+                            'copyleaks-error',
+                            null,
+                            'plagiarism_copyleaks',
+                            array('class' => 'cls-icon-no-margin')
+                        ) . '&nbsp;Duplication Failed: ' . $cmduplicationrecord->errormsg,
+                        array('class' => 'copyleaks-text-warn', 'style' => 'display: flex; align-items: center;')
+                    );
+                    $mform->addElement('html',  $duplicationerror);
+                }
                 // Database settings.
                 $mform->addElement(
                     'advcheckbox',
@@ -260,8 +295,7 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin
      * @param int $cmid - course module id
      * @return string
      */
-    public function print_disclosure($cmid)
-    {
+    public function print_disclosure($cmid) {
         global $DB, $USER;
 
         // Get course module.
@@ -330,8 +364,7 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin
      * @param object $course - full Course object
      * @param object $cm - full cm object
      */
-    public function update_status($course, $cm)
-    {
+    public function update_status($course, $cm) {
         // Called at top of submissions/grading pages - allows printing of admin style links or updating status.
     }
 }
@@ -346,8 +379,7 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin
 /**
  * @var mixed $course
  */
-function plagiarism_copyleaks_coursemodule_standard_elements($formwrapper, $mform)
-{
+function plagiarism_copyleaks_coursemodule_standard_elements($formwrapper, $mform) {
     $copyleaksplugin = new plagiarism_plugin_copyleaks();
     $course = $formwrapper->get_course();
     $context = context_course::instance($course->id);
@@ -366,8 +398,7 @@ function plagiarism_copyleaks_coursemodule_standard_elements($formwrapper, $mfor
  * @param stdClass $data
  * @param stdClass $course
  */
-function plagiarism_copyleaks_coursemodule_edit_post_actions($data, $course)
-{
+function plagiarism_copyleaks_coursemodule_edit_post_actions($data, $course) {
     $copyleaksplugin = new plagiarism_plugin_copyleaks();
 
     $copyleaksplugin->save_form_elements($data);

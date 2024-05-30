@@ -13,19 +13,26 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+/**
+ * Copyleaks Plagiarism Plugin - Handle restore operations
+ * @package   plagiarism_copyleaks
+ * @copyright 2021 Copyleaks
+ * @author    Shade Amasha <shadea@copyleaks.com>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 
 defined('MOODLE_INTERNAL') || die();
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_logs.class.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/enums/plagiarism_copyleaks_enums.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_comms.class.php');
 
 
-class restore_plagiarism_copyleaks_plugin extends restore_plagiarism_plugin{
+class restore_plagiarism_copyleaks_plugin extends restore_plagiarism_plugin {
 
   /**
    * Return the paths of the module data along with the function used for restoring that data.
    */
-  protected function define_module_plugin_structure()
-  {
+  protected function define_module_plugin_structure() {
     $paths = array();
     $paths[] = new restore_path_element('copyleaks_config', $this->get_pathfor('copyleaks_configs/copyleaks_config'));
 
@@ -36,8 +43,7 @@ class restore_plagiarism_copyleaks_plugin extends restore_plagiarism_plugin{
    * Restore the Copyleaks configs for this module,
    * This will only be done only if the module is from the same site it was backed up from.
    */
-  public function process_copyleaks_config($data)
-  {
+  public function process_copyleaks_config($data) {
     global $DB;
 
     if ($this->task->is_samesite()) {
@@ -47,7 +53,14 @@ class restore_plagiarism_copyleaks_plugin extends restore_plagiarism_plugin{
       $data->value = $data->value;
       $data->config_hash = $data->cm . "_" . $data->name;
 
-      $DB->insert_record('plagiarism_copyleaks_config', $data); //need to handle insertion errors 
+      if (!$DB->insert_record('plagiarism_copyleaks_config', $data)) {
+        \plagiarism_copyleaks_logs::add(
+          "failed to insert new database record for : " .
+            "plagiarism_copyleaks_config, Cannot create new config record for cmid: $data->cm " .
+            "config name: $data->name",
+          "INSERT_RECORD_FAILED"
+        );
+      } 
     }
   }
 
@@ -56,37 +69,33 @@ class restore_plagiarism_copyleaks_plugin extends restore_plagiarism_plugin{
    * duplicate the course module data on Copyleaks servers.
    * This will only be done only if the module is from the same site it was backed up from.
    */
-  public function after_restore_module()
-  {
+  public function after_restore_module() {
     global $DB;
 
-    $newcmid = $this->task->get_moduleid();
-    if (\plagiarism_copyleaks_moduleconfig::is_module_enabled($this->task->get_modulename(), $newcmid)) {
+    if ($this->task->is_samesite()) {
+      $newcmid = $this->task->get_moduleid();
+      if (\plagiarism_copyleaks_moduleconfig::is_module_enabled($this->task->get_modulename(), $newcmid)) {
         $plan = $this->task->get_info();
         $courseid = $this->task->get_courseid();
         $originalcmid = $this->task->get_old_moduleid();
-      
-        if ($plan->type === "course") {
-          $courseid = $this->task->get_courseid();
+
+        if ($plan->type === "course" || $plan->type === "activity") {
           $moduledata = array(
             'course_id' => $courseid,
             'original_cm_id' => $originalcmid,
             'new_cm_id' => $newcmid,
             'status' => plagiarism_copyleaks_cm_duplication_status::QUEUED,
           );
-          $DB->insert_record('plagiarism_copyleaks_cm_copy', $moduledata); //need to handle insertion errors
-        } else if ($plan->type === "activity") {
-          $cm = get_coursemodule_from_id('', $newcmid);
-          $cl = new plagiarism_copyleaks_comms();
-          $coursemodules[] = array(
-            'coursemoduleid' => $newcmid,
-            'oldcoursemoduleid' => $originalcmid,
-            'courseid' => $courseid,
-            'createddate' => $cm->added,
-          );
-          $cl->duplicate_course_modules(array('coursemodules' => $coursemodules));
+
+          if (!$DB->insert_record('plagiarism_copyleaks_cm_copy', $moduledata)) {
+            \plagiarism_copyleaks_logs::add(
+              "failed to insert new database record for : " .
+              "plagiarism_copyleaks_cm_copy, Cannot create new cm duplication record for cmid $newcmid",
+              "INSERT_RECORD_FAILED"
+            );
+          }
         }
       }
     }
-  
+  }
 }
