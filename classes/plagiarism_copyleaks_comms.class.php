@@ -414,15 +414,15 @@ class plagiarism_copyleaks_comms {
      * @return mixed
      */
     public function duplicate_course_modules($data) {
-        $endpoint = "/api/moodle/plugin/$this->key/duplicate-modules";
-        $verb = 'POST';
-        $response = plagiarism_copyleaks_http_client::execute(
-            $verb,
-            $this->copyleaks_api_url() . $endpoint,
-            true,
-            json_encode($data)
-        );
-        return $response;
+        if (isset($this->key) && isset($this->secret)) {
+            $response = plagiarism_copyleaks_http_client::execute(
+                'POST',
+                $this->copyleaks_api_url() . "/api/moodle/plugin/$this->key/duplicate-modules",
+                true,
+                json_encode($data)
+            );
+            return $response;
+        }
     }
 
     /**

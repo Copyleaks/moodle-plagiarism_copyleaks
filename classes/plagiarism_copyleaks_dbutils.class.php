@@ -256,4 +256,47 @@ class plagiarism_copyleaks_dbutils {
         }
         return $detectiondata;
     }
+
+    /**
+     * Check if the course module is duplicated and error message.
+     * @param int $cmid
+     * @return bool
+     */
+    public static function get_cm_duplicated_error_message($cmid) {
+        $cmduplicate = self::get_cm_duplicate($cmid);
+        if ($cmduplicate && $cmduplicate->status == plagiarism_copyleaks_cm_duplication_status::ERROR) {
+            return $cmduplicate->errormsg;
+        }
+        return null;
+    }
+
+    /**
+     * Check if the course module is duplicated and error.
+     * @param int $cmid
+     * @return bool
+     */
+    public static function is_cm_duplicated_error($cmid) {
+        $cmduplicate = self::get_cm_duplicate($cmid);
+        return $cmduplicate && $cmduplicate->status == plagiarism_copyleaks_cm_duplication_status::ERROR;
+    }
+
+    /**
+     * Check if the course module is duplicated and queued.
+     * @param int $cmid
+     * @return bool
+     */
+    public static function is_cm_duplicated_queued($cmid) {
+        $cmduplicate = self::get_cm_duplicate($cmid);
+        return $cmduplicate && $cmduplicate->status == plagiarism_copyleaks_cm_duplication_status::QUEUED;
+    }
+
+    /**
+     * Get the course module id of the duplicated course module.
+     * @param int $cmid
+     * @return object
+     */
+    private static function get_cm_duplicate($cmid) {
+        global $DB;
+        return $DB->get_record('plagiarism_copyleaks_cm_copy', array('new_cm_id' => $cmid));
+    }
 }

@@ -23,11 +23,14 @@
 
 namespace plagiarism_copyleaks\task;
 
+use DateTime;
+
 defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/plagiarism/copyleaks/constants/plagiarism_copyleaks.constants.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/enums/plagiarism_copyleaks_enums.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_logs.class.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_comms.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_moduleconfig.class.php');
 
 /**
  * Copyleaks Plagiarism Plugin - Handle Course Modules duplication
@@ -83,21 +86,26 @@ class plagiarism_copyleaks_cm_duplicate extends \core\task\scheduled_task {
             // Add course modules to the request.
             $coursemodules = array();
             foreach ($cmstocopy as $cmduplicationdata) {
+                if (\plagiarism_copyleaks_moduleconfig::is_course_module_request_queued($cmduplicationdata->original_cm_id)) {
+                    continue;
+                }
 
+                // We won't send chained duplicated cm.
                 if ($chainedduplicationchecker[$cmduplicationdata->original_cm_id]) {
+                    // Make this task get the cm data again in the next loop in case $canloadmoredata is false.
                     $canloadmoredata = true;
                     continue;
                 }
 
                 if ($cm = get_coursemodule_from_id('', $cmduplicationdata->new_cm_id)) {
+                    $datetime = new DateTime();
                     $coursemodules[] = array(
                         'coursemoduleid' => $cmduplicationdata->new_cm_id,
                         'oldcoursemoduleid' => $cmduplicationdata->original_cm_id,
                         'courseid' => $cmduplicationdata->course_id,
-                        'createddate' => $cm->added,
+                        'createddate' => $datetime->setTimestamp($cm->added)->format('Y-m-d H:i:s'),
                     );
                 } else {
-
                     \plagiarism_copyleaks_logs::add(
                         "Duplicate module failed (CM: " . $cm->id . ") - ",
                         "RECORD_NOT_FOUND"
@@ -110,7 +118,6 @@ class plagiarism_copyleaks_cm_duplicate extends \core\task\scheduled_task {
                         );
                     };
                 }
-                 
             }
 
             if (count($coursemodules) > 0) {
@@ -155,7 +162,7 @@ class plagiarism_copyleaks_cm_duplicate extends \core\task\scheduled_task {
                                 );
                             }
                         }
-                    }                   
+                    }
                 } catch (\Exception $e) {
                     \plagiarism_copyleaks_logs::add(
                         "Modules Duplication Error - " . $e->getMessage(),

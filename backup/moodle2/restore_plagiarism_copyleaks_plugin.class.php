@@ -46,21 +46,23 @@ class restore_plagiarism_copyleaks_plugin extends restore_plagiarism_plugin {
   public function process_copyleaks_config($data) {
     global $DB;
 
-    if ($this->task->is_samesite()) {
-      $data = (object)$data;
-      $data->name = $data->name;
-      $data->cm = $this->task->get_moduleid();
-      $data->value = $data->value;
-      $data->config_hash = $data->cm . "_" . $data->name;
+    if (!$this->task->is_samesite()) {
+      return;
+    }
 
-      if (!$DB->insert_record('plagiarism_copyleaks_config', $data)) {
-        \plagiarism_copyleaks_logs::add(
-          "failed to insert new database record for : " .
-            "plagiarism_copyleaks_config, Cannot create new config record for cmid: $data->cm " .
-            "config name: $data->name",
-          "INSERT_RECORD_FAILED"
-        );
-      } 
+    $data = (object)$data;
+    $data->name = $data->name;
+    $data->cm = $this->task->get_moduleid();
+    $data->value = $data->value;
+    $data->config_hash = $data->cm . "_" . $data->name;
+
+    if (!$DB->insert_record('plagiarism_copyleaks_config', $data)) {
+      \plagiarism_copyleaks_logs::add(
+        "failed to insert new database record for : " .
+          "plagiarism_copyleaks_config, Cannot create new config record for cmid: $data->cm " .
+          "config name: $data->name",
+        "INSERT_RECORD_FAILED"
+      );
     }
   }
 
@@ -72,29 +74,33 @@ class restore_plagiarism_copyleaks_plugin extends restore_plagiarism_plugin {
   public function after_restore_module() {
     global $DB;
 
-    if ($this->task->is_samesite()) {
-      $newcmid = $this->task->get_moduleid();
-      if (\plagiarism_copyleaks_moduleconfig::is_module_enabled($this->task->get_modulename(), $newcmid)) {
-        $plan = $this->task->get_info();
-        $courseid = $this->task->get_courseid();
-        $originalcmid = $this->task->get_old_moduleid();
+    if (!$this->task->is_samesite()) {
+      return;
+    }
 
-        if ($plan->type === "course" || $plan->type === "activity") {
-          $moduledata = array(
-            'course_id' => $courseid,
-            'original_cm_id' => $originalcmid,
-            'new_cm_id' => $newcmid,
-            'status' => plagiarism_copyleaks_cm_duplication_status::QUEUED,
-          );
+    $newcmid = $this->task->get_moduleid();
+    if (!\plagiarism_copyleaks_moduleconfig::is_module_enabled($this->task->get_modulename(), $newcmid)) {
+      return;
+    }
 
-          if (!$DB->insert_record('plagiarism_copyleaks_cm_copy', $moduledata)) {
-            \plagiarism_copyleaks_logs::add(
-              "failed to insert new database record for : " .
-              "plagiarism_copyleaks_cm_copy, Cannot create new cm duplication record for cmid $newcmid",
-              "INSERT_RECORD_FAILED"
-            );
-          }
-        }
+    $plan = $this->task->get_info();
+    $courseid = $this->task->get_courseid();
+    $originalcmid = $this->task->get_old_moduleid();
+
+    if ($plan->type === "course" || $plan->type === "activity") {
+      $moduledata = array(
+        'course_id' => $courseid,
+        'original_cm_id' => $originalcmid,
+        'new_cm_id' => $newcmid,
+        'status' => plagiarism_copyleaks_cm_duplication_status::QUEUED,
+      );
+
+      if (!$DB->insert_record('plagiarism_copyleaks_cm_copy', $moduledata)) {
+        \plagiarism_copyleaks_logs::add(
+          "failed to insert new database record for : " .
+            "plagiarism_copyleaks_cm_copy, Cannot create new cm duplication record for cmid $newcmid",
+          "INSERT_RECORD_FAILED"
+        );
       }
     }
   }

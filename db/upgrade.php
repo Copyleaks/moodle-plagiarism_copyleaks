@@ -484,7 +484,7 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2024041700, 'plagiarism', 'copyleaks');
     }
 
-    if ($oldversion < 2024041712) {
+    if ($oldversion < 2024060201) {
         $table = new xmldb_table('plagiarism_copyleaks_cm_copy');
 
         // Adding fields to table plagiarism_copyleaks_cm_copy.
@@ -494,7 +494,7 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         $table->add_field('new_cm_id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
         $table->add_field('status', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, null);
         $table->add_field('errormsg', XMLDB_TYPE_TEXT, null, null, null, null, null);
-   
+
         // Adding keys and indexes to table plagiarism_copyleaks_cm_copy.
         $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
         $table->add_index('new_cm_id', XMLDB_INDEX_NOTUNIQUE, array('new_cm_id'));
@@ -505,7 +505,7 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         }
 
         // Copyleaks savepoint reached.
-        upgrade_plugin_savepoint(true, 2024041712, 'plagiarism', 'copyleaks');
+        upgrade_plugin_savepoint(true, 2024060201, 'plagiarism', 'copyleaks');
     }
 
     return true;

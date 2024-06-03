@@ -32,19 +32,18 @@ require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/enums/plagiarism_cop
 /**
  * Copyleaks Plagiarism Plugin - Handle Resubmit Files
  */
-class plagiarism_copyleaks_background_task extends \core\task\scheduled_task
-{
+class plagiarism_copyleaks_background_task extends \core\task\scheduled_task {
     /**
      * Get scheduler name, this will be shown to admins on schedulers dashboard.
      */
-    public function get_name(){
+    public function get_name() {
         return get_string('clbackgroundtask', 'plagiarism_copyleaks');
     }
 
     /**
      * Execute the task.
      */
-    public function execute(){
+    public function execute() {
         if (!\plagiarism_copyleaks_comms::test_copyleaks_connection('scheduler_task', true)) {
             return;
         }
@@ -58,7 +57,7 @@ class plagiarism_copyleaks_background_task extends \core\task\scheduled_task
     /**
      * @param number $type - determine which task to run.
      */
-    private function handle_task_once($type){
+    private function handle_task_once($type) {
         try {
             global $DB;
             if ($DB->get_record('plagiarism_copyleaks_bgtasks', array('task' => $type))) {
@@ -81,7 +80,7 @@ class plagiarism_copyleaks_background_task extends \core\task\scheduled_task
     /**
      * @param number $type - determine which task to run.
      */
-    private function run_task_in_background($type){
+    private function run_task_in_background($type) {
         switch ($type) {
             case \plagiarism_copyleaks_background_tasks::SYNC_COURSES_DATA:
                 \plagiarism_copyleaks_synccoursesdata::sync_data();
