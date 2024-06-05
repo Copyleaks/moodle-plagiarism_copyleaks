@@ -256,4 +256,37 @@ class plagiarism_copyleaks_dbutils {
         }
         return $detectiondata;
     }
+
+    /**
+     * Get the configuration by name.
+     * @param string $name
+     * @return object
+     */
+    public static function is_config_result_view_enable($name, $cmid) {
+        global $DB, $USER, $COURSE;
+
+        $context = context_course::instance($COURSE->id);
+        $studentrole = $DB->get_record('role', ['shortname' => 'student']);
+        $isstudent = user_has_role_assignment($USER->id, $studentrole->id, $context->id);
+
+        if (!$isstudent) {
+            return true;
+        };
+
+        $defaultconfig = $DB->get_record(
+            'plagiarism_copyleaks_config',
+            array('name' => $name, 'cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID)
+        );
+
+        if ($defaultconfig) {
+            return $defaultconfig->value;
+        }
+
+        $config = $DB->get_record(
+            'plagiarism_copyleaks_config',
+            array('name' => $name, 'cm' => $cmid)
+        );
+
+        return $config ? $config->value : true;
+    }
 }
