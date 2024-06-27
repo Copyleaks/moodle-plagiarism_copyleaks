@@ -51,6 +51,7 @@ $string['clinserterror'] = 'Error while trying to insert records to database';
 $string['clsendqueuedsubmissions'] = "Copyleaks plagiarism plugin - handle queued files";
 $string['clsendresubmissionsfiles'] = "Copyleaks plagiarism plugin - handle resubmitted results";
 $string['clsyncoriginalityscore'] = "Copyleaks plagiarism plugin - handle plagiarism score sync";
+$string['clsyncconfigtask'] = "Copyleaks plagiarism plugin - handle configurations sync";
 $string['clsendrequestqueue'] = "Copyleaks plagiarism plugin - handle retry queued requests";
 $string['clupserteulausers'] = "Copyleaks plagiarism plugin - handle upsert eula acceptance users";
 $string['clbackgroundtask'] = "Copyleaks plagiarism plugin - handle tasks in background";

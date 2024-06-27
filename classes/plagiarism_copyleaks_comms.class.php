@@ -462,7 +462,6 @@ class plagiarism_copyleaks_comms {
 
     /**
      * Get all originality report ids with the updated scores
-     * @param string $cursor Copyleaks db cursor
      * @return array $result an array of ids and its updated scores
      */
     public function get_unsynced_scans_scores() {
@@ -494,8 +493,7 @@ class plagiarism_copyleaks_comms {
     }
 
     /**
-     * Get all originality report ids with the updated scores
-     * @param string $cursor Copyleaks db cursor
+     * Get all unsynced configs from Copyleaks server
      * @return array $result an array of ids and its updated scores
      */
     public function get_unsynced_configs() {

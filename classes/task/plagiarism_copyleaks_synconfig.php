@@ -38,7 +38,7 @@ class plagiarism_copyleaks_synconfig extends \core\task\scheduled_task {
      * Get scheduler name, this will be shown to admins on schedulers dashboard.
      */
     public function get_name() {
-        return get_string('clsyncoriginalityscore', 'plagiarism_copyleaks');
+        return get_string('clsyncconfigtask', 'plagiarism_copyleaks');
     }
 
     /**
@@ -48,13 +48,13 @@ class plagiarism_copyleaks_synconfig extends \core\task\scheduled_task {
         global $CFG;
         require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_comms.class.php');
 
-        $this->handle_scores_sync();
+        $this->handle_configs_sync();
     }
 
     /**
      * Handle sync config to plugin integration and course modules.
      */
-    private function handle_scores_sync() {
+    private function handle_configs_sync() {
         $copyleakscomms = new \plagiarism_copyleaks_comms();
         $canloadmoredata = true;
 
@@ -117,8 +117,6 @@ class plagiarism_copyleaks_synconfig extends \core\task\scheduled_task {
         }
     }
 
-
-    // private function get_config_by_name_and_cm($currentdbresults, $name, $cm) {
     private function get_config_by_name_and_cm($name, $cm) {
         global $DB;
         $config = $DB->get_record('plagiarism_copyleaks_config', ['name' => $name, 'cm' => $cm]);
