@@ -388,9 +388,11 @@ class plagiarism_copyleaks_eventshandler {
         global $DB, $CFG;
 
         $filerecord = $DB->get_record('files', array('pathnamehash' => $pathnamehash));
-        $hashedcontent = $filerecord->contenthash;
+        $hashedcontent = null;
 
         if ($filerecord) {
+            $hashedcontent = $filerecord->contenthash;
+
             $typefield = ($CFG->dbtype == "oci") ? " to_char(submissiontype) " : " submissiontype ";
             $savedfile = $DB->get_record(
                 'plagiarism_copyleaks_files',

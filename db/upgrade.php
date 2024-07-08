@@ -495,7 +495,7 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
 
     if ($oldversion < 2024070700) {
         $table = new xmldb_table('plagiarism_copyleaks_files');
-        $hashedcontentfield = new xmldb_field('hashedcontent', XMLDB_TYPE_TEXT, '255', null, false, null, null, 'identifier');
+        $hashedcontentfield = new xmldb_field('hashedcontent', XMLDB_TYPE_CHAR, '255', null, false, null, null, 'identifier');
 
         if ($dbman->table_exists($table)) {
             // Add hashed content field to files table.
