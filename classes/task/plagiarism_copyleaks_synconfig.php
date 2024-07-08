@@ -86,23 +86,23 @@ class plagiarism_copyleaks_synconfig extends \core\task\scheduled_task {
                     $this->delete_config_to_table($config, PLAGIARISM_COPYLEAKS_ENABLE_AI_VIEW_FOR_STUDENT);
                 }
 
-                if (is_bool($config->enablePlagiairsmResultViewForStudent)) {
+                if (is_bool($config->enablePlagiarismResultViewForStudent)) {
                     $plagviewconfig = $this->get_config_by_name_and_cm(
                         PLAGIARISM_COPYLEAKS_ENABLE_PLAGIARISM_VIEW_FOR_STUDENT,
                         $config->courseModuleId
                     );
-                    $plagviewconfig->value = $config->enablePlagiairsmResultViewForStudent;
+                    $plagviewconfig->value = $config->enablePlagiarismResultViewForStudent;
                     $this->upsert_config_to_table($plagviewconfig, PLAGIARISM_COPYLEAKS_ENABLE_PLAGIARISM_VIEW_FOR_STUDENT);
                 } else {
                     $this->delete_config_to_table($config, PLAGIARISM_COPYLEAKS_ENABLE_PLAGIARISM_VIEW_FOR_STUDENT);
                 }
 
-                if (is_bool($config->enableWritingAssisstentResultViewForStudent)) {
+                if (is_bool($config->enableWritingAssistantResultViewForStudent)) {
                     $wfviewconfig = $this->get_config_by_name_and_cm(
                         PLAGIARISM_COPYLEAKS_ENABLE_WF_VIEW_FOR_STUDENT,
                         $config->courseModuleId
                     );
-                    $wfviewconfig->value = $config->enableWritingAssisstentResultViewForStudent;
+                    $wfviewconfig->value = $config->enableWritingAssistantResultViewForStudent;
                     $this->upsert_config_to_table($wfviewconfig, PLAGIARISM_COPYLEAKS_ENABLE_WF_VIEW_FOR_STUDENT);
                 } else {
                     $this->delete_config_to_table($config, PLAGIARISM_COPYLEAKS_ENABLE_WF_VIEW_FOR_STUDENT);
