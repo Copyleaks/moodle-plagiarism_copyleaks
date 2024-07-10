@@ -412,7 +412,8 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
             null,
             null,
             null,
-            'aiscore');
+            'aiscore'
+        );
         $grammarfield = new xmldb_field('grammarcases', XMLDB_TYPE_NUMBER, '10', null, null, null, null);
 
         if ($dbman->table_exists($table)) {
@@ -490,6 +491,21 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
 
         // Copyleaks savepoint reached.
         upgrade_plugin_savepoint(true, 2024041700, 'plagiarism', 'copyleaks');
+    }
+
+    if ($oldversion < 2024070700) {
+        $table = new xmldb_table('plagiarism_copyleaks_files');
+        $hashedcontentfield = new xmldb_field('hashedcontent', XMLDB_TYPE_CHAR, '255', null, false, null, null, 'identifier');
+
+        if ($dbman->table_exists($table)) {
+            // Add hashed content field to files table.
+            if (!$dbman->field_exists($table, $hashedcontentfield)) {
+                $dbman->add_field($table, $hashedcontentfield);
+            }
+        }
+
+        // Copyleaks savepoint reached.
+        upgrade_plugin_savepoint(true, 2024070700, 'plagiarism', 'copyleaks');
     }
 
     return true;
