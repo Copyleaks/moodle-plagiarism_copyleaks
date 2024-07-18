@@ -14,18 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 /**
- * version.php - Meta-data about the plugin.
+ * Copyleaks services
  * @package   plagiarism_copyleaks
- * @author    Bayan Abuawad <bayana@copyleaks.com>
+ * @author    Shade Amasha <shadea@copyleaks.com>
  * @copyright 2021 Copyleaks
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later.
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+$messageproviders = array(
 
-defined('MOODLE_INTERNAL') || die();
-
-$plugin->version = 2024051606;
-$plugin->release = "3.5+";
-$plugin->requires = 2018051700;
-$plugin->component = 'plagiarism_copyleaks';
-$plugin->maturity = MATURITY_STABLE;
-$plugin->cron = 0;
+  // checkout notification
+  'copyleaks_notification' => array(),
+);

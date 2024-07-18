@@ -31,6 +31,7 @@ require_once($CFG->dirroot . '/plagiarism/lib.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_pluginconfig.class.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_moduleconfig.class.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/constants/plagiarism_copyleaks.constants.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/enums/plagiarism_copyleaks_enums.php');
 
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_assignmodule.class.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_utils.class.php');
@@ -69,6 +70,7 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
         $course = get_course($data->course);
         $duedate = plagiarism_copyleaks_utils::get_course_module_duedate($data->coursemodule);
         $coursestartdate = plagiarism_copyleaks_utils::get_course_start_date($data->course);
+
         $updatedata = array(
             'tempCourseModuleId' => isset($data->plagiarism_copyleaks_tempcmid) ? $data->plagiarism_copyleaks_tempcmid : null,
             'courseModuleId' => $data->coursemodule,
@@ -78,8 +80,64 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
             'courseName' => $course->fullname,
             'dueDate' => $duedate,
             'courseStartDate' => $coursestartdate
-
         );
+
+        // If its an assignment module add missing data.
+        if ($data->modulename == 'assign') {
+
+            // In case none of the below is set, we will default to point grading.
+            $updatedata['gradingType'] = plagiarism_copyleaks_grade_types::NONE;
+            if ($data->grade > 0 && $data->grade <= 100) {
+                // Grade between 0 and 100 means point grading.
+                $updatedata['gradingType'] = plagiarism_copyleaks_grade_types::POINT;
+                $updatedata['maxGrade'] = $data->grade;
+            } elseif ($data->grade == 0) {
+                // Grade == 0 means no grading.
+                $updatedata['gradingType'] = plagiarism_copyleaks_grade_types::NONE;
+                $gradingmethod = plagiarism_copyleaks_grade_methods::NONE;
+            } elseif ($data->grade < 0) {
+                // Grade < 0 means scale grading, and it is always negative.
+                $updatedata['gradingType'] = plagiarism_copyleaks_grade_types::SCALE;
+                $updatedata['scaleId'] = abs($data->grade);
+            }
+
+
+            // Setup grading methods.
+            if ($updatedata['gradingType'] != plagiarism_copyleaks_grade_types::NONE) {
+                $gradingmethod = plagiarism_copyleaks_grade_methods::SIMPLE_DIRECT_GRADING;
+
+                if (isset($data->advancedgradingmethod_submissions)) {
+                    if (
+                        $data->advancedgradingmethod_submissions == "guide"
+                    ) {
+                        $gradingmethod = plagiarism_copyleaks_grade_methods::MARKING_GUIDE;
+                    }
+                    if (
+                        $data->advancedgradingmethod_submissions == "rubric"
+                    ) {
+                        $gradingmethod = plagiarism_copyleaks_grade_methods::RUBRIC;
+                    }
+                }
+            }
+
+            // Setup additional attempts method.
+            $updatedata['additionalAttemptsMethod'] = plagiarism_copyleaks_additional_attempts_method::NEVER;
+            if ($data->attemptreopenmethod == "manual") {
+                $updatedata['additionalAttemptsMethod'] = plagiarism_copyleaks_additional_attempts_method::MANUAL;
+                $updatedata['maxAttempts'] = $data->maxattempts;
+            } elseif ($data->attemptreopenmethod == "untilpass") {
+                $updatedata['additionalAttemptsMethod'] = plagiarism_copyleaks_additional_attempts_method::UNTIL_PASS;
+                $updatedata['maxAttempts'] =  $data->maxattempts;
+            }
+
+            $updatedata['instance'] = $data->instance;
+            $updatedata['gradingMethod'] = $gradingmethod;
+            $updatedata['isAnonymousSubmissions'] = $data->blindmarking == "1" ? true : false;
+            $updatedata['hideGraderIdentityFromStudents'] = $data->hidegrader == "1" ? true : false;
+            $updatedata['markingWorkflow'] = $data->markingworkflow == "1" ? true : false;
+            $updatedata['isGroup'] = $data->teamsubmission == "1" ? true : false;
+        }
+        
         $cl->upsert_course_module($updatedata);
 
         try {

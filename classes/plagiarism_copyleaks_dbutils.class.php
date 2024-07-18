@@ -256,4 +256,52 @@ class plagiarism_copyleaks_dbutils {
         }
         return $detectiondata;
     }
+
+    /**
+     * @param bool $connectionstatus - true - active / false - inactive.
+     */
+    public static function upsert_config_api_connection_status($connectionstatus) {
+        global $DB;
+        $field = $DB->get_record(
+            'plagiarism_copyleaks_config',
+            array(
+                'cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID,
+                'name' => PLAGIARISM_COPYLEAKS_API_CONNECTION_STATUS_FIELD_NAME
+            )
+        );
+        if (!$field || !isset($field)) {
+            $newfield = new stdClass();
+            $newfield->cm = PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID;
+            $newfield->name = PLAGIARISM_COPYLEAKS_API_CONNECTION_STATUS_FIELD_NAME;
+            $newfield->value = $connectionstatus ? 1 : 0;
+            if (!$DB->insert_record('plagiarism_copyleaks_config', $newfield)) {
+                throw new moodle_exception(get_string('clupdateerror', 'plagiarism_copyleaks'));
+            }
+        } else {
+            $field->value = $connectionstatus ? 1 : 0;
+            if (!$DB->update_record('plagiarism_copyleaks_config', $field)) {
+                throw new moodle_exception(get_string('clupdateerror', 'plagiarism_copyleaks'));
+            }
+        }
+    }
+
+    /**
+     * Get the Api connection status.
+     */
+    public static function is_copyleaks_api_connected() {
+        global $DB;
+        $field = $DB->get_record(
+            'plagiarism_copyleaks_config',
+            array(
+                'cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID,
+                'name' => PLAGIARISM_COPYLEAKS_API_CONNECTION_STATUS_FIELD_NAME
+            )
+        );
+
+        if ($field) {
+            return $field->value == "1";
+        }
+
+        return false;
+    }
 }

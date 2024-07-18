@@ -28,8 +28,10 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_pluginconfig.class.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_moduleconfig.class.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_submissions.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_comms.class.php');
 
 require_once($CFG->dirroot . '/plagiarism/copyleaks/constants/plagiarism_copyleaks.constants.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/enums/plagiarism_copyleaks_enums.php');
 
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_assignmodule.class.php');
 
@@ -61,9 +63,10 @@ class plagiarism_copyleaks_eventshandler {
     public function handle_submissions($data) {
         global $DB;
         $result = true;
+       
         // Get course module.
         $coursemodule = $this->get_coursemodule($data);
-
+ 
         // Stop event if the course module is not found.
         if (!$coursemodule) {
             return true;
@@ -399,11 +402,11 @@ class plagiarism_copyleaks_eventshandler {
 
         $errormessage = null;
         $clsubmissionid = null;
+        $cl = new plagiarism_copyleaks_comms();
 
         if ($subtype == 'file') {
             $filestorage = get_file_storage();
             $fileref = $filestorage->get_file_by_hash($identifier);
-
             $filename = $fileref->get_filename();
         }
 
@@ -461,6 +464,40 @@ class plagiarism_copyleaks_eventshandler {
 
         // If we have error message, then we don't need to send it to Copyleaks.
         $submitstatus = $errormessage == null ? 'queued' : 'error';
+
+        if (plagiarism_copyleaks_dbutils::is_copyleaks_api_connected()) {
+
+            if (plagiarism_copyleaks_submissions::save(
+                $coursemodule,
+                $authoruserid,
+                $submissionid,
+                $identifier,
+                $submitstatus,
+                $clsubmissionid,
+                $submitteruserid,
+                $itemid,
+                $subtype,
+                $scheduledscandate,
+                $errormessage
+            ) && $submitstatus != 'error') {
+                $datetime = new DateTime();
+                $submissiondata = $this->get_submission_data($itemid, $coursemodule, $submitteruserid, $cmdata);
+                $reportdata = (array)[
+                    'courseModuleId' => $coursemodule->id,
+                    'moodleUserId' =>  $submitteruserid,
+                    'identifier' => $identifier,
+                    'submissionType' => $subtype,
+                    'fileName' => $filename,
+                    'scheduledScanDate' => ($datetime->setTimestamp($scheduledscandate))->format('Y-m-d H:i:s'),
+                ];
+                $data = (array)[
+                    'submission' => $submissiondata,
+                    'report' => $reportdata
+                ];
+                $cl->upsert_submission($data);
+            };
+        }
+
         return plagiarism_copyleaks_submissions::save(
             $coursemodule,
             $authoruserid,
@@ -545,4 +582,49 @@ class plagiarism_copyleaks_eventshandler {
             }
         }
     }
+
+
+    /**
+     * get submission data
+     * @param object $data
+     * @param object $coursemodule
+     * @param string $authoruserid
+     * @param string $submitteruserid
+     * @param object $cmdata
+     */
+    private function get_submission_data($itemid, $coursemodule, $submitteruserid, $cmdata) {
+        global $DB;
+        $datetime = new DateTime();
+        $submissiondata = array();
+        switch ($this->modulename) {
+            case 'assign':
+                $submissionrecord = $DB->get_record(
+                    'assign_submission',
+                    array('id' => $itemid)
+                );
+
+                $submissiondata['moodleSubmissionId'] = $submissionrecord->id;
+                $submissiondata['attempt'] = $submissionrecord->attemptnumber;
+                $submissiondata['moodleUserId'] = $submitteruserid;
+                $submissiondata['courseModuleId'] = $coursemodule->id;
+                if (isset($submissionrecord->timecreated)) {
+                    $submissiondata['createdAt'] = ($datetime->setTimestamp($submissionrecord->timecreated))->format('Y-m-d H:i:s');
+                }
+
+                if ($cmdata->teamsubmission == "1") {
+                    $group = $DB->get_record('groups', array('id' => $submissionrecord->groupid), 'id, name');
+                    if ($group) {
+                        $submissiondata['groupId'] = $group->id;
+                        $submissiondata['groupName'] = $group->name;
+                    }
+                }
+                break;
+
+            default:
+                break;
+        }
+
+        return $submissiondata;
+    }
+
 }

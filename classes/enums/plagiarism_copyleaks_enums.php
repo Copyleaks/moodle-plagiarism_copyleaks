@@ -31,6 +31,8 @@ class plagiarism_copyleaks_reportstatus {
     const ERROR = 2;
     /** @var int report is still pending */
     const PENDING = 3;
+    /** @var int report is scheduled */
+    const SCHEDULED = 4;
 }
 
 /**
@@ -64,6 +66,7 @@ class plagiarism_copyleaks_background_tasks {
     /** @var int an indicator to run the sync_courses_data background task */
     const SYNC_COURSES_DATA = 2;
 }
+
 /**
  * This class is used as an enum in order to know time left from a date.
  */
@@ -78,4 +81,35 @@ class plagiarism_copyleaks_times {
     const DAYS = 3;
     /** @var int respresents a month */
     const MONTHS = 4;
+}
+
+// this class is used as an enum in order to know the grade types
+class plagiarism_copyleaks_grade_types {
+    /** @var int Represents a grade type of 'None' (no grading). */
+    const NONE = 0;
+    /** @var int Represents a grade type of 'Scale' (uses a grading scale). */
+    const SCALE = 1;
+    /** @var int Represents a grade type of 'Point' (uses points for grading). */
+    const POINT = 2;
+}
+
+// this class is used as an enum in order to know the grade methods
+class plagiarism_copyleaks_grade_methods {
+    /** @var int Represents a grading method of 'None' (no grading method). */
+    const NONE = 0;
+    /** @var int Represents a grading method of 'Simple Direct Grading'. */
+    const SIMPLE_DIRECT_GRADING = 1;
+    /** @var int Represents a grading method of 'Marking Guide'. */
+    const MARKING_GUIDE = 2;
+    /** @var int Represents a grading method of 'Rubric'. */
+    const RUBRIC = 3;
+}
+
+class  plagiarism_copyleaks_additional_attempts_method {
+    /** @var int Represents a method of 'Never' (no additional attempts allowed). */
+    const NEVER = 0;
+    /** @var int Represents a method of 'Manually' (additional attempts allowed manually). */
+    const MANUAL = 1;
+    /** @var int Represents a method of 'automatically Until Pass' (additional attempts allowed automatically until pass). */
+    const UNTIL_PASS = 3;
 }

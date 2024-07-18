@@ -353,15 +353,20 @@ class plagiarism_copyleaks_comms {
         try {
             if (isset($this->key) && isset($this->secret)) {
                 $chekbalance = $updateconfig ? "true" : "false";
+                $url = new moodle_url('/');
+                $domain = $url->out(false);
+                // Remove the trailing slash if it exists
+                $domain = rtrim($domain, '/');
                 $result = plagiarism_copyleaks_http_client::execute_retry(
                     'GET',
                     $this->copyleaks_api_url() . "/api/moodle/plugin/" .
-                        $this->key . "/test-connection?source=" . $context . "&checkBalance=$chekbalance",
+                    $this->key . "/test-connection?source=" . $context . "&checkBalance=$chekbalance" . "&domain=$domain",
                     true
                 );
 
                 if ($updateconfig) {
                     plagiarism_copyleaks_dbutils::update_config_scanning_detection($result->detectionsValues);
+                    plagiarism_copyleaks_dbutils::upsert_config_api_connection_status($result->apiConnection);
                 }
 
                 if (isset($result) && isset($result->eulaVersion)) {
@@ -388,6 +393,32 @@ class plagiarism_copyleaks_comms {
      */
     public function upsert_course_module($data) {
         $endpoint = "/api/moodle/plugin/$this->key/upsert-module";
+        $verb = 'POST';
+        try {
+            plagiarism_copyleaks_http_client::execute(
+                $verb,
+                $this->copyleaks_api_url() . $endpoint,
+                true,
+                json_encode($data)
+            );
+        } catch (\Exception $e) {
+            plagiarism_copyleaks_dbutils::queued_failed_request(
+                $data['courseModuleId'],
+                $endpoint,
+                $data,
+                plagiarism_copyleaks_priority::HIGH,
+                $e->getMessage(),
+                $verb
+            );
+        }
+    }
+
+    /**
+     * .
+     * @param array $data
+     */
+    public function upsert_submission($data) {
+        $endpoint = "/api/moodle/plugin/$this->key/upsert-submission";
         $verb = 'POST';
         try {
             plagiarism_copyleaks_http_client::execute(
