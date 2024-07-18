@@ -493,7 +493,7 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2024041700, 'plagiarism', 'copyleaks');
     }
 
-    if ($oldversion < 2024070700) {
+    if ($oldversion < 2024071800) {
         $table = new xmldb_table('plagiarism_copyleaks_files');
         $hashedcontentfield = new xmldb_field('hashedcontent', XMLDB_TYPE_CHAR, '255', null, false, null, null, 'identifier');
 
@@ -505,7 +505,7 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         }
 
         // Copyleaks savepoint reached.
-        upgrade_plugin_savepoint(true, 2024070700, 'plagiarism', 'copyleaks');
+        upgrade_plugin_savepoint(true, 2024071800, 'plagiarism', 'copyleaks');
     }
 
     return true;
