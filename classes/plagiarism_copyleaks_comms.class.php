@@ -475,4 +475,68 @@ class plagiarism_copyleaks_comms {
         );
         return $result;
     }
+
+    /**
+     * Get all originality report ids with the updated scores
+     * @return array $result an array of ids and its updated scores
+     */
+    public function get_unsynced_scans_scores() {
+        if (isset($this->key) && isset($this->secret)) {
+            return plagiarism_copyleaks_http_client::execute_retry(
+                'GET',
+                $this->copyleaks_api_url() . "/api/moodle/plugin/" . $this->key . "/task/unsynced-scans-scores",
+                true,
+            );
+        }
+    }
+
+    /**
+     * Send request to delete synced ids to copyleaks server
+     * @param array $ids Copyleaks report scan ids
+     */
+    public function delete_synced_scans_by_ids(array $ids) {
+        if (isset($this->key) && isset($this->secret)) {
+            $reqbody = (array)[
+                'ids' => $ids
+            ];
+            plagiarism_copyleaks_http_client::execute_retry(
+                'POST',
+                $this->copyleaks_api_url() . "/api/moodle/plugin/" . $this->key . "/task/synced-scans-scores/delete",
+                true,
+                json_encode($reqbody)
+            );
+        }
+    }
+
+    /**
+     * Get all unsynced configs from Copyleaks server
+     * @return array $result an array of ids and its updated scores
+     */
+    public function get_unsynced_configs() {
+        if (isset($this->key) && isset($this->secret)) {
+            return plagiarism_copyleaks_http_client::execute_retry(
+                'GET',
+                $this->copyleaks_api_url() . "/api/moodle/plugin/" . $this->key . "/task/unsynced-configs",
+                true,
+            );
+        }
+    }
+
+    /**
+     * Send request to delete synced ids to copyleaks server
+     * @param array $ids Copyleaks report scan ids
+     */
+    public function delete_synced_config_by_keys(array $ids) {
+        if (isset($this->key) && isset($this->secret)) {
+            $reqbody = (array)[
+                'ids' => $ids
+            ];
+            plagiarism_copyleaks_http_client::execute_retry(
+                'POST',
+                $this->copyleaks_api_url() . "/api/moodle/plugin/" . $this->key . "/task/synced-configs/delete",
+                true,
+                json_encode($reqbody)
+            );
+        }
+    }
 }

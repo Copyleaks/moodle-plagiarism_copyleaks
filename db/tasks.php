@@ -80,7 +80,7 @@ $tasks = array(
         'month' => '*'
     ),
     array(
-        'classname' => 'plagiarism_copyleaks\task\plagiarism_copyleaks_cm_duplicate',
+        'classname' => 'plagiarism_copyleaks\task\plagiarism_copyleaks_syncoriginalityscore',
         'blocking' => 0,
         'minute' => '*/1',
         'hour' => '*',
@@ -88,4 +88,22 @@ $tasks = array(
         'dayofweek' => '*',
         'month' => '*'
     ),
+    array(
+        'classname' => 'plagiarism_copyleaks\task\plagiarism_copyleaks_synconfig',
+        'blocking' => 0,
+        'minute' => '*/1',
+        'hour' => '*',
+        'day' => '*',
+        'dayofweek' => '*',
+        'month' => '*'
+    ),
+    array(
+        'classname' => 'plagiarism_copyleaks\task\plagiarism_copyleaks_cm_duplicate',
+        'blocking' => 0,
+        'minute' => '*/1',
+        'hour' => '*',
+        'day' => '*',
+        'dayofweek' => '*',
+        'month' => '*'
+    )
 );

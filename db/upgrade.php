@@ -404,7 +404,16 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
 
     if ($oldversion < 2024040200) {
         $table = new xmldb_table('plagiarism_copyleaks_files');
-        $writingfeedbackissuesfield = new xmldb_field('writingfeedbackissues', XMLDB_TYPE_NUMBER, '10', null, null, null, null, 'aiscore');
+        $writingfeedbackissuesfield = new xmldb_field(
+            'writingfeedbackissues',
+            XMLDB_TYPE_NUMBER,
+            '10',
+            null,
+            null,
+            null,
+            null,
+            'aiscore'
+        );
         $grammarfield = new xmldb_field('grammarcases', XMLDB_TYPE_NUMBER, '10', null, null, null, null);
 
         if ($dbman->table_exists($table)) {
@@ -484,7 +493,22 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2024041700, 'plagiarism', 'copyleaks');
     }
 
-    if ($oldversion < 2024060201) {
+    if ($oldversion < 2024071800) {
+        $table = new xmldb_table('plagiarism_copyleaks_files');
+        $hashedcontentfield = new xmldb_field('hashedcontent', XMLDB_TYPE_CHAR, '255', null, false, null, null, 'identifier');
+
+        if ($dbman->table_exists($table)) {
+            // Add hashed content field to files table.
+            if (!$dbman->field_exists($table, $hashedcontentfield)) {
+                $dbman->add_field($table, $hashedcontentfield);
+            }
+        }
+
+        // Copyleaks savepoint reached.
+        upgrade_plugin_savepoint(true, 2024071800, 'plagiarism', 'copyleaks');
+    }
+
+    if ($oldversion < 2024072100) {
         $table = new xmldb_table('plagiarism_copyleaks_cm_copy');
 
         // Adding fields to table plagiarism_copyleaks_cm_copy.
@@ -505,7 +529,7 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         }
 
         // Copyleaks savepoint reached.
-        upgrade_plugin_savepoint(true, 2024060201, 'plagiarism', 'copyleaks');
+        upgrade_plugin_savepoint(true, 2024072100, 'plagiarism', 'copyleaks');
     }
 
     return true;
