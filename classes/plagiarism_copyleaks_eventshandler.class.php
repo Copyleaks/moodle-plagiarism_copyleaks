@@ -495,6 +495,8 @@ class plagiarism_copyleaks_eventshandler {
                     'report' => $reportdata
                 ];
                 $cl->upsert_submission($data);
+
+                return true;
             };
         }
 

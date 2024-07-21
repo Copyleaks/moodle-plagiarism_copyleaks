@@ -124,10 +124,10 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
             $updatedata['additionalAttemptsMethod'] = plagiarism_copyleaks_additional_attempts_method::NEVER;
             if ($data->attemptreopenmethod == "manual") {
                 $updatedata['additionalAttemptsMethod'] = plagiarism_copyleaks_additional_attempts_method::MANUAL;
-                $updatedata['maxAttempts'] = $data->maxattempts;
+                $updatedata['maxAttempts'] = (int)$data->maxattempts;
             } elseif ($data->attemptreopenmethod == "untilpass") {
                 $updatedata['additionalAttemptsMethod'] = plagiarism_copyleaks_additional_attempts_method::UNTIL_PASS;
-                $updatedata['maxAttempts'] =  $data->maxattempts;
+                $updatedata['maxAttempts'] =  (int)$data->maxattempts;
             }
 
             $updatedata['instance'] = $data->instance;
