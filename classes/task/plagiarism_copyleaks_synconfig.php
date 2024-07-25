@@ -127,6 +127,8 @@ class plagiarism_copyleaks_synconfig extends \core\task\scheduled_task {
             $config->name = $name;
             $config->config_hash = $cm . "_" . $name;
             $config->isnew = true;
+        } else {
+            $config->isnew = false;
         }
 
         return $config;
