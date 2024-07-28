@@ -393,24 +393,24 @@ class plagiarism_copyleaks_eventshandler {
         if ($filerecord) {
             $hashedcontent = $filerecord->contenthash;
 
-            $typefield = ($CFG->dbtype == "oci") ? " to_char(submissiontype) " : " submissiontype ";
-            $savedfile = $DB->get_record(
+            $typefield = ($CFG->dbtype == "oci") ? "to_char(submissiontype)" : "submissiontype";
+
+            $savedfiles = $DB->get_records_select(
                 'plagiarism_copyleaks_files',
-                array(
-                    "cm" => $coursemodule->id,
-                    "userid" => $authoruserid,
-                    $typefield => 'file',
-                    "identifier" => $pathnamehash
-                ),
+                " cm = ? AND userid = ? AND " . $typefield . " = ? AND identifier = ?",
+                array($coursemodule->id, $authoruserid, "file", $pathnamehash)
             );
 
-            if (isset($savedfile->hashedcontent) && $savedfile->hashedcontent != $hashedcontent) {
-                $DB->delete_records('plagiarism_copyleaks_files', array(
-                    "cm" => $coursemodule->id,
-                    "userid" => $authoruserid,
-                    $typefield => 'file',
-                    "identifier" => $pathnamehash
-                ));
+            if (count($savedfiles) > 0) {
+                $savedfile = reset($savedfiles);
+
+                if (isset($savedfile->hashedcontent) && $savedfile->hashedcontent != $hashedcontent) {
+                    $DB->delete_records_select(
+                        'plagiarism_copyleaks_files',
+                        " cm = ? AND userid = ? AND " . $typefield . " = ? AND identifier = ?",
+                        array($coursemodule->id, $authoruserid, "file", $pathnamehash)
+                    );
+                }
             }
         }
         return $hashedcontent;
