@@ -83,7 +83,7 @@ class plagiarism_copyleaks_times {
 }
 
 /**
- * This class is used as an enum in order to know the status of course module duplication 
+ * This class is used as an enum in order to know the status of course module duplication.
  */
 class plagiarism_copyleaks_cm_duplication_status {
     /** @var int course module queued and awaiting duplication. */

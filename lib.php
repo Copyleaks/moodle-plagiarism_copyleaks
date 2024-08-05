@@ -70,7 +70,7 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
             return;
         }
 
-        // If the record exists with status:ERROR, delete it. 
+        // If the record exists with status:ERROR, delete it.
         if (plagiarism_copyleaks_dbutils::is_cm_duplicated_error($data->coursemodule)) {
             $DB->delete_records('plagiarism_copyleaks_cm_copy', array('new_cm_id' => $data->coursemodule));
         }
