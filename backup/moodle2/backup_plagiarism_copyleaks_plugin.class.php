@@ -16,29 +16,25 @@
 /**
  * Copyleaks Plagiarism Plugin - Handle backup operations
  * @package   plagiarism_copyleaks
- * @copyright 2021 Copyleaks
+ * @copyright 2024 Copyleaks
  * @author    Shade Amasha <shadea@copyleaks.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
-
 class backup_plagiarism_copyleaks_plugin extends backup_plagiarism_plugin {
+    protected function define_module_plugin_structure() {
+        $plugin = $this->get_plugin_element();
 
-  protected function define_module_plugin_structure() {
-    $plugin = $this->get_plugin_element();
+        $pluginelement = new backup_nested_element($this->get_recommended_name());
+        $plugin->add_child($pluginelement);
 
-    $pluginelement = new backup_nested_element($this->get_recommended_name());
-    $plugin->add_child($pluginelement);
+        // Add module config elements.
+        $copyleaksconfigs = new backup_nested_element('copyleaks_configs');
+        $copyleaksconfig = new backup_nested_element('copyleaks_config', array('id'), array('name', 'value'));
+        $pluginelement->add_child($copyleaksconfigs);
+        $copyleaksconfigs->add_child($copyleaksconfig);
+        $copyleaksconfig->set_source_table('plagiarism_copyleaks_config', array('cm' => backup::VAR_PARENTID));
 
-    // Add module config elements.
-    $copyleaksconfigs = new backup_nested_element('copyleaks_configs');
-    $copyleaksconfig = new backup_nested_element('copyleaks_config', array('id'), array('name', 'value'));
-    $pluginelement->add_child($copyleaksconfigs);
-    $copyleaksconfigs->add_child($copyleaksconfig);
-    $copyleaksconfig->set_source_table('plagiarism_copyleaks_config', array('cm' => backup::VAR_PARENTID));
-    
-    return $plugin;
-}
-
+        return $plugin;
+    }
 }

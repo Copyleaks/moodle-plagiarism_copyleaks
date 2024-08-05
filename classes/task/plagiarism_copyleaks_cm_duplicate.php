@@ -16,7 +16,7 @@
 /**
  * Copyleaks Plagiarism Plugin - Handle course moudles duplication
  * @package   plagiarism_copyleaks
- * @copyright 2021 Copyleaks
+ * @copyright 2024 Copyleaks
  * @author    Shade Amasha <shadea@copyleaks.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -76,8 +76,8 @@ class plagiarism_copyleaks_cm_duplicate extends \core\task\scheduled_task {
                 break;
             }
 
-
-            // a set to check for chained duplication requests.
+            // A set to check for chained duplication requests.
+            // This is for cases were we duplicated newly duplicated activity and it's not finished it's duplication proccess.
             $chainedduplicationchecker = array();
             foreach ($cmstocopy as $cmduplicationdata) {
                 $chainedduplicationchecker[$cmduplicationdata->new_cm_id] = true;
@@ -125,11 +125,7 @@ class plagiarism_copyleaks_cm_duplicate extends \core\task\scheduled_task {
                     $cl = new \plagiarism_copyleaks_comms();
                     $response = $cl->duplicate_course_modules(array('duplicatedmodules' => $coursemodules));
 
-                    if (!isset($response)) {
-                        throw "Empty Response!";
-                    }
-
-                    // delete the successfully duplicated modules.
+                    // Delete the successfully duplicated modules.
                     if (count($response->successded) > 0) {
                         if (!$DB->delete_records_list('plagiarism_copyleaks_cm_copy', 'new_cm_id', $response->successded)) {
                             \plagiarism_copyleaks_logs::add(
@@ -142,12 +138,13 @@ class plagiarism_copyleaks_cm_duplicate extends \core\task\scheduled_task {
                     // Update Failed Entites.
                     if (count($response->failed) > 0) {
                         $faileditems = [];
-                        // Collect failed item IDs and messages in an associative array for quick lookup
+
+                        // Collect failed item IDs and messages in an associative array for quick lookup.
                         foreach ($response->failed as $faileditem) {
                             $faileditems[$faileditem->id] = $faileditem->message;
                         }
 
-                        // Filter the records to update only those that have failed
+                        // Filter the records to update only those that have failed.
                         $failedcopycms = array_filter($cmstocopy, function ($module) use ($faileditems) {
                             return isset($faileditems[$module->new_cm_id]);
                         });
