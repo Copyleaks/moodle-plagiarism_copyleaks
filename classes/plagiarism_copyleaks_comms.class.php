@@ -353,14 +353,10 @@ class plagiarism_copyleaks_comms {
         try {
             if (isset($this->key) && isset($this->secret)) {
                 $chekbalance = $updateconfig ? "true" : "false";
-                $url = new moodle_url('/');
-                $domain = $url->out(false);
-                // Remove the trailing slash if it exists
-                $domain = rtrim($domain, '/');
                 $result = plagiarism_copyleaks_http_client::execute_retry(
                     'GET',
                     $this->copyleaks_api_url() . "/api/moodle/plugin/" .
-                    $this->key . "/test-connection?source=" . $context . "&checkBalance=$chekbalance" . "&domain=$domain",
+                    $this->key . "/test-connection?source=" . $context . "&checkBalance=$chekbalance",
                     true
                 );
 
@@ -414,7 +410,7 @@ class plagiarism_copyleaks_comms {
     }
 
     /**
-     * .
+     * upsert submission at Copyleaks server.
      * @param array $data
      */
     public function upsert_submission($data) {
@@ -435,6 +431,40 @@ class plagiarism_copyleaks_comms {
                 plagiarism_copyleaks_priority::HIGH,
                 $e->getMessage(),
                 $verb
+            );
+        }
+    }
+
+    /**
+     * send request to delete submission datd from copyleaks servers
+     * @param array $data
+     */
+    public function delete_submission($data) {
+        if (isset($this->key) && isset($this->secret)) {
+            $endpoint = "/api/moodle/plugin/$this->key/delete-submission";
+            $verb = 'POST';
+            plagiarism_copyleaks_http_client::execute_retry(
+                $verb,
+                $this->copyleaks_api_url() . $endpoint,
+                true,
+                json_encode($data)
+            );
+        }
+    }
+
+    /**
+     * send request to delete originality report from copyleaks servers
+     * @param array $data
+     */
+    public function delete_report($data) {
+        if (isset($this->key) && isset($this->secret)) {
+            $endpoint = "/api/moodle/plugin/$this->key/delete-report";
+            $verb = 'POST';
+            plagiarism_copyleaks_http_client::execute_retry(
+                $verb,
+                $this->copyleaks_api_url() . $endpoint,
+                true,
+                json_encode($data)
             );
         }
     }

@@ -242,7 +242,7 @@ class plagiarism_copyleaks_eventshandler {
      * @param object $cmdata
      */
     private function queue_text_content($data, $coursemodule, $authoruserid, $submitteruserid, $cmdata) {
-        global $DB;
+        global $DB, $CFG;
 
         if ($coursemodule->modname == 'workshop' && !isset($data['other']['content'])) {
             $workshopsubmissions = $DB->get_record(
@@ -263,12 +263,20 @@ class plagiarism_copyleaks_eventshandler {
         if (count($files) > 0) {
             return true;
         } else {
+            $typefield = ($CFG->dbtype == "oci") ? "to_char(submissiontype)" : "submissiontype";
+            $typefieldvalue = ($coursemodule->modname == 'forum') ? 'forum_post' : 'text_content';
+            $DB->delete_records_select(
+                'plagiarism_copyleaks_files',
+                " cm = ? AND userid = ? AND " . $typefield . " = ?",
+                array($coursemodule->id, $authoruserid, $typefieldvalue)
+            );
+           
             return $this->queue_submission_to_copyleaks(
                 $coursemodule,
                 $authoruserid,
                 $submitteruserid,
                 $contentidentifier,
-                ($coursemodule->modname == 'forum') ? 'forum_post' : 'text_content',
+                $typefieldvalue,
                 $data['objectid'],
                 $cmdata
             );
@@ -462,7 +470,7 @@ class plagiarism_copyleaks_eventshandler {
             }
         }
 
-        // If we have error message, then we don't need to send it to Copyleaks.
+     
         $submitstatus = $errormessage == null ? 'queued' : 'error';
 
         if (plagiarism_copyleaks_dbutils::is_copyleaks_api_connected()) {
@@ -479,7 +487,7 @@ class plagiarism_copyleaks_eventshandler {
                 $subtype,
                 $scheduledscandate,
                 $errormessage
-            ) && $submitstatus != 'error') {
+            )) {
                 $datetime = new DateTime();
                 $submissiondata = $this->get_submission_data($itemid, $coursemodule, $submitteruserid, $cmdata);
                 $reportdata = (array)[
@@ -487,7 +495,6 @@ class plagiarism_copyleaks_eventshandler {
                     'moodleUserId' =>  $submitteruserid,
                     'identifier' => $identifier,
                     'submissionType' => $subtype,
-                    'fileName' => $filename,
                     'scheduledScanDate' => ($datetime->setTimestamp($scheduledscandate))->format('Y-m-d H:i:s'),
                 ];
                 $data = (array)[

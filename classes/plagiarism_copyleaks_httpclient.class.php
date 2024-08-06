@@ -69,16 +69,27 @@ class plagiarism_copyleaks_http_client {
         );
 
         $version = 2024051600;
+
+        $domain = (new moodle_url('/'))->out(false);
+        $domain = rtrim($domain, '/');
+
         $headers = (array)[
             'Content-Type' => $contenttype,
-            'Plugin-Version' => "$version"
+            'Plugin-Version' => "$version",
+            'x-plugin-domain' => $domain
         ];
 
         if ($requireauth) {
             $cljwttoken = plagiarism_copyleaks_comms::login_to_copyleaks();
             $authorization = "Authorization: Bearer $cljwttoken";
             $pluginversion = "Plugin-Version: $version";
-            $headers = array('Content-Type: ' . $contenttype, $authorization, $pluginversion);
+            $domain = "x-plugin-domain: $domain";
+            $headers = array(
+                'Content-Type: ' . $contenttype,
+                $authorization,
+                $pluginversion,
+                $domain
+            );
         }
 
         $c->setHeader($headers);

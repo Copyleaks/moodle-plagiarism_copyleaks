@@ -25,10 +25,24 @@
 // We defined the web service functions to install.
 $functions = array(
   'plagiarism_copyleaks_send_notification' => array(
-    'classname'   => 'plagiarism_copyleaks_external',
+    'classname'   => 'plagiarism_copyleaks_notifications',
     'methodname'  => 'send_notification',
-    'classpath'   => 'plagiarism/copyleaks/externallib.php',
-    'description' => 'Send notification to user',
+    'classpath'   => 'plagiarism/copyleaks/classes/webservices/plagiarism_copyleaks_notifications.php',
+    'description' => 'Send notification to a specific user',
+    'type'        => 'write',
+  ),
+  'plagiarism_copyleaks_update_report_webhook' => array(
+    'classname'   => 'plagiarism_copyleaks_webhooks',
+    'methodname'  => 'update_report_webhook',
+    'classpath'   => 'plagiarism/copyleaks/classes/webservices/plagiarism_copyleaks_webhooks.php',
+    'description' => 'update originality report',
+    'type'        => 'write',
+  ),
+  'plagiarism_copyleaks_update_failed_scan_to_queued_webhook' => array(
+    'classname'   => 'plagiarism_copyleaks_webhooks',
+    'methodname'  => 'update_failed_scan_to_queued_webhook',
+    'classpath'   => 'plagiarism/copyleaks/classes/webservices/plagiarism_copyleaks_webhooks.php',
+    'description' => 'update failed scan status to queued',
     'type'        => 'write',
   ),
 );
@@ -38,9 +52,11 @@ $services = array(
   'Plagiarism Copyleaks Webservices' => array(
     'functions' => array(
       'plagiarism_copyleaks_send_notification',
+      'plagiarism_copyleaks_update_report_webhook',
+      'plagiarism_copyleaks_update_failed_scan_to_queued_webhook',
       'mod_assign_save_grade',
-      'core_grading_get_definitions',
-      'core_grades_update_grades',
+      'core_comment_add_comments',
+      'core_group_get_group_members',
     ),
     'restrictedusers' => 1,
     'enabled' => 1,

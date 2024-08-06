@@ -275,4 +275,71 @@ class plagiarism_copyleaks_submissions {
             );
         }
     }
+
+    public static function update_report(
+        $coursemoduleid,
+        $moodleuserid,
+        $identifier,
+        $scanid,
+        $status,
+        $plagiarismscore,
+        $aiscore,
+        $writingfeedbackissues,
+        $ischeatingdetected,
+        $errormessage
+
+    ) {
+        global $DB;
+        $submission = $DB->get_record(
+            'plagiarism_copyleaks_files',
+            array(
+                'cm' => $coursemoduleid,
+                'userid' => $moodleuserid,
+                'identifier' => $identifier
+            )
+        );
+
+        if (isset($submission) && $submission) {
+            $submission->externalid = $scanid;
+            if ($status == 1) {
+                $submission->statuscode = 'success';
+                $submission->similarityscore = isset($plagiarismscore) ?
+                    round($plagiarismscore, 1) : null;
+                $submission->aiscore = isset($aiscore) ?
+                    round($aiscore, 1) : null;
+                $submission->writingfeedbackissues = isset($writingfeedbackissues) ?
+                    $writingfeedbackissues : null;
+                $submission->ischeatingdetected = $ischeatingdetected;
+                if (!$DB->update_record('plagiarism_copyleaks_files', $submission)) {
+                    \plagiarism_copyleaks_logs::add(
+                        "Update record failed (CM: " . $coursemoduleid . ", User: "
+                        . $moodleuserid . ") - ",
+                        "UPDATE_RECORD_FAILED"
+                    );
+                    return false;
+                }
+            } else if ($status == 2) {
+                $submission->statuscode = 'error';
+                $submission->errormsg = $errormessage;
+                if (!$DB->update_record('plagiarism_copyleaks_files', $submission)) {
+                    \plagiarism_copyleaks_logs::add(
+                        "Update record failed (CM: " . $coursemoduleid . ", User: "
+                        . $moodleuserid . ") - ",
+                        "UPDATE_RECORD_FAILED"
+                    );
+                    return false;
+                }
+            }
+        } else {
+            \plagiarism_copyleaks_logs::add(
+                "Submission not found for Copyleaks API scan instances with the identifier: "
+                . $identifier,
+                "SUBMISSION_NOT_FOUND"
+            );
+
+            return false;
+        }
+
+        return true;
+    }
 }

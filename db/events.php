@@ -55,5 +55,17 @@ $observers = array(
     array(
         'eventname' => '\core\event\user_deleted',
         'callback'  => 'plagiarism_copyleaks_observer::core_event_user_deletion'
-    )
+    ),
+    array(
+        'eventname' => '\mod_assign\event\submission_status_updated',
+        'callback'  => 'plagiarism_copyleaks_observer::assign_submission_status_updated'
+    ),
+    array(
+        'eventname' => '\assignsubmission_file\event\submission_updated',
+        'callback'  => 'plagiarism_copyleaks_observer::assign_submission_file_updated'
+    ),
+    array(
+        'eventname' => '\assignsubmission_onlinetext\event\submission_updated',
+        'callback'  => 'plagiarism_copyleaks_observer::assign_submission_text_updated'
+    )  
 );

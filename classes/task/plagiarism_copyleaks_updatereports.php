@@ -44,7 +44,12 @@ class plagiarism_copyleaks_updatereports extends \core\task\scheduled_task {
     public function execute() {
         global $CFG;
         require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_comms.class.php');
-        $this->update_reports();
+        require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_dbutils.class.php');
+        require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_submissions.class.php');
+        // Execute only if the API is not connected.
+        if (!\plagiarism_copyleaks_dbutils::is_copyleaks_api_connected()) {
+            $this->update_reports();
+        }
     }
 
     /**
@@ -105,51 +110,19 @@ class plagiarism_copyleaks_updatereports extends \core\task\scheduled_task {
                     if (count($scaninstances) > 0) {
                         foreach ($scaninstances as $clscaninstance) {
 
-                            $currentsubmission = $DB->get_record(
-                                'plagiarism_copyleaks_files',
-                                array(
-                                    'cm' => $clscaninstance->courseModuleId,
-                                    'userid' => $clscaninstance->moodleUserId,
-                                    'identifier' => $clscaninstance->identitfier
-                                )
+                            \plagiarism_copyleaks_submissions::update_report(
+                                $clscaninstance->courseModuleId,
+                                $clscaninstance->moodleUserId,
+                                $clscaninstance->identitfier,
+                                $clscaninstance->scanId,
+                                $clscaninstance->status,
+                                $clscaninstance->plagiarismScore,
+                                $clscaninstance->aiScore,
+                                $clscaninstance->writingFeedbackIssues,
+                                $clscaninstance->isCheatingDetected,
+                                $clscaninstance->errorMessage,
                             );
-
-                            if (isset($currentsubmission)) {
-                                $currentsubmission->externalid = $clscaninstance->scanId;
-                                if ($clscaninstance->status == 1) {
-                                    $currentsubmission->statuscode = 'success';
-                                    $currentsubmission->similarityscore = isset($clscaninstance->plagiarismScore) ?
-                                        round($clscaninstance->plagiarismScore, 1) : null;
-                                    $currentsubmission->aiscore = isset($clscaninstance->aiScore) ?
-                                        round($clscaninstance->aiScore, 1) : null;
-                                    $currentsubmission->writingfeedbackissues = isset($clscaninstance->writingFeedbackIssues) ?
-                                        $clscaninstance->writingFeedbackIssues : null;
-                                    $currentsubmission->ischeatingdetected = $clscaninstance->isCheatingDetected;
-                                    if (!$DB->update_record('plagiarism_copyleaks_files', $currentsubmission)) {
-                                        \plagiarism_copyleaks_logs::add(
-                                            "Update record failed (CM: " . $cm->id . ", User: "
-                                                . $currentsubmission->userid . ") - ",
-                                            "UPDATE_RECORD_FAILED"
-                                        );
-                                    }
-                                } else if ($clscaninstance->status == 2) {
-                                    $currentsubmission->statuscode = 'error';
-                                    $currentsubmission->errormsg = $clscaninstance->errorMessage;
-                                    if (!$DB->update_record('plagiarism_copyleaks_files', $currentsubmission)) {
-                                        \plagiarism_copyleaks_logs::add(
-                                            "Update record failed (CM: " . $cm->id . ", User: "
-                                                . $currentsubmission->userid . ") - ",
-                                            "UPDATE_RECORD_FAILED"
-                                        );
-                                    }
-                                }
-                            } else {
-                                \plagiarism_copyleaks_logs::add(
-                                    "Submission not found for Copyleaks API scan instances with the identifier: "
-                                        . $clscaninstance->identitfier,
-                                    "SUBMISSION_NOT_FOUND"
-                                );
-                            }
+                              
                         }
                     }
                 } catch (\Exception $e) {

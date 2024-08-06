@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 /**
- * Copyleaks services
+ * Copyleaks notifications
  * @package   plagiarism_copyleaks
  * @author    Shade Amasha <shadea@copyleaks.com>
  * @copyright 2021 Copyleaks
@@ -23,7 +23,8 @@
 
 require_once($CFG->libdir . "/externallib.php");
 
-class plagiarism_copyleaks_external extends external_api {
+class plagiarism_copyleaks_notifications extends external_api {
+
   /**
    * Returns description of method parameters
    * @return external_function_parameters
@@ -90,16 +91,16 @@ class plagiarism_copyleaks_external extends external_api {
     $messageid = message_send($message);
 
     if ($messageid) {
-      return array('status' => true);
+      return array('success' => true);
     } else {
-      return array('status' => false);
+      return array('success' => false);
     }
   }
 
   public static function send_notification_returns() {
     return new external_single_structure(
       array(
-        'status' => new external_value(PARAM_BOOL, 'status of the notification true/success or false/failure'),
+        'success' => new external_value(PARAM_BOOL, 'status of the notification true/success or false/failure'),
       )
     );
   }

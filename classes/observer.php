@@ -25,6 +25,7 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/plagiarism/copyleaks/lib.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_eventshandler.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_comms.class.php');
 
 /**
  * Moodle events handlers for Copyleaks plagiairsm plugin
@@ -78,6 +79,97 @@ class plagiarism_copyleaks_observer {
     ) {
         $eventhandler = new plagiarism_copyleaks_eventshandler('file_uploaded', 'assign');
         $eventhandler->handle_submissions($event->get_data());
+    }
+
+
+    /**
+     * Handle assign submission deletion.
+     * @param  \mod_assign\event\submission_status_updated $event Event
+     * @return void
+     */
+    public static function assign_submission_status_updated(
+        \mod_assign\event\submission_status_updated $event
+    ) {
+        global $DB;
+        $data = $event->get_data();
+        $cmid = $data["contextinstanceid"];
+
+        if (!plagiarism_copyleaks_moduleconfig::is_module_enabled('assign', $cmid)) {
+            return;
+        }
+
+        // Get user id.
+        $userid = $data['relateduserid'];
+        if ($userid == null) {
+            $userid = $data['userid'];
+        }
+
+        // Delete in assign.
+        if ($data['target'] == 'submission_status') {
+            // The event is triggered when a submission is deleted and when the submission is passed to draft.
+            $fs = get_file_storage();
+            $submissionfiles = $fs->get_area_files(
+                $data["contextid"],
+                "assignsubmission_file",
+                'submission_files',
+                $data["objectid"]
+            );
+
+            // If the documents have been deleted in the mdl_files table, we also delete them on our side.
+            if (empty($submissionfiles)) {
+                $cl = new \plagiarism_copyleaks_comms();
+                $data = (array)[
+                    'courseModuleId' => $cmid,
+                    'moodleUserId' => $userid,
+                    'moodleSubmissionId' => $data["objectid"],
+                ];
+                $cl->delete_submission($data);
+                $DB->delete_records('plagiarism_copyleaks_files', ['cm' => $cmid, 'userid' => $userid]);
+            }
+        }
+    }
+
+    /**
+     * Handle file deletion in assign submission
+     * @param  \assignsubmission_file\event\submission_updated $event Event
+     * @return void
+     */
+    public static function assign_submission_file_updated(
+        \assignsubmission_file\event\submission_updated $event
+    ) {
+        global $DB;
+
+        $data = $event->get_data();
+        $cmid = $data["contextinstanceid"];
+
+        if (!plagiarism_copyleaks_moduleconfig::is_module_enabled('assign', $cmid)) {
+            return;
+        }
+
+        // Get user id.
+        $userid = $data['relateduserid'];
+        if ($userid == null) {
+            $userid = $data['userid'];
+        }
+
+        if ($data['target'] == 'submission' && $data['action'] == 'updated') {
+
+            $clfiles = $DB->get_records('plagiarism_copyleaks_files', ['cm' => $cmid, 'userid' => $userid, 'submissiontype' => 'file']);
+            $fs = get_file_storage();
+            foreach ($clfiles as $clfile) {
+                $file = $fs->get_file_by_hash($clfile->identifier);
+                if ($file === false) {
+                    $cl = new \plagiarism_copyleaks_comms();
+                    $data = (array)[
+                        'identifier' => $clfile->identifier,
+                        'courseModuleId' => $clfile->cm,
+                        'moodleUserId' => $clfile->userid,
+                    ];
+                    $cl->delete_report($data);
+                    $DB->delete_records('plagiarism_copyleaks_files', ['cm' => $cmid, 'userid' => $userid, 'identifier' => $clfile->identifier]);
+                }
+            }
+        }
     }
 
     /**
