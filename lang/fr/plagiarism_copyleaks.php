@@ -27,6 +27,8 @@ defined('MOODLE_INTERNAL') || die();
 
 $string['claccountconfig'] = 'Configuration du compte Copyleaks';
 $string['claccountkey'] = 'Copyleaks clé';
+$string['copyleaks:enable'] = 'Activer Copyleaks';
+$string['copyleaks:viewfullreport'] = 'Voir le rapport Web';
 $string['claccountsecret'] = 'Copyleaks secrète';
 $string['cladminconfig'] = 'Copyleaks configuration du plugin de plagiat';
 $string['cladminconfigsavesuccess'] = 'Copyleaks les paramètres de plagiat ont été enregistrés avec succès.';
