@@ -116,5 +116,23 @@
         <INDEX NAME="task" UNIQUE="true" FIELDS="task"/>
       </INDEXES>
     </TABLE>
+
+      <TABLE NAME="plagiarism_copyleaks_cm_copy" COMMENT="Copyleaks course modules pending duplication">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="course_id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="original_cm_id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/> 
+        <FIELD NAME="new_cm_id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="status" TYPE="int" LENGTH="1" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="errormsg" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id" />
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="new_cm_id" UNIQUE="false" FIELDS="new_cm_id"/>
+        <INDEX NAME="status" UNIQUE="false" FIELDS="status"/>
+      </INDEXES>
+    </TABLE>
   </TABLES>
 </XMLDB>

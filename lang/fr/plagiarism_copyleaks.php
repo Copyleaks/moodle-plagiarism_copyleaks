@@ -81,6 +81,7 @@ $string['clstudentdagreedtoeula'] = '<span>Vous avez déjà accepté le service 
 $string['cltaskfailedconnecting'] = 'La connexion à Copyleaks ne peut pas être établie, erreur : {$a}';
 $string['clupdateerror'] = 'Erreur lors de la tentative de mise à jour des enregistrements dans la base de données';
 $string['clupdatereportscores'] = 'Plugin de plagiat Copyleaks - gérer la mise à jour du score de similarité de la vérification du plagiat';
+$string['clduplicatecoursemodules'] = "Plugin de plagiat Copyleaks - gérer la duplication des modules de cours";
 $string['copyleaks'] = 'Copyleaks';
 $string['pluginname'] = 'Plugin de plagiat Copyleaks';
 
@@ -104,6 +105,8 @@ $string['cltimehours'] = 'heures';
 $string['cltimedays'] = 'jours';
 $string['cltimemonths'] = 'mois';
 $string['cltimemin'] = 'dans';
+$string['clpendingduplication'] = 'En attente de duplication';
+$string['clfailedduplication'] = 'Échec de la duplication';
 
 $string['privacy:metadata:core_files'] = 'Copyleaks stocke les fichiers qui ont été téléchargés sur Moodle pour former une soumission Copyleaks.';
 $string['privacy:metadata:plagiarism_copyleaks_client'] = 'Afin de s\'intégrer à un Copyleaks, certaines données utilisateur doivent être échangées avec Copyleaks.';

@@ -409,6 +409,23 @@ class plagiarism_copyleaks_comms {
     }
 
     /**
+     * duplicate course modules data at Copyleaks server.
+     * @param array $data
+     * @return mixed
+     */
+    public function duplicate_course_modules($data) {
+        if (isset($this->key) && isset($this->secret)) {
+            $response = plagiarism_copyleaks_http_client::execute(
+                'POST',
+                $this->copyleaks_api_url() . "/api/moodle/plugin/$this->key/duplicate-modules",
+                true,
+                json_encode($data)
+            );
+            return $response;
+        }
+    }
+
+    /**
      * Update courses at Copyleaks server.
      * @param array $data
      */
@@ -443,7 +460,6 @@ class plagiarism_copyleaks_comms {
             plagiarism_copyleaks_logs::add($errormsg, 'API_ERROR');
         }
     }
-
 
     /**
      * Update course module temp id at Copyleaks server.
