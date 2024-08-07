@@ -265,6 +265,7 @@ class plagiarism_copyleaks_eventshandler {
         } else {
             $typefield = ($CFG->dbtype == "oci") ? "to_char(submissiontype)" : "submissiontype";
             $typefieldvalue = ($coursemodule->modname == 'forum') ? 'forum_post' : 'text_content';
+            // use itemid instead of userid
             $DB->delete_records_select(
                 'plagiarism_copyleaks_files',
                 " cm = ? AND userid = ? AND " . $typefield . " = ?",

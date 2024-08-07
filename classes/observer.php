@@ -158,6 +158,7 @@ class plagiarism_copyleaks_observer {
             $fs = get_file_storage();
             foreach ($clfiles as $clfile) {
                 $file = $fs->get_file_by_hash($clfile->identifier);
+                
                 if ($file === false) {
                     $cl = new \plagiarism_copyleaks_comms();
                     $data = (array)[
@@ -168,6 +169,10 @@ class plagiarism_copyleaks_observer {
                     $cl->delete_report($data);
                     $DB->delete_records('plagiarism_copyleaks_files', ['cm' => $cmid, 'userid' => $userid, 'identifier' => $clfile->identifier]);
                 }
+            }
+
+            // if group submission
+            if ($data['other']['groupid'] !== 0) {
             }
         }
     }
