@@ -348,6 +348,8 @@ class plagiarism_copyleaks_eventshandler {
 
         foreach ($data['other']['pathnamehashes'] as $pathnamehash) {
 
+            $hashedcontent = $this->check_existing_file_identifier($pathnamehash, $coursemodule, $authoruserid);
+
             $filestorage = get_file_storage();
             $fileref = $filestorage->get_file_by_hash($pathnamehash);
 
@@ -380,11 +382,50 @@ class plagiarism_copyleaks_eventshandler {
                 $pathnamehash,
                 'file',
                 $data['objectid'],
-                $cmdata
+                $cmdata,
+                $hashedcontent
             );
         }
 
         return $result;
+    }
+
+    /**
+     * Check if same identifier already exists in copyleaks_files table,
+     * in case the content is different it will be deleted.
+     * @param string $pathnamehash
+     * @return string hashed content
+     */
+    private function check_existing_file_identifier($pathnamehash, $coursemodule, $authoruserid) {
+        global $DB, $CFG;
+
+        $filerecord = $DB->get_record('files', array('pathnamehash' => $pathnamehash));
+        $hashedcontent = null;
+
+        if ($filerecord) {
+            $hashedcontent = $filerecord->contenthash;
+
+            $typefield = ($CFG->dbtype == "oci") ? "to_char(submissiontype)" : "submissiontype";
+
+            $savedfiles = $DB->get_records_select(
+                'plagiarism_copyleaks_files',
+                " cm = ? AND userid = ? AND " . $typefield . " = ? AND identifier = ?",
+                array($coursemodule->id, $authoruserid, "file", $pathnamehash)
+            );
+
+            if (count($savedfiles) > 0) {
+                $savedfile = reset($savedfiles);
+
+                if (isset($savedfile->hashedcontent) && $savedfile->hashedcontent != $hashedcontent) {
+                    $DB->delete_records_select(
+                        'plagiarism_copyleaks_files',
+                        " cm = ? AND userid = ? AND " . $typefield . " = ? AND identifier = ?",
+                        array($coursemodule->id, $authoruserid, "file", $pathnamehash)
+                    );
+                }
+            }
+        }
+        return $hashedcontent;
     }
 
     /**
@@ -405,7 +446,8 @@ class plagiarism_copyleaks_eventshandler {
         $identifier,
         $subtype,
         $itemid,
-        $cmdata
+        $cmdata,
+        $hashedcontent = null
     ) {
         global $DB, $CFG;
 
@@ -431,7 +473,13 @@ class plagiarism_copyleaks_eventshandler {
             // Submission already exists, do not queue it again.
             return true;
         } else {
-            $submissionid = plagiarism_copyleaks_submissions::create($coursemodule, $authoruserid, $identifier, $subtype);
+            $submissionid = plagiarism_copyleaks_submissions::create(
+                $coursemodule,
+                $authoruserid,
+                $identifier,
+                $subtype,
+                $hashedcontent
+            );
         }
 
         // Check if file type is supported by Copyleaks.
@@ -455,7 +503,6 @@ class plagiarism_copyleaks_eventshandler {
 
         // Scan immediately.
         $scheduledscandate = strtotime('- 1 minutes');
-
         if (isset($cmdata->duedate)) {
             // Get module settings.
             $clmoduleconfig = $DB->get_records_menu(

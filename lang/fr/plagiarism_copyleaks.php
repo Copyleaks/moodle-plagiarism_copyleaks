@@ -27,6 +27,8 @@ defined('MOODLE_INTERNAL') || die();
 
 $string['claccountconfig'] = 'Configuration du compte Copyleaks';
 $string['claccountkey'] = 'Copyleaks clé';
+$string['copyleaks:enable'] = 'Activer Copyleaks';
+$string['copyleaks:viewfullreport'] = 'Voir le rapport Web';
 $string['claccountsecret'] = 'Copyleaks secrète';
 $string['cladminconfig'] = 'Copyleaks configuration du plugin de plagiat';
 $string['cladminconfigsavesuccess'] = 'Copyleaks les paramètres de plagiat ont été enregistrés avec succès.';
@@ -68,6 +70,7 @@ $string['clscoursesettings'] = 'Paramètres de fuites de copie';
 $string['clsendqueuedsubmissions'] = 'Plugin de plagiat Copyleaks - gérer les fichiers en file d\'attente';
 $string['clsendresubmissionsfiles'] = "Plugin de plagiat Copyleaks - gérer les résultats soumis à nouveau";
 $string['clsyncoriginalityscore'] = "Plugin de plagiat Copyleaks - gérer la synchronisation des scores de plagiat";
+$string['clsyncconfigtask'] = "Plugin de plagiat Copyleaks - gérer la synchronisation des configurations";
 $string['clsendrequestqueue'] = "Plugin de plagiat Copyleaks - gérer les demandes de relance en file d'attente";
 $string['clupserteulausers'] = "Plugin de plagiat Copyleaks - gérer la mise à jour des utilisateurs d'acceptation eula";
 $string['clbackgroundtask'] = "Plugin de plagiat Copyleaks - gérer les tâches en arrière-plan";

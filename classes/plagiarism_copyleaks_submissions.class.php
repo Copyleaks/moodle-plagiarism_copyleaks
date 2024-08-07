@@ -39,7 +39,7 @@ class plagiarism_copyleaks_submissions {
      * @param string $identifier
      * @param string $submissiontype
      **/
-    public static function create($cm, $userid, $identifier, $submissiontype) {
+    public static function create($cm, $userid, $identifier, $submissiontype, $hashedcontent = null) {
         global $DB;
 
         $file = new stdClass();
@@ -49,6 +49,7 @@ class plagiarism_copyleaks_submissions {
         $file->statuscode = "queued";
         $file->similarityscore = null;
         $file->submissiontype = $submissiontype;
+        $file->hashedcontent = $hashedcontent;
 
         if (!$fileid = $DB->insert_record('plagiarism_copyleaks_files', $file)) {
             \plagiarism_copyleaks_logs::add(

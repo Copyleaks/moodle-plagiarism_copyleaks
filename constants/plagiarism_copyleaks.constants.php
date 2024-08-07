@@ -67,3 +67,7 @@ define('PLAGIARISM_COPYLEAKS_SCAN_PLAGIARISM_FIELD_NAME', 'plagiarism_copyleaks_
 define('PLAGIARISM_COPYLEAKS_DETECT_GRAMMAR_FIELD_NAME', 'plagiarism_copyleaks_enable_grammar_detection');
 define('PLAGIARISM_COPYLEAKS_DETECT_WF_ISSUES_FIELD_NAME', 'plagiarism_copyleaks_enable_wf_issues_detection');
 define('PLAGIARISM_COPYLEAKS_API_CONNECTION_STATUS_FIELD_NAME', 'plagiarism_copyleaks_api_connected');
+
+define('PLAGIARISM_COPYLEAKS_ENABLE_AI_VIEW_FOR_STUDENT', 'enable_ai_result_view_for_student');
+define('PLAGIARISM_COPYLEAKS_ENABLE_PLAGIARISM_VIEW_FOR_STUDENT', 'enable_plagiairsm_result_view_for_student');
+define('PLAGIARISM_COPYLEAKS_ENABLE_WF_VIEW_FOR_STUDENT', 'enable_writing_assisstant_result_view_for_student');

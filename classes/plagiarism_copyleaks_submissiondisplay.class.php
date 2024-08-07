@@ -21,6 +21,8 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use core\plugininfo\plagiarism;
+
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_pluginconfig.class.php');
@@ -234,6 +236,18 @@ class plagiarism_copyleaks_submissiondisplay {
                         case 'success':
                             // Detection data - wich detection to display.
                             $detectiondata = plagiarism_copyleaks_dbutils::get_config_scanning_detection();
+                            $enableairesultviewforstudent = plagiarism_copyleaks_dbutils::is_config_result_view_enable(
+                                PLAGIARISM_COPYLEAKS_ENABLE_AI_VIEW_FOR_STUDENT,
+                                $submissionref["cmid"]
+                            );
+                            $enableplagiarismresultviewforstudent = plagiarism_copyleaks_dbutils::is_config_result_view_enable(
+                                PLAGIARISM_COPYLEAKS_ENABLE_PLAGIARISM_VIEW_FOR_STUDENT,
+                                $submissionref["cmid"]
+                            );
+                            $enablewfresultviewforstudent = plagiarism_copyleaks_dbutils::is_config_result_view_enable(
+                                PLAGIARISM_COPYLEAKS_ENABLE_WF_VIEW_FOR_STUDENT,
+                                $submissionref["cmid"]
+                            );
 
                             // Plagiarism Score level class.
                             $scorelevelclass = '';
@@ -292,7 +306,7 @@ class plagiarism_copyleaks_submissiondisplay {
                                     ) .
                                         html_writer::tag(
                                             'div',
-                                            (isset($results["aiscore"]) ? html_writer::tag(
+                                            (isset($results["aiscore"]) && $enableairesultviewforstudent ? html_writer::tag(
                                                 'span',
                                                 '',
                                                 array('class' => "score-level $aiscorelevel")
@@ -314,7 +328,7 @@ class plagiarism_copyleaks_submissiondisplay {
                                         ($submittedfile->ischeatingdetected ? $cheatdetectionicon : '') .
                                         html_writer::tag(
                                             'div',
-                                            (isset($results["score"]) ? html_writer::tag(
+                                            (isset($results["score"]) && $enableplagiarismresultviewforstudent ? html_writer::tag(
                                                 'span',
                                                 '',
                                                 array('class' => "score-level $scorelevelclass")
@@ -335,7 +349,7 @@ class plagiarism_copyleaks_submissiondisplay {
                                     ) .
                                         html_writer::tag(
                                             'div',
-                                            (isset($results["writingfeedbackissues"]) ?
+                                            (isset($results["writingfeedbackissues"]) && $enablewfresultviewforstudent ?
                                                 html_writer::tag(
                                                     'span',
                                                     '',
