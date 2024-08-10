@@ -141,6 +141,7 @@ class plagiarism_copyleaks_observer {
 
         $data = $event->get_data();
         $cmid = $data["contextinstanceid"];
+        $submissionid = $data["other"]["submissionid"];
 
         if (!plagiarism_copyleaks_moduleconfig::is_module_enabled('assign', $cmid)) {
             return;
@@ -154,11 +155,10 @@ class plagiarism_copyleaks_observer {
 
         if ($data['target'] == 'submission' && $data['action'] == 'updated') {
 
-            $clfiles = $DB->get_records('plagiarism_copyleaks_files', ['cm' => $cmid, 'userid' => $userid, 'submissiontype' => 'file']);
+            $clfiles = $DB->get_records('plagiarism_copyleaks_files', ['cm' => $cmid, 'itemid' => $submissionid, 'submissiontype' => 'file']);
             $fs = get_file_storage();
             foreach ($clfiles as $clfile) {
                 $file = $fs->get_file_by_hash($clfile->identifier);
-                
                 if ($file === false) {
                     $cl = new \plagiarism_copyleaks_comms();
                     $data = (array)[
@@ -167,14 +167,51 @@ class plagiarism_copyleaks_observer {
                         'moodleUserId' => $clfile->userid,
                     ];
                     $cl->delete_report($data);
-                    $DB->delete_records('plagiarism_copyleaks_files', ['cm' => $cmid, 'userid' => $userid, 'identifier' => $clfile->identifier]);
+                    $DB->delete_records('plagiarism_copyleaks_files', ['cm' => $cmid, 'userid' => $clfile->userid, 'identifier' => $clfile->identifier]);
                 }
             }
-
-            // if group submission
-            if ($data['other']['groupid'] !== 0) {
-            }
         }
+    }
+
+    /**
+     * assign submission comment creation event handler.
+     * @param \assignsubmission_comments\event\comment_created $event
+     */
+    public static function assign_submission_comment_created(
+        \assignsubmission_comments\event\comment_created $event
+    ) {
+        global $DB;
+        $datetime = new DateTime();
+        $eventdata = $event->get_data();
+        $commentcontent = $DB->get_record('comments', ['id' => $eventdata['objectid']], 'content');
+        $commentdata = (array)[
+            'commentid' => $eventdata['objectid'],
+            'submissionid' => $eventdata['other']['itemid'],
+            'cmid' => $eventdata['contextinstanceid'],
+            'userid' => $eventdata['userid'],
+            'content' => $commentcontent->content,
+            'createdAt' => ($datetime->setTimestamp($eventdata['timecreated']))->format('Y-m-d H:i:s'),
+        ];
+
+        // sync comment creation  with copyleaks
+    }
+
+    /**
+     * assign submission comment deletion event handler.
+     * @param \assignsubmission_comments\event\comment_deleted $event
+     */
+    public static function assign_submission_comment_deleted(
+        \assignsubmission_comments\event\comment_deleted $event
+    ) {
+        $eventdata = $event->get_data();
+        $commentdata = (array)[
+            'commentid' => $eventdata['objectid'],
+            'submissionid' => $eventdata['other']['itemid'],
+            'cmid' => $eventdata['contextinstanceid'],
+            'userid' => $eventdata['userid'],
+        ];
+
+        //delete data from copyleaks
     }
 
     /**

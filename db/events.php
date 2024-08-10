@@ -67,5 +67,13 @@ $observers = array(
     array(
         'eventname' => '\assignsubmission_onlinetext\event\submission_updated',
         'callback'  => 'plagiarism_copyleaks_observer::assign_submission_text_updated'
-    )  
+    ),
+    array(
+        'eventname' => '\assignsubmission_comments\event\comment_created',
+        'callback'  => 'plagiarism_copyleaks_observer::assign_submission_comment_created'
+    ),
+    array(
+        'eventname' => '\assignsubmission_comments\event\comment_deleted',
+        'callback'  => 'plagiarism_copyleaks_observer::assign_submission_comment_deleted'
+    ),
 );

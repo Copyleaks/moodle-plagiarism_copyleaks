@@ -265,11 +265,10 @@ class plagiarism_copyleaks_eventshandler {
         } else {
             $typefield = ($CFG->dbtype == "oci") ? "to_char(submissiontype)" : "submissiontype";
             $typefieldvalue = ($coursemodule->modname == 'forum') ? 'forum_post' : 'text_content';
-            // use itemid instead of userid
             $DB->delete_records_select(
                 'plagiarism_copyleaks_files',
-                " cm = ? AND userid = ? AND " . $typefield . " = ?",
-                array($coursemodule->id, $authoruserid, $typefieldvalue)
+                " cm = ? AND itemid = ? AND " . $typefield . " = ?",
+                array($coursemodule->id, $data['objectid'], $typefieldvalue)
             );
            
             return $this->queue_submission_to_copyleaks(
@@ -460,13 +459,12 @@ class plagiarism_copyleaks_eventshandler {
             $fileref = $filestorage->get_file_by_hash($identifier);
             $filename = $fileref->get_filename();
         }
-
         // Check if submission already exists.
         $typefield = ($CFG->dbtype == "oci") ? " to_char(submissiontype) " : " submissiontype ";
         if ($DB->get_records_select(
             'plagiarism_copyleaks_files',
-            " cm = ? AND userid = ? AND " . $typefield . " = ? AND identifier = ?",
-            array($coursemodule->id, $authoruserid, $subtype, $identifier),
+            " cm = ? AND itemid = ? AND " . $typefield . " = ? AND identifier = ? AND hashedcontent = ?",
+            array($coursemodule->id, $itemid, $subtype, $identifier, $hashedcontent),
             'id',
             'id'
         )) {
