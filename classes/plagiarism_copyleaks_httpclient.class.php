@@ -68,11 +68,10 @@ class plagiarism_copyleaks_http_client {
             )
         );
 
-
         $domain = (new moodle_url('/'))->out(false);
         $domain = rtrim($domain, '/');
 
-        $version = 2024072800;
+        $version = 2024081000;
         $headers = (array)[
             'Content-Type' => $contenttype,
             'Plugin-Version' => "$version",
