@@ -64,39 +64,40 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
         // Check if plugin is configured and enabled.
         if (
             empty($data->modulename) ||
-            !plagiarism_copyleaks_pluginconfig::is_plugin_configured('mod_' . $data->modulename) ||
-            !$data->plagiarism_copyleaks_enable
+            !plagiarism_copyleaks_pluginconfig::is_plugin_configured('mod_' . $data->modulename) 
         ) {
             return;
         }
 
-        // If the record exists with status:ERROR, delete it.
-        if (plagiarism_copyleaks_dbutils::is_cm_duplicated_error($data->coursemodule)) {
-            $DB->delete_records('plagiarism_copyleaks_cm_copy', array('new_cm_id' => $data->coursemodule));
+        if ($data->plagiarism_copyleaks_enable) {
+            // If the record exists with status:ERROR, delete it.
+            if (plagiarism_copyleaks_dbutils::is_cm_duplicated_error($data->coursemodule)) {
+                $DB->delete_records('plagiarism_copyleaks_cm_copy', array('new_cm_id' => $data->coursemodule));
+            }
+
+            if (plagiarism_copyleaks_dbutils::is_cm_duplicated_queued($data->coursemodule)) {
+                return;
+            }
+
+            $cl = new plagiarism_copyleaks_comms();
+            $course = get_course($data->course);
+            $duedate = plagiarism_copyleaks_utils::get_course_module_duedate($data->coursemodule);
+            $coursestartdate = plagiarism_copyleaks_utils::get_course_start_date($data->course);
+            $updatedata = array(
+                'tempCourseModuleId' => isset($data->plagiarism_copyleaks_tempcmid) ? $data->plagiarism_copyleaks_tempcmid : null,
+                'courseModuleId' => $data->coursemodule,
+                'name' => $data->name,
+                'moduleName' => $data->modulename,
+                'courseId' => $data->course,
+                'courseName' => $course->fullname,
+                'dueDate' => $duedate,
+                'courseStartDate' => $coursestartdate
+
+            );
+
+            $cl->upsert_course_module($updatedata);
         }
-
-        if (plagiarism_copyleaks_dbutils::is_cm_duplicated_queued($data->coursemodule)) {
-            return;
-        }
-
-        $cl = new plagiarism_copyleaks_comms();
-        $course = get_course($data->course);
-        $duedate = plagiarism_copyleaks_utils::get_course_module_duedate($data->coursemodule);
-        $coursestartdate = plagiarism_copyleaks_utils::get_course_start_date($data->course);
-        $updatedata = array(
-            'tempCourseModuleId' => isset($data->plagiarism_copyleaks_tempcmid) ? $data->plagiarism_copyleaks_tempcmid : null,
-            'courseModuleId' => $data->coursemodule,
-            'name' => $data->name,
-            'moduleName' => $data->modulename,
-            'courseId' => $data->course,
-            'courseName' => $course->fullname,
-            'dueDate' => $duedate,
-            'courseStartDate' => $coursestartdate
-
-        );
-
-        $cl->upsert_course_module($updatedata);
-
+     
         try {
             // Get copyleaks api course module settings.
             $cl = new plagiarism_copyleaks_comms();
