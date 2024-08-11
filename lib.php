@@ -64,22 +64,22 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
         // Check if plugin is configured and enabled.
         if (
             empty($data->modulename) ||
-            !plagiarism_copyleaks_pluginconfig::is_plugin_configured('mod_' . $data->modulename) 
+            !plagiarism_copyleaks_pluginconfig::is_plugin_configured('mod_' . $data->modulename)
         ) {
             return;
         }
 
+        // If the record exists with status:ERROR, delete it.
+        if (plagiarism_copyleaks_dbutils::is_cm_duplicated_error($data->coursemodule)) {
+            $DB->delete_records('plagiarism_copyleaks_cm_copy', array('new_cm_id' => $data->coursemodule));
+        }
+
         if ($data->plagiarism_copyleaks_enable) {
-            // If the record exists with status:ERROR, delete it.
-            if (plagiarism_copyleaks_dbutils::is_cm_duplicated_error($data->coursemodule)) {
-                $DB->delete_records('plagiarism_copyleaks_cm_copy', array('new_cm_id' => $data->coursemodule));
-            }
 
             if (plagiarism_copyleaks_dbutils::is_cm_duplicated_queued($data->coursemodule)) {
                 return;
             }
 
-            $cl = new plagiarism_copyleaks_comms();
             $course = get_course($data->course);
             $duedate = plagiarism_copyleaks_utils::get_course_module_duedate($data->coursemodule);
             $coursestartdate = plagiarism_copyleaks_utils::get_course_start_date($data->course);
@@ -92,30 +92,28 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
                 'courseName' => $course->fullname,
                 'dueDate' => $duedate,
                 'courseStartDate' => $coursestartdate
-
             );
 
-            $cl->upsert_course_module($updatedata);
+            try {
+                $cl = new plagiarism_copyleaks_comms();
+                $cl->upsert_course_module($updatedata);
+            } catch (plagiarism_copyleaks_exception $ex) {
+                $errormessage = get_string('clfailtosavedata', 'plagiarism_copyleaks');
+                plagiarism_copyleaks_logs::add($errormessage . ': ' . $ex->getMessage(), 'API_ERROR');
+                throw new moodle_exception($errormessage);
+            } catch (plagiarism_copyleaks_auth_exception $ex) {
+                throw new moodle_exception(get_string('clinvalidkeyorsecret', 'plagiarism_copyleaks'));
+            }
         }
-     
-        try {
-            // Get copyleaks api course module settings.
-            $cl = new plagiarism_copyleaks_comms();
 
-            plagiarism_copyleaks_moduleconfig::set_module_config(
-                $data->coursemodule,
-                $data->plagiarism_copyleaks_enable,
-                isset($data->plagiarism_copyleaks_draftsubmit) ? $data->plagiarism_copyleaks_draftsubmit : 0,
-                isset($data->plagiarism_copyleaks_reportgen) ? $data->plagiarism_copyleaks_reportgen : 0,
-                $data->plagiarism_copyleaks_allowstudentaccess
-            );
-        } catch (plagiarism_copyleaks_exception $ex) {
-            $errormessage = get_string('clfailtosavedata', 'plagiarism_copyleaks');
-            plagiarism_copyleaks_logs::add($errormessage . ': ' . $ex->getMessage(), 'API_ERROR');
-            throw new moodle_exception($errormessage);
-        } catch (plagiarism_copyleaks_auth_exception $ex) {
-            throw new moodle_exception(get_string('clinvalidkeyorsecret', 'plagiarism_copyleaks'));
-        }
+        plagiarism_copyleaks_moduleconfig::set_module_config(
+            $data->coursemodule,
+            $data->plagiarism_copyleaks_enable,
+            isset($data->plagiarism_copyleaks_draftsubmit) ? $data->plagiarism_copyleaks_draftsubmit : 0,
+            isset($data->plagiarism_copyleaks_reportgen) ? $data->plagiarism_copyleaks_reportgen : 0,
+            $data->plagiarism_copyleaks_allowstudentaccess
+        );
+
     }
 
     /**
@@ -132,8 +130,7 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
         global $DB, $CFG, $OUTPUT;
 
         // This is a bit of a hack and untidy way to ensure the form elements aren't displayed,
-        // twice. This won't be needed once this method goes away.
-        // TODO: Remove once this method goes away.
+        // twice. This won't be needed once this method goes away.        
         static $settingsdisplayed;
         if ($settingsdisplayed) {
             return;
