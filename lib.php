@@ -130,7 +130,7 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
         global $DB, $CFG, $OUTPUT;
 
         // This is a bit of a hack and untidy way to ensure the form elements aren't displayed,
-        // twice. This won't be needed once this method goes away.        
+        // Twice. This won't be needed once this method goes away.
         static $settingsdisplayed;
         if ($settingsdisplayed) {
             return;
