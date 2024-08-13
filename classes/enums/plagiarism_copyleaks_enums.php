@@ -21,6 +21,7 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
+
 /**
  * This class is used as an enum in order to know what status the submissions are.
  */
@@ -83,7 +84,7 @@ class plagiarism_copyleaks_times {
     const MONTHS = 4;
 }
 
-// this class is used as an enum in order to know the grade types
+// This class is used as an enum in order to know the grade types.
 class plagiarism_copyleaks_grade_types {
     /** @var int Represents a grade type of 'None' (no grading). */
     const NONE = 0;
@@ -93,7 +94,7 @@ class plagiarism_copyleaks_grade_types {
     const POINT = 2;
 }
 
-// this class is used as an enum in order to know the grade methods
+// This class is used as an enum in order to know the grade methods.
 class plagiarism_copyleaks_grade_methods {
     /** @var int Represents a grading method of 'None' (no grading method). */
     const NONE = 0;
@@ -105,11 +106,20 @@ class plagiarism_copyleaks_grade_methods {
     const RUBRIC = 3;
 }
 
-class  plagiarism_copyleaks_additional_attempts_method {
+class plagiarism_copyleaks_additional_attempts_method {
     /** @var int Represents a method of 'Never' (no additional attempts allowed). */
     const NEVER = 0;
     /** @var int Represents a method of 'Manually' (additional attempts allowed manually). */
     const MANUAL = 1;
     /** @var int Represents a method of 'automatically Until Pass' (additional attempts allowed automatically until pass). */
     const UNTIL_PASS = 3;
+}
+/**
+ * This class is used as an enum in order to know the status of course module duplication.
+ */
+class plagiarism_copyleaks_cm_duplication_status {
+    /** @var int course module queued and awaiting duplication. */
+    const QUEUED = 1;
+    /** @var int duplication process failed */
+    const ERROR = 2;
 }
