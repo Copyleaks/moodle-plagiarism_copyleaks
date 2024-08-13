@@ -508,5 +508,29 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2024071800, 'plagiarism', 'copyleaks');
     }
 
+    if ($oldversion < 2024081200) {
+        $table = new xmldb_table('plagiarism_copyleaks_cm_copy');
+
+        // Adding fields to table plagiarism_copyleaks_cm_copy.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('course_id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('original_cm_id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('new_cm_id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('status', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('errormsg', XMLDB_TYPE_TEXT, null, null, null, null, null);
+
+        // Adding keys and indexes to table plagiarism_copyleaks_cm_copy.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        $table->add_index('new_cm_id', XMLDB_INDEX_NOTUNIQUE, array('new_cm_id'));
+        $table->add_index('status', XMLDB_INDEX_NOTUNIQUE, array('status'));
+
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Copyleaks savepoint reached.
+        upgrade_plugin_savepoint(true, 2024081200, 'plagiarism', 'copyleaks');
+    }
+
     return true;
 }

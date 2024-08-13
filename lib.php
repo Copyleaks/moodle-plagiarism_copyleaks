@@ -31,6 +31,7 @@ require_once($CFG->dirroot . '/plagiarism/lib.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_pluginconfig.class.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_moduleconfig.class.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/constants/plagiarism_copyleaks.constants.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/enums/plagiarism_copyleaks_enums.php');
 
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_assignmodule.class.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_utils.class.php');
@@ -59,47 +60,60 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
      * @param stdClass $data form data
      */
     public function save_form_elements($data) {
+        global $DB;
         // Check if plugin is configured and enabled.
-        if (empty($data->modulename) || !plagiarism_copyleaks_pluginconfig::is_plugin_configured('mod_' . $data->modulename)) {
+        if (
+            empty($data->modulename) ||
+            !plagiarism_copyleaks_pluginconfig::is_plugin_configured('mod_' . $data->modulename)
+        ) {
             return;
         }
 
-        // Save settings to Copyleaks.
-        $cl = new plagiarism_copyleaks_comms();
-        $course = get_course($data->course);
-        $duedate = plagiarism_copyleaks_utils::get_course_module_duedate($data->coursemodule);
-        $coursestartdate = plagiarism_copyleaks_utils::get_course_start_date($data->course);
-        $updatedata = array(
-            'tempCourseModuleId' => isset($data->plagiarism_copyleaks_tempcmid) ? $data->plagiarism_copyleaks_tempcmid : null,
-            'courseModuleId' => $data->coursemodule,
-            'name' => $data->name,
-            'moduleName' => $data->modulename,
-            'courseId' => $data->course,
-            'courseName' => $course->fullname,
-            'dueDate' => $duedate,
-            'courseStartDate' => $coursestartdate
-
-        );
-        $cl->upsert_course_module($updatedata);
-
-        try {
-            // Get copyleaks api course module settings.
-            $cl = new plagiarism_copyleaks_comms();
-
-            plagiarism_copyleaks_moduleconfig::set_module_config(
-                $data->coursemodule,
-                $data->plagiarism_copyleaks_enable,
-                isset($data->plagiarism_copyleaks_draftsubmit) ? $data->plagiarism_copyleaks_draftsubmit : 0,
-                isset($data->plagiarism_copyleaks_reportgen) ? $data->plagiarism_copyleaks_reportgen : 0,
-                $data->plagiarism_copyleaks_allowstudentaccess
-            );
-        } catch (plagiarism_copyleaks_exception $ex) {
-            $errormessage = get_string('clfailtosavedata', 'plagiarism_copyleaks');
-            plagiarism_copyleaks_logs::add($errormessage . ': ' . $ex->getMessage(), 'API_ERROR');
-            throw new moodle_exception($errormessage);
-        } catch (plagiarism_copyleaks_auth_exception $ex) {
-            throw new moodle_exception(get_string('clinvalidkeyorsecret', 'plagiarism_copyleaks'));
+        // If the record exists with status:ERROR, delete it.
+        if (plagiarism_copyleaks_dbutils::is_cm_duplicated_error($data->coursemodule)) {
+            $DB->delete_records('plagiarism_copyleaks_cm_copy', array('new_cm_id' => $data->coursemodule));
         }
+
+        if ($data->plagiarism_copyleaks_enable) {
+
+            if (plagiarism_copyleaks_dbutils::is_cm_duplicated_queued($data->coursemodule)) {
+                return;
+            }
+
+            $course = get_course($data->course);
+            $duedate = plagiarism_copyleaks_utils::get_course_module_duedate($data->coursemodule);
+            $coursestartdate = plagiarism_copyleaks_utils::get_course_start_date($data->course);
+            $updatedata = array(
+                'tempCourseModuleId' => isset($data->plagiarism_copyleaks_tempcmid) ? $data->plagiarism_copyleaks_tempcmid : null,
+                'courseModuleId' => $data->coursemodule,
+                'name' => $data->name,
+                'moduleName' => $data->modulename,
+                'courseId' => $data->course,
+                'courseName' => $course->fullname,
+                'dueDate' => $duedate,
+                'courseStartDate' => $coursestartdate
+            );
+
+            try {
+                $cl = new plagiarism_copyleaks_comms();
+                $cl->upsert_course_module($updatedata);
+            } catch (plagiarism_copyleaks_exception $ex) {
+                $errormessage = get_string('clfailtosavedata', 'plagiarism_copyleaks');
+                plagiarism_copyleaks_logs::add($errormessage . ': ' . $ex->getMessage(), 'API_ERROR');
+                throw new moodle_exception($errormessage);
+            } catch (plagiarism_copyleaks_auth_exception $ex) {
+                throw new moodle_exception(get_string('clinvalidkeyorsecret', 'plagiarism_copyleaks'));
+            }
+        }
+
+        plagiarism_copyleaks_moduleconfig::set_module_config(
+            $data->coursemodule,
+            $data->plagiarism_copyleaks_enable,
+            isset($data->plagiarism_copyleaks_draftsubmit) ? $data->plagiarism_copyleaks_draftsubmit : 0,
+            isset($data->plagiarism_copyleaks_reportgen) ? $data->plagiarism_copyleaks_reportgen : 0,
+            $data->plagiarism_copyleaks_allowstudentaccess
+        );
+
     }
 
     /**
@@ -113,10 +127,10 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
      * @param string $modulename
      */
     public function get_form_elements_module($mform, $context, $modulename = "") {
-        global $DB, $CFG;
+        global $DB, $CFG, $OUTPUT;
+
         // This is a bit of a hack and untidy way to ensure the form elements aren't displayed,
-        // twice. This won't be needed once this method goes away.
-        // TODO: Remove once this method goes away.
+        // Twice. This won't be needed once this method goes away.
         static $settingsdisplayed;
         if ($settingsdisplayed) {
             return;
@@ -136,110 +150,150 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
                 get_string('clscoursesettings', 'plagiarism_copyleaks')
             );
 
-            // Database settings.
-            $mform->addElement(
-                'advcheckbox',
-                'plagiarism_copyleaks_enable',
-                get_string('clenable', 'plagiarism_copyleaks')
-            );
+            $cmid = optional_param('update', null, PARAM_INT);
+            $addparam = optional_param('add', null, PARAM_TEXT);
+            $isnewactivity = isset($addparam) && $addparam != "0";
 
-            // Add draft submission properties only if exists.
-            if ($mform->elementExists('submissiondrafts')) {
+            if (!$isnewactivity && plagiarism_copyleaks_dbutils::is_cm_duplicated_queued($cmid)) {
+                $pendingduplication = html_writer::tag(
+                    'div',
+                    $OUTPUT->pix_icon(
+                        'copyleaks-spinner',
+                        null,
+                        'plagiarism_copyleaks',
+                        array('class' => 'cls-icon-no-margin')
+                    ) .
+                        html_writer::tag(
+                            'div',
+                            get_string('clpendingduplication', 'plagiarism_copyleaks'),
+                        ),
+                    array('class' => 'copyleaks-text-gray cls-gap-eight-container')
+                );
+                $mform->addElement('html', $pendingduplication . '<br>');
+            } else {
+
+                if (!$isnewactivity && plagiarism_copyleaks_dbutils::is_cm_duplicated_error($cmid)) {
+                    $cmduplicationerror = plagiarism_copyleaks_dbutils::get_cm_duplicated_error_message($cmid);
+                    $duplicationerror = html_writer::tag(
+                        'div',
+                        $OUTPUT->pix_icon(
+                            'copyleaks-error',
+                            null,
+                            'plagiarism_copyleaks',
+                            array('class' => 'cls-icon-no-margin')
+                        ) .
+                            html_writer::tag(
+                                'div',
+                                get_string('clfailedduplication', 'plagiarism_copyleaks') . ": " . $cmduplicationerror,
+                            ),
+                        array('class' => 'copyleaks-text-warn cls-gap-eight-container')
+                    );
+                    $mform->addElement('html',  $duplicationerror);
+                }
+
+                // Database settings.
                 $mform->addElement(
                     'advcheckbox',
-                    'plagiarism_copyleaks_draftsubmit',
-                    get_string("cldraftsubmit", "plagiarism_copyleaks")
-                );
-                $mform->addHelpButton(
-                    'plagiarism_copyleaks_draftsubmit',
-                    'cldraftsubmit',
-                    'plagiarism_copyleaks'
-                );
-                $mform->disabledIf(
-                    'plagiarism_copyleaks_draftsubmit',
-                    'submissiondrafts',
-                    'eq',
-                    0
-                );
-            }
-
-            // Add due date properties only if exists.
-            if ($mform->elementExists('duedate')) {
-                $genoptions = array(
-                    0 => get_string('clgenereportimmediately', 'plagiarism_copyleaks'),
-                    1 => get_string('clgenereportonduedate', 'plagiarism_copyleaks')
-                );
-                $mform->addElement(
-                    'select',
-                    'plagiarism_copyleaks_reportgen',
-                    get_string("clreportgenspeed", "plagiarism_copyleaks"),
-                    $genoptions
-                );
-            }
-
-            $mform->addElement(
-                'advcheckbox',
-                'plagiarism_copyleaks_allowstudentaccess',
-                get_string('clallowstudentaccess', 'plagiarism_copyleaks')
-            );
-
-            $cmid = optional_param('update', null, PARAM_INT);
-            $savedvalues = $DB->get_records_menu('plagiarism_copyleaks_config', array('cm' => $cmid), '', 'name,value');
-            if (count($savedvalues) > 0) {
-                // Add check for a new Course Module (for lower versions).
-                $mform->setDefault(
                     'plagiarism_copyleaks_enable',
-                    isset($savedvalues['plagiarism_copyleaks_enable']) ? $savedvalues['plagiarism_copyleaks_enable'] : 0
+                    get_string('clenable', 'plagiarism_copyleaks')
                 );
 
-                $draftsubmit = isset($savedvalues['plagiarism_copyleaks_draftsubmit']) ?
-                    $savedvalues['plagiarism_copyleaks_draftsubmit'] : 0;
-
-                $mform->setDefault('plagiarism_copyleaks_draftsubmit', $draftsubmit);
-                if (isset($savedvalues['plagiarism_copyleaks_reportgen'])) {
-                    $mform->setDefault('plagiarism_copyleaks_reportgen', $savedvalues['plagiarism_copyleaks_reportgen']);
-                }
-                if (isset($savedvalues['plagiarism_copyleaks_allowstudentaccess'])) {
-                    $mform->setDefault(
-                        'plagiarism_copyleaks_allowstudentaccess',
-                        $savedvalues['plagiarism_copyleaks_allowstudentaccess']
+                // Add draft submission properties only if exists.
+                if ($mform->elementExists('submissiondrafts')) {
+                    $mform->addElement(
+                        'advcheckbox',
+                        'plagiarism_copyleaks_draftsubmit',
+                        get_string("cldraftsubmit", "plagiarism_copyleaks")
+                    );
+                    $mform->addHelpButton(
+                        'plagiarism_copyleaks_draftsubmit',
+                        'cldraftsubmit',
+                        'plagiarism_copyleaks'
+                    );
+                    $mform->disabledIf(
+                        'plagiarism_copyleaks_draftsubmit',
+                        'submissiondrafts',
+                        'eq',
+                        0
                     );
                 }
-            } else {
-                $mform->setDefault('plagiarism_copyleaks_enable', false);
-                $mform->setDefault('plagiarism_copyleaks_draftsubmit', 0);
-                $mform->setDefault('plagiarism_copyleaks_reportgen', 0);
-                $mform->setDefault('plagiarism_copyleaks_allowstudentaccess', 0);
-            }
 
-            $settingslinkparams = "?";
-            $addparam = optional_param('add', null, PARAM_TEXT);
-            $courseid = optional_param('course', 0, PARAM_INT);
-            $isnewactivity = isset($addparam) && $addparam != "0";
-            if ($isnewactivity) {
-                $cmid = plagiarism_copyleaks_utils::get_copyleaks_temp_course_module_id("$courseid");
+                // Add due date properties only if exists.
+                if ($mform->elementExists('duedate')) {
+                    $genoptions = array(
+                        0 => get_string('clgenereportimmediately', 'plagiarism_copyleaks'),
+                        1 => get_string('clgenereportonduedate', 'plagiarism_copyleaks')
+                    );
+                    $mform->addElement(
+                        'select',
+                        'plagiarism_copyleaks_reportgen',
+                        get_string("clreportgenspeed", "plagiarism_copyleaks"),
+                        $genoptions
+                    );
+                }
+
                 $mform->addElement(
-                    'hidden',
-                    'plagiarism_copyleaks_tempcmid',
-                    "$cmid"
-
+                    'advcheckbox',
+                    'plagiarism_copyleaks_allowstudentaccess',
+                    get_string('clallowstudentaccess', 'plagiarism_copyleaks')
                 );
-                // Need to set type for Moodle's older version.
-                $mform->setType('plagiarism_copyleaks_tempcmid', PARAM_INT);
-                $settingslinkparams = $settingslinkparams . "isnewactivity=$isnewactivity&courseid=$courseid&";
+
+                $savedvalues = $DB->get_records_menu('plagiarism_copyleaks_config', array('cm' => $cmid), '', 'name,value');
+                if (count($savedvalues) > 0) {
+                    // Add check for a new Course Module (for lower versions).
+                    $mform->setDefault(
+                        'plagiarism_copyleaks_enable',
+                        isset($savedvalues['plagiarism_copyleaks_enable']) ? $savedvalues['plagiarism_copyleaks_enable'] : 0
+                    );
+
+                    $draftsubmit = isset($savedvalues['plagiarism_copyleaks_draftsubmit']) ?
+                        $savedvalues['plagiarism_copyleaks_draftsubmit'] : 0;
+
+                    $mform->setDefault('plagiarism_copyleaks_draftsubmit', $draftsubmit);
+                    if (isset($savedvalues['plagiarism_copyleaks_reportgen'])) {
+                        $mform->setDefault('plagiarism_copyleaks_reportgen', $savedvalues['plagiarism_copyleaks_reportgen']);
+                    }
+                    if (isset($savedvalues['plagiarism_copyleaks_allowstudentaccess'])) {
+                        $mform->setDefault(
+                            'plagiarism_copyleaks_allowstudentaccess',
+                            $savedvalues['plagiarism_copyleaks_allowstudentaccess']
+                        );
+                    }
+                } else {
+                    $mform->setDefault('plagiarism_copyleaks_enable', false);
+                    $mform->setDefault('plagiarism_copyleaks_draftsubmit', 0);
+                    $mform->setDefault('plagiarism_copyleaks_reportgen', 0);
+                    $mform->setDefault('plagiarism_copyleaks_allowstudentaccess', 0);
+                }
+
+                $settingslinkparams = "?";
+                $courseid = optional_param('course', 0, PARAM_INT);
+
+                if ($isnewactivity) {
+                    $cmid = plagiarism_copyleaks_utils::get_copyleaks_temp_course_module_id("$courseid");
+                    $mform->addElement(
+                        'hidden',
+                        'plagiarism_copyleaks_tempcmid',
+                        "$cmid"
+
+                    );
+                    // Need to set type for Moodle's older version.
+                    $mform->setType('plagiarism_copyleaks_tempcmid', PARAM_INT);
+                    $settingslinkparams = $settingslinkparams . "isnewactivity=$isnewactivity&courseid=$courseid&";
+                }
+
+                $settingslinkparams = $settingslinkparams . "cmid=$cmid&modulename=$modulename";
+
+                $btn = plagiarism_copyleaks_utils::get_copyleaks_settings_button_link($settingslinkparams, false, $cmid);
+                $mform->addElement('html', $btn);
+
+                $cm = get_coursemodule_from_id('', $cmid);
+                $isanalyticsdisabled = $isnewactivity || !plagiarism_copyleaks_moduleconfig::is_module_enabled($cm->modname, $cmid);
+                $btn = plagiarism_copyleaks_utils::get_copyleaks_analytics_button_link($cmid,  $isanalyticsdisabled);
+                $mform->addElement('html', $btn);
+
+                $settingsdisplayed = true;
             }
-
-            $settingslinkparams = $settingslinkparams . "cmid=$cmid&modulename=$modulename";
-
-            $btn = plagiarism_copyleaks_utils::get_copyleaks_settings_button_link($settingslinkparams, false, $cmid);
-            $mform->addElement('html', $btn);
-
-            $cm = get_coursemodule_from_id('', $cmid);
-            $isanalyticsdisabled = $isnewactivity || !plagiarism_copyleaks_moduleconfig::is_module_enabled($cm->modname, $cmid);
-            $btn = plagiarism_copyleaks_utils::get_copyleaks_analytics_button_link($cmid,  $isanalyticsdisabled);
-            $mform->addElement('html', $btn);
-
-            $settingsdisplayed = true;
         }
     }
 
