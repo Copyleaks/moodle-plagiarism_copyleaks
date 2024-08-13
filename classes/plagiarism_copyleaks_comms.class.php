@@ -470,6 +470,40 @@ class plagiarism_copyleaks_comms {
     }
 
     /**
+     * send request to delete assign submission comment from copyleaks servers
+     * @param array $data
+     */
+    public function delete_assign_submission_comment($data) {
+        if (isset($this->key) && isset($this->secret)) {
+            $endpoint = "/api/moodle/plugin/$this->key/webhooks/delete-assign-submission-comment";
+            $verb = 'POST';
+            plagiarism_copyleaks_http_client::execute_retry(
+                $verb,
+                $this->copyleaks_api_url() . $endpoint,
+                true,
+                json_encode($data)
+            );
+        }
+    }
+
+    /**
+     * send request to add assign submission comment from copyleaks servers
+     * @param array $data
+     */
+    public function add_assign_submission_comment($data) {
+        if (isset($this->key) && isset($this->secret)) {
+            $endpoint = "/api/moodle/plugin/$this->key/webhooks/add-assign-submission-comment";
+            $verb = 'POST';
+            plagiarism_copyleaks_http_client::execute_retry(
+                $verb,
+                $this->copyleaks_api_url() . $endpoint,
+                true,
+                json_encode($data)
+            );
+        }
+    }
+
+    /**
      * Update courses at Copyleaks server.
      * @param array $data
      */

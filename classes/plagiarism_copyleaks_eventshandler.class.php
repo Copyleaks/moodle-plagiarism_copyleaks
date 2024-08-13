@@ -535,10 +535,10 @@ class plagiarism_copyleaks_eventshandler {
                 $errormessage
             )) {
                 $datetime = new DateTime();
-                $submissiondata = $this->get_submission_data($itemid, $coursemodule, $submitteruserid, $cmdata);
+                $submissiondata = $this->get_submission_data($itemid, $coursemodule, $authoruserid, $cmdata);
                 $reportdata = (array)[
                     'courseModuleId' => $coursemodule->id,
-                    'moodleUserId' =>  $submitteruserid,
+                    'moodleUserId' =>  $authoruserid,
                     'identifier' => $identifier,
                     'submissionType' => $subtype,
                     'scheduledScanDate' => ($datetime->setTimestamp($scheduledscandate))->format('Y-m-d H:i:s'),

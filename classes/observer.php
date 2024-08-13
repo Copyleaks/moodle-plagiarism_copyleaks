@@ -181,6 +181,7 @@ class plagiarism_copyleaks_observer {
         \assignsubmission_comments\event\comment_created $event
     ) {
         global $DB;
+        $cl = new \plagiarism_copyleaks_comms();
         $datetime = new DateTime();
         $eventdata = $event->get_data();
         $commentcontent = $DB->get_record('comments', ['id' => $eventdata['objectid']], 'content');
@@ -193,7 +194,7 @@ class plagiarism_copyleaks_observer {
             'createdAt' => ($datetime->setTimestamp($eventdata['timecreated']))->format('Y-m-d H:i:s'),
         ];
 
-        // sync comment creation  with copyleaks
+        $cl->add_assign_submission_comment($commentdata);
     }
 
     /**
@@ -204,6 +205,7 @@ class plagiarism_copyleaks_observer {
         \assignsubmission_comments\event\comment_deleted $event
     ) {
         $eventdata = $event->get_data();
+        $cl = new \plagiarism_copyleaks_comms();
         $commentdata = (array)[
             'commentid' => $eventdata['objectid'],
             'submissionid' => $eventdata['other']['itemid'],
@@ -211,7 +213,7 @@ class plagiarism_copyleaks_observer {
             'userid' => $eventdata['userid'],
         ];
 
-        //delete data from copyleaks
+        $cl->delete_assign_submission_comment($commentdata);
     }
 
     /**
