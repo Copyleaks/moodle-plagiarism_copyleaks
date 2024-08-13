@@ -152,6 +152,13 @@ a.copyleaks-settings-link:hover {
     display: flex;
 }
 
+.cls-gap-eight-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.cls-gap-container,
 .cls-details-header .cls-action {
     display: flex;
     align-items: center;

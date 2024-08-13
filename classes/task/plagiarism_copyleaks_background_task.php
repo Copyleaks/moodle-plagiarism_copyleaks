@@ -15,6 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 /**
  * Copyleaks Plagiarism Plugin - Handle Resubmit Files
+ *
  * @package   plagiarism_copyleaks
  * @copyright 2023 Copyleaks
  * @author    Gil Cohen <gilc@copyleaks.com>
