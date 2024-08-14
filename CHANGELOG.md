@@ -1,3 +1,7 @@
+### [v2024081400] - 2024-Aug-14
+- Support for duplicating, copying, and importing courses and modules within the same environment.
+<br>
+
 ### [v2024040200] - 2024-Apr-02
 - Support Writing Assistance
 <br>
