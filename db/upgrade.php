@@ -508,7 +508,7 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2024071800, 'plagiarism', 'copyleaks');
     }
 
-    if ($oldversion < 2024081200) {
+    if ($oldversion < 2024081401) {
         $table = new xmldb_table('plagiarism_copyleaks_cm_copy');
 
         // Adding fields to table plagiarism_copyleaks_cm_copy.
@@ -529,7 +529,7 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         }
 
         // Copyleaks savepoint reached.
-        upgrade_plugin_savepoint(true, 2024081200, 'plagiarism', 'copyleaks');
+        upgrade_plugin_savepoint(true, 2024081401, 'plagiarism', 'copyleaks');
     }
 
     return true;
