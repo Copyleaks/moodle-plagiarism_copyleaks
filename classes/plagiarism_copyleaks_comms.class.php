@@ -520,6 +520,27 @@ class plagiarism_copyleaks_comms {
     }
 
     /**
+     * Update submission grade.
+     * @param array $data
+     * @return object all the user ids that was updated succesfully in Copyleaks server
+     */
+    public function upsert_submission_grade($data) {
+        $endpoint = "/api/moodle/plugin/$this->key/upsert-submission-grade";
+        $verb = 'POST';
+        try {
+            plagiarism_copyleaks_http_client::execute_retry(
+                $verb,
+                $this->copyleaks_api_url() . $endpoint,
+                true,
+                json_encode($data)
+            );
+        } catch (\Exception $e) {
+            $errormsg = get_string('cltaskfailedconnecting', 'plagiarism_copyleaks', $e->getMessage());
+            plagiarism_copyleaks_logs::add($errormsg, 'API_ERROR');
+        }
+    }
+
+    /**
      * Update courses at Copyleaks server.
      * @param array $data
      */

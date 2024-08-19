@@ -76,4 +76,8 @@ $observers = array(
         'eventname' => '\assignsubmission_comments\event\comment_deleted',
         'callback'  => 'plagiarism_copyleaks_observer::assign_submission_comment_deleted'
     ),
+    array(
+        'eventname' => '\core\event\user_graded',
+        'callback'  => 'plagiarism_copyleaks_observer::user_graded'
+    ),
 );

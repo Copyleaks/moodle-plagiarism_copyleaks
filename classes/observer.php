@@ -186,10 +186,10 @@ class plagiarism_copyleaks_observer {
         $eventdata = $event->get_data();
         $commentcontent = $DB->get_record('comments', ['id' => $eventdata['objectid']], 'content');
         $commentdata = (array)[
-            'commentid' => $eventdata['objectid'],
-            'submissionid' => $eventdata['other']['itemid'],
-            'cmid' => $eventdata['contextinstanceid'],
-            'userid' => $eventdata['userid'],
+            'commentId' => $eventdata['objectid'],
+            'submissionId' => $eventdata['other']['itemid'],
+            'courseModuleId' => $eventdata['contextinstanceid'],
+            'userId' => $eventdata['userid'],
             'content' => $commentcontent->content,
             'createdAt' => ($datetime->setTimestamp($eventdata['timecreated']))->format('Y-m-d H:i:s'),
         ];
@@ -207,10 +207,10 @@ class plagiarism_copyleaks_observer {
         $eventdata = $event->get_data();
         $cl = new \plagiarism_copyleaks_comms();
         $commentdata = (array)[
-            'commentid' => $eventdata['objectid'],
-            'submissionid' => $eventdata['other']['itemid'],
-            'cmid' => $eventdata['contextinstanceid'],
-            'userid' => $eventdata['userid'],
+            'commentId' => $eventdata['objectid'],
+            'submissionId' => $eventdata['other']['itemid'],
+            'courseModuleId' => $eventdata['contextinstanceid'],
+            'userId' => $eventdata['userid'],
         ];
 
         $cl->delete_assign_submission_comment($commentdata);
@@ -271,4 +271,39 @@ class plagiarism_copyleaks_observer {
         $plugin = new plagiarism_copyleaks_eventshandler('quiz_submitted', 'quiz');
         $plugin->handle_submissions($eventdata);
     }
+
+    /**
+     * user graded event handler.
+     * @param \core\event\user_graded $event
+     */
+    public static function user_graded(
+        \core\event\user_graded $event
+    ) {
+        global $DB;
+        $eventdata = $event->get_data();
+
+        if (!$item = $DB->get_record('grade_items', ['id' => $eventdata['other']['itemid']])) {
+            return;
+        }
+        if (!$DB->get_record('grade_grades', ['id' => $eventdata['objectid']])) {
+            return;
+        }
+
+        if ($item->itemtype == 'mod') {
+            $cl = new \plagiarism_copyleaks_comms();
+
+            $cmid = get_coursemodule_from_instance($item->itemmodule, $item->iteminstance, $eventdata['courseid'])->id;
+            $userid     = ($eventdata['relateduserid']) ? $eventdata['relateduserid'] : $eventdata['userid'];
+            $finalgrade = $eventdata['other']['finalgrade'];
+
+            $data = (array)[
+                'courseModuleId' => $cmid,
+                'moodleUserId' => $userid,
+                'finalGrade' => $finalgrade,
+            ];
+
+            $cl->upsert_submission_grade($data);
+        }
+    }
+
 }
