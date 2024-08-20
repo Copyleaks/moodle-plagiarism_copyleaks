@@ -647,7 +647,7 @@ class plagiarism_copyleaks_eventshandler {
      * @param string $submitteruserid
      * @param object $cmdata
      */
-    private function get_submission_data($itemid, $coursemodule, $submitteruserid, $cmdata) {
+    private function get_submission_data($itemid, $coursemodule, $authoruserid, $cmdata) {
         global $DB;
         $datetime = new DateTime();
         $submissiondata = array();
@@ -660,7 +660,7 @@ class plagiarism_copyleaks_eventshandler {
 
                 $submissiondata['moodleSubmissionId'] = $submissionrecord->id;
                 $submissiondata['attempt'] = $submissionrecord->attemptnumber;
-                $submissiondata['moodleUserId'] = $submitteruserid;
+                $submissiondata['moodleUserId'] = $authoruserid;
                 $submissiondata['courseModuleId'] = $coursemodule->id;
                 if (isset($submissionrecord->timecreated)) {
                     $submissiondata['createdAt'] = ($datetime->setTimestamp($submissionrecord->timecreated))->format('Y-m-d H:i:s');
@@ -673,6 +673,30 @@ class plagiarism_copyleaks_eventshandler {
                         $submissiondata['groupName'] = $group->name;
                     }
                 }
+                break;
+
+            case 'forum':
+                //these are only the essential three params to vreate the sumbission entity key  
+                //later we will commplete the needed submission data
+                $submissiondata['moodleSubmissionId'] = $itemid;
+                $submissiondata['moodleUserId'] = $authoruserid;
+                $submissiondata['courseModuleId'] = $coursemodule->id;
+                break;
+
+            case 'workshop':
+                //these are only the essential three params to vreate the sumbission entity key  
+                //later we will commplete the needed submission data
+                $submissiondata['moodleSubmissionId'] = $itemid;
+                $submissiondata['moodleUserId'] = $authoruserid;
+                $submissiondata['courseModuleId'] = $coursemodule->id;
+                break;
+
+            case 'quiz':
+                //these are only the essential three params to vreate the sumbission entity key  
+                //later we will commplete the needed submission data
+                $submissiondata['moodleSubmissionId'] = $itemid;
+                $submissiondata['moodleUserId'] = $authoruserid;
+                $submissiondata['courseModuleId'] = $coursemodule->id;
                 break;
 
             default:
