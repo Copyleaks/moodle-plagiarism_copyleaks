@@ -534,21 +534,10 @@ class plagiarism_copyleaks_eventshandler {
                 $scheduledscandate,
                 $errormessage
             )) {
-                $datetime = new DateTime();
-                $submissiondata = $this->get_submission_data($itemid, $coursemodule, $authoruserid, $cmdata);
-                $reportdata = (array)[
-                    'courseModuleId' => $coursemodule->id,
-                    'moodleUserId' =>  $authoruserid,
-                    'identifier' => $identifier,
-                    'submissionType' => $subtype,
-                    'scheduledScanDate' => ($datetime->setTimestamp($scheduledscandate))->format('Y-m-d H:i:s'),
-                ];
-                $data = (array)[
-                    'submission' => $submissiondata,
-                    'report' => $reportdata
-                ];
-                $cl->upsert_submission($data);
-
+                if ($this->modulename == 'assign') {
+                    $data = $this->get_assign_submission_data($itemid, $coursemodule, $authoruserid, $cmdata, $identifier, $subtype, $scheduledscandate);
+                    $cl->upsert_submission($data);
+                }
                 return true;
             };
         }
@@ -640,70 +629,55 @@ class plagiarism_copyleaks_eventshandler {
 
 
     /**
-     * get submission data
+     * get assign submission data
      * @param object $data
      * @param object $coursemodule
      * @param string $authoruserid
      * @param string $submitteruserid
      * @param object $cmdata
+     * @param object $identifier
+     * @param string $subtype
+     * @param int $scheduledscandate
      */
-    private function get_submission_data($itemid, $coursemodule, $authoruserid, $cmdata) {
+    private function get_assign_submission_data($itemid, $coursemodule, $authoruserid, $cmdata, $identifier, $subtype, $scheduledscandate) {
         global $DB;
-        $datetime = new DateTime();
+
+
         $submissiondata = array();
-        switch ($this->modulename) {
-            case 'assign':
-                $submissionrecord = $DB->get_record(
-                    'assign_submission',
-                    array('id' => $itemid)
-                );
+        $submissionrecord = $DB->get_record(
+            'assign_submission',
+            array('id' => $itemid)
+        );
 
-                $submissiondata['moodleSubmissionId'] = $submissionrecord->id;
-                $submissiondata['attempt'] = $submissionrecord->attemptnumber;
-                $submissiondata['moodleUserId'] = $authoruserid;
-                $submissiondata['courseModuleId'] = $coursemodule->id;
-                if (isset($submissionrecord->timecreated)) {
-                    $submissiondata['createdAt'] = ($datetime->setTimestamp($submissionrecord->timecreated))->format('Y-m-d H:i:s');
-                }
-
-                if ($cmdata->teamsubmission == "1") {
-                    $group = $DB->get_record('groups', array('id' => $submissionrecord->groupid), 'id, name');
-                    if ($group) {
-                        $submissiondata['groupId'] = $group->id;
-                        $submissiondata['groupName'] = $group->name;
-                    }
-                }
-                break;
-
-            case 'forum':
-                //these are only the essential three params to vreate the sumbission entity key  
-                //later we will commplete the needed submission data
-                $submissiondata['moodleSubmissionId'] = $itemid;
-                $submissiondata['moodleUserId'] = $authoruserid;
-                $submissiondata['courseModuleId'] = $coursemodule->id;
-                break;
-
-            case 'workshop':
-                //these are only the essential three params to vreate the sumbission entity key  
-                //later we will commplete the needed submission data
-                $submissiondata['moodleSubmissionId'] = $itemid;
-                $submissiondata['moodleUserId'] = $authoruserid;
-                $submissiondata['courseModuleId'] = $coursemodule->id;
-                break;
-
-            case 'quiz':
-                //these are only the essential three params to vreate the sumbission entity key  
-                //later we will commplete the needed submission data
-                $submissiondata['moodleSubmissionId'] = $itemid;
-                $submissiondata['moodleUserId'] = $authoruserid;
-                $submissiondata['courseModuleId'] = $coursemodule->id;
-                break;
-
-            default:
-                break;
+        $submissiondata['moodleSubmissionId'] = $submissionrecord->id;
+        $submissiondata['attempt'] = $submissionrecord->attemptnumber;
+        $submissiondata['moodleUserId'] = $authoruserid;
+        $submissiondata['courseModuleId'] = $coursemodule->id;
+        if (isset($submissionrecord->timecreated)) {
+            $submissiondata['createdAt'] = ((new DateTime())->setTimestamp($submissionrecord->timecreated))->format('Y-m-d H:i:s');
         }
 
-        return $submissiondata;
+        if ($cmdata->teamsubmission == "1") {
+            $group = $DB->get_record('groups', array('id' => $submissionrecord->groupid), 'id, name');
+            if ($group) {
+                $submissiondata['groupId'] = $group->id;
+                $submissiondata['groupName'] = $group->name;
+            }
+        }
+
+        $reportdata = (array)[
+            'courseModuleId' => $coursemodule->id,
+            'moodleUserId' =>  $authoruserid,
+            'identifier' => $identifier,
+            'submissionType' => $subtype,
+            'scheduledScanDate' => ((new DateTime())->setTimestamp($scheduledscandate))->format('Y-m-d H:i:s'),
+        ];
+        $data = (array)[
+            'submission' => $submissiondata,
+            'report' => $reportdata
+        ];
+
+        return $data;
     }
 
 }
