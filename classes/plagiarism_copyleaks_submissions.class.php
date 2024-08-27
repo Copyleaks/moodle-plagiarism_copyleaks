@@ -277,6 +277,21 @@ class plagiarism_copyleaks_submissions {
         }
     }
 
+
+    /**
+     * Update report 
+     * @param  string $coursemoduleid  Course module ID
+     * @param  string $moodleuserid    Moodle user ID
+     * @param  string $identifier      Identifier
+     * @param  string $scanid          Scan ID
+     * @param  int    $status          Report scan status
+     * @param  float  $plagiarismscore Plagiarism score
+     * @param  float  $aiscore         AI score
+     * @param  int    $writingfeedbackissues Writing feedback issues
+     * @param  bool   $ischeatingdetected    Is cheating detected
+     * @param  string $errormessage    Error message
+     * @return bool  true if success, false if failed
+     */
     public static function update_report(
         $coursemoduleid,
         $moodleuserid,

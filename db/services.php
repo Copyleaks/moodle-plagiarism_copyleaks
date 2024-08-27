@@ -57,6 +57,7 @@ $services = array(
       'mod_assign_save_grade',
       'core_comment_add_comments',
       'core_group_get_group_members',
+      'core_competency_get_scale_values',
     ),
     'restrictedusers' => 1,
     'enabled' => 1,
