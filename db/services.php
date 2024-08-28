@@ -45,6 +45,13 @@ $functions = array(
     'description' => 'update failed scan status to queued',
     'type'        => 'write',
   ),
+  'plagiarism_copyleaks_get_course_groups_info' => array(
+    'classname'   => 'plagiarism_copyleaks_course_groups',
+    'methodname'  => 'get_course_groups_info',
+    'classpath'   => 'plagiarism/copyleaks/classes/webservices/plagiarism_copyleaks_course_groups.php',
+    'description' => 'Get course groups info',
+    'type'        => 'read',
+  ),
 );
 
 // Pre-built service.
@@ -54,9 +61,9 @@ $services = array(
       'plagiarism_copyleaks_send_notification',
       'plagiarism_copyleaks_update_report_webhook',
       'plagiarism_copyleaks_update_failed_scan_to_queued_webhook',
+      'plagiarism_copyleaks_get_course_groups_info',
       'mod_assign_save_grade',
       'core_comment_add_comments',
-      'core_group_get_group_members',
       'core_competency_get_scale_values',
     ),
     'restrictedusers' => 1,
