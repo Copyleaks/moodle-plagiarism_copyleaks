@@ -80,4 +80,24 @@ $observers = array(
         'eventname' => '\core\event\user_graded',
         'callback'  => 'plagiarism_copyleaks_observer::user_graded'
     ),
+    array(
+        'eventname' => '\core\event\group_created',
+        'callback'  => 'plagiarism_copyleaks_observer::group_created'
+    ),
+    array(
+        'eventname' => '\core\event\group_deleted',
+        'callback'  => 'plagiarism_copyleaks_observer::group_deleted'
+    ),
+    array(
+        'eventname' => '\core\event\group_updated',
+        'callback'  => 'plagiarism_copyleaks_observer::group_updated'
+    ),
+    array(
+        'eventname' => '\core\event\group_member_added',
+        'callback'  => 'plagiarism_copyleaks_observer::group_member_added'
+    ),
+    array(
+        'eventname' => '\core\event\group_member_removed',
+        'callback'  => 'plagiarism_copyleaks_observer::group_member_removed'
+    ),
 );

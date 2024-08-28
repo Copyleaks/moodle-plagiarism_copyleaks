@@ -661,7 +661,6 @@ class plagiarism_copyleaks_eventshandler {
             $group = $DB->get_record('groups', array('id' => $submissionrecord->groupid), 'id, name');
             if ($group) {
                 $submissiondata['groupId'] = $group->id;
-                $submissiondata['groupName'] = $group->name;
             }
         }
 

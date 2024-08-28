@@ -520,12 +520,111 @@ class plagiarism_copyleaks_comms {
     }
 
     /**
-     * Update submission grade.
+     * Update assign grade.
      * @param array $data
-     * @return object all the user ids that was updated succesfully in Copyleaks server
      */
-    public function upsert_submission_grade($data) {
-        $endpoint = "/api/moodle/plugin/$this->key/upsert-submission-grade";
+    public function upsert_assign_grade($data) {
+        $endpoint = "/api/moodle/plugin/$this->key/webhooks/upsert-assign-grade";
+        $verb = 'POST';
+        try {
+            plagiarism_copyleaks_http_client::execute_retry(
+                $verb,
+                $this->copyleaks_api_url() . $endpoint,
+                true,
+                json_encode($data)
+            );
+        } catch (\Exception $e) {
+            $errormsg = get_string('cltaskfailedconnecting', 'plagiarism_copyleaks', $e->getMessage());
+            plagiarism_copyleaks_logs::add($errormsg, 'API_ERROR');
+        }
+    }
+
+    /**
+     * Create group.
+     * @param array $data
+     */
+    public function create_group($data) {
+        $endpoint = "/api/moodle/plugin/$this->key/webhooks/create-group";
+        $verb = 'POST';
+        try {
+            plagiarism_copyleaks_http_client::execute_retry(
+                $verb,
+                $this->copyleaks_api_url() . $endpoint,
+                true,
+                json_encode($data)
+            );
+        } catch (\Exception $e) {
+            $errormsg = get_string('cltaskfailedconnecting', 'plagiarism_copyleaks', $e->getMessage());
+            plagiarism_copyleaks_logs::add($errormsg, 'API_ERROR');
+        }
+    }
+
+    /**
+     * Delete group.
+     * @param array $data
+     */
+    public function delete_group($data) {
+        $endpoint = "/api/moodle/plugin/$this->key/webhooks/delete-group";
+        $verb = 'POST';
+        try {
+            plagiarism_copyleaks_http_client::execute_retry(
+                $verb,
+                $this->copyleaks_api_url() . $endpoint,
+                true,
+                json_encode($data)
+            );
+        } catch (\Exception $e) {
+            $errormsg = get_string('cltaskfailedconnecting', 'plagiarism_copyleaks', $e->getMessage());
+            plagiarism_copyleaks_logs::add($errormsg, 'API_ERROR');
+        }
+    }
+
+    /**
+     * update group.
+     * @param array $data
+     */
+    public function update_group($data) {
+        $endpoint = "/api/moodle/plugin/$this->key/webhooks/update-group";
+        $verb = 'POST';
+        try {
+            plagiarism_copyleaks_http_client::execute_retry(
+                $verb,
+                $this->copyleaks_api_url() . $endpoint,
+                true,
+                json_encode($data)
+            );
+        } catch (\Exception $e) {
+            $errormsg = get_string('cltaskfailedconnecting', 'plagiarism_copyleaks', $e->getMessage());
+            plagiarism_copyleaks_logs::add($errormsg, 'API_ERROR');
+        }
+    }
+
+    /**
+     * Add group member.
+     * @param array $data
+     */
+    public function add_group_member($data) {
+        $endpoint = "/api/moodle/plugin/$this->key/webhooks/add-group-member";
+        $verb = 'POST';
+        try {
+            plagiarism_copyleaks_http_client::execute_retry(
+                $verb,
+                $this->copyleaks_api_url() . $endpoint,
+                true,
+                json_encode($data)
+            );
+        } catch (\Exception $e) {
+            $errormsg = get_string('cltaskfailedconnecting', 'plagiarism_copyleaks', $e->getMessage());
+            plagiarism_copyleaks_logs::add($errormsg, 'API_ERROR');
+        }
+    }
+
+    /**
+     * remove group member.
+     * @param array $data
+     */
+    public function remove_group_member($data) {
+        $endpoint = "/api/moodle/plugin/$this->key/webhooks/remove-group-member";
         $verb = 'POST';
         try {
             plagiarism_copyleaks_http_client::execute_retry(
