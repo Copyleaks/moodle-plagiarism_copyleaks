@@ -24,6 +24,7 @@ defined('MOODLE_INTERNAL') || die();
 
 $string['pluginname']  = 'Copyleaks plagiarism plugin';
 $string['copyleaks'] = 'Copyleaks';
+$string['messageprovider:copyleaks_notification'] = "Copyleaks notification";
 $string['copyleaks:enable'] = 'Enable Copyleaks';
 $string['copyleaks:viewfullreport'] = 'View Web Report';
 $string['clstudentdisclosure'] = 'Student disclosure';
