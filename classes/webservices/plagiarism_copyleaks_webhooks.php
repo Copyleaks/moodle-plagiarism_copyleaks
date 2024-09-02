@@ -112,7 +112,7 @@ class plagiarism_copyleaks_webhooks extends external_api {
   public static function update_report_webhook_returns() {
     return new external_single_structure(
       array(
-        'success' => new external_value(PARAM_BOOL, 'Status of the update')
+        'success' => new external_value(PARAM_BOOL, 'Status of the operation')
       )
     );
   }
@@ -161,13 +161,13 @@ class plagiarism_copyleaks_webhooks extends external_api {
   }
 
   /**
-   * Describes the return value for Update_report_webhook
+   * Describes the return value for update_failed_scan_to_queued
    * @return external_single_structure
    */
   public static function update_failed_scan_to_queued_webhook_returns() {
     return new external_single_structure(
       array(
-        'success' => new external_value(PARAM_BOOL, 'Status of the update')
+        'success' => new external_value(PARAM_BOOL, 'Status of the operation')
       )
     );
   }

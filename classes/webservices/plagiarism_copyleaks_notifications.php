@@ -97,11 +97,16 @@ class plagiarism_copyleaks_notifications extends external_api {
     }
   }
 
+  /**
+   * Describes the return value for send_notification
+   * @return external_single_structure
+   */
   public static function send_notification_returns() {
     return new external_single_structure(
       array(
-        'success' => new external_value(PARAM_BOOL, 'status of the notification true/success or false/failure'),
+        'success' => new external_value(PARAM_BOOL, 'Status of the operation'),
       )
     );
   }
+
 }

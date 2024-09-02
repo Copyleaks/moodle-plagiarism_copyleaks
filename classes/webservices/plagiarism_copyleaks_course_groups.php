@@ -39,8 +39,8 @@ class plagiarism_copyleaks_course_groups extends external_api {
   }
 
   /**
-   * Send notification to user
-   * @param string $courseid Notification subject
+   * Gets the groups/members of a course
+   * @param string $courseid Course ID
    * @return array
    */
   public static function get_course_groups_info($courseid) {
@@ -50,56 +50,53 @@ class plagiarism_copyleaks_course_groups extends external_api {
     ));
 
     // Fetch the groups of the course.
-    $groups = groups_get_course_data($params['courseid']);
+    $groups = groups_get_course_data($params['courseid'])->groups;
 
-    $groupData = [];
-
+    $groupdata = [];
     foreach ($groups as $group) {
       $groupid = $group->id;
       $groupname = $group->name;
 
       // Fetch the members of the group.
-      $members = groups_get_groups_members($group->id);
+      $members = groups_get_groups_members([$groupid]);
 
-      // Prepare an array to hold member data.
-      $memberData = [];
-      foreach ($members as $member) {
-        $memberData[] = [
-          'userid' => $member->userid,
-          'fullname' => $member->fullname,
-        ];
-      }
+      // Convert the members to a comma-separated string of member ids.
+      $membersids = implode(',', array_column($members, 'id'));
 
       // Map the group and its members.
-      $groupData[] = [
+      $groupdata[] = [
         'groupid' => $groupid,
         'groupname' => $groupname,
-        'members' => $memberData
+        'members' => $membersids
       ];
     }
 
-    if ($groupData) {
-      return array('success' => true, 'groups' => $groupData);
+    if ($groupdata) {
+      return array('success' => true, 'groups' => $groupdata);
     } else {
       return array('success' => false);
     }
   }
 
-
+  /**                                                                                                                                  
+   * Describes the return value for get_course_groups_info
+   * @return external_single_structure
+   */
   public static function get_course_groups_info_returns() {
     return new external_single_structure(
       array(
-        'success' => new external_value(PARAM_BOOL, 'Status of the update'),
-        'groups' => array(
-          'groupid' => new external_value(PARAM_TEXT, 'Group ID'),
-          'groupname' => new external_value(PARAM_TEXT, 'Group Name'),
-          'members' => array(
+        'success' => new external_value(PARAM_BOOL, 'Status of the operation'),
+        'groups' => new external_multiple_structure(
+          new external_single_structure(
             array(
-              'userid' => new external_value(PARAM_TEXT, 'User ID'),
-              'fullname' => new external_value(PARAM_TEXT, 'Full name')
+              'groupid' => new external_value(PARAM_TEXT, 'Group ID'),
+              'groupname' => new external_value(PARAM_TEXT, 'Group Name'),
+              'members' => new external_value(PARAM_TEXT, 'Members of the group')
             )
-          )
-        )
+          ),
+          'Groups of the course',
+          VALUE_OPTIONAL
+        ),
       )
     );
   }
