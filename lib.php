@@ -378,6 +378,15 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
 }
 
 /**
+ * hook to allow status of submitted files to be updated - called on grading/report pages.
+ * @param object $course - full Course object
+ * @param object $cm - full cm object
+ */
+function plagiarism_copyleaks_before_standard_top_of_body_html($course, $cm) {
+        // Called at top of submissions/grading pages - allows printing of admin style links or updating status.
+}
+
+/**
  * Add the Copyleaks settings form to an add/edit activity page.
  *
  * @param moodleform_mod $formwrapper
