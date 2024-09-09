@@ -378,12 +378,12 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
 }
 
 /**
- * hook to allow status of submitted files to be updated - called on grading/report pages.
- * @param object $course - full Course object
- * @param object $cm - full cm object
+ * This enables a plugin to insert a chunk of html at the start of the html document.
+ * Typical use cases include some sort of alert notification, but in many cases the Notifications may be a better fit.
+ * It MUST return a string containing a well formed chunk of html, or at minimum an empty string.
  */
-function plagiarism_copyleaks_before_standard_top_of_body_html($course, $cm) {
-        // Called at top of submissions/grading pages - allows printing of admin style links or updating status.
+function plagiarism_copyleaks_before_standard_top_of_body_html() {
+    return "";
 }
 
 /**
