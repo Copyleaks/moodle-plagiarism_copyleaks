@@ -23,6 +23,7 @@
 
 require_once($CFG->libdir . "/externallib.php");
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_submissions.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/exceptions/plagiarism_copyleaks_webserviceexception.class.php');
 
 class plagiarism_copyleaks_webhooks extends external_api {
 
@@ -102,7 +103,11 @@ class plagiarism_copyleaks_webhooks extends external_api {
       $params['ischeatingdetected'],
       $params['errormessage'],
     );
-    return array('success' => $result);
+    if ($result) {
+      return null;
+    }
+
+    throw new plagiarism_copyleaks_webservice_exception('clreportupdatefailed');
   }
 
   /**
@@ -110,11 +115,7 @@ class plagiarism_copyleaks_webhooks extends external_api {
    * @return external_single_structure
    */
   public static function update_report_webhook_returns() {
-    return new external_single_structure(
-      array(
-        'success' => new external_value(PARAM_BOOL, 'Status of the operation')
-      )
-    );
+    return null;
   }
 
 
@@ -157,7 +158,7 @@ class plagiarism_copyleaks_webhooks extends external_api {
     $fileid = $DB->get_field('plagiarism_copyleaks_files', 'id', array('cm' => $params['coursemoduleid'], 'userid' => $params['moodleuserid'], 'identifier' => $params['identifier']));
     plagiarism_copyleaks_submissions::change_failed_scan_to_queued($fileid);
 
-    return array('success' => true);
+    return null;
   }
 
   /**
@@ -165,10 +166,6 @@ class plagiarism_copyleaks_webhooks extends external_api {
    * @return external_single_structure
    */
   public static function update_failed_scan_to_queued_webhook_returns() {
-    return new external_single_structure(
-      array(
-        'success' => new external_value(PARAM_BOOL, 'Status of the operation')
-      )
-    );
+    return null;
   }
 }

@@ -535,8 +535,8 @@ class plagiarism_copyleaks_eventshandler {
                 $errormessage
             )) {
                 if ($this->modulename == 'assign') {
-                    $data = $this->get_assign_submission_data($itemid, $coursemodule, $authoruserid, $cmdata, $identifier, $subtype, $scheduledscandate);
-                    $cl->upsert_submission($data);
+                    list($data, $submissionid) = $this->get_assign_submission_data($itemid, $coursemodule, $authoruserid, $cmdata, $identifier, $subtype, $scheduledscandate);
+                    $cl->upsert_submission($data, $submissionid);
                 }
                 return true;
             };
@@ -649,7 +649,8 @@ class plagiarism_copyleaks_eventshandler {
             array('id' => $itemid)
         );
 
-        $submissiondata['moodleSubmissionId'] = $submissionrecord->id;
+        $submissionid = $submissionrecord->id;
+
         $submissiondata['attempt'] = $submissionrecord->attemptnumber;
         $submissiondata['moodleUserId'] = $authoruserid;
         $submissiondata['courseModuleId'] = $coursemodule->id;
@@ -669,14 +670,12 @@ class plagiarism_copyleaks_eventshandler {
             'moodleUserId' =>  $authoruserid,
             'identifier' => $identifier,
             'submissionType' => $subtype,
-            'scheduledScanDate' => ((new DateTime())->setTimestamp($scheduledscandate))->format('Y-m-d H:i:s'),
         ];
         $data = (array)[
             'submission' => $submissiondata,
             'report' => $reportdata
         ];
 
-        return $data;
+        return [$data, $submissionid];
     }
-
 }

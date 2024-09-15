@@ -92,39 +92,39 @@ class plagiarism_copyleaks_observer {
         \mod_assign\event\submission_status_updated $event
     ) {
         global $DB;
-        $data = $event->get_data();
-        $cmid = $data["contextinstanceid"];
+        $eventdata = $event->get_data();
+        $cmid = $eventdata["contextinstanceid"];
 
         if (!plagiarism_copyleaks_moduleconfig::is_module_enabled('assign', $cmid)) {
             return;
         }
 
         // Get user id.
-        $userid = $data['relateduserid'];
+        $userid = $eventdata['relateduserid'];
         if ($userid == null) {
-            $userid = $data['userid'];
+            $userid = $eventdata['userid'];
         }
 
         // Delete in assign.
-        if ($data['target'] == 'submission_status') {
+        if ($eventdata['target'] == 'submission_status') {
             // The event is triggered when a submission is deleted and when the submission is passed to draft.
             $fs = get_file_storage();
             $submissionfiles = $fs->get_area_files(
-                $data["contextid"],
+                $eventdata["contextid"],
                 "assignsubmission_file",
                 'submission_files',
-                $data["objectid"]
+                $eventdata["objectid"]
             );
 
             // If the documents have been deleted in the mdl_files table, we also delete them on our side.
             if (empty($submissionfiles)) {
                 $cl = new \plagiarism_copyleaks_comms();
+                $submissionid = $eventdata["objectid"];
                 $data = (array)[
                     'courseModuleId' => $cmid,
                     'moodleUserId' => $userid,
-                    'moodleSubmissionId' => $data["objectid"],
                 ];
-                $cl->delete_submission($data);
+                $cl->delete_submission($data, $submissionid);
                 $DB->delete_records('plagiarism_copyleaks_files', ['cm' => $cmid, 'userid' => $userid]);
             }
         }
@@ -140,21 +140,21 @@ class plagiarism_copyleaks_observer {
     ) {
         global $DB;
 
-        $data = $event->get_data();
-        $cmid = $data["contextinstanceid"];
-        $submissionid = $data["other"]["submissionid"];
+        $eventdata = $event->get_data();
+        $cmid = $eventdata["contextinstanceid"];
+        $submissionid = $eventdata["other"]["submissionid"];
 
         if (!plagiarism_copyleaks_moduleconfig::is_module_enabled('assign', $cmid)) {
             return;
         }
 
         // Get user id.
-        $userid = $data['relateduserid'];
+        $userid = $eventdata['relateduserid'];
         if ($userid == null) {
-            $userid = $data['userid'];
+            $userid = $eventdata['userid'];
         }
 
-        if ($data['target'] == 'submission' && $data['action'] == 'updated') {
+        if ($eventdata['target'] == 'submission' && $eventdata['action'] == 'updated') {
 
             $clfiles = $DB->get_records('plagiarism_copyleaks_files', ['cm' => $cmid, 'itemid' => $submissionid, 'submissiontype' => 'file']);
             $fs = get_file_storage();
@@ -188,14 +188,15 @@ class plagiarism_copyleaks_observer {
         $commentcontent = $DB->get_record('comments', ['id' => $eventdata['objectid']], 'content');
         $commentdata = (array)[
             'commentId' => $eventdata['objectid'],
-            'submissionId' => $eventdata['other']['itemid'],
             'courseModuleId' => $eventdata['contextinstanceid'],
-            'userId' => $eventdata['userid'],
+            'moodleUserId' => $eventdata['userid'],
             'content' => $commentcontent->content,
             'createdAt' => ($datetime->setTimestamp($eventdata['timecreated']))->format('Y-m-d H:i:s'),
         ];
 
-        $cl->add_assign_submission_comment($commentdata);
+        $submissionid = $eventdata['other']['itemid'];
+
+        $cl->add_assign_submission_comment($commentdata, $submissionid);
     }
 
     /**
@@ -209,12 +210,13 @@ class plagiarism_copyleaks_observer {
         $cl = new \plagiarism_copyleaks_comms();
         $commentdata = (array)[
             'commentId' => $eventdata['objectid'],
-            'submissionId' => $eventdata['other']['itemid'],
             'courseModuleId' => $eventdata['contextinstanceid'],
-            'userId' => $eventdata['userid'],
+            'moodleUserId' => $eventdata['userid'],
         ];
 
-        $cl->delete_assign_submission_comment($commentdata);
+        $submissionid = $eventdata['other']['itemid'];
+
+        $cl->delete_assign_submission_comment($commentdata, $submissionid);
     }
 
     /**
@@ -322,13 +324,13 @@ class plagiarism_copyleaks_observer {
         $eventdata = $event->get_data();
         $cl = new \plagiarism_copyleaks_comms();
         $groupname = groups_get_group_name($eventdata['objectid']);
+        $courseId = $eventdata['courseid'];
         $data = (array)[
-            'courseId' => $eventdata['courseid'],
             'groupId' => $eventdata['objectid'],
             'groupName' => $groupname,
         ];
 
-        $cl->create_group($data);
+        $cl->create_group($data, $courseId);
     }
 
     /**
@@ -338,11 +340,11 @@ class plagiarism_copyleaks_observer {
     public static function group_deleted(\core\event\group_deleted $event) {
         $eventdata = $event->get_data();
         $cl = new \plagiarism_copyleaks_comms();
+        $courseId = $eventdata['courseid'];
         $data = (array)[
-            'courseId' => $eventdata['courseid'],
             'groupId' => $eventdata['objectid'],
         ];
-        $cl->delete_group($data);
+        $cl->delete_group($data, $courseId);
     }
 
 
@@ -354,13 +356,13 @@ class plagiarism_copyleaks_observer {
         $eventdata = $event->get_data();
         $cl = new \plagiarism_copyleaks_comms();
         $groupname = groups_get_group_name($eventdata['objectid']);
+        $courseId = $eventdata['courseid'];
         $data = (array)[
-            'courseId' => $eventdata['courseid'],
             'groupId' => $eventdata['objectid'],
             'groupName' => $groupname,
         ];
 
-        $cl->update_group($data);
+        $cl->update_group($data, $courseId);
     }
 
     /**
@@ -373,9 +375,8 @@ class plagiarism_copyleaks_observer {
         $cl = new \plagiarism_copyleaks_comms();
         $user = $DB->get_record('user', array('id' => $eventdata['relateduserid']), '*', MUST_EXIST);
         $groupname = groups_get_group_name($eventdata['objectid']);
-
+        $courseId = $eventdata['courseid'];
         $groupdata = (array)[
-            'courseId' => $eventdata['courseid'],
             'groupId' => $eventdata['objectid'],
             'groupName' => $groupname,
         ];
@@ -390,7 +391,7 @@ class plagiarism_copyleaks_observer {
             'user' => $userdata
         ];
 
-        $cl->add_group_member($data);
+        $cl->add_group_member($data, $courseId);
     }
 
     /**
@@ -400,8 +401,8 @@ class plagiarism_copyleaks_observer {
     public static function group_member_removed(\core\event\group_member_removed $event) {
         $eventdata = $event->get_data();
         $cl = new \plagiarism_copyleaks_comms();
+        $courseId = $eventdata['courseid'];
         $groupdata = (array)[
-            'courseId' => $eventdata['courseid'],
             'groupId' => $eventdata['objectid'],
         ];
 
@@ -414,6 +415,6 @@ class plagiarism_copyleaks_observer {
             'user' => $userdata
         ];
 
-        $cl->remove_group_member($data);
+        $cl->remove_group_member($data, $courseId);
     }
 }

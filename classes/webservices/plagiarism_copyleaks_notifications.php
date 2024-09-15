@@ -22,6 +22,7 @@
  */
 
 require_once($CFG->libdir . "/externallib.php");
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/exceptions/plagiarism_copyleaks_webserviceexception.class.php');
 
 class plagiarism_copyleaks_notifications extends external_api {
 
@@ -91,10 +92,9 @@ class plagiarism_copyleaks_notifications extends external_api {
     $messageid = message_send($message);
 
     if ($messageid) {
-      return array('success' => true);
-    } else {
-      return array('success' => false);
+      return null;
     }
+    throw new plagiarism_copyleaks_webservice_exception('clsendnotificationfailed');
   }
 
   /**
@@ -102,11 +102,6 @@ class plagiarism_copyleaks_notifications extends external_api {
    * @return external_single_structure
    */
   public static function send_notification_returns() {
-    return new external_single_structure(
-      array(
-        'success' => new external_value(PARAM_BOOL, 'Status of the operation'),
-      )
-    );
+    return null;
   }
-
 }

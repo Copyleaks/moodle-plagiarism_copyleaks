@@ -106,6 +106,10 @@ $string['cltimemin'] = 'in';
 $string['clpendingduplication'] = 'Pending Duplication';
 $string['clfailedduplication'] = 'Duplication Failed';
 
+$string['clnogroupsfound'] = 'No groups were found for the specified course.';
+$string['clreportupdatefailed'] = 'Failed to update the report';
+$string['clsendnotificationfailed'] = 'Failed to send notification';
+
 $string['privacy:metadata:core_files'] = 'Copyleaks stores files that have been uploaded to Moodle to form a Copyleaks submission.';
 $string['privacy:metadata:plagiarism_copyleaks_files'] = 'Information that links a Moodle submission to a Copyleaks submission.';
 $string['privacy:metadata:plagiarism_copyleaks_files:userid'] = 'The ID of the user who is the owner of the submission.';

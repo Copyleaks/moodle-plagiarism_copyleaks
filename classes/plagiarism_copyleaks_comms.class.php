@@ -413,8 +413,8 @@ class plagiarism_copyleaks_comms {
      * upsert submission at Copyleaks server.
      * @param array $data
      */
-    public function upsert_submission($data) {
-        $endpoint = "/api/moodle/plugin/$this->key/upsert-submission";
+    public function upsert_submission($data, $submissionid) {
+        $endpoint = "/api/moodle/plugin/$this->key/webhooks/submissions/$submissionid/upsert-submission";
         $verb = 'POST';
         try {
             plagiarism_copyleaks_http_client::execute(
@@ -439,9 +439,9 @@ class plagiarism_copyleaks_comms {
      * send request to delete submission datd from copyleaks servers
      * @param array $data
      */
-    public function delete_submission($data) {
+    public function delete_submission($data, $submissionid) {
         if (isset($this->key) && isset($this->secret)) {
-            $endpoint = "/api/moodle/plugin/$this->key/delete-submission";
+            $endpoint = "/api/moodle/plugin/$this->key/webhooks/submissions/$submissionid/delete-submission";
             $verb = 'POST';
             plagiarism_copyleaks_http_client::execute_retry(
                 $verb,
@@ -458,7 +458,7 @@ class plagiarism_copyleaks_comms {
      */
     public function delete_report($data) {
         if (isset($this->key) && isset($this->secret)) {
-            $endpoint = "/api/moodle/plugin/$this->key/delete-report";
+            $endpoint = "/api/moodle/plugin/$this->key/webhooks/submissions/reports/delete-report";
             $verb = 'POST';
             plagiarism_copyleaks_http_client::execute_retry(
                 $verb,
@@ -489,9 +489,9 @@ class plagiarism_copyleaks_comms {
      * send request to delete assign submission comment from copyleaks servers
      * @param array $data
      */
-    public function delete_assign_submission_comment($data) {
+    public function delete_assign_submission_comment($data, $submissionid) {
         if (isset($this->key) && isset($this->secret)) {
-            $endpoint = "/api/moodle/plugin/$this->key/webhooks/delete-assign-submission-comment";
+            $endpoint = "/api/moodle/plugin/$this->key/webhooks/submissions/$submissionid/comments/delete-comment";
             $verb = 'POST';
             plagiarism_copyleaks_http_client::execute_retry(
                 $verb,
@@ -506,9 +506,9 @@ class plagiarism_copyleaks_comms {
      * send request to add assign submission comment from copyleaks servers
      * @param array $data
      */
-    public function add_assign_submission_comment($data) {
+    public function add_assign_submission_comment($data, $submissionid) {
         if (isset($this->key) && isset($this->secret)) {
-            $endpoint = "/api/moodle/plugin/$this->key/webhooks/add-assign-submission-comment";
+            $endpoint = "/api/moodle/plugin/$this->key/webhooks/submissions/$submissionid/comments/add-comment";
             $verb = 'POST';
             plagiarism_copyleaks_http_client::execute_retry(
                 $verb,
@@ -524,7 +524,8 @@ class plagiarism_copyleaks_comms {
      * @param array $data
      */
     public function upsert_assign_grade($data) {
-        $endpoint = "/api/moodle/plugin/$this->key/webhooks/upsert-assign-grade";
+
+        $endpoint = "/api/moodle/plugin/$this->key/webhooks/grades/upsert-grade";
         $verb = 'POST';
         try {
             plagiarism_copyleaks_http_client::execute_retry(
@@ -543,8 +544,8 @@ class plagiarism_copyleaks_comms {
      * Create group.
      * @param array $data
      */
-    public function create_group($data) {
-        $endpoint = "/api/moodle/plugin/$this->key/webhooks/create-group";
+    public function create_group($data, $courseId) {
+        $endpoint = "/api/moodle/plugin/$this->key/webhooks/course/$courseId/groups/create-group";
         $verb = 'POST';
         try {
             plagiarism_copyleaks_http_client::execute_retry(
@@ -563,8 +564,8 @@ class plagiarism_copyleaks_comms {
      * Delete group.
      * @param array $data
      */
-    public function delete_group($data) {
-        $endpoint = "/api/moodle/plugin/$this->key/webhooks/delete-group";
+    public function delete_group($data, $courseId) {
+        $endpoint = "/api/moodle/plugin/$this->key/webhooks/course/$courseId/groups/delete-group";
         $verb = 'POST';
         try {
             plagiarism_copyleaks_http_client::execute_retry(
@@ -583,8 +584,8 @@ class plagiarism_copyleaks_comms {
      * update group.
      * @param array $data
      */
-    public function update_group($data) {
-        $endpoint = "/api/moodle/plugin/$this->key/webhooks/update-group";
+    public function update_group($data, $courseId) {
+        $endpoint = "/api/moodle/plugin/$this->key/webhooks/course/$courseId/groups/update-group";
         $verb = 'POST';
         try {
             plagiarism_copyleaks_http_client::execute_retry(
@@ -603,8 +604,8 @@ class plagiarism_copyleaks_comms {
      * Add group member.
      * @param array $data
      */
-    public function add_group_member($data) {
-        $endpoint = "/api/moodle/plugin/$this->key/webhooks/add-group-member";
+    public function add_group_member($data, $courseId) {
+        $endpoint = "/api/moodle/plugin/$this->key/webhooks/course/$courseId/groups/add-group-member";
         $verb = 'POST';
         try {
             plagiarism_copyleaks_http_client::execute_retry(
@@ -623,8 +624,8 @@ class plagiarism_copyleaks_comms {
      * remove group member.
      * @param array $data
      */
-    public function remove_group_member($data) {
-        $endpoint = "/api/moodle/plugin/$this->key/webhooks/remove-group-member";
+    public function remove_group_member($data, $courseId) {
+        $endpoint = "/api/moodle/plugin/$this->key/webhooks/course/$courseId/groups/remove-group-member";
         $verb = 'POST';
         try {
             plagiarism_copyleaks_http_client::execute_retry(
@@ -674,7 +675,6 @@ class plagiarism_copyleaks_comms {
             plagiarism_copyleaks_logs::add($errormsg, 'API_ERROR');
         }
     }
-
 
     /**
      * Update course module temp id at Copyleaks server.

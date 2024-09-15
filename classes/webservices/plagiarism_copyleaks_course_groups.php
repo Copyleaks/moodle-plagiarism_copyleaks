@@ -23,6 +23,7 @@
 
 require_once($CFG->libdir . "/externallib.php");
 require_once($CFG->dirroot . '/lib/grouplib.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/exceptions/plagiarism_copyleaks_webserviceexception.class.php');
 
 class plagiarism_copyleaks_course_groups extends external_api {
 
@@ -60,22 +61,23 @@ class plagiarism_copyleaks_course_groups extends external_api {
       // Fetch the members of the group.
       $members = groups_get_groups_members([$groupid]);
 
-      // Convert the members to a comma-separated string of member ids.
-      $membersids = implode(',', array_column($members, 'id'));
+      // Collect the member ids in an array.
+      $membersids = array_column($members, 'id');
 
       // Map the group and its members.
       $groupdata[] = [
         'groupid' => $groupid,
         'groupname' => $groupname,
-        'members' => $membersids
+        'members' => $membersids 
       ];
     }
 
-    if ($groupdata) {
-      return array('success' => true, 'groups' => $groupdata);
-    } else {
-      return array('success' => false);
+    if (empty($groupdata)) {
+      throw new plagiarism_copyleaks_webservice_exception('clnogroupsfound');
     }
+
+    return array('groups' => $groupdata);
+    
   }
 
   /**                                                                                                                                  
@@ -85,13 +87,15 @@ class plagiarism_copyleaks_course_groups extends external_api {
   public static function get_course_groups_info_returns() {
     return new external_single_structure(
       array(
-        'success' => new external_value(PARAM_BOOL, 'Status of the operation'),
         'groups' => new external_multiple_structure(
           new external_single_structure(
             array(
               'groupid' => new external_value(PARAM_TEXT, 'Group ID'),
               'groupname' => new external_value(PARAM_TEXT, 'Group Name'),
-              'members' => new external_value(PARAM_TEXT, 'Members of the group')
+              'members' => new external_multiple_structure(
+                new external_value(PARAM_TEXT, 'Member ID'),
+                'Members of the group'
+              ),
             )
           ),
           'Groups of the course',
