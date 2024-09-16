@@ -117,7 +117,7 @@
       </INDEXES>
     </TABLE>
 
-      <TABLE NAME="plagiarism_copyleaks_cm_copy" COMMENT="Copyleaks course modules pending duplication">
+    <TABLE NAME="plagiarism_copyleaks_cm_copy" COMMENT="Copyleaks course modules pending duplication">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="course_id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
@@ -134,5 +134,6 @@
         <INDEX NAME="status" UNIQUE="false" FIELDS="status"/>
       </INDEXES>
     </TABLE>
+
   </TABLES>
 </XMLDB>

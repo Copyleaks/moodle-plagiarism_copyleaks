@@ -66,6 +66,8 @@ class plagiarism_copyleaks_background_tasks {
     const SYNC_USERS_DATA = 1;
     /** @var int an indicator to run the sync_courses_data background task */
     const SYNC_COURSES_DATA = 2;
+    /** @var int an indicator to run the sync_plugin_integration_data background task */
+    const SYNC_PLUGIN_INTEGRATION_DATA = 3;
 }
 
 /**
