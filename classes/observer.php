@@ -370,10 +370,9 @@ class plagiarism_copyleaks_observer {
      * @param \core\event\group_member_added $event
      */
     public static function group_member_added(\core\event\group_member_added $event) {
-        global $DB;
         $eventdata = $event->get_data();
         $cl = new \plagiarism_copyleaks_comms();
-        $user = $DB->get_record('user', array('id' => $eventdata['relateduserid']), '*', MUST_EXIST);
+        $user = get_complete_user_data('id', $eventdata['relateduserid']);
         $groupname = groups_get_group_name($eventdata['objectid']);
         $courseId = $eventdata['courseid'];
         $groupdata = (array)[
@@ -383,7 +382,8 @@ class plagiarism_copyleaks_observer {
 
         $userdata = (array)[
             'mppUserId' => $eventdata['relateduserid'],
-            'userName' => fullname($user),
+            'userName' => $user->firstname . " " . $user->lastname,
+            'userEmail' => $user->email,
         ];
 
         $data = (array)[

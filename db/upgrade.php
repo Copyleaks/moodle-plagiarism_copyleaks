@@ -533,14 +533,23 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
     }
 
     if ($oldversion < 2024082815) {
-        require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/enums/plagiarism_copyleaks_enums.php');
-        // insert background task to sync plugin integration data
-        $bgtask = new stdClass();
-        $bgtask->task = plagiarism_copyleaks_background_tasks::SYNC_PLUGIN_INTEGRATION_DATA;
-        $DB->insert_record('plagiarism_copyleaks_bgtasks', $bgtask);
+        $config = plagiarism_copyleaks_pluginconfig::admin_config();
+        //check if the plugin key is set and not empty
+        if (isset($config->plagiarism_copyleaks_key) && !empty($config->plagiarism_copyleaks_key)) {
+            $domain = (new moodle_url('/'))->out(false);
+            $domain = rtrim($domain, '/');
+            $plugindata = (array)[
+                'domain' => $domain,
+                'pluginVersion' => 2024082815
+            ];
+            plagiarism_copyleaks_dbutils::queue_copyleaks_integration_data_sync_request(
+                $plugindata,
+                $config->plagiarism_copyleaks_key
+            );
+        }
 
         // Copyleaks savepoint reached.
-        upgrade_plugin_savepoint(true, 2024082810, 'plagiarism', 'copyleaks');
+        upgrade_plugin_savepoint(true, 2024082815, 'plagiarism', 'copyleaks');
     }
 
     return true;
