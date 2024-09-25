@@ -75,8 +75,6 @@ class plagiarism_copyleaks_webhooks extends external_api {
     $ischeatingdetected = false,
     $errormessage = null
   ) {
-    global $DB;
-
     // Validate parameters
     $params = self::validate_parameters(self::update_report_webhook_parameters(), array(
       'coursemoduleid' => $coursemoduleid,
@@ -103,11 +101,10 @@ class plagiarism_copyleaks_webhooks extends external_api {
       $params['ischeatingdetected'],
       $params['errormessage'],
     );
-    if ($result) {
-      return null;
+    if (!$result) {
+      throw new plagiarism_copyleaks_webservice_exception('clreportupdatefailed');
     }
-
-    throw new plagiarism_copyleaks_webservice_exception('clreportupdatefailed');
+    return null;
   }
 
   /**

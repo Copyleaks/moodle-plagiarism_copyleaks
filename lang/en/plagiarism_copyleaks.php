@@ -106,7 +106,6 @@ $string['cltimemin'] = 'in';
 $string['clpendingduplication'] = 'Pending Duplication';
 $string['clfailedduplication'] = 'Duplication Failed';
 
-$string['clnogroupsfound'] = 'No groups were found for the specified course.';
 $string['clreportupdatefailed'] = 'Failed to update the report';
 $string['clsendnotificationfailed'] = 'Failed to send notification';
 

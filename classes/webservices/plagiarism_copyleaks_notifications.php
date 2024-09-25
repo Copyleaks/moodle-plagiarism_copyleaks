@@ -91,10 +91,11 @@ class plagiarism_copyleaks_notifications extends external_api {
 
     $messageid = message_send($message);
 
-    if ($messageid) {
-      return null;
+    if (!$messageid) {
+      throw new plagiarism_copyleaks_webservice_exception('clsendnotificationfailed');
     }
-    throw new plagiarism_copyleaks_webservice_exception('clsendnotificationfailed');
+
+    return null;
   }
 
   /**
