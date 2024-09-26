@@ -31,7 +31,7 @@ require_once($CFG->dirroot . '/plagiarism/copyleaks/lib.php');
  * @return bool
  */
 function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
-    global $DB;
+    global $DB, $CFG;
     $dbman = $DB->get_manager();
     if ($oldversion < 2021090901) {
         // Changing type of field similarityscore on table plagiarism_copyleaks_files to number.
@@ -400,6 +400,156 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
 
         // Copyleaks savepoint reached.
         upgrade_plugin_savepoint(true, 2024010100, 'plagiarism', 'copyleaks');
+    }
+
+    if ($oldversion < 2024040200) {
+        $table = new xmldb_table('plagiarism_copyleaks_files');
+        $writingfeedbackissuesfield = new xmldb_field(
+            'writingfeedbackissues',
+            XMLDB_TYPE_NUMBER,
+            '10',
+            null,
+            null,
+            null,
+            null,
+            'aiscore'
+        );
+        $grammarfield = new xmldb_field('grammarcases', XMLDB_TYPE_NUMBER, '10', null, null, null, null);
+
+        if ($dbman->table_exists($table)) {
+            // Drop grammar cases column.
+            if ($dbman->field_exists($table, 'grammarcases')) {
+                $dbman->drop_field($table, $grammarfield);
+            }
+
+            // Add writing feedback issues field to files table.
+            if (!$dbman->field_exists($table, $writingfeedbackissuesfield)) {
+                $dbman->add_field($table, $writingfeedbackissuesfield);
+            }
+        }
+
+        // Delete config enable grammar.
+        if (!$DB->delete_records(
+            'plagiarism_copyleaks_config',
+            array(
+                'cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID,
+                'name' => PLAGIARISM_COPYLEAKS_DETECT_GRAMMAR_FIELD_NAME
+            ),
+            IGNORE_MISSING
+        )) {
+            throw new moodle_exception(get_string('clupdateerror', 'plagiarism_copyleaks'));
+        }
+
+        $saveddefaultvalue = $DB->get_records_menu(
+            'plagiarism_copyleaks_config',
+            array('cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID),
+            '',
+            'name,value'
+        );
+
+        // Update saved default copyleaks settings.
+        $newfield = new stdClass();
+        $newfield->cm = PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID;
+        $newfield->name = PLAGIARISM_COPYLEAKS_DETECT_WF_ISSUES_FIELD_NAME;
+        $newfield->value = 0;
+        if (!isset($saveddefaultvalue) || !isset($saveddefaultvalue[PLAGIARISM_COPYLEAKS_DETECT_WF_ISSUES_FIELD_NAME])) {
+            $newfield->config_hash = $newfield->cm . "_" . $newfield->name;
+            if (!$DB->insert_record('plagiarism_copyleaks_config', $newfield)) {
+                throw new moodle_exception(get_string('clinserterror', 'plagiarism_copyleaks'));
+            }
+        } else {
+            $newfield->id = $DB->get_field(
+                'plagiarism_copyleaks_config',
+                'id',
+                (array(
+                    'cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID,
+                    'name' => $fieldname
+                ))
+            );
+            if (!$DB->update_record('plagiarism_copyleaks_config', $newfield)) {
+                throw new moodle_exception(get_string('clupdateerror', 'plagiarism_copyleaks'));
+            }
+        }
+
+        // Copyleaks savepoint reached.
+        upgrade_plugin_savepoint(true, 2024040200, 'plagiarism', 'copyleaks');
+    }
+
+    if ($oldversion < 2024041700) {
+        $table = new xmldb_table('plagiarism_copyleaks_files');
+        $retrycntfield = new xmldb_field('retrycnt', XMLDB_TYPE_INTEGER, '2', null, null, null, 0, 'ischeatingdetected');
+
+        if ($dbman->table_exists($table)) {
+            // Add retry counter field to files table.
+            if (!$dbman->field_exists($table, $retrycntfield)) {
+                $dbman->add_field($table, $retrycntfield);
+            } else {
+                $dbman->change_field_type($table, $retrycntfield);
+                $dbman->change_field_default($table, $retrycntfield);
+            }
+        }
+
+        // Copyleaks savepoint reached.
+        upgrade_plugin_savepoint(true, 2024041700, 'plagiarism', 'copyleaks');
+    }
+
+    if ($oldversion < 2024071800) {
+        $table = new xmldb_table('plagiarism_copyleaks_files');
+        $hashedcontentfield = new xmldb_field('hashedcontent', XMLDB_TYPE_CHAR, '255', null, false, null, null, 'identifier');
+
+        if ($dbman->table_exists($table)) {
+            // Add hashed content field to files table.
+            if (!$dbman->field_exists($table, $hashedcontentfield)) {
+                $dbman->add_field($table, $hashedcontentfield);
+            }
+        }
+
+        // Copyleaks savepoint reached.
+        upgrade_plugin_savepoint(true, 2024071800, 'plagiarism', 'copyleaks');
+    }
+
+    if ($oldversion < 2024081401) {
+        $table = new xmldb_table('plagiarism_copyleaks_cm_copy');
+
+        // Adding fields to table plagiarism_copyleaks_cm_copy.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('course_id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('original_cm_id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('new_cm_id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('status', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('errormsg', XMLDB_TYPE_TEXT, null, null, null, null, null);
+
+        // Adding keys and indexes to table plagiarism_copyleaks_cm_copy.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        $table->add_index('new_cm_id', XMLDB_INDEX_NOTUNIQUE, array('new_cm_id'));
+        $table->add_index('status', XMLDB_INDEX_NOTUNIQUE, array('status'));
+
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Copyleaks savepoint reached.
+        upgrade_plugin_savepoint(true, 2024081401, 'plagiarism', 'copyleaks');
+    }
+
+    if ($oldversion < 2024082815) {
+        $config = plagiarism_copyleaks_pluginconfig::admin_config();
+        //check if the plugin key is set and not empty
+        if (isset($config->plagiarism_copyleaks_key) && !empty($config->plagiarism_copyleaks_key)) {
+            $domain = (new moodle_url('/'))->out(false);
+            $domain = rtrim($domain, '/');
+            $plugindata = (array)[
+                'domain' => $domain,
+                'pluginVersion' => 2024082815
+            ];
+            plagiarism_copyleaks_dbutils::queue_copyleaks_integration_data_sync_request(
+                $plugindata,
+                $config->plagiarism_copyleaks_key
+            );
+        }
+
+        // Copyleaks savepoint reached.
+        upgrade_plugin_savepoint(true, 2024082815, 'plagiarism', 'copyleaks');
     }
 
     return true;

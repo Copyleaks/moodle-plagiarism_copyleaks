@@ -57,43 +57,47 @@ $observers = array(
         'callback'  => 'plagiarism_copyleaks_observer::core_event_user_deletion'
     ),
     array(
-        'eventname' => '\core\event\comment_created',
-        'callback'  => 'plagiarism_copyleaks_observer::mod_assign_comment_event_created'
+        'eventname' => '\mod_assign\event\submission_status_updated',
+        'callback'  => 'plagiarism_copyleaks_observer::assign_submission_status_updated'
     ),
     array(
-        'eventname' => 'core\event\comment_deleted',
-        'callback'  => 'plagiarism_copyleaks_observer::mod_assign_comment_event_deleted'
+        'eventname' => '\assignsubmission_file\event\submission_updated',
+        'callback'  => 'plagiarism_copyleaks_observer::assign_submission_file_updated'
     ),
     array(
-        'eventname' => 'mod_data\event\comment_created',
-        'callback'  => 'plagiarism_copyleaks_observer::mod_data_comment_event_created'
+        'eventname' => '\assignsubmission_onlinetext\event\submission_updated',
+        'callback'  => 'plagiarism_copyleaks_observer::assign_submission_text_updated'
     ),
     array(
-        'eventname' => 'mod_assign\event\submission_graded',
-        'callback'  => 'plagiarism_copyleaks_observer::mod_assign_graded_event'
+        'eventname' => '\assignsubmission_comments\event\comment_created',
+        'callback'  => 'plagiarism_copyleaks_observer::assign_submission_comment_created'
     ),
     array(
-        'eventname' => 'mod_quiz\event\attempt_regraded',
-        'callback'  => 'plagiarism_copyleaks_observer::mod_quiz_graded_event'
+        'eventname' => '\assignsubmission_comments\event\comment_deleted',
+        'callback'  => 'plagiarism_copyleaks_observer::assign_submission_comment_deleted'
     ),
     array(
-        'eventname' => 'mod_quiz\event\question_manually_graded',
-        'callback'  => 'plagiarism_copyleaks_observer::mod_quiz_question_manually_graded'
+        'eventname' => '\core\event\user_graded',
+        'callback'  => 'plagiarism_copyleaks_observer::user_graded'
     ),
     array(
-        'eventname' => 'mod_workshop\event\phase_switched',
-        'callback'  => 'plagiarism_copyleaks_observer::mod_workshop_phase_switched'
+        'eventname' => '\core\event\group_created',
+        'callback'  => 'plagiarism_copyleaks_observer::group_created'
     ),
     array(
-        'eventname' => 'mod_workshop\event\assessment_evaluated',
-        'callback'  => 'plagiarism_copyleaks_observer::mod_workshop_assessment_evaluated'
+        'eventname' => '\core\event\group_deleted',
+        'callback'  => 'plagiarism_copyleaks_observer::group_deleted'
     ),
     array(
-        'eventname' => 'mod_workshop\event\assessment_reevaluated',
-        'callback'  => 'plagiarism_copyleaks_observer::mod_workshop_assessment_reevaluated'
+        'eventname' => '\core\event\group_updated',
+        'callback'  => 'plagiarism_copyleaks_observer::group_updated'
     ),
     array(
-        'eventname' => 'mod_workshop\event\submission_assessed',
-        'callback'  => 'plagiarism_copyleaks_observer::mod_workshop_submission_assessed'
+        'eventname' => '\core\event\group_member_added',
+        'callback'  => 'plagiarism_copyleaks_observer::group_member_added'
+    ),
+    array(
+        'eventname' => '\core\event\group_member_removed',
+        'callback'  => 'plagiarism_copyleaks_observer::group_member_removed'
     ),
 );

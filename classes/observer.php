@@ -25,6 +25,8 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/plagiarism/copyleaks/lib.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_eventshandler.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_comms.class.php');
+require_once($CFG->dirroot . '/lib/grouplib.php');
 
 /**
  * Moodle events handlers for Copyleaks plagiairsm plugin
@@ -137,127 +139,332 @@ class plagiarism_copyleaks_observer {
     }
 
     /**
-     * comment on submission event handler.
-     * @param \core\event\comment_created $event
+     * Handle assign submission deletion.
+     * @param  \mod_assign\event\submission_status_updated $event Event
+     * @return void
      */
-    public static function mod_assign_comment_event_created(
-        \core\event\comment_created $event
+    public static function assign_submission_status_updated(
+        \mod_assign\event\submission_status_updated $event
     ) {
-        $eventdata = $event->get_data();
-        echo '';
-    }
-
-    /**
-     * comment on submission event handler.
-     * @param core\event\comment_deleted $event
-     */
-    public static function mod_data_comment_event_created(
-        mod_data\event\comment_created $event
-    ) {
-        $eventdata = $event->get_data();
-        echo '';
-    }
-
-    /**
-     * comment on submission event handler.
-     * @param core\event\comment_deleted $event
-     */
-    public static function mod_assign_comment_event_deleted(
-        core\event\comment_deleted $event
-    ) {
-        $eventdata = $event->get_data();
-        echo '';
-    }
-
-    /**
-     * comment on submission event handler.
-     * @param mod_assign\event\submission_graded $event
-     */
-    public static function mod_assign_graded_event(
-        mod_assign\event\submission_graded $event
-    ) {
-        $eventdata = $event->get_data();
-        echo '';
-    }
-
-    /**
-     * comment on submission event handler.
-     * @param mod_assign\event\attempt_regraded $event
-     */
-    public static function mod_quiz_regraded_event(
-        mod_quiz\event\attempt_regraded $event
-    ) {
-        $eventdata = $event->get_data();
-        echo '';
-    }
-
-
-    /**
-     * comment on submission event handler.
-     * @param mod_quiz\event\question_manually_graded $event
-     */
-    public static function mod_quiz_question_manually_graded(
-        mod_quiz\event\question_manually_graded $event
-    ) {
-        $eventdata = $event->get_data();
         global $DB;
-        // Getting the updated grade for the whole quiz 
-        $quizattempt = $DB->get_record('quiz_attempts', array('uniqueid' => $eventdata['other']['attemptid']));
-        $quizquestgrade = $DB->get_record('quiz_grades', array(
-            'quiz' => $eventdata['other']['quizid'],
-            'userid' => $quizattempt->userid
-        ));
-        echo '';
-    }
 
-    /**
-     * comment on submission event handler.
-     * @param mod_workshop\event\assessment_evaluated $event
-     */
-    public static function mod_workshop_phase_switched(
-        mod_workshop\event\phase_switched $event
-    ) {
-        $eventdata = $event->get_data();
-        if ($eventdata['other']['workshopphase'] == workshop::PHASE_CLOSED) {
-
-            echo '';
+        // Check if Copyleaks API is connected.
+        if (!plagiarism_copyleaks_dbutils::is_copyleaks_api_connected()) {
+            return;
         }
-        echo '';
+
+        $eventdata = $event->get_data();
+        $cmid = $eventdata["contextinstanceid"];
+
+        if (!plagiarism_copyleaks_moduleconfig::is_module_enabled('assign', $cmid)) {
+            return;
+        }
+
+        // Get user id.
+        $userid = $eventdata['relateduserid'];
+        if ($userid == null) {
+            $userid = $eventdata['userid'];
+        }
+
+        // Delete in assign.
+        if ($eventdata['target'] == 'submission_status') {
+            // The event is triggered when a submission is deleted and when the submission is passed to draft.
+            $fs = get_file_storage();
+            $submissionfiles = $fs->get_area_files(
+                $eventdata["contextid"],
+                "assignsubmission_file",
+                'submission_files',
+                $eventdata["objectid"]
+            );
+
+            // If the documents have been deleted in the mdl_files table, we also delete them on our side.
+            if (empty($submissionfiles)) {
+                // Check if Copyleaks API is connected.
+                $cl = new \plagiarism_copyleaks_comms();
+                $submissionid = $eventdata["objectid"];
+                $data = (array)[
+                    'courseModuleId' => $cmid,
+                    'moodleUserId' => $userid,
+                ];
+                $cl->delete_submission($data, $submissionid);
+                // $DB->delete_records('plagiarism_copyleaks_files', ['cm' => $cmid, 'userid' => $userid]);
+            }
+        }
     }
 
     /**
-     * comment on submission event handler.
-     * @param mod_workshop\event\assessment_evaluated $event
+     * Handle file deletion in assign submission
+     * @param  \assignsubmission_file\event\submission_updated $event Event
+     * @return void
      */
-    public static function mod_workshop_assessment_evaluated(
-        mod_workshop\event\assessment_evaluated $event
+    public static function assign_submission_file_updated(
+        \assignsubmission_file\event\submission_updated $event
     ) {
-        $eventdata = $event->get_data();
+        global $DB;
 
-        echo '';
+        // Check if Copyleaks API is connected.
+        if (!plagiarism_copyleaks_dbutils::is_copyleaks_api_connected()) {
+            return;
+        }
+
+        $eventdata = $event->get_data();
+        $cmid = $eventdata["contextinstanceid"];
+        $submissionid = $eventdata["other"]["submissionid"];
+
+        if (!plagiarism_copyleaks_moduleconfig::is_module_enabled('assign', $cmid)) {
+            return;
+        }
+
+        // Get user id.
+        $userid = $eventdata['relateduserid'];
+        if ($userid == null) {
+            $userid = $eventdata['userid'];
+        }
+
+        if ($eventdata['target'] == 'submission' && $eventdata['action'] == 'updated') {
+
+            $clfiles = $DB->get_records('plagiarism_copyleaks_files', ['cm' => $cmid, 'itemid' => $submissionid, 'submissiontype' => 'file']);
+            $fs = get_file_storage();
+            foreach ($clfiles as $clfile) {
+                $file = $fs->get_file_by_hash($clfile->identifier);
+                if ($file === false) {
+                    $cl = new \plagiarism_copyleaks_comms();
+                    $data = (array)[
+                        'identifier' => $clfile->identifier,
+                        'courseModuleId' => $clfile->cm,
+                        'moodleUserId' => $clfile->userid,
+                    ];
+                    $cl->delete_report($data);
+                    // $DB->delete_records('plagiarism_copyleaks_files', ['cm' => $cmid, 'userid' => $clfile->userid, 'identifier' => $clfile->identifier]);
+                }
+            }
+        }
     }
 
     /**
-     * comment on submission event handler.
-     * @param mod_workshop\event\assessment_evaluated $event
+     * assign submission comment creation event handler.
+     * @param \assignsubmission_comments\event\comment_created $event
      */
-    public static function mod_workshop_assessment_reevaluated(
-        mod_workshop\event\assessment_reevaluated $event
+    public static function assign_submission_comment_created(
+        \assignsubmission_comments\event\comment_created $event
     ) {
-        $eventdata = $event->get_data();
+        // Check if Copyleaks API is connected.
+        if (!plagiarism_copyleaks_dbutils::is_copyleaks_api_connected()) {
+            return;
+        }
 
-        echo '';
+        global $DB;
+        $cl = new \plagiarism_copyleaks_comms();
+        $datetime = new DateTime();
+        $eventdata = $event->get_data();
+        $commentcontent = $DB->get_record('comments', ['id' => $eventdata['objectid']], 'content');
+        $commentdata = (array)[
+            'commentId' => $eventdata['objectid'],
+            'courseModuleId' => $eventdata['contextinstanceid'],
+            'moodleUserId' => $eventdata['userid'],
+            'content' => $commentcontent->content,
+            'createdAt' => ($datetime->setTimestamp($eventdata['timecreated']))->format('Y-m-d H:i:s'),
+        ];
+
+        $submissionid = $eventdata['other']['itemid'];
+
+        $cl->add_assign_submission_comment($commentdata, $submissionid);
     }
 
     /**
-     * comment on submission event handler.
-     * @param mod_workshop\event\submission_assessed $event
+     * assign submission comment deletion event handler.
+     * @param \assignsubmission_comments\event\comment_deleted $event
      */
-    public static function mod_workshop_submission_assessed(
-        mod_workshop\event\submission_assessed $event
+    public static function assign_submission_comment_deleted(
+        \assignsubmission_comments\event\comment_deleted $event
     ) {
+        // Check if Copyleaks API is connected.
+        if (!plagiarism_copyleaks_dbutils::is_copyleaks_api_connected()) {
+            return;
+        }
+
+        $eventdata = $event->get_data();
+        $cl = new \plagiarism_copyleaks_comms();
+        $commentdata = (array)[
+            'commentId' => $eventdata['objectid'],
+            'courseModuleId' => $eventdata['contextinstanceid'],
+            'moodleUserId' => $eventdata['userid'],
+        ];
+
+        $submissionid = $eventdata['other']['itemid'];
+
+        $cl->delete_assign_submission_comment($commentdata, $submissionid);
+    }
+
+    /**
+     * user graded event handler.
+     * @param \core\event\user_graded $event
+     */
+    public static function user_graded(
+        \core\event\user_graded $event
+    ) {
+        // Check if Copyleaks API is connected.
+        if (!plagiarism_copyleaks_dbutils::is_copyleaks_api_connected()) {
+            return;
+        }
+        // if (!\plagiarism_copyleaks_moduleconfig::is_module_enabled($this->task->get_modulename(), $newcmid)) {
+        //     return;
+        // }
+        global $DB;
         $eventdata = $event->get_data();
 
-        echo '';
+        if (!$item = $DB->get_record('grade_items', ['id' => $eventdata['other']['itemid']])) {
+            return;
+        }
+
+        if (
+            $item->itemtype == 'mod'
+        ) {
+
+            $cl = new \plagiarism_copyleaks_comms();
+
+            if (!$DB->get_record('grade_grades', ['id' => $eventdata['objectid']])) {
+                return;
+            }
+
+            $cmid = get_coursemodule_from_instance($item->itemmodule, $item->iteminstance, $eventdata['courseid'])->id;
+            $userid     = ($eventdata['relateduserid']) ? $eventdata['relateduserid'] : $eventdata['userid'];
+            $finalgrade = $eventdata['other']['finalgrade'];
+
+            $data = (array)[
+                'courseModuleId' => $cmid,
+                'moodleUserId' => $userid,
+                'finalGrade' => $finalgrade,
+            ];
+
+            $cl->upsert_assign_grade($data);
+        }
+    }
+
+    /**
+     * Group created event handler.
+     * @param \core\event\group_created $event
+     */
+    public static function group_created(\core\event\group_created $event) {
+        // Check if Copyleaks API is connected.
+        if (!plagiarism_copyleaks_dbutils::is_copyleaks_api_connected()) {
+            return;
+        }
+
+        $eventdata = $event->get_data();
+        $cl = new \plagiarism_copyleaks_comms();
+        $groupname = groups_get_group_name($eventdata['objectid']);
+        $courseId = $eventdata['courseid'];
+        $data = (array)[
+            'groupId' => $eventdata['objectid'],
+            'groupName' => $groupname,
+        ];
+
+        $cl->create_group($data, $courseId);
+    }
+
+    /**
+     * Group deleted event handler.
+     * @param \core\event\group_deleted $event
+     */
+    public static function group_deleted(\core\event\group_deleted $event) {
+        // Check if Copyleaks API is connected.
+        if (!plagiarism_copyleaks_dbutils::is_copyleaks_api_connected()) {
+            return;
+        }
+
+        $eventdata = $event->get_data();
+        $cl = new \plagiarism_copyleaks_comms();
+        $courseId = $eventdata['courseid'];
+        $data = (array)[
+            'groupId' => $eventdata['objectid'],
+        ];
+        $cl->delete_group($data, $courseId);
+    }
+
+
+    /**
+     * Group updated event handler.
+     * @param \core\event\group_updated $event
+     */
+    public static function group_updated(\core\event\group_updated $event) {
+        // Check if Copyleaks API is connected.
+        if (!plagiarism_copyleaks_dbutils::is_copyleaks_api_connected()) {
+            return;
+        }
+
+        $eventdata = $event->get_data();
+        $cl = new \plagiarism_copyleaks_comms();
+        $groupname = groups_get_group_name($eventdata['objectid']);
+        $courseId = $eventdata['courseid'];
+        $data = (array)[
+            'groupId' => $eventdata['objectid'],
+            'groupName' => $groupname,
+        ];
+
+        $cl->update_group($data, $courseId);
+    }
+
+    /**
+     * Group member added event handler.
+     * @param \core\event\group_member_added $event
+     */
+    public static function group_member_added(\core\event\group_member_added $event) {
+        // Check if Copyleaks API is connected.
+        if (!plagiarism_copyleaks_dbutils::is_copyleaks_api_connected()) {
+            return;
+        }
+
+        $eventdata = $event->get_data();
+        $cl = new \plagiarism_copyleaks_comms();
+        $user = get_complete_user_data('id', $eventdata['relateduserid']);
+        $groupname = groups_get_group_name($eventdata['objectid']);
+        $courseId = $eventdata['courseid'];
+        $groupdata = (array)[
+            'groupId' => $eventdata['objectid'],
+            'groupName' => $groupname,
+        ];
+
+        $userdata = (array)[
+            'mppUserId' => $eventdata['relateduserid'],
+            'userName' => $user->firstname . " " . $user->lastname,
+            'userEmail' => $user->email,
+        ];
+
+        $data = (array)[
+            'group' => $groupdata,
+            'user' => $userdata
+        ];
+
+        $cl->add_group_member($data, $courseId);
+    }
+
+    /**
+     * Group member removed event handler.
+     * @param \core\event\group_member_removed $event
+     */
+    public static function group_member_removed(\core\event\group_member_removed $event) {
+        // Check if Copyleaks API is connected.
+        if (!plagiarism_copyleaks_dbutils::is_copyleaks_api_connected()) {
+            return;
+        }
+
+        $eventdata = $event->get_data();
+        $cl = new \plagiarism_copyleaks_comms();
+        $courseId = $eventdata['courseid'];
+        $groupdata = (array)[
+            'groupId' => $eventdata['objectid'],
+        ];
+
+        $userdata = (array)[
+            'mppUserId' => $eventdata['relateduserid'],
+        ];
+
+        $data = (array)[
+            'group' => $groupdata,
+            'user' => $userdata
+        ];
+
+        $cl->remove_group_member($data, $courseId);
     }
 }

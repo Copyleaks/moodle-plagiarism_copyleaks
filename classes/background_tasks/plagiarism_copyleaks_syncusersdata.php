@@ -79,10 +79,11 @@ class plagiarism_copyleaks_synusersdata {
                     }
 
                     if ($userdata) {
+                        $isusereulauptodate = plagiarism_copyleaks_dbutils::is_user_eula_uptodate($file->userid);
                         $usersobjects[] = array(
                             "MPPUserId" => $userdata->id,
-                            "userName" => plagiarism_copyleaks_dbutils::is_user_eula_uptodate($file->userid)
-                                ? $userdata->firstname . " " . $userdata->lastname : ""
+                            "userName" => $isusereulauptodate ? $userdata->firstname . " " . $userdata->lastname : "",
+                            "userEmail" => $isusereulauptodate ? $userdata->email : "",
                         );
                     }
                 }

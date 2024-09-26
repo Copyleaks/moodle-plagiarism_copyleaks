@@ -198,12 +198,12 @@ class plagiarism_copyleaks_dbutils {
     public static function update_config_scanning_detection($detectiondata) {
         global $DB;
         $scandetections = array(
-            PLAGIARISM_COPYLEAKS_DETECT_GRAMMAR_FIELD_NAME,
+            PLAGIARISM_COPYLEAKS_DETECT_WF_ISSUES_FIELD_NAME,
             PLAGIARISM_COPYLEAKS_SCAN_AI_FIELD_NAME,
             PLAGIARISM_COPYLEAKS_SCAN_PLAGIARISM_FIELD_NAME
         );
         $savedvalues = array(
-            $detectiondata->showGrammar,
+            $detectiondata->showWritingFeedbackIssues,
             $detectiondata->showAI,
             $detectiondata->showPlagiarism
         );
@@ -239,7 +239,7 @@ class plagiarism_copyleaks_dbutils {
     public static function get_config_scanning_detection() {
         global $DB;
         $scandetections = array(
-            PLAGIARISM_COPYLEAKS_DETECT_GRAMMAR_FIELD_NAME,
+            PLAGIARISM_COPYLEAKS_DETECT_WF_ISSUES_FIELD_NAME,
             PLAGIARISM_COPYLEAKS_SCAN_AI_FIELD_NAME,
             PLAGIARISM_COPYLEAKS_SCAN_PLAGIARISM_FIELD_NAME
         );
@@ -256,4 +256,155 @@ class plagiarism_copyleaks_dbutils {
         }
         return $detectiondata;
     }
+
+    /**
+     * @param bool $connectionstatus - true - active / false - inactive.
+     */
+    public static function upsert_config_api_connection_status($connectionstatus) {
+        global $DB;
+        $field = $DB->get_record(
+            'plagiarism_copyleaks_config',
+            array(
+                'cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID,
+                'name' => PLAGIARISM_COPYLEAKS_API_CONNECTION_STATUS_FIELD_NAME
+            )
+        );
+        if (!$field || !isset($field)) {
+            $newfield = new stdClass();
+            $newfield->cm = PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID;
+            $newfield->name = PLAGIARISM_COPYLEAKS_API_CONNECTION_STATUS_FIELD_NAME;
+            $newfield->value = $connectionstatus ? 1 : 0;
+            if (!$DB->insert_record('plagiarism_copyleaks_config', $newfield)) {
+                throw new moodle_exception(get_string('clupdateerror', 'plagiarism_copyleaks'));
+            }
+        } else {
+            $field->value = $connectionstatus ? 1 : 0;
+            if (!$DB->update_record('plagiarism_copyleaks_config', $field)) {
+                throw new moodle_exception(get_string('clupdateerror', 'plagiarism_copyleaks'));
+            }
+        }
+    }
+
+    /**
+     * Get the Api connection status.
+     */
+    public static function is_copyleaks_api_connected() {
+        global $DB;
+        $field = $DB->get_record(
+            'plagiarism_copyleaks_config',
+            array(
+                'cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID,
+                'name' => PLAGIARISM_COPYLEAKS_API_CONNECTION_STATUS_FIELD_NAME
+            )
+        );
+
+        if ($field) {
+            return $field->value == "1";
+        }
+
+        return false;
+    }
+    
+    /** 
+     * Check if the course module is duplicated and error message.
+     * @param int $cmid
+     * @return bool
+     */
+    public static function get_cm_duplicated_error_message($cmid) {
+        $cmduplicate = self::get_cm_duplicate($cmid);
+        if ($cmduplicate && $cmduplicate->status == plagiarism_copyleaks_cm_duplication_status::ERROR) {
+            return $cmduplicate->errormsg;
+        }
+        return null;
+    }
+
+    /**
+     * Check if the course module is duplicated and error.
+     * @param int $cmid
+     * @return bool
+     */
+    public static function is_cm_duplicated_error($cmid) {
+        $cmduplicate = self::get_cm_duplicate($cmid);
+        return $cmduplicate && $cmduplicate->status == plagiarism_copyleaks_cm_duplication_status::ERROR;
+    }
+
+    /**
+     * Check if the course module is duplicated and queued.
+     * @param int $cmid
+     * @return bool
+     */
+    public static function is_cm_duplicated_queued($cmid) {
+        $cmduplicate = self::get_cm_duplicate($cmid);
+        return $cmduplicate && $cmduplicate->status == plagiarism_copyleaks_cm_duplication_status::QUEUED;
+    }
+
+    /**
+     * Get the course module id of the duplicated course module.
+     * @param int $cmid
+     * @return object
+     */
+    private static function get_cm_duplicate($cmid) {
+        global $DB;
+        return $DB->get_record('plagiarism_copyleaks_cm_copy', array('new_cm_id' => $cmid));
+    }
+
+    /**
+     * Get the configuration by name.
+     * @param string $name
+     * @return object
+     */
+    public static function is_config_result_view_enable($name, $cmid) {
+        global $DB, $USER, $COURSE;
+
+        $context = context_course::instance($COURSE->id);
+        $studentrole = $DB->get_record('role', ['shortname' => 'student']);
+        $isstudent = user_has_role_assignment($USER->id, $studentrole->id, $context->id);
+
+        if (!$isstudent) {
+            return true;
+        };
+
+        $defaultconfig = $DB->get_record(
+            'plagiarism_copyleaks_config',
+            array('name' => $name, 'cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID)
+        );
+
+        if ($defaultconfig) {
+            return $defaultconfig->value;
+        }
+
+        $config = $DB->get_record(
+            'plagiarism_copyleaks_config',
+            array('name' => $name, 'cm' => $cmid)
+        );
+
+        return $config ? $config->value : true;
+    }
+
+    /**
+     * Save the request to Syncs Copyleaks integration data.
+     * @param array $data
+     * @param string $plagiarism_copyleaks_key
+     */
+    public static function queue_copyleaks_integration_data_sync_request($data, $plagiarism_copyleaks_key) {
+        global $DB;
+        $request = new stdClass();
+        $request->created_date = time();
+        $request->cmid = 0;
+        $request->endpoint = "/api/moodle/plugin/$plagiarism_copyleaks_key/task/upsert-plugin-integraion-data";
+        $request->total_retry_attempts = 0;
+        $request->data = json_encode($data);
+        $request->priority = plagiarism_copyleaks_priority::HIGH;
+        $request->status = plagiarism_copyleaks_request_status::FAILED;
+        $request->fail_message = "";
+        $request->verb = 'POST';
+        $request->require_auth = true;
+        if (!$DB->insert_record('plagiarism_copyleaks_request', $request)) {
+            \plagiarism_copyleaks_logs::add(
+                "failed to create new database record queue request for endpoint: $request->endpoint",
+                "INSERT_RECORD_FAILED"
+            );
+        }
+    }
+
 }

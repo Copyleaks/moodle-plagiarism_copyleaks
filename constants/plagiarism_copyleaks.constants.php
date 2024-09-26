@@ -59,8 +59,15 @@ define('DEFAULT_DATABASE_COPYLEAKSDB_ID', 'DEFAULT_DATABASE_COPYLEAKSDB_ID');
 // Copyleaks retry array in seconds.
 define('PLAGIARISM_COPYLEAKS_RETRY', array(0, 2.5, 3, 5, 10));
 define('PLAGIARISM_COPYLEAKS_MAX_RETRY', 5);
+define('PLAGIARISM_COPYLEAKS_MAX_AUTO_RETRY', 10);
 define('PLAGIARISM_COPYLEAKS_DEFUALT_EULA_VERSION', '2023032700');
 define('PLAGIARISM_COPYLEAKS_EULA_FIELD_NAME', 'plagiarism_copyleaks_latesteulaversion ');
 define('PLAGIARISM_COPYLEAKS_SCAN_AI_FIELD_NAME', 'plagiarism_copyleaks_enable_ai_detection');
 define('PLAGIARISM_COPYLEAKS_SCAN_PLAGIARISM_FIELD_NAME', 'plagiarism_copyleaks_enable_plagiarism_detection');
 define('PLAGIARISM_COPYLEAKS_DETECT_GRAMMAR_FIELD_NAME', 'plagiarism_copyleaks_enable_grammar_detection');
+define('PLAGIARISM_COPYLEAKS_DETECT_WF_ISSUES_FIELD_NAME', 'plagiarism_copyleaks_enable_wf_issues_detection');
+define('PLAGIARISM_COPYLEAKS_API_CONNECTION_STATUS_FIELD_NAME', 'plagiarism_copyleaks_api_connected');
+
+define('PLAGIARISM_COPYLEAKS_ENABLE_AI_VIEW_FOR_STUDENT', 'enable_ai_result_view_for_student');
+define('PLAGIARISM_COPYLEAKS_ENABLE_PLAGIARISM_VIEW_FOR_STUDENT', 'enable_plagiairsm_result_view_for_student');
+define('PLAGIARISM_COPYLEAKS_ENABLE_WF_VIEW_FOR_STUDENT', 'enable_writing_assisstant_result_view_for_student');

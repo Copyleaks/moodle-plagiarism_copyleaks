@@ -23,6 +23,7 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_logs.class.php');
@@ -38,7 +39,7 @@ class plagiarism_copyleaks_submissions {
      * @param string $identifier
      * @param string $submissiontype
      **/
-    public static function create($cm, $userid, $identifier, $submissiontype) {
+    public static function create($cm, $userid, $identifier, $submissiontype, $hashedcontent = null) {
         global $DB;
 
         $file = new stdClass();
@@ -48,6 +49,7 @@ class plagiarism_copyleaks_submissions {
         $file->statuscode = "queued";
         $file->similarityscore = null;
         $file->submissiontype = $submissiontype;
+        $file->hashedcontent = $hashedcontent;
 
         if (!$fileid = $DB->insert_record('plagiarism_copyleaks_files', $file)) {
             \plagiarism_copyleaks_logs::add(
@@ -132,13 +134,19 @@ class plagiarism_copyleaks_submissions {
      * @param string $fileid submission id
      * @param string $errormsg error message (optional)
      */
-    public static function mark_error($fileid, $errormsg = null) {
+    public static function mark_error($fileid, $errormsg = null, $failedafterretry = false) {
         global $DB;
 
         $file = new stdClass();
         $file->id = $fileid;
         $file->statuscode = 'error';
         $file->lastmodified = time();
+        $errorlog = "MARK_ERROR_SUBMISSION";
+
+        if ($failedafterretry) {
+            $file->retrycnt = 0;
+            $errorlog = "SUBMISSION_MAX_RETRY_FAILED";
+        }
 
         if (!empty($errormsg)) {
             $file->errormsg = $errormsg;
@@ -150,7 +158,7 @@ class plagiarism_copyleaks_submissions {
                 "UPDATE_RECORD_FAILED"
             );
         } else {
-            \plagiarism_copyleaks_logs::add($errormsg . " (fileid: " . $fileid . ") - ", "MARK_ERROR_SUBMISSION");
+            \plagiarism_copyleaks_logs::add($errormsg . " (fileid: " . $fileid . ") - ", $errorlog);
         }
 
         return true;
@@ -239,5 +247,115 @@ class plagiarism_copyleaks_submissions {
                 );
             }
         }
+    }
+
+    /**
+     * @param object $submission - will update the submission reference.
+     * @param string $errormessage
+     */
+    public static function handle_submission_error(&$submission, $errormessage = '') {
+        global $DB;
+        if (isset($submission->retrycnt) && $submission->retrycnt > PLAGIARISM_COPYLEAKS_MAX_AUTO_RETRY) {
+            self::mark_error($submission->id, $errormessage, true);
+            return;
+        }
+
+        if (!isset($submission->retrycnt)) {
+            $submission->retrycnt = 0;
+        }
+
+        $submission->retrycnt += 1;
+        $submission->scheduledscandate = strtotime('+ 5 minutes');
+        $submission->statuscode = 'queued';
+
+        if (!$DB->update_record('plagiarism_copyleaks_files', $submission)) {
+            $logtxt = empty($submission->errormsg) ? 'retry count' : 'error';
+            \plagiarism_copyleaks_logs::add(
+                "failed to update submission $logtxt, fileid: " . $submission->id,
+                "UPDATE_RECORD_FAILED"
+            );
+        }
+    }
+
+
+    /**
+     * Update report 
+     * @param  string $coursemoduleid  Course module ID
+     * @param  string $moodleuserid    Moodle user ID
+     * @param  string $identifier      Identifier
+     * @param  string $scanid          Scan ID
+     * @param  int    $status          Report scan status
+     * @param  float  $plagiarismscore Plagiarism score
+     * @param  float  $aiscore         AI score
+     * @param  int    $writingfeedbackissues Writing feedback issues
+     * @param  bool   $ischeatingdetected    Is cheating detected
+     * @param  string $errormessage    Error message
+     * @return bool  true if success, false if failed
+     */
+    public static function update_report(
+        $coursemoduleid,
+        $moodleuserid,
+        $identifier,
+        $scanid,
+        $status,
+        $plagiarismscore,
+        $aiscore,
+        $writingfeedbackissues,
+        $ischeatingdetected,
+        $errormessage
+
+    ) {
+        global $DB;
+        $submission = $DB->get_record(
+            'plagiarism_copyleaks_files',
+            array(
+                'cm' => $coursemoduleid,
+                'userid' => $moodleuserid,
+                'identifier' => $identifier
+            )
+        );
+
+        if (isset($submission) && $submission) {
+            $submission->externalid = $scanid;
+            if ($status == 1) {
+                $submission->statuscode = 'success';
+                $submission->similarityscore = isset($plagiarismscore) ?
+                    round($plagiarismscore, 1) : null;
+                $submission->aiscore = isset($aiscore) ?
+                    round($aiscore, 1) : null;
+                $submission->writingfeedbackissues = isset($writingfeedbackissues) ?
+                    $writingfeedbackissues : null;
+                $submission->ischeatingdetected = $ischeatingdetected;
+                if (!$DB->update_record('plagiarism_copyleaks_files', $submission)) {
+                    \plagiarism_copyleaks_logs::add(
+                        "Update record failed (CM: " . $coursemoduleid . ", User: "
+                        . $moodleuserid . ") - ",
+                        "UPDATE_RECORD_FAILED"
+                    );
+                    return false;
+                }
+            } else if ($status == 2) {
+                $submission->statuscode = 'error';
+                $submission->errormsg = $errormessage;
+                if (!$DB->update_record('plagiarism_copyleaks_files', $submission)) {
+                    \plagiarism_copyleaks_logs::add(
+                        "Update record failed (CM: " . $coursemoduleid . ", User: "
+                        . $moodleuserid . ") - ",
+                        "UPDATE_RECORD_FAILED"
+                    );
+                    return false;
+                }
+            }
+        } else {
+            \plagiarism_copyleaks_logs::add(
+                "Submission not found for Copyleaks API scan instances with the identifier: "
+                . $identifier,
+                "SUBMISSION_NOT_FOUND"
+            );
+
+            return false;
+        }
+
+        return true;
     }
 }

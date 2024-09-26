@@ -37,6 +37,7 @@ require_login($course, true, $cm);
 
 $context = context_course::instance($courseid);
 $roles = get_user_roles($context, $USER->id);
+$errormessagestyle = 'color:red; display:flex; width:100%; justify-content:center;';
 
 foreach ($roles as $role) {
     if ($role->shortname == 'student') {

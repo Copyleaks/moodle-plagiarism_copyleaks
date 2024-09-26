@@ -352,14 +352,17 @@ class plagiarism_copyleaks_comms {
     public function test_connection($context, $updateconfig = false) {
         try {
             if (isset($this->key) && isset($this->secret)) {
+                $chekbalance = $updateconfig ? "true" : "false";
                 $result = plagiarism_copyleaks_http_client::execute_retry(
                     'GET',
-                    $this->copyleaks_api_url() . "/api/moodle/plugin/" . $this->key . "/test-connection?source=" . $context,
+                    $this->copyleaks_api_url() . "/api/moodle/plugin/" .
+                    $this->key . "/test-connection?source=" . $context . "&checkBalance=$chekbalance",
                     true
                 );
 
                 if ($updateconfig) {
                     plagiarism_copyleaks_dbutils::update_config_scanning_detection($result->detectionsValues);
+                    plagiarism_copyleaks_dbutils::upsert_config_api_connection_status($result->apiConnection);
                 }
 
                 if (isset($result) && isset($result->eulaVersion)) {
@@ -407,6 +410,237 @@ class plagiarism_copyleaks_comms {
     }
 
     /**
+     * upsert submission at Copyleaks server.
+     * @param array $data
+     */
+    public function upsert_submission($data, $submissionid) {
+        $endpoint = "/api/moodle/plugin/$this->key/webhooks/submissions/$submissionid/upsert-submission";
+        $verb = 'POST';
+        try {
+            plagiarism_copyleaks_http_client::execute(
+                $verb,
+                $this->copyleaks_api_url() . $endpoint,
+                true,
+                json_encode($data)
+            );
+        } catch (\Exception $e) {
+            plagiarism_copyleaks_dbutils::queued_failed_request(
+                $data['courseModuleId'],
+                $endpoint,
+                $data,
+                plagiarism_copyleaks_priority::HIGH,
+                $e->getMessage(),
+                $verb
+            );
+        }
+    }
+
+    /**
+     * send request to delete submission datd from copyleaks servers
+     * @param array $data
+     */
+    public function delete_submission($data, $submissionid) {
+        if (isset($this->key) && isset($this->secret)) {
+            $endpoint = "/api/moodle/plugin/$this->key/webhooks/submissions/$submissionid/delete-submission";
+            $verb = 'POST';
+            plagiarism_copyleaks_http_client::execute_retry(
+                $verb,
+                $this->copyleaks_api_url() . $endpoint,
+                true,
+                json_encode($data)
+            );
+        }
+    }
+
+    /**
+     * send request to delete originality report from copyleaks servers
+     * @param array $data
+     */
+    public function delete_report($data) {
+        if (isset($this->key) && isset($this->secret)) {
+            $endpoint = "/api/moodle/plugin/$this->key/webhooks/submissions/reports/delete-report";
+            $verb = 'POST';
+            plagiarism_copyleaks_http_client::execute_retry(
+                $verb,
+                $this->copyleaks_api_url() . $endpoint,
+                true,
+                json_encode($data)
+            );
+        }
+    }
+    /**
+     * duplicate course modules data at Copyleaks server.
+     * @param array $data
+     * @return mixed
+     */
+    public function duplicate_course_modules($data) {
+        if (isset($this->key) && isset($this->secret)) {
+            $response = plagiarism_copyleaks_http_client::execute(
+                'POST',
+                $this->copyleaks_api_url() . "/api/moodle/plugin/$this->key/duplicate-modules",
+                true,
+                json_encode($data)
+            );
+            return $response;
+        }
+    }
+
+    /**
+     * send request to delete assign submission comment from copyleaks servers
+     * @param array $data
+     */
+    public function delete_assign_submission_comment($data, $submissionid) {
+        if (isset($this->key) && isset($this->secret)) {
+            $endpoint = "/api/moodle/plugin/$this->key/webhooks/submissions/$submissionid/comments/delete-comment";
+            $verb = 'POST';
+            plagiarism_copyleaks_http_client::execute_retry(
+                $verb,
+                $this->copyleaks_api_url() . $endpoint,
+                true,
+                json_encode($data)
+            );
+        }
+    }
+
+    /**
+     * send request to add assign submission comment from copyleaks servers
+     * @param array $data
+     */
+    public function add_assign_submission_comment($data, $submissionid) {
+        if (isset($this->key) && isset($this->secret)) {
+            $endpoint = "/api/moodle/plugin/$this->key/webhooks/submissions/$submissionid/comments/add-comment";
+            $verb = 'POST';
+            plagiarism_copyleaks_http_client::execute_retry(
+                $verb,
+                $this->copyleaks_api_url() . $endpoint,
+                true,
+                json_encode($data)
+            );
+        }
+    }
+
+    /**
+     * Update assign grade.
+     * @param array $data
+     */
+    public function upsert_assign_grade($data) {
+
+        $endpoint = "/api/moodle/plugin/$this->key/webhooks/grades/upsert-grade";
+        $verb = 'POST';
+        try {
+            plagiarism_copyleaks_http_client::execute_retry(
+                $verb,
+                $this->copyleaks_api_url() . $endpoint,
+                true,
+                json_encode($data)
+            );
+        } catch (\Exception $e) {
+            $errormsg = get_string('cltaskfailedconnecting', 'plagiarism_copyleaks', $e->getMessage());
+            plagiarism_copyleaks_logs::add($errormsg, 'API_ERROR');
+        }
+    }
+
+    /**
+     * Create group.
+     * @param array $data
+     */
+    public function create_group($data, $courseId) {
+        $endpoint = "/api/moodle/plugin/$this->key/webhooks/course/$courseId/groups/create-group";
+        $verb = 'POST';
+        try {
+            plagiarism_copyleaks_http_client::execute_retry(
+                $verb,
+                $this->copyleaks_api_url() . $endpoint,
+                true,
+                json_encode($data)
+            );
+        } catch (\Exception $e) {
+            $errormsg = get_string('cltaskfailedconnecting', 'plagiarism_copyleaks', $e->getMessage());
+            plagiarism_copyleaks_logs::add($errormsg, 'API_ERROR');
+        }
+    }
+
+    /**
+     * Delete group.
+     * @param array $data
+     */
+    public function delete_group($data, $courseId) {
+        $endpoint = "/api/moodle/plugin/$this->key/webhooks/course/$courseId/groups/delete-group";
+        $verb = 'POST';
+        try {
+            plagiarism_copyleaks_http_client::execute_retry(
+                $verb,
+                $this->copyleaks_api_url() . $endpoint,
+                true,
+                json_encode($data)
+            );
+        } catch (\Exception $e) {
+            $errormsg = get_string('cltaskfailedconnecting', 'plagiarism_copyleaks', $e->getMessage());
+            plagiarism_copyleaks_logs::add($errormsg, 'API_ERROR');
+        }
+    }
+
+    /**
+     * update group.
+     * @param array $data
+     */
+    public function update_group($data, $courseId) {
+        $endpoint = "/api/moodle/plugin/$this->key/webhooks/course/$courseId/groups/update-group";
+        $verb = 'POST';
+        try {
+            plagiarism_copyleaks_http_client::execute_retry(
+                $verb,
+                $this->copyleaks_api_url() . $endpoint,
+                true,
+                json_encode($data)
+            );
+        } catch (\Exception $e) {
+            $errormsg = get_string('cltaskfailedconnecting', 'plagiarism_copyleaks', $e->getMessage());
+            plagiarism_copyleaks_logs::add($errormsg, 'API_ERROR');
+        }
+    }
+
+    /**
+     * Add group member.
+     * @param array $data
+     */
+    public function add_group_member($data, $courseId) {
+        $endpoint = "/api/moodle/plugin/$this->key/webhooks/course/$courseId/groups/add-group-member";
+        $verb = 'POST';
+        try {
+            plagiarism_copyleaks_http_client::execute_retry(
+                $verb,
+                $this->copyleaks_api_url() . $endpoint,
+                true,
+                json_encode($data)
+            );
+        } catch (\Exception $e) {
+            $errormsg = get_string('cltaskfailedconnecting', 'plagiarism_copyleaks', $e->getMessage());
+            plagiarism_copyleaks_logs::add($errormsg, 'API_ERROR');
+        }
+    }
+
+    /**
+     * remove group member.
+     * @param array $data
+     */
+    public function remove_group_member($data, $courseId) {
+        $endpoint = "/api/moodle/plugin/$this->key/webhooks/course/$courseId/groups/remove-group-member";
+        $verb = 'POST';
+        try {
+            plagiarism_copyleaks_http_client::execute_retry(
+                $verb,
+                $this->copyleaks_api_url() . $endpoint,
+                true,
+                json_encode($data)
+            );
+        } catch (\Exception $e) {
+            $errormsg = get_string('cltaskfailedconnecting', 'plagiarism_copyleaks', $e->getMessage());
+            plagiarism_copyleaks_logs::add($errormsg, 'API_ERROR');
+        }
+    }
+
+    /**
      * Update courses at Copyleaks server.
      * @param array $data
      */
@@ -442,7 +676,6 @@ class plagiarism_copyleaks_comms {
         }
     }
 
-
     /**
      * Update course module temp id at Copyleaks server.
      * @param array $data
@@ -456,5 +689,89 @@ class plagiarism_copyleaks_comms {
             json_encode($data)
         );
         return $result;
+    }
+
+    /**
+     * Get all originality report ids with the updated scores
+     * @return array $result an array of ids and its updated scores
+     */
+    public function get_unsynced_scans_scores() {
+        if (isset($this->key) && isset($this->secret)) {
+            return plagiarism_copyleaks_http_client::execute_retry(
+                'GET',
+                $this->copyleaks_api_url() . "/api/moodle/plugin/" . $this->key . "/task/unsynced-scans-scores",
+                true,
+            );
+        }
+    }
+
+    /**
+     * Send request to delete synced ids to copyleaks server
+     * @param array $ids Copyleaks report scan ids
+     */
+    public function delete_synced_scans_by_ids(array $ids) {
+        if (isset($this->key) && isset($this->secret)) {
+            $reqbody = (array)[
+                'ids' => $ids
+            ];
+            plagiarism_copyleaks_http_client::execute_retry(
+                'POST',
+                $this->copyleaks_api_url() . "/api/moodle/plugin/" . $this->key . "/task/synced-scans-scores/delete",
+                true,
+                json_encode($reqbody)
+            );
+        }
+    }
+
+    /**
+     * Get all unsynced configs from Copyleaks server
+     * @return array $result an array of ids and its updated scores
+     */
+    public function get_unsynced_configs() {
+        if (isset($this->key) && isset($this->secret)) {
+            return plagiarism_copyleaks_http_client::execute_retry(
+                'GET',
+                $this->copyleaks_api_url() . "/api/moodle/plugin/" . $this->key . "/task/unsynced-configs",
+                true,
+            );
+        }
+    }
+
+    /**
+     * Send request to delete synced ids to copyleaks server
+     * @param array $ids Copyleaks report scan ids
+     */
+    public function delete_synced_config_by_keys(array $ids) {
+        if (isset($this->key) && isset($this->secret)) {
+            $reqbody = (array)[
+                'ids' => $ids
+            ];
+            plagiarism_copyleaks_http_client::execute_retry(
+                'POST',
+                $this->copyleaks_api_url() . "/api/moodle/plugin/" . $this->key . "/task/synced-configs/delete",
+                true,
+                json_encode($reqbody)
+            );
+        }
+    }
+
+    /**
+     * 
+     * @param array $data
+     */
+    public function save_plugin_integration_data($data) {
+        $endpoint = "/api/moodle/plugin/$this->key/task/upsert-plugin-integraion-data";
+        $verb = 'POST';
+        try {
+            plagiarism_copyleaks_http_client::execute_retry(
+                $verb,
+                $this->copyleaks_api_url() . $endpoint,
+                true,
+                json_encode($data)
+            );
+        } catch (\Exception $e) {
+            $errormsg = get_string('cltaskfailedconnecting', 'plagiarism_copyleaks', $e->getMessage());
+            plagiarism_copyleaks_logs::add($errormsg, 'API_ERROR');
+        }
     }
 }

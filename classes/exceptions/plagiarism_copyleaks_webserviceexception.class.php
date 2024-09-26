@@ -14,18 +14,19 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 /**
- * version.php - Meta-data about the plugin.
+ * Copyleaks Web service exception
  * @package   plagiarism_copyleaks
- * @author    Bayan Abuawad <bayana@copyleaks.com>
- * @copyright 2021 Copyleaks
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later.
+ * @copyright 2024 Copyleaks
+ * @author    Shade Amasha <shadea@copyleaks.com>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
-
-$plugin->version = 2024091201;
-$plugin->release = "3.5+";
-$plugin->requires = 2018051700;
-$plugin->component = 'plagiarism_copyleaks';
-$plugin->maturity = MATURITY_STABLE;
-$plugin->cron = 0;
+/** Copyleaks web service exception */
+class plagiarism_copyleaks_webservice_exception extends moodle_exception {
+  /**
+   * constructor
+   */
+  public function __construct($errorcode) {
+    parent::__construct($errorcode, 'plagiarism_copyleaks');
+  }
+}

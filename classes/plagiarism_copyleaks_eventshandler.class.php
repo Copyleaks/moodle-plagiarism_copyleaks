@@ -28,8 +28,10 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_pluginconfig.class.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_moduleconfig.class.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_submissions.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_comms.class.php');
 
 require_once($CFG->dirroot . '/plagiarism/copyleaks/constants/plagiarism_copyleaks.constants.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/enums/plagiarism_copyleaks_enums.php');
 
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_assignmodule.class.php');
 
@@ -61,9 +63,10 @@ class plagiarism_copyleaks_eventshandler {
     public function handle_submissions($data) {
         global $DB;
         $result = true;
+       
         // Get course module.
         $coursemodule = $this->get_coursemodule($data);
-
+ 
         // Stop event if the course module is not found.
         if (!$coursemodule) {
             return true;
@@ -239,7 +242,7 @@ class plagiarism_copyleaks_eventshandler {
      * @param object $cmdata
      */
     private function queue_text_content($data, $coursemodule, $authoruserid, $submitteruserid, $cmdata) {
-        global $DB;
+        global $DB, $CFG;
 
         if ($coursemodule->modname == 'workshop' && !isset($data['other']['content'])) {
             $workshopsubmissions = $DB->get_record(
@@ -260,12 +263,20 @@ class plagiarism_copyleaks_eventshandler {
         if (count($files) > 0) {
             return true;
         } else {
+            $typefield = ($CFG->dbtype == "oci") ? "to_char(submissiontype)" : "submissiontype";
+            $typefieldvalue = ($coursemodule->modname == 'forum') ? 'forum_post' : 'text_content';
+            $DB->delete_records_select(
+                'plagiarism_copyleaks_files',
+                " cm = ? AND itemid = ? AND " . $typefield . " = ?",
+                array($coursemodule->id, $data['objectid'], $typefieldvalue)
+            );
+           
             return $this->queue_submission_to_copyleaks(
                 $coursemodule,
                 $authoruserid,
                 $submitteruserid,
                 $contentidentifier,
-                ($coursemodule->modname == 'forum') ? 'forum_post' : 'text_content',
+                $typefieldvalue,
                 $data['objectid'],
                 $cmdata
             );
@@ -336,6 +347,8 @@ class plagiarism_copyleaks_eventshandler {
 
         foreach ($data['other']['pathnamehashes'] as $pathnamehash) {
 
+            $hashedcontent = $this->check_existing_file_identifier($pathnamehash, $coursemodule, $authoruserid);
+
             $filestorage = get_file_storage();
             $fileref = $filestorage->get_file_by_hash($pathnamehash);
 
@@ -368,11 +381,50 @@ class plagiarism_copyleaks_eventshandler {
                 $pathnamehash,
                 'file',
                 $data['objectid'],
-                $cmdata
+                $cmdata,
+                $hashedcontent
             );
         }
 
         return $result;
+    }
+
+    /**
+     * Check if same identifier already exists in copyleaks_files table,
+     * in case the content is different it will be deleted.
+     * @param string $pathnamehash
+     * @return string hashed content
+     */
+    private function check_existing_file_identifier($pathnamehash, $coursemodule, $authoruserid) {
+        global $DB, $CFG;
+
+        $filerecord = $DB->get_record('files', array('pathnamehash' => $pathnamehash));
+        $hashedcontent = null;
+
+        if ($filerecord) {
+            $hashedcontent = $filerecord->contenthash;
+
+            $typefield = ($CFG->dbtype == "oci") ? "to_char(submissiontype)" : "submissiontype";
+
+            $savedfiles = $DB->get_records_select(
+                'plagiarism_copyleaks_files',
+                " cm = ? AND userid = ? AND " . $typefield . " = ? AND identifier = ?",
+                array($coursemodule->id, $authoruserid, "file", $pathnamehash)
+            );
+
+            if (count($savedfiles) > 0) {
+                $savedfile = reset($savedfiles);
+
+                if (isset($savedfile->hashedcontent) && $savedfile->hashedcontent != $hashedcontent) {
+                    $DB->delete_records_select(
+                        'plagiarism_copyleaks_files',
+                        " cm = ? AND userid = ? AND " . $typefield . " = ? AND identifier = ?",
+                        array($coursemodule->id, $authoruserid, "file", $pathnamehash)
+                    );
+                }
+            }
+        }
+        return $hashedcontent;
     }
 
     /**
@@ -393,33 +445,39 @@ class plagiarism_copyleaks_eventshandler {
         $identifier,
         $subtype,
         $itemid,
-        $cmdata
+        $cmdata,
+        $hashedcontent = null
     ) {
         global $DB, $CFG;
 
         $errormessage = null;
         $clsubmissionid = null;
+        $cl = new plagiarism_copyleaks_comms();
 
         if ($subtype == 'file') {
             $filestorage = get_file_storage();
             $fileref = $filestorage->get_file_by_hash($identifier);
-
             $filename = $fileref->get_filename();
         }
-
         // Check if submission already exists.
         $typefield = ($CFG->dbtype == "oci") ? " to_char(submissiontype) " : " submissiontype ";
         if ($DB->get_records_select(
             'plagiarism_copyleaks_files',
-            " cm = ? AND userid = ? AND " . $typefield . " = ? AND identifier = ?",
-            array($coursemodule->id, $authoruserid, $subtype, $identifier),
+            " cm = ? AND itemid = ? AND " . $typefield . " = ? AND identifier = ? AND hashedcontent = ?",
+            array($coursemodule->id, $itemid, $subtype, $identifier, $hashedcontent),
             'id',
             'id'
         )) {
             // Submission already exists, do not queue it again.
             return true;
         } else {
-            $submissionid = plagiarism_copyleaks_submissions::create($coursemodule, $authoruserid, $identifier, $subtype);
+            $submissionid = plagiarism_copyleaks_submissions::create(
+                $coursemodule,
+                $authoruserid,
+                $identifier,
+                $subtype,
+                $hashedcontent
+            );
         }
 
         // Check if file type is supported by Copyleaks.
@@ -458,8 +516,32 @@ class plagiarism_copyleaks_eventshandler {
             }
         }
 
-        // If we have error message, then we don't need to send it to Copyleaks.
+     
         $submitstatus = $errormessage == null ? 'queued' : 'error';
+
+        if (plagiarism_copyleaks_dbutils::is_copyleaks_api_connected()) {
+
+            if (plagiarism_copyleaks_submissions::save(
+                $coursemodule,
+                $authoruserid,
+                $submissionid,
+                $identifier,
+                $submitstatus,
+                $clsubmissionid,
+                $submitteruserid,
+                $itemid,
+                $subtype,
+                $scheduledscandate,
+                $errormessage
+            )) {
+                if ($this->modulename == 'assign') {
+                    list($data, $submissionid) = $this->get_assign_submission_data($itemid, $coursemodule, $authoruserid, $cmdata, $identifier, $subtype, $scheduledscandate);
+                    $cl->upsert_submission($data, $submissionid);
+                }
+                return true;
+            };
+        }
+
         return plagiarism_copyleaks_submissions::save(
             $coursemodule,
             $authoruserid,
@@ -543,5 +625,57 @@ class plagiarism_copyleaks_eventshandler {
                 );
             }
         }
+    }
+
+
+    /**
+     * get assign submission data
+     * @param object $data
+     * @param object $coursemodule
+     * @param string $authoruserid
+     * @param string $submitteruserid
+     * @param object $cmdata
+     * @param object $identifier
+     * @param string $subtype
+     * @param int $scheduledscandate
+     */
+    private function get_assign_submission_data($itemid, $coursemodule, $authoruserid, $cmdata, $identifier, $subtype, $scheduledscandate) {
+        global $DB;
+
+
+        $submissiondata = array();
+        $submissionrecord = $DB->get_record(
+            'assign_submission',
+            array('id' => $itemid)
+        );
+
+        $submissionid = $submissionrecord->id;
+
+        $submissiondata['attempt'] = $submissionrecord->attemptnumber;
+        $submissiondata['moodleUserId'] = $authoruserid;
+        $submissiondata['courseModuleId'] = $coursemodule->id;
+        if (isset($submissionrecord->timecreated)) {
+            $submissiondata['createdAt'] = ((new DateTime())->setTimestamp($submissionrecord->timecreated))->format('Y-m-d H:i:s');
+        }
+
+        if ($cmdata->teamsubmission == "1") {
+            $group = $DB->get_record('groups', array('id' => $submissionrecord->groupid), 'id, name');
+            if ($group) {
+                $submissiondata['groupId'] = $group->id;
+            }
+        }
+
+        $reportdata = (array)[
+            'courseModuleId' => $coursemodule->id,
+            'moodleUserId' =>  $authoruserid,
+            'identifier' => $identifier,
+            'submissionType' => $subtype,
+        ];
+        $data = (array)[
+            'submission' => $submissiondata,
+            'report' => $reportdata
+        ];
+
+        return [$data, $submissionid];
     }
 }
