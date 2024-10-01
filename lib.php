@@ -139,7 +139,7 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
                     $updatedata['maxAttempts'] = (int)$data->maxattempts;
                 }
 
-                $updatedata['instance'] = $data->instance;
+                $updatedata['assignmentId'] = $data->instance;
                 $updatedata['gradingMethod'] = $gradingmethod;
                 $updatedata['isAnonymousSubmissions'] = $data->blindmarking == "1" ? true : false;
                 $updatedata['hideGraderIdentityFromStudents'] = $data->hidegrader == "1" ? true : false;

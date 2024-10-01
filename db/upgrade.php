@@ -31,7 +31,7 @@ require_once($CFG->dirroot . '/plagiarism/copyleaks/lib.php');
  * @return bool
  */
 function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
-    global $DB;
+    global $DB, $CFG;
     $dbman = $DB->get_manager();
     if ($oldversion < 2021090901) {
         // Changing type of field similarityscore on table plagiarism_copyleaks_files to number.
@@ -530,6 +530,26 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
 
         // Copyleaks savepoint reached.
         upgrade_plugin_savepoint(true, 2024081401, 'plagiarism', 'copyleaks');
+    }
+
+    if ($oldversion < 2024082815) {
+        $config = plagiarism_copyleaks_pluginconfig::admin_config();
+        //check if the plugin key is set and not empty
+        if (isset($config->plagiarism_copyleaks_key) && !empty($config->plagiarism_copyleaks_key)) {
+            $domain = (new moodle_url('/'))->out(false);
+            $domain = rtrim($domain, '/');
+            $plugindata = (array)[
+                'domain' => $domain,
+                'pluginVersion' => 2024082815
+            ];
+            plagiarism_copyleaks_dbutils::queue_copyleaks_integration_data_sync_request(
+                $plugindata,
+                $config->plagiarism_copyleaks_key
+            );
+        }
+
+        // Copyleaks savepoint reached.
+        upgrade_plugin_savepoint(true, 2024082815, 'plagiarism', 'copyleaks');
     }
 
     return true;

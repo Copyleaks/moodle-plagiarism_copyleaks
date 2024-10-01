@@ -72,12 +72,7 @@ class plagiarism_copyleaks_course_groups extends external_api {
       ];
     }
 
-    if (empty($groupdata)) {
-      throw new plagiarism_copyleaks_webservice_exception('clnogroupsfound');
-    }
-
     return array('groups' => $groupdata);
-    
   }
 
   /**                                                                                                                                  

@@ -380,4 +380,31 @@ class plagiarism_copyleaks_dbutils {
 
         return $config ? $config->value : true;
     }
+
+    /**
+     * Save the request to Syncs Copyleaks integration data.
+     * @param array $data
+     * @param string $plagiarism_copyleaks_key
+     */
+    public static function queue_copyleaks_integration_data_sync_request($data, $plagiarism_copyleaks_key) {
+        global $DB;
+        $request = new stdClass();
+        $request->created_date = time();
+        $request->cmid = 0;
+        $request->endpoint = "/api/moodle/plugin/$plagiarism_copyleaks_key/task/upsert-plugin-integraion-data";
+        $request->total_retry_attempts = 0;
+        $request->data = json_encode($data);
+        $request->priority = plagiarism_copyleaks_priority::HIGH;
+        $request->status = plagiarism_copyleaks_request_status::FAILED;
+        $request->fail_message = "";
+        $request->verb = 'POST';
+        $request->require_auth = true;
+        if (!$DB->insert_record('plagiarism_copyleaks_request', $request)) {
+            \plagiarism_copyleaks_logs::add(
+                "failed to create new database record queue request for endpoint: $request->endpoint",
+                "INSERT_RECORD_FAILED"
+            );
+        }
+    }
+
 }
