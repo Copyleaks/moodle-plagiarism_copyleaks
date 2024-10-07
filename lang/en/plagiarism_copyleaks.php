@@ -108,6 +108,7 @@ $string['clfailedduplication'] = 'Duplication Failed';
 
 $string['clreportupdatefailed'] = 'Failed to update the report';
 $string['clsendnotificationfailed'] = 'Failed to send notification';
+$string['filenotfound'] = 'File not found';
 
 $string['privacy:metadata:core_files'] = 'Copyleaks stores files that have been uploaded to Moodle to form a Copyleaks submission.';
 $string['privacy:metadata:plagiarism_copyleaks_files'] = 'Information that links a Moodle submission to a Copyleaks submission.';

@@ -108,6 +108,10 @@ $string['cltimemin'] = 'dans';
 $string['clpendingduplication'] = 'En attente de duplication';
 $string['clfailedduplication'] = 'Échec de la duplication';
 
+$string['clreportupdatefailed'] = 'Échec de la mise à jour du rapport';
+$string['clsendnotificationfailed'] = 'Échec de l’envoi de la notification';
+$string['filenotfound'] = 'Fichier introuvable';
+
 $string['privacy:metadata:core_files'] = 'Copyleaks stocke les fichiers qui ont été téléchargés sur Moodle pour former une soumission Copyleaks.';
 $string['privacy:metadata:plagiarism_copyleaks_client'] = 'Afin de s\'intégrer à un Copyleaks, certaines données utilisateur doivent être échangées avec Copyleaks.';
 $string['privacy:metadata:plagiarism_copyleaks_client:module_creationtime'] = 'L\'heure de création du module est envoyée à Copyleaks à des fins d\'identification.';

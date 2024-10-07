@@ -100,4 +100,24 @@ $observers = array(
         'eventname' => '\core\event\group_member_removed',
         'callback'  => 'plagiarism_copyleaks_observer::group_member_removed'
     ),
+    array(
+        'eventname' => '\core\event\grouping_created',
+        'callback'  => 'plagiarism_copyleaks_observer::grouping_created'
+    ),
+    array(
+        'eventname' => '\core\event\grouping_deleted',
+        'callback'  => 'plagiarism_copyleaks_observer::grouping_deleted'
+    ),
+    array(
+        'eventname' => '\core\event\grouping_updated',
+        'callback'  => 'plagiarism_copyleaks_observer::grouping_updated'
+    ),
+    array(
+        'eventname' => '\core\event\grouping_group_assigned',
+        'callback'  => 'plagiarism_copyleaks_observer::grouping_group_assigned'
+    ),
+    array(
+        'eventname' => '\core\event\grouping_group_unassigned',
+        'callback'  => 'plagiarism_copyleaks_observer::grouping_group_unassigned'
+    ),
 );
