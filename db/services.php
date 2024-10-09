@@ -52,6 +52,14 @@ $functions = array(
     'description' => 'Get course groups info',
     'type'        => 'read',
   ),
+  'plagiarism_copyleaks_get_file_info' => array(
+    'classname'   => 'plagiarism_copyleaks_files',
+    'methodname'  => 'get_file_info',
+    'classpath'   => 'plagiarism/copyleaks/classes/webservices/plagiarism_copyleaks_files.php',
+    'description' => 'Retrieve file information',
+    'type'        => 'read',
+    'capabilities' => 'moodle/course:managefiles',
+  ),
 );
 
 // Pre-built service.
@@ -62,6 +70,7 @@ $services = array(
       'plagiarism_copyleaks_update_report_webhook',
       'plagiarism_copyleaks_update_failed_scan_to_queued_webhook',
       'plagiarism_copyleaks_get_course_groups_info',
+      'plagiarism_copyleaks_get_file_info',
       'mod_assign_save_grade',
       'core_comment_add_comments',
       'core_competency_get_scale_values',
@@ -70,5 +79,6 @@ $services = array(
     'restrictedusers' => 1,
     'enabled' => 1,
     'shortname' => 'plagiarism_copyleaks_webservices',
+    'downloadfiles' => 1,
   )
 );

@@ -153,6 +153,10 @@ class plagiarism_copyleaks_webhooks extends external_api {
     ));
 
     $fileid = $DB->get_field('plagiarism_copyleaks_files', 'id', array('cm' => $params['coursemoduleid'], 'userid' => $params['moodleuserid'], 'identifier' => $params['identifier']));
+
+    if (!$fileid) {
+      throw new plagiarism_copyleaks_webservice_exception('filenotfound');
+    }
     plagiarism_copyleaks_submissions::change_failed_scan_to_queued($fileid);
 
     return null;

@@ -23,6 +23,8 @@
 
 use core\check\performance\stats;
 
+require_once($CFG->dirroot . '/lib/modinfolib.php');
+
 /**
  * module configurations helpers methods
  */
@@ -173,5 +175,32 @@ class plagiarism_copyleaks_moduleconfig {
         global $DB;
         $record = $DB->get_record('plagiarism_copyleaks_request', ['cmid' => $cmid]);
         return isset($record) && $record;
+    }
+
+    /**
+     * Check if Copyleaks is enabled for any assignment in a course.
+     * 
+     * @param int $courseid The course ID.
+     * @return bool True if any assignment in the course has Copyleaks enabled, false otherwise.
+     */
+    public static function is_copyleaks_enabled_for_any_assignment($courseid) {
+        // Fetch all assignment modules in the course
+        $modinfo = get_fast_modinfo($courseid);
+        $assignments = $modinfo->get_instances_of('assign');
+
+        // Loop through each assignment and check if Copyleaks is enabled
+        foreach ($assignments as $cm) {
+            // Get the settings for the current assignment
+            $plagiarismsettings = self::get_module_config($cm->id);
+
+            // Check if Copyleaks is enabled for this specific assignment
+            $moduleclenabled = plagiarism_copyleaks_pluginconfig::is_plugin_configured('mod_assign');
+            if (!empty($plagiarismsettings['plagiarism_copyleaks_enable']) && !empty($moduleclenabled)) {
+                return true;  // Copyleaks is enabled for at least one assignment
+            }
+        }
+
+        // No assignments with Copyleaks enabled found
+        return false;
     }
 }

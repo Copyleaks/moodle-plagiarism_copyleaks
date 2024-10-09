@@ -33,61 +33,58 @@ class plagiarism_copyleaks_notifications extends external_api {
   public static function send_notification_parameters() {
     return new external_function_parameters(
       array(
-        'userid'    => new external_value(PARAM_INT, 'User id'),
+        'userto'    => new external_value(PARAM_INT, 'User id'),
+        'userfrom' => new external_value(PARAM_INT, 'Notification message sender', VALUE_DEFAULT, null),
         'subject' => new external_value(PARAM_TEXT, 'Notification subject'),
         'fullmessage' => new external_value(PARAM_TEXT, 'Notification message'),
-        'fullmessageformat' => new external_value(PARAM_TEXT, 'Notification message format'),
-        'fullmessagehtml' => new external_value(PARAM_RAW, 'Notification message html'),
-        'smallmessage' => new external_value(PARAM_TEXT, 'Notification small message'),
-        'contexturl' => new external_value(PARAM_URL, 'Notification message context URL'),
-        'contexturlname' => new external_value(PARAM_TEXT, 'Notification message  context URL name'),
+        'contexturl' => new external_value(PARAM_URL, 'Notification message context URL', VALUE_DEFAULT, null),
+        'contexturlname' => new external_value(PARAM_TEXT, 'Notification message  context URL name', VALUE_DEFAULT, null),
       )
     );
   }
 
   /**
    * Send notification to user
-   * @param int $userid User ID
+   * @param int $userto reciver User ID
+   * @param int $userfrom sender User ID
    * @param string $subject Notification subject
    * @param string $fullmessage Notification message
-   * @param string $fullmessageformat Notification message format
-   * @param string $fullmessagehtml Notification message html
-   * @param string $smallmessage Notification small message
    * @param string $contexturl Notification message context URL
    * @param string $contexturlname Notification message context URL name
    * @return array
    */
-  public static function send_notification($userid, $subject, $fullmessage, $fullmessageformat, $fullmessagehtml, $smallmessage, $contexturl, $contexturlname) {
-    global $DB;
+  public static function send_notification($userto, $userfrom = null, $subject, $fullmessage, $contexturl = null, $contexturlname = null) {
 
     // Validate parameters
     $params = self::validate_parameters(self::send_notification_parameters(), array(
-      'userid' => $userid,
+      'userto' => $userto,
       'subject' => $subject,
       'fullmessage' => $fullmessage,
-      'fullmessageformat' => $fullmessageformat,
-      'fullmessagehtml' => $fullmessagehtml,
-      'smallmessage' => $smallmessage,
+      'userfrom' => $userfrom,
       'contexturl' => $contexturl,
       'contexturlname' => $contexturlname,
     ));
 
-    // Get the recipient user object
-    $user = $DB->get_record('user', array('id' => $params['userid']), '*', MUST_EXIST);
+    if ($params['userfrom'] == null) {
+      $params['userfrom'] = core_user::get_noreply_user();
+    }
 
     $message = new \core\message\message();
     $message->component = 'plagiarism_copyleaks';
     $message->name = 'copyleaks_notification';
-    $message->userfrom = core_user::get_noreply_user();
-    $message->userto = $user;
+    $message->userfrom = $params['userfrom'];
+    $message->userto = $params['userto'];
     $message->subject = $params['subject'];
     $message->fullmessage = $params['fullmessage'];
-    $message->fullmessageformat = $params['fullmessageformat'];
-    $message->fullmessagehtml = $params['fullmessagehtml'];
-    $message->smallmessage = $params['smallmessage'];
+    $message->fullmessageformat = FORMAT_PLAIN;
+    $message->fullmessagehtml = text_to_html($params['fullmessage']);
     $message->notification = 1;
-    $message->contexturl = $params['contexturl'];
-    $message->contexturlname = $params['contexturlname'];
+    if ($params['contexturl'] != null) {
+      $message->contexturl = $params['contexturl'];
+    }
+    if ($params['contexturlname'] != null) {
+      $message->contexturlname = $params['contexturlname'];
+    }
 
     $messageid = message_send($message);
 
