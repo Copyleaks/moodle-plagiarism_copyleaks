@@ -374,7 +374,7 @@ class plagiarism_copyleaks_observer {
         $courseid = $eventdata['courseid'];
 
         // Check if Copyleaks is enabled for any assignment in a course.
-        if (!plagiarism_copyleaks_moduleconfig::is_copyleaks_enabled_for_any_assignment($courseid)) {
+        if (!plagiarism_copyleaks_moduleconfig::is_copyleaks_enabled_for_any_module($courseid, "assign")) {
             return;
         }
         
@@ -401,7 +401,7 @@ class plagiarism_copyleaks_observer {
         $courseid = $eventdata['courseid'];
 
         // Check if Copyleaks is enabled for any assignment in a course.
-        if (!plagiarism_copyleaks_moduleconfig::is_copyleaks_enabled_for_any_assignment($courseid)) {
+        if (!plagiarism_copyleaks_moduleconfig::is_copyleaks_enabled_for_any_module($courseid, "assign")) {
             return;
         }
 
@@ -427,7 +427,7 @@ class plagiarism_copyleaks_observer {
         $courseid = $eventdata['courseid'];
 
         // Check if Copyleaks is enabled for any assignment in a course.
-        if (!plagiarism_copyleaks_moduleconfig::is_copyleaks_enabled_for_any_assignment($courseid)) {
+        if (!plagiarism_copyleaks_moduleconfig::is_copyleaks_enabled_for_any_module($courseid, "assign")) {
             return;
         }
 
@@ -455,7 +455,7 @@ class plagiarism_copyleaks_observer {
         $courseid = $eventdata['courseid'];
 
         // Check if Copyleaks is enabled for any assignment in a course.
-        if (!plagiarism_copyleaks_moduleconfig::is_copyleaks_enabled_for_any_assignment($courseid)) {
+        if (!plagiarism_copyleaks_moduleconfig::is_copyleaks_enabled_for_any_module($courseid, "assign")) {
             return;
         }
             
@@ -495,7 +495,7 @@ class plagiarism_copyleaks_observer {
         $courseid = $eventdata['courseid'];
 
         // Check if Copyleaks is enabled for any assignment in a course.
-        if (!plagiarism_copyleaks_moduleconfig::is_copyleaks_enabled_for_any_assignment($courseid)) {
+        if (!plagiarism_copyleaks_moduleconfig::is_copyleaks_enabled_for_any_module($courseid, "assign")) {
             return;
         }
 
@@ -527,15 +527,21 @@ class plagiarism_copyleaks_observer {
         }
 
         $eventdata = $event->get_data();
+        $courseid = $eventdata['courseid'];
+
+        // Check if Copyleaks is enabled for any assignment in a course.
+        if (!plagiarism_copyleaks_moduleconfig::is_copyleaks_enabled_for_any_module($courseid, "assign")) {
+            return;
+        }
+
         $cl = new \plagiarism_copyleaks_comms();
         $groupingname = groups_get_grouping_name($eventdata['objectid']);
-        $courseId = $eventdata['courseid'];
         $data = (array)[
             'groupingId' => $eventdata['objectid'],
             'groupingName' => $groupingname,
         ];
 
-        $cl->create_grouping($data, $courseId);
+        $cl->create_grouping($data, $courseid);
     }
 
     /**
@@ -549,13 +555,19 @@ class plagiarism_copyleaks_observer {
         }
 
         $eventdata = $event->get_data();
+        $courseid = $eventdata['courseid'];
+
+        // Check if Copyleaks is enabled for any assignment in a course.
+        if (!plagiarism_copyleaks_moduleconfig::is_copyleaks_enabled_for_any_module($courseid, "assign")) {
+            return;
+        }
+
         $cl = new \plagiarism_copyleaks_comms();
-        $courseId = $eventdata['courseid'];
         $data = (array)[
             'groupingId' => $eventdata['objectid'],
         ];
 
-        $cl->delete_grouping($data, $courseId);
+        $cl->delete_grouping($data, $courseid);
     }
 
     /**
@@ -569,15 +581,21 @@ class plagiarism_copyleaks_observer {
         }
 
         $eventdata = $event->get_data();
+        $courseid = $eventdata['courseid'];
+
+        // Check if Copyleaks is enabled for any assignment in a course.
+        if (!plagiarism_copyleaks_moduleconfig::is_copyleaks_enabled_for_any_module($courseid, "assign")) {
+            return;
+        }
+
         $cl = new \plagiarism_copyleaks_comms();
         $groupingname = groups_get_grouping_name($eventdata['objectid']);
-        $courseId = $eventdata['courseid'];
         $data = (array)[
             'groupingId' => $eventdata['objectid'],
             'groupingName' => $groupingname,
         ];
 
-        $cl->update_grouping($data, $courseId);
+        $cl->update_grouping($data, $courseid);
     }
 
     /**
@@ -591,9 +609,15 @@ class plagiarism_copyleaks_observer {
         }
 
         $eventdata = $event->get_data();
+        $courseid = $eventdata['courseid'];
+
+        // Check if Copyleaks is enabled for any assignment in a course.
+        if (!plagiarism_copyleaks_moduleconfig::is_copyleaks_enabled_for_any_module($courseid, "assign")) {
+            return;
+        }
+
         $cl = new \plagiarism_copyleaks_comms();
         $groupingname = groups_get_grouping_name($eventdata['objectid']);
-        $courseId = $eventdata['courseid'];
         $groupingdata = (array)[
             'groupingId' => $eventdata['objectid'],
             'groupingName' => $groupingname,
@@ -610,7 +634,7 @@ class plagiarism_copyleaks_observer {
             'group' => $groupdata
         ];
 
-        $cl->add_grouping_group($data, $courseId);
+        $cl->add_grouping_group($data, $courseid);
     }
 
     /**
@@ -624,8 +648,14 @@ class plagiarism_copyleaks_observer {
         }
 
         $eventdata = $event->get_data();
+        $courseid = $eventdata['courseid'];
+
+        // Check if Copyleaks is enabled for any assignment in a course.
+        if (!plagiarism_copyleaks_moduleconfig::is_copyleaks_enabled_for_any_module($courseid, "assign")) {
+            return;
+        }
+
         $cl = new \plagiarism_copyleaks_comms();
-        $courseId = $eventdata['courseid'];
         $groupingdata = (array)[
             'groupingId' => $eventdata['objectid'],
         ];
@@ -639,6 +669,144 @@ class plagiarism_copyleaks_observer {
             'group' => $groupdata
         ];
 
-        $cl->remove_grouping_group($data, $courseId);
+        $cl->remove_grouping_group($data, $courseid);
+    }
+
+    /**
+     * User enrolment deleted event handler.
+     * @param \core\event\user_enrolment_deleted $event
+     */
+    public static function user_enrolment_deleted(\core\event\user_enrolment_deleted $event) {
+        // Check if Copyleaks API is connected.
+        if (!plagiarism_copyleaks_dbutils::is_copyleaks_api_connected()) {
+            return;
+        }
+
+        // Get event data
+        $eventdata = $event->get_data();
+        $courseid = $eventdata['courseid'];
+
+        // If the courseid is 0, then the event is not related to a course. 
+        if ($courseid == 0) {
+            return;
+        }
+
+        // Check if Copyleaks is enabled for any assignment in a course.
+        if (!plagiarism_copyleaks_moduleconfig::is_copyleaks_enabled_for_any_module($courseid, "assign")) {
+            return;
+        }
+
+        // id is the id of the user that was unenroled.
+        $data = [
+            'id' => $eventdata['relateduserid'],
+        ];
+
+        $cl = new \plagiarism_copyleaks_comms();
+        $cl->unenrol_user($data, $courseid);
+    }
+
+
+    /**
+     * Role assigned event handler.
+     * Handles the role assigned event to enroll users and assign roles.
+     * @param \core\event\role_assigned $event
+     */
+    public static function role_assigned(\core\event\role_assigned $event) {
+        // Check if Copyleaks API is connected.
+        if (!plagiarism_copyleaks_dbutils::is_copyleaks_api_connected()) {
+            return;
+        }
+
+        // Get event data
+        $eventdata = $event->get_data();
+        $courseid = $eventdata['courseid'];
+
+        // If the courseid is 0, then the event is not related to a course. 
+        if ($courseid == 0) {
+            return;
+        }
+
+        // Check if Copyleaks is enabled for any assignment in a course.
+        if (!plagiarism_copyleaks_moduleconfig::is_copyleaks_enabled_for_any_module($courseid, "assign")) {
+            return;
+        }
+
+        $user = get_complete_user_data('id', $eventdata['relateduserid']);
+        $roleid = $eventdata['objectid'];  // The ID of the assigned role
+
+        // Retrieve all roles
+        $roles = get_all_roles();
+
+        // Check if the role with the specific roleid exists
+        if (!isset($roles[$roleid])) {
+            // Role not found;
+            return;
+        }
+
+        $role = (object)[
+            'shortName' => $roles[$roleid]->shortname
+        ];
+
+        //id: the ID of the user that was enroled into the course and assigned the role.
+        $data = [
+            'id' => $eventdata['relateduserid'],
+            'fullName' => $user->firstname . ' ' . $user->lastname,
+            'email' => $user->email,
+            'roles' => [$role]
+        ];
+
+        $cl = new \plagiarism_copyleaks_comms();
+
+        // Use enrol_user to handle role assignments: update role if user is enrolled, otherwise enroll and assign the role.
+        $cl->enrol_user($data, $courseid);
+    }
+
+    /**
+     * role unassigned event handler.
+     * @param \core\event\role_unassigned $event
+     */
+    public static function role_unassigned(\core\event\role_unassigned $event) {
+        // Check if Copyleaks API is connected.
+        if (!plagiarism_copyleaks_dbutils::is_copyleaks_api_connected()) {
+            return;
+        }
+
+        // Get event data
+        $eventdata = $event->get_data();
+        $courseid = $eventdata['courseid'];
+
+        // If the courseid is 0, then the event is not related to a course. 
+        if ($courseid == 0) {
+            return;
+        }
+
+        // Check if Copyleaks is enabled for any assignment in a course.
+        if (!plagiarism_copyleaks_moduleconfig::is_copyleaks_enabled_for_any_module($courseid, "assign")) {
+            return;
+        }
+
+        $roleid = $eventdata['objectid'];  // The ID of the assigned role
+
+        // Retrieve all roles
+        $roles = get_all_roles();
+
+        // Check if the role with the specific roleid exists
+        if (!isset($roles[$roleid])) {
+            // Role not found;
+            return;
+        }
+
+        $role = (object)[
+            'shortName' => $roles[$roleid]->shortname
+        ];
+
+        //id: the ID of the user that was enroled into the course and assigned the role.
+        $data = [
+            'id' => $eventdata['relateduserid'],
+            'roles' => [$role]
+        ];
+
+        $cl = new \plagiarism_copyleaks_comms();
+        $cl->unassign_role($data, $courseid);
     }
 }

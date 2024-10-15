@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 /**
- * Copyleaks notifications
+ * Copyleaks course groups
  * @package   plagiarism_copyleaks
  * @author    Shade Amasha <shadea@copyleaks.com>
  * @copyright 2021 Copyleaks
@@ -94,6 +94,82 @@ class plagiarism_copyleaks_course_groups extends external_api {
             )
           ),
           'Groups of the course',
+          VALUE_OPTIONAL
+        ),
+      )
+    );
+  }
+
+
+
+
+  /**
+   * Returns description of method parameters
+   * @return external_function_parameters
+   */
+  public static function get_course_groupings_info_parameters() {
+    return new external_function_parameters(
+      array(
+        'courseid' => new external_value(PARAM_TEXT, 'Course ID'),
+      )
+    );
+  }
+
+  /**
+   * Gets the groupings and the groups in each grouping for a course
+   * @param string $courseid Course ID
+   * @return array
+   */
+  public static function get_course_groupings_info($courseid) {
+    // Validate parameters
+    $params = self::validate_parameters(self::get_course_groupings_info_parameters(), array(
+      'courseid' => $courseid
+    ));
+
+    // Fetch the groupings of the course.
+    $groupings = groups_get_course_data($params['courseid'])->groupings;
+
+    $groupingdata = [];
+    foreach ($groupings as $grouping) {
+      $groupingid = $grouping->id;
+      $groupingname = $grouping->name;
+
+      // Fetch the groups assigned to the grouping.
+      $groupsingrouping = groups_get_all_groups($params['courseid'], 0, $groupingid);
+
+      // Collect the group ids in an array.
+      $groupids = array_keys($groupsingrouping);
+
+      // Map the grouping and its groups.
+      $groupingdata[] = [
+        'groupingid' => $groupingid,
+        'groupingname' => $groupingname,
+        'groups' => $groupids
+      ];
+    }
+
+    return array('groupings' => $groupingdata);
+  }
+
+  /**
+   * Describes the return value for get_course_groupings_info
+   * @return external_single_structure
+   */
+  public static function get_course_groupings_info_returns() {
+    return new external_single_structure(
+      array(
+        'groupings' => new external_multiple_structure(
+          new external_single_structure(
+            array(
+              'groupingid' => new external_value(PARAM_TEXT, 'Grouping ID'),
+              'groupingname' => new external_value(PARAM_TEXT, 'Grouping Name'),
+              'groups' => new external_multiple_structure(
+                new external_value(PARAM_TEXT, 'Group ID'),
+                'Groups within the grouping'
+              ),
+            )
+          ),
+          'Groupings of the course',
           VALUE_OPTIONAL
         ),
       )

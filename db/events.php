@@ -120,4 +120,16 @@ $observers = array(
         'eventname' => '\core\event\grouping_group_unassigned',
         'callback'  => 'plagiarism_copyleaks_observer::grouping_group_unassigned'
     ),
+    array(
+        'eventname' => '\core\event\user_enrolment_deleted',
+        'callback'  => 'plagiarism_copyleaks_observer::user_enrolment_deleted'
+    ),
+    array(
+        'eventname' => '\core\event\role_assigned',
+        'callback'  => 'plagiarism_copyleaks_observer::role_assigned'
+    ),
+    array(
+        'eventname' => '\core\event\role_unassigned',
+        'callback'  => 'plagiarism_copyleaks_observer::role_unassigned'
+    ),
 );

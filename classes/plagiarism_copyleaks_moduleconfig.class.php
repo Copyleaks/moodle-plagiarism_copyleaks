@@ -178,29 +178,32 @@ class plagiarism_copyleaks_moduleconfig {
     }
 
     /**
-     * Check if Copyleaks is enabled for any assignment in a course.
-     * 
+     * Check if Copyleaks is enabled for any module in a course.
+     *
      * @param int $courseid The course ID.
-     * @return bool True if any assignment in the course has Copyleaks enabled, false otherwise.
+     * @param string|null $modname The module name (e.g., 'assign', 'forum'). Defaults to null to check all modules.
+     * @return bool True if any module in the course has Copyleaks enabled, false otherwise.
      */
-    public static function is_copyleaks_enabled_for_any_assignment($courseid) {
-        // Fetch all assignment modules in the course
+    public static function is_copyleaks_enabled_for_any_module($courseid, $modname = null) {
+        // Fetch all modules in the course
         $modinfo = get_fast_modinfo($courseid);
-        $assignments = $modinfo->get_instances_of('assign');
 
-        // Loop through each assignment and check if Copyleaks is enabled
-        foreach ($assignments as $cm) {
-            // Get the settings for the current assignment
-            $plagiarismsettings = self::get_module_config($cm->id);
+        // Determine which modules to check
+        $modulestocheck = ($modname === null) ? $modinfo->get_cms() : $modinfo->get_instances_of($modname);
 
-            // Check if Copyleaks is enabled for this specific assignment
-            $moduleclenabled = plagiarism_copyleaks_pluginconfig::is_plugin_configured('mod_assign');
-            if (!empty($plagiarismsettings['plagiarism_copyleaks_enable']) && !empty($moduleclenabled)) {
-                return true;  // Copyleaks is enabled for at least one assignment
+        // Loop through each module and check if Copyleaks is enabled
+        foreach ($modulestocheck as $cm) {
+            // Skip if the cm is being deleted
+            if ($cm->deletioninprogress == "1") {
+                continue;
+            }
+
+            if (\plagiarism_copyleaks_moduleconfig::is_module_enabled($cm->modname, $cm->id)) {
+                return true;
             }
         }
 
-        // No assignments with Copyleaks enabled found
+        // No module with Copyleaks enabled found
         return false;
     }
 }

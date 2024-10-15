@@ -25,6 +25,7 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_logs.class.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/enums/plagiarism_copyleaks_enums.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_comms.class.php');
+require_once($CFG->dirroot . '/course/lib.php');
 
 
 class restore_plagiarism_copyleaks_plugin extends restore_plagiarism_plugin {
@@ -103,5 +104,67 @@ class restore_plagiarism_copyleaks_plugin extends restore_plagiarism_plugin {
                 );
             }
         }
+    }
+
+    /**
+     * Creates a dummy path element in order to be able to execute code after restore.
+     *
+     * @return restore_path_element[]
+     */
+    public function define_course_plugin_structure() {
+
+        // Dummy path element is needed in order for after_restore_course() to be called.
+        return [new restore_path_element('copyleaks_course', $this->get_pathfor('/copyleakscourse'))];
+    }
+
+    /**
+     * Dummy process method.
+     *
+     * @return void
+     */
+    public function process_copyleaks_course() {
+    }
+
+    /**
+     *  After course restoration, upsert course data to Copyleaks and sync if Copyleaks is enabled and API is connected.
+     */
+    public function after_restore_course() {
+        // Ensure task is from the same site.
+        if (!$this->task->is_samesite()) {
+            return;  // Exit early if the course restoration task is from a different site.
+        }
+
+        // Fetch the course ID and retrieve the course information.
+        $courseid = $this->task->get_courseid();
+        $course = get_course($courseid);
+
+        // Check if Copyleaks is enabled for any course module; if not, exit early.
+        if (!plagiarism_copyleaks_moduleconfig::is_copyleaks_enabled_for_any_module($courseid)) {
+            return;
+        }
+
+        $synccourse = false;
+        $startdate = isset($course->startdate) ? (new DateTime())->setTimestamp($course->startdate)->format('Y-m-d') : null;
+        // Prepare the course data for upsert.
+        $data = [
+            "id" => $courseid,
+            "name" => $course->fullname,
+            "startdate" => $startdate
+        ];
+
+        /**
+         * Sync course data (users, groups, groupings).
+         * If the Copyleaks API connection is available.
+         * And the couse has at last one assignment with copyleaks enabled.
+         */
+        if (
+            plagiarism_copyleaks_dbutils::is_copyleaks_api_connected() &&
+            plagiarism_copyleaks_moduleconfig::is_copyleaks_enabled_for_any_module($courseid, "assign")
+        ) {
+            $synccourse = true;
+        }
+        // Initialize Copyleaks communication and upsert course data.
+        $cl = new \plagiarism_copyleaks_comms();
+        $cl->upsert_course($data, $courseid, $synccourse);
     }
 }

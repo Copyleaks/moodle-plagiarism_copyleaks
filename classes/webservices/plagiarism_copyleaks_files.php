@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 /**
- * Copyleaks notifications
+ * Copyleaks files
  * @package   plagiarism_copyleaks
  * @author    Shade Amasha <shadea@copyleaks.com>
  * @copyright 2021 Copyleaks
@@ -56,12 +56,12 @@ class plagiarism_copyleaks_files extends external_api {
     }
 
     return array(
-      'contextId'  => $file->get_contextid(),
+      'contextid'  => $file->get_contextid(),
       'component'  => $file->get_component(),
-      'fileArea'   => $file->get_filearea(),
-      'itemId'     => $file->get_itemid(),
-      'filePath'   => $file->get_filepath(),
-      'fileName'   => $file->get_filename(),
+      'filearea'   => $file->get_filearea(),
+      'itemid'     => $file->get_itemid(),
+      'filepath'   => $file->get_filepath(),
+      'filename'   => $file->get_filename(),
     );
   }
 
@@ -72,12 +72,12 @@ class plagiarism_copyleaks_files extends external_api {
   public static function get_file_info_returns() {
     return new external_single_structure(
       array(
-        'contextId' => new external_value(PARAM_TEXT, 'The context ID of the file'),
+        'contextid' => new external_value(PARAM_TEXT, 'The context ID of the file'),
         'component' => new external_value(PARAM_TEXT, 'The component of the file'),
-        'fileArea'  => new external_value(PARAM_TEXT, 'The file area'),
-        'itemId'    => new external_value(PARAM_TEXT, 'The item ID'),
-        'filePath'  => new external_value(PARAM_TEXT, 'The file path'),
-        'fileName'  => new external_value(PARAM_TEXT, 'The file name'),
+        'filearea'  => new external_value(PARAM_TEXT, 'The file area'),
+        'itemid'    => new external_value(PARAM_TEXT, 'The item ID'),
+        'filepath'  => new external_value(PARAM_TEXT, 'The file path'),
+        'filename'  => new external_value(PARAM_TEXT, 'The file name'),
       )
     );
   }

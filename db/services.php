@@ -52,6 +52,13 @@ $functions = array(
     'description' => 'Get course groups info',
     'type'        => 'read',
   ),
+  'plagiarism_copyleaks_get_course_groupings_info' => array(
+    'classname'   => 'plagiarism_copyleaks_course_groups',
+    'methodname'  => 'get_course_groupings_info',
+    'classpath'   => 'plagiarism/copyleaks/classes/webservices/plagiarism_copyleaks_course_groups.php',
+    'description' => 'Get course groupings info',
+    'type'        => 'read',
+  ),
   'plagiarism_copyleaks_get_file_info' => array(
     'classname'   => 'plagiarism_copyleaks_files',
     'methodname'  => 'get_file_info',
@@ -70,6 +77,7 @@ $services = array(
       'plagiarism_copyleaks_update_report_webhook',
       'plagiarism_copyleaks_update_failed_scan_to_queued_webhook',
       'plagiarism_copyleaks_get_course_groups_info',
+      'plagiarism_copyleaks_get_course_groupings_info',
       'plagiarism_copyleaks_get_file_info',
       'mod_assign_save_grade',
       'core_comment_add_comments',
