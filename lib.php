@@ -378,15 +378,6 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
 }
 
 /**
- * This enables a plugin to insert a chunk of html at the start of the html document.
- * Typical use cases include some sort of alert notification, but in many cases the Notifications may be a better fit.
- * It MUST return a string containing a well formed chunk of html, or at minimum an empty string.
- */
-function plagiarism_copyleaks_before_standard_top_of_body_html() {
-    return "";
-}
-
-/**
  * Add the Copyleaks settings form to an add/edit activity page.
  *
  * @param moodleform_mod $formwrapper
