@@ -23,6 +23,8 @@
 
 use core\check\performance\stats;
 
+require_once($CFG->dirroot . '/lib/modinfolib.php');
+
 /**
  * module configurations helpers methods
  */
@@ -173,5 +175,35 @@ class plagiarism_copyleaks_moduleconfig {
         global $DB;
         $record = $DB->get_record('plagiarism_copyleaks_request', ['cmid' => $cmid]);
         return isset($record) && $record;
+    }
+
+    /**
+     * Check if Copyleaks is enabled for any module in a course.
+     *
+     * @param int $courseid The course ID.
+     * @param string|null $modname The module name (e.g., 'assign', 'forum'). Defaults to null to check all modules.
+     * @return bool True if any module in the course has Copyleaks enabled, false otherwise.
+     */
+    public static function is_copyleaks_enabled_for_any_module($courseid, $modname = null) {
+        // Fetch all modules in the course
+        $modinfo = get_fast_modinfo($courseid);
+
+        // Determine which modules to check
+        $modulestocheck = ($modname === null) ? $modinfo->get_cms() : $modinfo->get_instances_of($modname);
+
+        // Loop through each module and check if Copyleaks is enabled
+        foreach ($modulestocheck as $cm) {
+            // Skip if the cm is being deleted
+            if ($cm->deletioninprogress == "1") {
+                continue;
+            }
+
+            if (\plagiarism_copyleaks_moduleconfig::is_module_enabled($cm->modname, $cm->id)) {
+                return true;
+            }
+        }
+
+        // No module with Copyleaks enabled found
+        return false;
     }
 }
