@@ -81,6 +81,8 @@ $services = array(
       'plagiarism_copyleaks_get_file_info',
       'mod_assign_save_grade',
       'core_comment_add_comments',
+      'core_comment_delete_comments',
+      'core_comment_get_comments',
       'core_competency_get_scale_values',
       'core_enrol_get_enrolled_users',
     ),
