@@ -63,10 +63,10 @@ class plagiarism_copyleaks_eventshandler {
     public function handle_submissions($data) {
         global $DB;
         $result = true;
-       
+
         // Get course module.
         $coursemodule = $this->get_coursemodule($data);
- 
+
         // Stop event if the course module is not found.
         if (!$coursemodule) {
             return true;
@@ -270,7 +270,7 @@ class plagiarism_copyleaks_eventshandler {
                 " cm = ? AND itemid = ? AND " . $typefield . " = ?",
                 array($coursemodule->id, $data['objectid'], $typefieldvalue)
             );
-           
+
             return $this->queue_submission_to_copyleaks(
                 $coursemodule,
                 $authoruserid,
@@ -516,7 +516,7 @@ class plagiarism_copyleaks_eventshandler {
             }
         }
 
-     
+
         $submitstatus = $errormessage == null ? 'queued' : 'error';
 
         if (plagiarism_copyleaks_dbutils::is_copyleaks_api_connected()) {
@@ -639,9 +639,8 @@ class plagiarism_copyleaks_eventshandler {
      * @param string $subtype
      * @param int $scheduledscandate
      */
-    private function get_assign_submission_data($itemid, $coursemodule, $authoruserid, $cmdata, $identifier, $subtype, $scheduledscandate) {
+    private function get_assign_submission_data($itemid, $coursemodule, $authoruserid, $cmdata, $identifier, $submissiontype, $scheduledscandate) {
         global $DB;
-
 
         $submissiondata = array();
         $submissionrecord = $DB->get_record(
@@ -665,11 +664,30 @@ class plagiarism_copyleaks_eventshandler {
             }
         }
 
+        $filename = '';
+        if ($submissiontype == 'file') {
+            $filestorage = get_file_storage();
+            $fileref = $filestorage->get_file_by_hash($identifier);
+            if ($fileref) {
+                $filename = $fileref->get_filename();
+            }
+        } else if ($submissiontype == 'text_content') {
+            $filename = 'online_text_'
+                . $authoruserid . "_"
+                . $coursemodule->id . "_"
+                . $coursemodule->instance . '.txt';
+        }
+
+        $scandate = new DateTime();
+        $scandate->setTimestamp($scheduledscandate);
+
         $reportdata = (array)[
             'courseModuleId' => $coursemodule->id,
             'moodleUserId' =>  $authoruserid,
             'identifier' => $identifier,
-            'submissionType' => $subtype,
+            'submissionType' => $submissiontype,
+            'fileName' => $filename,
+            'scheduledScanDate' => $scandate->format('Y-m-d H:i:s')
         ];
         $data = (array)[
             'submission' => $submissiondata,

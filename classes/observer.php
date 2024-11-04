@@ -51,6 +51,8 @@ class plagiarism_copyleaks_observer {
             array('cm' => $cmid)
         );
 
+        $ismoduleenabled = plagiarism_copyleaks_moduleconfig::is_module_enabled('assign', $cmid);
+
         // Delete Copyleaks module config.
         $DB->delete_records(
             'plagiarism_copyleaks_config',
@@ -62,6 +64,10 @@ class plagiarism_copyleaks_observer {
             'plagiarism_copyleaks_request',
             array('cmid' => $cmid)
         );
+        if ($ismoduleenabled) {
+            $cl = new \plagiarism_copyleaks_comms();
+            $cl->delete_course_module($cmid);
+        }
     }
 
     /**
@@ -149,7 +155,7 @@ class plagiarism_copyleaks_observer {
         \mod_assign\event\submission_status_updated $event
     ) {
         global $DB;
-        
+
         // Check if Copyleaks API is connected.
         if (!plagiarism_copyleaks_dbutils::is_copyleaks_api_connected()) {
             return;
@@ -300,7 +306,7 @@ class plagiarism_copyleaks_observer {
         if (!plagiarism_copyleaks_moduleconfig::is_module_enabled('assign', $cmid)) {
             return;
         }
-        
+
         $cl = new \plagiarism_copyleaks_comms();
         $commentdata = (array)[
             'commentId' => $eventdata['objectid'],
@@ -322,7 +328,7 @@ class plagiarism_copyleaks_observer {
         if (!plagiarism_copyleaks_dbutils::is_copyleaks_api_connected()) {
             return;
         }
-        
+
         $eventdata = $event->get_data();
 
         if (!$item = grade_item::fetch(['id' => $eventdata['other']['itemid']])) {
@@ -348,12 +354,15 @@ class plagiarism_copyleaks_observer {
             }
 
             $userid     = ($eventdata['relateduserid']) ? $eventdata['relateduserid'] : $eventdata['userid'];
-            $finalgrade = $eventdata['other']['finalgrade'];
+            $finalgrade = $eventdata['other']['finalgrade'] == "0.00000" ? 0 : $eventdata['other']['finalgrade'];
+
+            $course = get_course($eventdata['courseid']);
 
             $data = (array)[
                 'courseModuleId' => $cmid,
                 'moodleUserId' => $userid,
                 'finalGrade' => $finalgrade,
+                'courseName' => $course->fullname,
             ];
 
             $cl->upsert_assign_grade($data);
@@ -377,7 +386,7 @@ class plagiarism_copyleaks_observer {
         if (!plagiarism_copyleaks_moduleconfig::is_copyleaks_enabled_for_any_module($courseid, "assign")) {
             return;
         }
-        
+
         $cl = new \plagiarism_copyleaks_comms();
         $groupname = groups_get_group_name($eventdata['objectid']);
         $data = (array)[
@@ -458,7 +467,7 @@ class plagiarism_copyleaks_observer {
         if (!plagiarism_copyleaks_moduleconfig::is_copyleaks_enabled_for_any_module($courseid, "assign")) {
             return;
         }
-            
+
         $cl = new \plagiarism_copyleaks_comms();
         $user = get_complete_user_data('id', $eventdata['relateduserid']);
         $groupname = groups_get_group_name($eventdata['objectid']);

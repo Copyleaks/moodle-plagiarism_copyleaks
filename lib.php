@@ -145,6 +145,7 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
                 $updatedata['hideGraderIdentityFromStudents'] = $data->hidegrader == "1" ? true : false;
                 $updatedata['markingWorkflow'] = $data->markingworkflow == "1" ? true : false;
                 $updatedata['isGroup'] = $data->teamsubmission == "1" ? true : false;
+                $updatedata['groupingId'] = $data->teamsubmissiongroupingid;
             }
 
             try {
@@ -343,7 +344,6 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
                 $isanalyticsdisabled = $isnewactivity || !plagiarism_copyleaks_moduleconfig::is_module_enabled($cm->modname, $cmid);
                 $btn = plagiarism_copyleaks_utils::get_copyleaks_analytics_button_link($cmid,  $isanalyticsdisabled);
                 $mform->addElement('html', $btn);
-
             }
 
             $settingsdisplayed = true;

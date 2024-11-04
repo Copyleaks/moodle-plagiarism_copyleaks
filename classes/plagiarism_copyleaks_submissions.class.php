@@ -174,6 +174,7 @@ class plagiarism_copyleaks_submissions {
         $file = new stdClass();
         $file->id = $fileid;
         $file->statuscode = 'pending';
+        $file->errormsg = '';
         $file->lastmodified = time();
 
         if (!$DB->update_record('plagiarism_copyleaks_files', $file)) {
@@ -329,7 +330,7 @@ class plagiarism_copyleaks_submissions {
                 if (!$DB->update_record('plagiarism_copyleaks_files', $submission)) {
                     \plagiarism_copyleaks_logs::add(
                         "Update record failed (CM: " . $coursemoduleid . ", User: "
-                        . $moodleuserid . ") - ",
+                            . $moodleuserid . ") - ",
                         "UPDATE_RECORD_FAILED"
                     );
                     return false;
@@ -340,16 +341,18 @@ class plagiarism_copyleaks_submissions {
                 if (!$DB->update_record('plagiarism_copyleaks_files', $submission)) {
                     \plagiarism_copyleaks_logs::add(
                         "Update record failed (CM: " . $coursemoduleid . ", User: "
-                        . $moodleuserid . ") - ",
+                            . $moodleuserid . ") - ",
                         "UPDATE_RECORD_FAILED"
                     );
                     return false;
                 }
+            } else if ($status == 3) {
+                \plagiarism_copyleaks_submissions::mark_pending($submission->id);
             }
         } else {
             \plagiarism_copyleaks_logs::add(
                 "Submission not found for Copyleaks API scan instances with the identifier: "
-                . $identifier,
+                    . $identifier,
                 "SUBMISSION_NOT_FOUND"
             );
 

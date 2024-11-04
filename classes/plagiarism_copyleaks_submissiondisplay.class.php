@@ -353,7 +353,7 @@ class plagiarism_copyleaks_submissiondisplay {
                                                 html_writer::tag(
                                                     'span',
                                                     '',
-                                                    array('class' => "score-level $writingfeedbackcorrectionlevel")
+                                                    array('class' => "score-level")
                                                 ) . $results["writingfeedbackissues"] : 'N/A'),
                                             array('class' => 'cls-score-container')
                                         ),
@@ -388,7 +388,8 @@ class plagiarism_copyleaks_submissiondisplay {
                                                     array('class' => 'cls-icon-no-margin')
                                                 ),
                                                 array(
-                                                    'href' => $downloadpdfurl, 'target' => '_blank',
+                                                    'href' => $downloadpdfurl,
+                                                    'target' => '_blank',
                                                     'title' => get_string('clopenreport', 'plagiarism_copyleaks')
                                                 )
                                             ) .
@@ -402,7 +403,8 @@ class plagiarism_copyleaks_submissiondisplay {
                                                         array('class' => 'cls-icon-no-margin')
                                                     ),
                                                     array(
-                                                        'href' => $results['reporturl'], 'target' => '_blank',
+                                                        'href' => $results['reporturl'],
+                                                        'target' => '_blank',
                                                         'title' => get_string('clopenreport', 'plagiarism_copyleaks')
                                                     )
                                                 ) . ($coursemodule->modname != "forum" ?

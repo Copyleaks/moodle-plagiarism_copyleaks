@@ -193,7 +193,7 @@ class plagiarism_copyleaks_comms {
      * @param boolean $isinstructor Copyleaks report scan id
      * @return string a JWT to access student report only
      */
-    public function request_access_for_report(string $scanid, $isinstructor) {
+    public function request_access_for_report(string $scanid, $isinstructor, $userid) {
         if ($isinstructor == 0) {
             $isinstructor = -1;
         }
@@ -202,7 +202,7 @@ class plagiarism_copyleaks_comms {
             $result = plagiarism_copyleaks_http_client::execute_retry(
                 'POST',
                 $this->copyleaks_api_url() . "/api/moodle/" . $this->key .
-                    "/report/" . $scanid . "/" . $isinstructor . "/request-access",
+                    "/report/" . $scanid . "/" . $isinstructor . "/request-access" . "/" . $userid,
                 true
             );
 
@@ -356,7 +356,7 @@ class plagiarism_copyleaks_comms {
                 $result = plagiarism_copyleaks_http_client::execute_retry(
                     'GET',
                     $this->copyleaks_api_url() . "/api/moodle/plugin/" .
-                    $this->key . "/test-connection?source=" . $context . "&checkBalance=$chekbalance",
+                        $this->key . "/test-connection?source=" . $context . "&checkBalance=$chekbalance",
                     true
                 );
 
@@ -426,7 +426,7 @@ class plagiarism_copyleaks_comms {
             );
         } catch (\Exception $e) {
             plagiarism_copyleaks_dbutils::queued_failed_request(
-                $data['courseModuleId'],
+                $data['report']['courseModuleId'],
                 $endpoint,
                 $data,
                 plagiarism_copyleaks_priority::HIGH,
@@ -970,6 +970,23 @@ class plagiarism_copyleaks_comms {
                 $this->copyleaks_api_url() . $endpoint,
                 true,
                 json_encode($data)
+            );
+        } catch (\Exception $e) {
+            $errormsg = get_string('cltaskfailedconnecting', 'plagiarism_copyleaks', $e->getMessage());
+            plagiarism_copyleaks_logs::add($errormsg, 'API_ERROR');
+        }
+    }
+
+    /**
+     * @param string $cmid course module id
+     */
+    public function delete_course_module($cmid) {
+        $endpoint = "/api/moodle/plugin/$this->key/course-module/$cmid/delete";
+        try {
+            plagiarism_copyleaks_http_client::execute_retry(
+                'POST',
+                $this->copyleaks_api_url() . $endpoint,
+                true
             );
         } catch (\Exception $e) {
             $errormsg = get_string('cltaskfailedconnecting', 'plagiarism_copyleaks', $e->getMessage());
