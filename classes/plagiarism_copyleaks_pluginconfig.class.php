@@ -104,13 +104,8 @@ class plagiarism_copyleaks_pluginconfig {
     public static function validate_admin_config_key($key) {
         $copyleaksadminconfig = self::admin_config();
 
-        if (
-            !isset($copyleaksadminconfig) ||
-            !isset($copyleaksadminconfig->plagiarism_copyleaks_key) ||
-            $copyleaksadminconfig->plagiarism_copyleaks_key != $key
-        ) {
-            return false;
-        }
-        return true;
+        return isset($copyleaksadminconfig) &&
+            isset($copyleaksadminconfig->plagiarism_copyleaks_key) &&
+            $copyleaksadminconfig->plagiarism_copyleaks_key == $key;
     }
 }

@@ -127,7 +127,7 @@ class plagiarism_copyleaks_webhooks extends external_api {
     return new external_function_parameters(
       array(
         'pluginintegrationkey' => new external_value(PARAM_TEXT, 'Plugin integration key'),
-        'modifytoconnected' => new external_value(PARAM_BOOL, 'modifytoconnected'),
+        'isconnected' => new external_value(PARAM_BOOL, 'isconnected'),
 
       )
     );
@@ -142,20 +142,20 @@ class plagiarism_copyleaks_webhooks extends external_api {
    * @return array  Warnings and success status
    */
 
-  public static function update_api_connection_webhook($pluginintegrationkey, $modifytoconnected) {
+  public static function update_api_connection_webhook($pluginintegrationkey, $isconnected) {
     // Validate parameters
     self::validate_parameters(
       self::update_api_connection_webhook_parameters(),
-      array('pluginintegrationkey' => $pluginintegrationkey, 'modifytoconnected' => $modifytoconnected)
+      array('pluginintegrationkey' => $pluginintegrationkey, 'isconnected' => $isconnected)
     );
 
     if (!plagiarism_copyleaks_pluginconfig::validate_admin_config_key($pluginintegrationkey)) {
-      return array('successfullyModified' => false);
+      return array('successfullyUpdated' => false);
     }
 
-    plagiarism_copyleaks_dbutils::upsert_config_api_connection_status($modifytoconnected);
+    plagiarism_copyleaks_dbutils::upsert_config_api_connection_status($isconnected);
 
-    return array('successfullyModified' => true);
+    return array('successfullyUpdated' => true);
   }
 
   /**
@@ -165,7 +165,7 @@ class plagiarism_copyleaks_webhooks extends external_api {
   public static function update_api_connection_webhook_returns() {
     return new external_single_structure(
       array(
-        'successfullyModified' => new external_value(PARAM_BOOL, 'Successfully modified')
+        'successfullyUpdated' => new external_value(PARAM_BOOL, 'Successfully Updated')
       )
     );
   }
