@@ -96,4 +96,21 @@ class plagiarism_copyleaks_pluginconfig {
             set_config($dbfield, $data->$prop, 'plagiarism_copyleaks');
         }
     }
+
+    /**
+     * Validate admin config key
+     * @return bool copyleaks key
+     */
+    public static function validate_admin_config_key($key) {
+        $copyleaksadminconfig = self::admin_config();
+
+        if (
+            !isset($copyleaksadminconfig) ||
+            !isset($copyleaksadminconfig->plagiarism_copyleaks_key) ||
+            $copyleaksadminconfig->plagiarism_copyleaks_key != $key
+        ) {
+            return false;
+        }
+        return true;
+    }
 }

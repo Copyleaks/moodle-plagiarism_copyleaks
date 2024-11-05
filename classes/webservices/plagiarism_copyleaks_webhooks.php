@@ -24,9 +24,11 @@
 require_once($CFG->libdir . "/externallib.php");
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_submissions.class.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/exceptions/plagiarism_copyleaks_webserviceexception.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_dbutils.class.php');
 
 class plagiarism_copyleaks_webhooks extends external_api {
 
+  # ----- Region Update Report Webhook -----
   /**
    * Returns description of method parameters
    * @return external_function_parameters
@@ -114,18 +116,19 @@ class plagiarism_copyleaks_webhooks extends external_api {
   public static function update_report_webhook_returns() {
     return null;
   }
+  # EndRegion Update Report Webhook
 
-
+  # ----- Region Disconnect Web Service Webhook -----
   /**
    * Returns description of method parameters
    * @return external_function_parameters
    */
-  public static function update_failed_scan_to_queued_webhook_parameters() {
+  public static function update_api_connection_webhook_parameters() {
     return new external_function_parameters(
       array(
-        'coursemoduleid' => new external_value(PARAM_TEXT, 'Course module ID'),
-        'moodleuserid' => new external_value(PARAM_TEXT, 'Moodle user ID'),
-        'identifier' => new external_value(PARAM_TEXT, 'Identifier'),
+        'pluginintegrationkey' => new external_value(PARAM_TEXT, 'Plugin integration key'),
+        'modifytoconnected' => new external_value(PARAM_BOOL, 'modifytoconnected'),
+
       )
     );
   }
@@ -139,34 +142,32 @@ class plagiarism_copyleaks_webhooks extends external_api {
    * @return array  Warnings and success status
    */
 
-  public static function update_failed_scan_to_queued_webhook(
-    $coursemoduleid,
-    $moodleuserid,
-    $identifier
-  ) {
-    global $DB;
+  public static function update_api_connection_webhook($pluginintegrationkey, $modifytoconnected) {
     // Validate parameters
-    $params = self::validate_parameters(self::update_failed_scan_to_queued_webhook_parameters(), array(
-      'coursemoduleid' => $coursemoduleid,
-      'moodleuserid' => $moodleuserid,
-      'identifier' => $identifier
-    ));
+    self::validate_parameters(
+      self::update_api_connection_webhook_parameters(),
+      array('pluginintegrationkey' => $pluginintegrationkey, 'modifytoconnected' => $modifytoconnected)
+    );
 
-    $fileid = $DB->get_field('plagiarism_copyleaks_files', 'id', array('cm' => $params['coursemoduleid'], 'userid' => $params['moodleuserid'], 'identifier' => $params['identifier']));
-
-    if (!$fileid) {
-      throw new plagiarism_copyleaks_webservice_exception('filenotfound');
+    if (!plagiarism_copyleaks_pluginconfig::validate_admin_config_key($pluginintegrationkey)) {
+      return array('successfullyModified' => false);
     }
-    plagiarism_copyleaks_submissions::change_failed_scan_to_queued($fileid);
 
-    return null;
+    plagiarism_copyleaks_dbutils::upsert_config_api_connection_status($modifytoconnected);
+
+    return array('successfullyModified' => true);
   }
 
   /**
-   * Describes the return value for update_failed_scan_to_queued
+   * Describes the return value for update_api_connection_webhook
    * @return external_single_structure
    */
-  public static function update_failed_scan_to_queued_webhook_returns() {
-    return null;
+  public static function update_api_connection_webhook_returns() {
+    return new external_single_structure(
+      array(
+        'successfullyModified' => new external_value(PARAM_BOOL, 'Successfully modified')
+      )
+    );
   }
+  # EndRegion Disconnect Web Service Webhook
 }

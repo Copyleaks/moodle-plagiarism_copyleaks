@@ -362,7 +362,7 @@ class plagiarism_copyleaks_comms {
 
                 if ($updateconfig) {
                     plagiarism_copyleaks_dbutils::update_config_scanning_detection($result->detectionsValues);
-                    plagiarism_copyleaks_dbutils::upsert_config_api_connection_status($result->apiConnection);
+                    // plagiarism_copyleaks_dbutils::upsert_config_api_connection_status($result->apiConnection);
                 }
 
                 if (isset($result) && isset($result->eulaVersion)) {
