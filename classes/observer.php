@@ -28,6 +28,7 @@ require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_comms.class.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_moduleconfig.class.php');
 require_once($CFG->dirroot . '/lib/grouplib.php');
+require_once($CFG->dirroot . '/mod/assign/locallib.php');
 
 
 /**
@@ -368,48 +369,7 @@ class plagiarism_copyleaks_observer {
             $cl->upsert_assign_grade($data);
         }
     }
-
-    /**
-     * assignment workglow state event handler.
-     * @param \mod_assign\event\workflow_state_updated $event
-     */
-    public static function workflow_state_updated(\mod_assign\event\workflow_state_updated $event) {
-        // Retrieve event data
-        $eventdata = $event->get_data();
-
-        $data = [
-            'userId' => $eventdata['relateduserid'],
-            'courseModuleId' => $eventdata['contextinstanceid'],
-            'workflowState' => $eventdata['other']['newstate'],
-        ];
-
-        echo '';
-    }
-    /**
-     * assignment workglow state event handler.
-     * @param \mod_assign\event\submission_graded $event
-     */
-    public static function submission_graded(\mod_assign\event\submission_graded $event) {
-        global $DB;
-        // Retrieve event data
-        $eventdata = $event->get_data();
-        $cm = get_coursemodule_from_id(null, $eventdata['contextinstanceid']);
-
-        // Get the grade for the specified user
-        $grade = $DB->get_record('assign_grades', [
-            'assignment' => $cm->instance,
-            'userid' => $eventdata['relateduserid']
-        ]);
-
-        $data = [
-            'grade' => $grade->grade,
-            'userId' => $eventdata['relateduserid'],
-            'courseModuleId' => $eventdata['contextinstanceid'],
-        ];
-
-        echo '';
-    }
-
+    
     /**
      * Group created event handler.
      * @param \core\event\group_created $event

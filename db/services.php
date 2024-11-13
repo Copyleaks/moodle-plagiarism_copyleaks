@@ -45,13 +45,6 @@ $functions = array(
     'description' => 'update web service plugin config',
     'type'        => 'write',
   ),
-  'plagiarism_copyleaks_update_failed_scan_to_queued_webhook' => array(
-    'classname'   => 'plagiarism_copyleaks_webhooks',
-    'methodname'  => 'update_failed_scan_to_queued_webhook',
-    'classpath'   => 'plagiarism/copyleaks/classes/webservices/plagiarism_copyleaks_webhooks.php',
-    'description' => 'update failed scan status to queued',
-    'type'        => 'write',
-  ),
   'plagiarism_copyleaks_get_course_groups_info' => array(
     'classname'   => 'plagiarism_copyleaks_course_groups',
     'methodname'  => 'get_course_groups_info',
@@ -82,7 +75,6 @@ $services = array(
     'functions' => array(
       'plagiarism_copyleaks_send_notification',
       'plagiarism_copyleaks_update_report_webhook',
-      'plagiarism_copyleaks_update_failed_scan_to_queued_webhook',
       'plagiarism_copyleaks_update_web_service_connection',
       'plagiarism_copyleaks_get_course_groups_info',
       'plagiarism_copyleaks_get_course_groupings_info',
