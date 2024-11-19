@@ -67,6 +67,13 @@ $functions = array(
     'type'        => 'read',
     'capabilities' => 'moodle/course:managefiles',
   ),
+  'plagiarism_copyleaks_get_multiple_scales_values' => array(
+    'classname'   => 'plagiarism_copyleaks_grades',
+    'methodname'  => 'get_multiple_scales_values',
+    'classpath'   => 'plagiarism/copyleaks/classes/webservices/plagiarism_copyleaks_grades.php',
+    'description' => 'Get multiple scales values',
+    'type'        => 'read',
+  ),
 );
 
 // Pre-built service.
@@ -78,6 +85,7 @@ $services = array(
       'plagiarism_copyleaks_update_web_service_connection',
       'plagiarism_copyleaks_get_course_groups_info',
       'plagiarism_copyleaks_get_course_groupings_info',
+      'plagiarism_copyleaks_get_multiple_scales_values',
       'plagiarism_copyleaks_get_file_info',
       'mod_assign_save_grade',
       'core_comment_add_comments',

@@ -132,12 +132,4 @@ $observers = array(
         'eventname' => '\core\event\role_unassigned',
         'callback'  => 'plagiarism_copyleaks_observer::role_unassigned'
     ),
-    array(
-        'eventname' => '\mod_assign\event\workflow_state_updated',
-        'callback'  => 'plagiarism_copyleaks_observer::workflow_state_updated'
-    ),
-    array(
-        'eventname' => '\mod_assign\event\submission_graded',
-        'callback'  => 'plagiarism_copyleaks_observer::submission_graded'
-    ),
 );
