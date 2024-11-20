@@ -355,7 +355,11 @@ class plagiarism_copyleaks_observer {
             }
 
             $userid     = ($eventdata['relateduserid']) ? $eventdata['relateduserid'] : $eventdata['userid'];
-            $finalgrade = $eventdata['other']['finalgrade'] == "0.00000" ? 0 : $eventdata['other']['finalgrade'];
+
+            $finalgrade = $eventdata['other']['finalgrade'];
+            if (is_string($finalgrade) && str_contains($finalgrade, "0.")) {
+                $finalgrade = 0;
+            }
 
             // If the grade type is "1" (points), format the final grade to two decimal places to ensure consistency in stored values.
             if ($item->gradetype == "1") {
@@ -374,7 +378,7 @@ class plagiarism_copyleaks_observer {
             $cl->upsert_assign_grade($data);
         }
     }
-    
+
     /**
      * Group created event handler.
      * @param \core\event\group_created $event
