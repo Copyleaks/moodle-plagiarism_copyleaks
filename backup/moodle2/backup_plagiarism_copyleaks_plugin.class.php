@@ -13,7 +13,9 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
+ *
  * Copyleaks Plagiarism Plugin - Handle backup operations
  * @package   plagiarism_copyleaks
  * @copyright 2024 Copyleaks
@@ -21,7 +23,25 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+/**
+ * Class backup_plagiarism_copyleaks_plugin
+ *
+ * Extends the backup_plagiarism_plugin class to define the structure for backing up
+ * and restoring the Copyleaks plagiarism plugin configuration for modules in Moodle.
+ *
+ * This class includes the module-specific configuration elements and integrates them
+ * into the backup and restore process via nested elements.
+ */
 class backup_plagiarism_copyleaks_plugin extends backup_plagiarism_plugin {
+    /**
+     * Defines the plugin structure for backup and restore.
+     *
+     * This method creates a nested structure for the Copyleaks plugin configuration,
+     * including all associated module configuration settings. It uses the backup_nested_element
+     * class to represent the hierarchy and sets the source table for the configuration data.
+     *
+     * @return backup_plugin_element The plugin element with its nested structure.
+     */
     protected function define_module_plugin_structure() {
         $plugin = $this->get_plugin_element();
 
@@ -30,10 +50,10 @@ class backup_plagiarism_copyleaks_plugin extends backup_plagiarism_plugin {
 
         // Add module config elements.
         $copyleaksconfigs = new backup_nested_element('copyleaks_configs');
-        $copyleaksconfig = new backup_nested_element('copyleaks_config', array('id'), array('name', 'value'));
+        $copyleaksconfig = new backup_nested_element('copyleaks_config', ['id'], ['name', 'value']);
         $pluginelement->add_child($copyleaksconfigs);
         $copyleaksconfigs->add_child($copyleaksconfig);
-        $copyleaksconfig->set_source_table('plagiarism_copyleaks_config', array('cm' => backup::VAR_PARENTID));
+        $copyleaksconfig->set_source_table('plagiarism_copyleaks_config', ['cm' => backup::VAR_PARENTID]);
 
         return $plugin;
     }

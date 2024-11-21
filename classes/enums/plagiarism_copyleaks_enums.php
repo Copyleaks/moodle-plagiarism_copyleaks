@@ -13,6 +13,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
  * lib.php - Contains Plagiarism plugin specific functions called by Modules.
  * @package   plagiarism_copyleaks
@@ -84,7 +85,9 @@ class plagiarism_copyleaks_times {
     const MONTHS = 4;
 }
 
-// This class is used as an enum in order to know the grade types.
+/**
+ * This class is used as an enum in order to know the grade types..
+ */
 class plagiarism_copyleaks_grade_types {
     /** @var int Represents a grade type of 'None' (no grading). */
     const NONE = 0;
@@ -94,7 +97,9 @@ class plagiarism_copyleaks_grade_types {
     const POINT = 2;
 }
 
-// This class is used as an enum in order to know the grade methods.
+/**
+ * This class is used as an enum in order to know the grade methods.
+ */
 class plagiarism_copyleaks_grade_methods {
     /** @var int Represents a grading method of 'None' (no grading method). */
     const NONE = 0;
@@ -106,6 +111,9 @@ class plagiarism_copyleaks_grade_methods {
     const RUBRIC = 3;
 }
 
+/**
+ * This class is used as an enum in order to know the additional attempts methods.
+ */
 class plagiarism_copyleaks_additional_attempts_method {
     /** @var int Represents a method of 'Never' (no additional attempts allowed). */
     const NEVER = 0;

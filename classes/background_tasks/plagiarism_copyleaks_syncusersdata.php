@@ -13,6 +13,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
  * Copyleaks Plagiarism Plugin
  * @package   plagiarism_copyleaks
@@ -25,6 +26,20 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_comms.class.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/constants/plagiarism_copyleaks.constants.php');
 
+/**
+ * Class plagiarism_copyleaks_synusersdata
+ *
+ * Handles the synchronization of user data with Copyleaks servers.
+ * This class provides a static method to identify users associated with Copyleaks-enabled
+ * files and upserts their data (such as name and email) to the Copyleaks platform.
+ *
+ * Key Features:
+ * - Fetches users linked to files submitted with Copyleaks enabled.
+ * - Ensures users are upserted only once during the synchronization process.
+ * - Limits the number of records processed in a single execution to prevent excessive load.
+ * - Verifies user EULA acceptance status before including user data in the upsert request.
+ * - Communicates with Copyleaks servers to update user data.
+ */
 class plagiarism_copyleaks_synusersdata {
     /**
      * Handle users upsert to Copyleaks
@@ -35,7 +50,7 @@ class plagiarism_copyleaks_synusersdata {
         $canloadmore = true;
         $maxdataloadloops = PLAGIARISM_COPYLEAKS_CRON_MAX_DATA_LOOP;
         $maxitemsperloop = PLAGIARISM_COPYLEAKS_CRON_QUERY_LIMIT;
-        $alreadyupdatedusers = array();
+        $alreadyupdatedusers = [];
         $cl = new \plagiarism_copyleaks_comms();
 
         while ($canloadmore && (--$maxdataloadloops) > 0) {
@@ -64,7 +79,7 @@ class plagiarism_copyleaks_synusersdata {
 
             $startindex += $filescount;
 
-            $usersobjects = array();
+            $usersobjects = [];
 
             // For each file we'll find its user data and add it to the request array.
             foreach ($files as $file) {
@@ -80,18 +95,18 @@ class plagiarism_copyleaks_synusersdata {
 
                     if ($userdata) {
                         $isusereulauptodate = plagiarism_copyleaks_dbutils::is_user_eula_uptodate($file->userid);
-                        $usersobjects[] = array(
+                        $usersobjects[] = [
                             "MPPUserId" => $userdata->id,
                             "userName" => $isusereulauptodate ? $userdata->firstname . " " . $userdata->lastname : "",
                             "userEmail" => $isusereulauptodate ? $userdata->email : "",
-                        );
+                        ];
                     }
                 }
             }
 
             // Send the upsert request only if there is any courses.
             if (count($usersobjects) > 0) {
-                $cl->save_users_data(array('users' => $usersobjects));
+                $cl->save_users_data(['users' => $usersobjects]);
             }
         }
     }

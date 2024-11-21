@@ -13,6 +13,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
  * Copyleaks Plagiarism Plugin
  * @package   plagiarism_copyleaks
@@ -26,7 +27,19 @@ require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks
 require_once($CFG->dirroot . '/plagiarism/copyleaks/constants/plagiarism_copyleaks.constants.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_utils.class.php');
 
-
+/**
+ * Class plagiarism_copyleaks_synccoursesdata
+ *
+ * Handles the synchronization of course data with Copyleaks servers.
+ * This class provides a static method to identify courses with Copyleaks enabled
+ * and upserts their data (such as name and start date) to the Copyleaks platform.
+ *
+ * Key Features:
+ * - Fetches course modules with Copyleaks plagiarism detection enabled.
+ * - Ensures courses are upserted only once during the synchronization process.
+ * - Limits the number of records processed in a single execution to prevent excessive load.
+ * - Communicates with Copyleaks servers to update course data.
+ */
 class plagiarism_copyleaks_synccoursesdata {
     /**
      * Handle Courses upsert to Copyleaks
@@ -38,17 +51,17 @@ class plagiarism_copyleaks_synccoursesdata {
         $maxdataloadloops = PLAGIARISM_COPYLEAKS_CRON_MAX_DATA_LOOP;
         $maxitemsperloop = PLAGIARISM_COPYLEAKS_CRON_QUERY_LIMIT;
         $cl = new \plagiarism_copyleaks_comms();
-        $alreadyupdatedcourses = array();
+        $alreadyupdatedcourses = [];
 
         while ($canloadmore && (--$maxdataloadloops) > 0) {
 
             // Get all course modules that activated copyleaks plugin.
             $coursemodules = $DB->get_records(
                 'plagiarism_copyleaks_config',
-                array(
+                [
                     'name' => 'plagiarism_copyleaks_enable',
-                    'value' => true
-                ),
+                    'value' => true,
+                ],
                 '',
                 'cm',
                 $startindex,
@@ -69,7 +82,7 @@ class plagiarism_copyleaks_synccoursesdata {
 
             $startindex += $coursemodulesscount;
 
-            $courseobjects = array();
+            $courseobjects = [];
 
             // For each cm we'll find its course and add it to the request array only if not already upserted.
             foreach ($coursemodules as $record) {
@@ -87,18 +100,18 @@ class plagiarism_copyleaks_synccoursesdata {
 
                     if ($course) {
                         $coursestartdate = plagiarism_copyleaks_utils::get_course_start_date($coursemodule->course);
-                        $courseobjects[] = array(
+                        $courseobjects[] = [
                             "id" => $course->id,
                             "name" => $course->fullname,
-                            "startdate" => $coursestartdate
-                        );
+                            "startdate" => $coursestartdate,
+                        ];
                     }
                 }
             }
 
             // Send the upsert request only if there is any courses.
             if (count($courseobjects) > 0) {
-                $cl->upsert_courses(array('courses' => $courseobjects));
+                $cl->upsert_courses(['courses' => $courseobjects]);
             }
         }
     }
