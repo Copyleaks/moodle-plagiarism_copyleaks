@@ -13,6 +13,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
  * observer.php - Moodle events handlers for Copyleaks plagiairsm plugin
  * @package   plagiarism_copyleaks
@@ -49,7 +50,7 @@ class plagiarism_copyleaks_observer {
         // Delete Copyleaks module files.
         $DB->delete_records(
             'plagiarism_copyleaks_files',
-            array('cm' => $cmid)
+            ['cm' => $cmid]
         );
 
         $ismoduleenabled = plagiarism_copyleaks_moduleconfig::is_module_enabled('assign', $cmid);
@@ -57,13 +58,13 @@ class plagiarism_copyleaks_observer {
         // Delete Copyleaks module config.
         $DB->delete_records(
             'plagiarism_copyleaks_config',
-            array('cm' => $cmid)
+            ['cm' => $cmid]
         );
 
         // Delete Copyleaks module queued requests.
         $DB->delete_records(
             'plagiarism_copyleaks_request',
-            array('cmid' => $cmid)
+            ['cmid' => $cmid]
         );
         if ($ismoduleenabled) {
             $cl = new \plagiarism_copyleaks_comms();
@@ -233,7 +234,10 @@ class plagiarism_copyleaks_observer {
 
         if ($eventdata['target'] == 'submission' && $eventdata['action'] == 'updated') {
 
-            $clfiles = $DB->get_records('plagiarism_copyleaks_files', ['cm' => $cmid, 'itemid' => $submissionid, 'submissiontype' => 'file']);
+            $clfiles = $DB->get_records(
+                'plagiarism_copyleaks_files',
+                ['cm' => $cmid, 'itemid' => $submissionid, 'submissiontype' => 'file']
+            );
             $fs = get_file_storage();
             foreach ($clfiles as $clfile) {
                 $file = $fs->get_file_by_hash($clfile->identifier);
@@ -245,7 +249,10 @@ class plagiarism_copyleaks_observer {
                         'moodleUserId' => $clfile->userid,
                     ];
                     $cl->delete_report($data);
-                    $DB->delete_records('plagiarism_copyleaks_files', ['cm' => $cmid, 'userid' => $clfile->userid, 'identifier' => $clfile->identifier]);
+                    $DB->delete_records(
+                        'plagiarism_copyleaks_files',
+                        ['cm' => $cmid, 'userid' => $clfile->userid, 'identifier' => $clfile->identifier]
+                    );
                 }
             }
         }
@@ -277,7 +284,7 @@ class plagiarism_copyleaks_observer {
         $commentcontent = $DB->get_record('comments', ['id' => $eventdata['objectid']], 'content');
         $commentdata = (array)[
             'commentId' => $eventdata['objectid'],
-            'courseModuleId' =>  $cmid,
+            'courseModuleId' => $cmid,
             'moodleUserId' => $eventdata['userid'],
             'content' => $commentcontent->content,
             'createdAt' => ($datetime->setTimestamp($eventdata['timecreated']))->format('Y-m-d H:i:s'),
@@ -342,7 +349,7 @@ class plagiarism_copyleaks_observer {
 
             $cl = new \plagiarism_copyleaks_comms();
 
-            // exists in grade_grades table
+            // Exists in grade_grades table.
             if (!grade_grade::fetch(['id' => $eventdata['objectid']])) {
                 return;
             }
@@ -369,7 +376,7 @@ class plagiarism_copyleaks_observer {
             $cl->upsert_assign_grade($data);
         }
     }
-    
+
     /**
      * Group created event handler.
      * @param \core\event\group_created $event
@@ -485,7 +492,7 @@ class plagiarism_copyleaks_observer {
 
         $data = (array)[
             'group' => $groupdata,
-            'user' => $userdata
+            'user' => $userdata,
         ];
 
         $cl->add_group_member($data, $courseid);
@@ -520,7 +527,7 @@ class plagiarism_copyleaks_observer {
 
         $data = (array)[
             'group' => $groupdata,
-            'user' => $userdata
+            'user' => $userdata,
         ];
 
         $cl->remove_group_member($data, $courseid);
@@ -639,9 +646,9 @@ class plagiarism_copyleaks_observer {
             'groupName' => $group->name,
         ];
 
-        $data =  (array)[
+        $data = (array)[
             'grouping' => $groupingdata,
-            'group' => $groupdata
+            'group' => $groupdata,
         ];
 
         $cl->add_grouping_group($data, $courseid);
@@ -674,9 +681,9 @@ class plagiarism_copyleaks_observer {
             'groupId' => $eventdata['other']['groupid'],
         ];
 
-        $data =  (array)[
+        $data = (array)[
             'grouping' => $groupingdata,
-            'group' => $groupdata
+            'group' => $groupdata,
         ];
 
         $cl->remove_grouping_group($data, $courseid);
@@ -692,11 +699,11 @@ class plagiarism_copyleaks_observer {
             return;
         }
 
-        // Get event data
+        // Get event data.
         $eventdata = $event->get_data();
         $courseid = $eventdata['courseid'];
 
-        // If the courseid is 0, then the event is not related to a course. 
+        // If the courseid is 0, then the event is not related to a course.
         if ($courseid == 0) {
             return;
         }
@@ -706,7 +713,7 @@ class plagiarism_copyleaks_observer {
             return;
         }
 
-        // id is the id of the user that was unenroled.
+        // Id is the id of the user that was unenroled.
         $data = [
             'id' => $eventdata['relateduserid'],
         ];
@@ -727,11 +734,11 @@ class plagiarism_copyleaks_observer {
             return;
         }
 
-        // Get event data
+        // Get event data.
         $eventdata = $event->get_data();
         $courseid = $eventdata['courseid'];
 
-        // If the courseid is 0, then the event is not related to a course. 
+        // If the courseid is 0, then the event is not related to a course.
         if ($courseid == 0) {
             return;
         }
@@ -742,27 +749,27 @@ class plagiarism_copyleaks_observer {
         }
 
         $user = get_complete_user_data('id', $eventdata['relateduserid']);
-        $roleid = $eventdata['objectid'];  // The ID of the assigned role
+        $roleid = $eventdata['objectid'];  // The ID of the assigned role.
 
-        // Retrieve all roles
+        // Retrieve all roles.
         $roles = get_all_roles();
 
-        // Check if the role with the specific roleid exists
+        // Check if the role with the specific roleid exists.
         if (!isset($roles[$roleid])) {
-            // Role not found;
+            // Role not found.
             return;
         }
 
         $role = (object)[
-            'shortName' => $roles[$roleid]->shortname
+            'shortName' => $roles[$roleid]->shortname,
         ];
 
-        //id: the ID of the user that was enroled into the course and assigned the role.
+        // Id: the ID of the user that was enroled into the course and assigned the role.
         $data = [
             'id' => $eventdata['relateduserid'],
             'fullName' => $user->firstname . ' ' . $user->lastname,
             'email' => $user->email,
-            'roles' => [$role]
+            'roles' => [$role],
         ];
 
         $cl = new \plagiarism_copyleaks_comms();
@@ -781,11 +788,11 @@ class plagiarism_copyleaks_observer {
             return;
         }
 
-        // Get event data
+        // Get event data.
         $eventdata = $event->get_data();
         $courseid = $eventdata['courseid'];
 
-        // If the courseid is 0, then the event is not related to a course. 
+        // If the courseid is 0, then the event is not related to a course.
         if ($courseid == 0) {
             return;
         }
@@ -795,25 +802,25 @@ class plagiarism_copyleaks_observer {
             return;
         }
 
-        $roleid = $eventdata['objectid'];  // The ID of the assigned role
+        $roleid = $eventdata['objectid'];  // The ID of the assigned role.
 
-        // Retrieve all roles
+        // Retrieve all roles.
         $roles = get_all_roles();
 
-        // Check if the role with the specific roleid exists
+        // Check if the role with the specific roleid exists.
         if (!isset($roles[$roleid])) {
-            // Role not found;
+            // Role not found.
             return;
         }
 
         $role = (object)[
-            'shortName' => $roles[$roleid]->shortname
+            'shortName' => $roles[$roleid]->shortname,
         ];
 
-        //id: the ID of the user that was enroled into the course and assigned the role.
+        // Id: the ID of the user that was enroled into the course and assigned the role.
         $data = [
             'id' => $eventdata['relateduserid'],
-            'roles' => [$role]
+            'roles' => [$role],
         ];
 
         $cl = new \plagiarism_copyleaks_comms();

@@ -13,6 +13,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
  * Copyleaks Plagiarism Plugin - Handle Resubmit Files
  * @package   plagiarism_copyleaks
@@ -117,6 +118,9 @@ class plagiarism_copyleaks_synconfig extends \core\task\scheduled_task {
         }
     }
 
+    /**
+     * Get config by name an course module.
+     */
     private function get_config_by_name_and_cm($name, $cm) {
         global $DB;
         $config = $DB->get_record('plagiarism_copyleaks_config', ['name' => $name, 'cm' => $cm]);
@@ -134,6 +138,9 @@ class plagiarism_copyleaks_synconfig extends \core\task\scheduled_task {
         return $config;
     }
 
+    /**
+     * Upsert config to table.
+     */
     private function upsert_config_to_table($config, $name) {
         global $DB;
 
@@ -162,6 +169,10 @@ class plagiarism_copyleaks_synconfig extends \core\task\scheduled_task {
         }
     }
 
+
+    /**
+     * Write log.
+     */
     private function write_log($cmid, $configname, $isdelete = false) {
         \plagiarism_copyleaks_logs::add(
             "Failed to update synced config: $configname, of cmid: $cmid",

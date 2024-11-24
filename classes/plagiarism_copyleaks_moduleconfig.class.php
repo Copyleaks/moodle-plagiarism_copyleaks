@@ -13,6 +13,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
  * module configurations helpers methods
  * @package   plagiarism_copyleaks
@@ -23,6 +24,7 @@
 
 use core\check\performance\stats;
 
+defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/lib/modinfolib.php');
 
 /**
@@ -34,12 +36,12 @@ class plagiarism_copyleaks_moduleconfig {
      * @return array Course Module DB Properties
      */
     public static function get_config_db_properties() {
-        return array(
+        return [
             'plagiarism_copyleaks_enable',
             'plagiarism_copyleaks_draftsubmit',
             'plagiarism_copyleaks_reportgen',
-            'plagiarism_copyleaks_allowstudentaccess'
-        );
+            'plagiarism_copyleaks_allowstudentaccess',
+        ];
     }
 
     /**
@@ -52,7 +54,7 @@ class plagiarism_copyleaks_moduleconfig {
 
         $result = $DB->get_records_menu(
             'plagiarism_copyleaks_config',
-            array('cm' => $cmid),
+            ['cm' => $cmid],
             '',
             'name,value'
         );
@@ -72,7 +74,7 @@ class plagiarism_copyleaks_moduleconfig {
         global $DB;
         $result = $DB->get_records_menu(
             'plagiarism_copyleaks_config',
-            array('cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID),
+            ['cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID],
             '',
             'name,value'
         );
@@ -99,7 +101,7 @@ class plagiarism_copyleaks_moduleconfig {
     ) {
         global $DB;
 
-        $default = array();
+        $default = [];
         $default['plagiarism_copyleaks_enable'] = $enabled;
         $default['plagiarism_copyleaks_draftsubmit'] = $draftssubmit;
         $default['plagiarism_copyleaks_reportgen'] = $reportgen;
@@ -109,7 +111,7 @@ class plagiarism_copyleaks_moduleconfig {
         $clcmconfigfields = self::get_config_db_properties();
 
         // Get saved db settings.
-        $saveddefaultvalue = $DB->get_records_menu('plagiarism_copyleaks_config', array('cm' => $cmid), '', 'name,value');
+        $saveddefaultvalue = $DB->get_records_menu('plagiarism_copyleaks_config', ['cm' => $cmid], '', 'name,value');
 
         // Save db settings.
         foreach ($clcmconfigfields as $f) {
@@ -128,10 +130,10 @@ class plagiarism_copyleaks_moduleconfig {
                     $savedfield->id = $DB->get_field(
                         'plagiarism_copyleaks_config',
                         'id',
-                        (array(
+                        ([
                             'cm' => $cmid,
-                            'name' => $f
-                        ))
+                            'name' => $f,
+                        ])
                     );
                     if (!$DB->update_record('plagiarism_copyleaks_config', $savedfield)) {
                         throw new moodle_exception(get_string('clupdateerror', 'plagiarism_copyleaks'));
@@ -163,11 +165,12 @@ class plagiarism_copyleaks_moduleconfig {
      * @return bool is allowed
      */
     public static function is_allowed_eula_acceptance($modname) {
-        $supportedeulamodules = array('assign', 'workshop');
+        $supportedeulamodules = ['assign', 'workshop'];
         return in_array($modname, $supportedeulamodules);
     }
 
     /**
+     * Is course module request queued.
      * @param string $cmid check if the cmid is in the requests queue
      * @return bool
      */
@@ -185,25 +188,25 @@ class plagiarism_copyleaks_moduleconfig {
      * @return bool True if any module in the course has Copyleaks enabled, false otherwise.
      */
     public static function is_copyleaks_enabled_for_any_module($courseid, $modname = null) {
-        // Fetch all modules in the course
+        // Fetch all modules in the course.
         $modinfo = get_fast_modinfo($courseid);
 
-        // Determine which modules to check
+        // Determine which modules to check.
         $modulestocheck = ($modname === null) ? $modinfo->get_cms() : $modinfo->get_instances_of($modname);
 
-        // Loop through each module and check if Copyleaks is enabled
+        // Loop through each module and check if Copyleaks is enabled.
         foreach ($modulestocheck as $cm) {
-            // Skip if the cm is being deleted
+            // Skip if the cm is being deleted.
             if ($cm->deletioninprogress == "1") {
                 continue;
             }
 
-            if (\plagiarism_copyleaks_moduleconfig::is_module_enabled($cm->modname, $cm->id)) {
+            if (self::is_module_enabled($cm->modname, $cm->id)) {
                 return true;
             }
         }
 
-        // No module with Copyleaks enabled found
+        // No module with Copyleaks enabled found.
         return false;
     }
 }

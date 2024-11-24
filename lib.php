@@ -13,6 +13,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
  * Contains Plagiarism plugin specific functions called by Modules.
  * @package   plagiarism_copyleaks
@@ -71,7 +72,7 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
 
         // If the record exists with status:ERROR, delete it.
         if (plagiarism_copyleaks_dbutils::is_cm_duplicated_error($data->coursemodule)) {
-            $DB->delete_records('plagiarism_copyleaks_cm_copy', array('new_cm_id' => $data->coursemodule));
+            $DB->delete_records('plagiarism_copyleaks_cm_copy', ['new_cm_id' => $data->coursemodule]);
         }
 
         if ($data->plagiarism_copyleaks_enable) {
@@ -83,7 +84,7 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
             $course = get_course($data->course);
             $duedate = plagiarism_copyleaks_utils::get_course_module_duedate($data->coursemodule);
             $coursestartdate = plagiarism_copyleaks_utils::get_course_start_date($data->course);
-            $updatedata = array(
+            $updatedata = [
                 'tempCourseModuleId' => isset($data->plagiarism_copyleaks_tempcmid) ? $data->plagiarism_copyleaks_tempcmid : null,
                 'courseModuleId' => $data->coursemodule,
                 'name' => $data->name,
@@ -91,8 +92,8 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
                 'courseId' => $data->course,
                 'courseName' => $course->fullname,
                 'dueDate' => $duedate,
-                'courseStartDate' => $coursestartdate
-            );
+                'courseStartDate' => $coursestartdate,
+            ];
 
             // If its an assignment module add missing data.
             if ($data->modulename == 'assign') {
@@ -214,13 +215,13 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
                         'copyleaks-spinner',
                         null,
                         'plagiarism_copyleaks',
-                        array('class' => 'cls-icon-no-margin')
+                        ['class' => 'cls-icon-no-margin']
                     ) .
                         html_writer::tag(
                             'div',
                             get_string('clpendingduplication', 'plagiarism_copyleaks'),
                         ),
-                    array('class' => 'copyleaks-text-gray cls-gap-eight-container')
+                    ['class' => 'copyleaks-text-gray cls-gap-eight-container']
                 );
                 $mform->addElement('html', $pendingduplication . '<br>');
             } else {
@@ -233,13 +234,13 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
                             'copyleaks-error',
                             null,
                             'plagiarism_copyleaks',
-                            array('class' => 'cls-icon-no-margin')
+                            ['class' => 'cls-icon-no-margin']
                         ) .
                             html_writer::tag(
                                 'div',
                                 get_string('clfailedduplication', 'plagiarism_copyleaks') . ": " . $cmduplicationerror,
                             ),
-                        array('class' => 'copyleaks-text-warn cls-gap-eight-container')
+                        ['class' => 'copyleaks-text-warn cls-gap-eight-container']
                     );
                     $mform->addElement('html',  $duplicationerror);
                 }
@@ -273,10 +274,10 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
 
                 // Add due date properties only if exists.
                 if ($mform->elementExists('duedate')) {
-                    $genoptions = array(
+                    $genoptions = [
                         0 => get_string('clgenereportimmediately', 'plagiarism_copyleaks'),
-                        1 => get_string('clgenereportonduedate', 'plagiarism_copyleaks')
-                    );
+                        1 => get_string('clgenereportonduedate', 'plagiarism_copyleaks'),
+                    ];
                     $mform->addElement(
                         'select',
                         'plagiarism_copyleaks_reportgen',
@@ -291,7 +292,7 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
                     get_string('clallowstudentaccess', 'plagiarism_copyleaks')
                 );
 
-                $savedvalues = $DB->get_records_menu('plagiarism_copyleaks_config', array('cm' => $cmid), '', 'name,value');
+                $savedvalues = $DB->get_records_menu('plagiarism_copyleaks_config', ['cm' => $cmid], '', 'name,value');
                 if (count($savedvalues) > 0) {
                     // Add check for a new Course Module (for lower versions).
                     $mform->setDefault(
@@ -364,7 +365,7 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
         // Get course module copyleaks settings.
         $clmodulesettings = $DB->get_records_menu(
             'plagiarism_copyleaks_config',
-            array('cm' => $cmid),
+            ['cm' => $cmid],
             '',
             'name,value'
         );
@@ -389,11 +390,11 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
             $clstudentdisclosure = get_string('clstudentdagreedtoeula', 'plagiarism_copyleaks');
         }
 
-        $contents = format_text($clstudentdisclosure, FORMAT_MOODLE, array("noclean" => true));
+        $contents = format_text($clstudentdisclosure, FORMAT_MOODLE, ["noclean" => true]);
         if (!$isuseragreed) {
             $checkbox = "<input type='checkbox' id='cls_student_disclosure'>" .
                 "<label for='cls_student_disclosure' class='copyleaks-student-disclosure-checkbox'>$contents</label>";
-            $output = html_writer::tag('div', $checkbox, array('class' => 'copyleaks-student-disclosure '));
+            $output = html_writer::tag('div', $checkbox, ['class' => 'copyleaks-student-disclosure ']);
             $output .= html_writer::tag(
                 'script',
                 "(function disableInput() {" .
@@ -413,7 +414,7 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
                 null
             );
         } else {
-            $output = html_writer::tag('div', $contents, array('class' => 'copyleaks-student-disclosure'));
+            $output = html_writer::tag('div', $contents, ['class' => 'copyleaks-student-disclosure']);
         }
 
         return $output;
@@ -437,6 +438,7 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
  * @return type
  */
 /**
+ *
  * @var mixed $course
  */
 function plagiarism_copyleaks_coursemodule_standard_elements($formwrapper, $mform) {

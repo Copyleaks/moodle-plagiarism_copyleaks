@@ -13,13 +13,15 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
- * Copyleaks report page
+ * Resubmit handler.
  * @package   plagiarism_copyleaks
  * @author    Bayan Abuawad <bayana@copyleaks.com>
  * @copyright 2021 Copyleaks
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 require(dirname(dirname(__FILE__)) . '/../config.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_submissions.class.php');
 
@@ -42,7 +44,7 @@ $roles = get_user_roles($context, $USER->id);
 
 foreach ($roles as $role) {
     if ($role->shortname == 'student') {
-        echo html_writer::div(get_string('clnopageaccess', 'plagiarism_copyleaks'), null, array('style' => $errormessagestyle));
+        echo html_writer::div(get_string('clnopageaccess', 'plagiarism_copyleaks'), null, ['style' => $errormessagestyle]);
         return;
     }
 }

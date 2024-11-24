@@ -13,6 +13,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
  * copyleaks_comms.class.php - used for communications between Moodle and Copyleaks
  * @package   plagiarism_copyleaks
@@ -90,7 +91,7 @@ class plagiarism_copyleaks_comms {
                     'courseName' => (get_course($coursemodule->course))->fullname,
                     'duedate' => $duedate,
                     'coursestartdate' => $coursestartdate,
-                    'oldScanId' => $externalid // In case the insrtuctor pressed "Try again" button.
+                    'oldScanId' => $externalid, // In case the insrtuctor pressed "Try again" button.
                 ];
             } else {
                 $paramsmerge = (array)[
@@ -103,7 +104,7 @@ class plagiarism_copyleaks_comms {
                     'courseName' => (get_course($coursemodule->course))->fullname,
                     'duedate' => $duedate,
                     'coursestartdate' => $coursestartdate,
-                    'oldScanId' => $externalid
+                    'oldScanId' => $externalid,
                 ];
             }
 
@@ -157,7 +158,7 @@ class plagiarism_copyleaks_comms {
     public function get_resubmit_reports_ids() {
         if (isset($this->key) && isset($this->secret)) {
             $reqbody = (array)[
-                'cursor' => ''
+                'cursor' => '',
             ];
             $result = plagiarism_copyleaks_http_client::execute_retry(
                 'POST',
@@ -176,7 +177,7 @@ class plagiarism_copyleaks_comms {
     public function delete_resubmitted_ids(array $ids) {
         if (isset($this->key) && isset($this->secret)) {
             $reqbody = (array)[
-                'ids' => $ids
+                'ids' => $ids,
             ];
             plagiarism_copyleaks_http_client::execute_retry(
                 'POST',
@@ -224,7 +225,7 @@ class plagiarism_copyleaks_comms {
                 'breadcrumbs' => $breadcrumbs,
                 'name' => $name,
                 'courseModuleName' => $coursemodulename,
-                'accessRole' => $role
+                'accessRole' => $role,
             ];
             $url = $this->copyleaks_api_url() . "/api/moodle/" . $this->key . "/settings/request-access";
             if (isset($cmid)) {
@@ -312,7 +313,7 @@ class plagiarism_copyleaks_comms {
         if (!isset($result) || $force) {
             // Login to copyleaks api and get jwt.
             $reqbody = (array)[
-                'secret' => $secret
+                'secret' => $secret,
             ];
 
             $result = plagiarism_copyleaks_http_client::execute_retry(
@@ -824,9 +825,9 @@ class plagiarism_copyleaks_comms {
      */
     public function upsert_course($data, $courseid, $synccourse = false) {
         $endpoint = "/api/moodle/plugin/$this->key/course/$courseid/upsert-course";
-        // Convert the boolean $synccourse to string "true" or "false"
-        $queryParams = http_build_query(['syncCourse' => $synccourse ? 'true' : 'false']);
-        $endpoint .= '?' . $queryParams;
+        // Convert the boolean $synccourse to string "true" or "false".
+        $queryparams = http_build_query(['syncCourse' => $synccourse ? 'true' : 'false']);
+        $endpoint .= '?' . $queryparams;
         $verb = 'POST';
         try {
             plagiarism_copyleaks_http_client::execute_retry(
@@ -861,6 +862,10 @@ class plagiarism_copyleaks_comms {
         }
     }
 
+    /**
+     * Save user data.
+     * @param array $data
+     */
     public function save_users_data($data) {
         $endpoint = "/api/moodle/plugin/$this->key/task/upsert-users";
         $verb = 'POST';
@@ -913,7 +918,7 @@ class plagiarism_copyleaks_comms {
     public function delete_synced_scans_by_ids(array $ids) {
         if (isset($this->key) && isset($this->secret)) {
             $reqbody = (array)[
-                'ids' => $ids
+                'ids' => $ids,
             ];
             plagiarism_copyleaks_http_client::execute_retry(
                 'POST',
@@ -945,7 +950,7 @@ class plagiarism_copyleaks_comms {
     public function delete_synced_config_by_keys(array $ids) {
         if (isset($this->key) && isset($this->secret)) {
             $reqbody = (array)[
-                'ids' => $ids
+                'ids' => $ids,
             ];
             plagiarism_copyleaks_http_client::execute_retry(
                 'POST',
@@ -957,7 +962,7 @@ class plagiarism_copyleaks_comms {
     }
 
     /**
-     * 
+     * Save plugin integration data.
      * @param array $data
      */
     public function save_plugin_integration_data($data) {
@@ -977,6 +982,7 @@ class plagiarism_copyleaks_comms {
     }
 
     /**
+     * Delete course module.
      * @param string $cmid course module id
      */
     public function delete_course_module($cmid) {

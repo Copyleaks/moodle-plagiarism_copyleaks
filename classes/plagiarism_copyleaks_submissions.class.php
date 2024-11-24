@@ -201,7 +201,7 @@ class plagiarism_copyleaks_submissions {
             $insql,
             $inparams
         ) = $DB->get_in_or_equal(
-            array('success', 'queued'),
+            ['success', 'queued'],
             SQL_PARAMS_QM,
             'param',
             false
@@ -214,11 +214,11 @@ class plagiarism_copyleaks_submissions {
             "plagiarism_copyleaks_files",
             " userid = ? AND cm = ? AND identifier = ? AND " . $typefield . " " . $insql,
             array_merge(
-                array(
+                [
                     $author,
                     $cmid,
-                    $identifier
-                ),
+                    $identifier,
+                ],
                 $inparams
             )
         );
@@ -234,9 +234,9 @@ class plagiarism_copyleaks_submissions {
         global $DB;
         $record = $DB->get_record(
             'plagiarism_copyleaks_files',
-            array(
+            [
                 'id' => $fileid,
-            )
+            ]
         );
         $record->statuscode = "queued";
         $record->errormsg = null;
@@ -251,6 +251,7 @@ class plagiarism_copyleaks_submissions {
     }
 
     /**
+     * Handle submission error.
      * @param object $submission - will update the submission reference.
      * @param string $errormessage
      */
@@ -280,7 +281,7 @@ class plagiarism_copyleaks_submissions {
 
 
     /**
-     * Update report 
+     * Update report
      * @param  string $coursemoduleid  Course module ID
      * @param  string $moodleuserid    Moodle user ID
      * @param  string $identifier      Identifier
@@ -309,11 +310,11 @@ class plagiarism_copyleaks_submissions {
         global $DB;
         $submission = $DB->get_record(
             'plagiarism_copyleaks_files',
-            array(
+            [
                 'cm' => $coursemoduleid,
                 'userid' => $moodleuserid,
-                'identifier' => $identifier
-            )
+                'identifier' => $identifier,
+            ]
         );
 
         if (isset($submission) && $submission) {
@@ -347,7 +348,7 @@ class plagiarism_copyleaks_submissions {
                     return false;
                 }
             } else if ($status == 3) {
-                \plagiarism_copyleaks_submissions::mark_pending($submission->id);
+                self::mark_pending($submission->id);
             }
         } else {
             \plagiarism_copyleaks_logs::add(

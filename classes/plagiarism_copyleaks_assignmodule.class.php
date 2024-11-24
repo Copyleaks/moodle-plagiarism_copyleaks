@@ -13,6 +13,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
  * Copyleaks assign module helper
  * @package   plagiarism_copyleaks
@@ -21,7 +22,9 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-/** Copyleaks assign module helper */
+/**
+ * Copyleaks assign module helper
+ */
 class plagiarism_copyleaks_assignmodule {
     /**
      * check if current module user is instructor
@@ -47,7 +50,7 @@ class plagiarism_copyleaks_assignmodule {
     public static function get_author($itemid) {
         global $DB;
 
-        if ($submission = $DB->get_record('assign_submission', array('id' => $itemid), 'userid')) {
+        if ($submission = $DB->get_record('assign_submission', ['id' => $itemid], 'userid')) {
             return $submission->userid;
         } else {
             return 0;

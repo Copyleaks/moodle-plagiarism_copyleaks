@@ -13,6 +13,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
  * Copyleaks files
  * @package   plagiarism_copyleaks
@@ -21,64 +22,69 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+defined('MOODLE_INTERNAL') || die();
+
 require_once($CFG->libdir . "/externallib.php");
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/exceptions/plagiarism_copyleaks_webserviceexception.class.php');
 
+  /**
+   * plagiarism_copyleaks_files external API class
+   */
 class plagiarism_copyleaks_files extends external_api {
-  /**
-   * Returns description of method parameters
-   * @return external_function_parameters
-   */
-  public static function get_file_info_parameters() {
-    return new external_function_parameters(
-      array(
-        'identifier' => new external_value(PARAM_TEXT, 'Identifier'),
-      )
-    );
-  }
-
-  /**
-   * Gets the file information.
-   * @param string $identifier Identifier
-   * @return array
-   */
-  public static function get_file_info($identifier) {
-    // Validate parameters
-    $params = self::validate_parameters(self::get_file_info_parameters(), array(
-      'identifier' => $identifier
-    ));
-
-    $filestorage = get_file_storage();
-    $file = $filestorage->get_file_by_hash($params['identifier']);
-
-    if (!$file) {
-      throw new plagiarism_copyleaks_webservice_exception('filenotfound');;
+    /**
+     * Returns description of method parameters
+     * @return external_function_parameters
+     */
+    public static function get_file_info_parameters() {
+        return new external_function_parameters(
+          [
+            'identifier' => new external_value(PARAM_TEXT, 'Identifier'),
+          ]
+        );
     }
 
-    return array(
-      'contextid'  => $file->get_contextid(),
-      'component'  => $file->get_component(),
-      'filearea'   => $file->get_filearea(),
-      'itemid'     => $file->get_itemid(),
-      'filepath'   => $file->get_filepath(),
-      'filename'   => $file->get_filename(),
-    );
-  }
+    /**
+     * Gets the file information.
+     * @param string $identifier Identifier
+     * @return array
+     */
+    public static function get_file_info($identifier) {
+        // Validate parameters.
+        $params = self::validate_parameters(self::get_file_info_parameters(), [
+          'identifier' => $identifier,
+        ]);
 
-  /**
-   * Describes the return value for get_file_info
-   * @return external_single_structure
-   */
-  public static function get_file_info_returns() {
-    return new external_single_structure(
-      array(
-        'contextid' => new external_value(PARAM_TEXT, 'The context ID of the file'),
-        'component' => new external_value(PARAM_TEXT, 'The component of the file'),
-        'filearea'  => new external_value(PARAM_TEXT, 'The file area'),
-        'itemid'    => new external_value(PARAM_TEXT, 'The item ID'),
-        'filepath'  => new external_value(PARAM_TEXT, 'The file path'),
-        'filename'  => new external_value(PARAM_TEXT, 'The file name'),
-      )
-    );
-  }
+        $filestorage = get_file_storage();
+        $file = $filestorage->get_file_by_hash($params['identifier']);
+
+        if (!$file) {
+            throw new plagiarism_copyleaks_webservice_exception('filenotfound');
+        }
+
+        return [
+          'contextid'  => $file->get_contextid(),
+          'component'  => $file->get_component(),
+          'filearea'   => $file->get_filearea(),
+          'itemid'     => $file->get_itemid(),
+          'filepath'   => $file->get_filepath(),
+          'filename'   => $file->get_filename(),
+        ];
+    }
+
+    /**
+     * Describes the return value for get_file_info
+     * @return external_single_structure
+     */
+    public static function get_file_info_returns() {
+        return new external_single_structure(
+          [
+            'contextid' => new external_value(PARAM_TEXT, 'The context ID of the file'),
+            'component' => new external_value(PARAM_TEXT, 'The component of the file'),
+            'filearea'  => new external_value(PARAM_TEXT, 'The file area'),
+            'itemid'    => new external_value(PARAM_TEXT, 'The item ID'),
+            'filepath'  => new external_value(PARAM_TEXT, 'The file path'),
+            'filename'  => new external_value(PARAM_TEXT, 'The file name'),
+          ]
+        );
+    }
 }

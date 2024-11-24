@@ -13,6 +13,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
  * Copyleaks settings page
  * @package   plagiarism_copyleaks
@@ -31,7 +32,7 @@ $cmid = required_param('cmid', PARAM_INT);
 
 $cm = get_coursemodule_from_id('', $cmid);
 $courseid  = $cm->course;
-$course = $DB->get_record('course', array('id' => $courseid), '*', MUST_EXIST);
+$course = $DB->get_record('course', ['id' => $courseid], '*', MUST_EXIST);
 
 require_login($course, true, $cm);
 
@@ -41,7 +42,7 @@ $errormessagestyle = 'color:red; display:flex; width:100%; justify-content:cente
 
 foreach ($roles as $role) {
     if ($role->shortname == 'student') {
-        echo html_writer::div(get_string('clnopageaccess', 'plagiarism_copyleaks'), null, array('style' => $errormessagestyle));
+        echo html_writer::div(get_string('clnopageaccess', 'plagiarism_copyleaks'), null, ['style' => $errormessagestyle]);
         return;
     }
 }
@@ -71,7 +72,7 @@ $coursestartdate = plagiarism_copyleaks_utils::get_course_start_date($courseid);
 echo html_writer::tag(
     'iframe',
     null,
-    array(
+    [
         'title' => 'Copyleaks Analytics',
         'srcdoc' =>
         "<form target='_self'" .
@@ -87,8 +88,8 @@ echo html_writer::tag(
             "<script type='text/javascript'>" .
             "window.document.forms[0].submit();" .
             "</script>",
-        'style' => 'width: 100%; height: 100%; margin: 0px; padding: 0px; border: none;'
-    )
+        'style' => 'width: 100%; height: 100%; margin: 0px; padding: 0px; border: none;',
+    ]
 );
 
 echo html_writer::script(

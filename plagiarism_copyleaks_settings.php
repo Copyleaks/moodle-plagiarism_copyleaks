@@ -13,6 +13,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
  * Copyleaks settings page
  * @package   plagiarism_copyleaks
@@ -63,7 +64,7 @@ if ($isadminview) {
     if (!isset($courseid)) {
         $courseid = $cm->course;
     }
-    $course = $DB->get_record('course', array('id' => $courseid), '*', MUST_EXIST);
+    $course = $DB->get_record('course', ['id' => $courseid], '*', MUST_EXIST);
 
     // Request login.
     require_login($course, true, $cm);
@@ -77,15 +78,15 @@ if ($isadminview) {
     $roles = get_user_roles($context, $USER->id);
     foreach ($roles as $role) {
         if ($role->shortname == 'student') {
-            echo html_writer::div(get_string('clnopageaccess', 'plagiarism_copyleaks'), null, array('style' => $errormessagestyle));
+            echo html_writer::div(get_string('clnopageaccess', 'plagiarism_copyleaks'), null, ['style' => $errormessagestyle]);
             return;
         }
     }
-    $PAGE->set_url('/moodle/plagiarism/copyleaks/plagiarism_copyleaks_settings.php', array(
+    $PAGE->set_url('/moodle/plagiarism/copyleaks/plagiarism_copyleaks_settings.php', [
         'courseid' => $courseid,
         'cmid' => $cmid,
-        'modulename' => $modulename
-    ));
+        'modulename' => $modulename,
+    ]);
 }
 
 global $USER;
@@ -105,11 +106,11 @@ $errormessagestyle = 'color:red; display:flex; width:100%; justify-content:cente
 
 
 if (!$isnewmodulesettings && !$isadminview && !$clmoduleenabled) {
-    echo html_writer::div(get_string('cldisabledformodule', 'plagiarism_copyleaks'), null, array('style' => $errormessagestyle));
+    echo html_writer::div(get_string('cldisabledformodule', 'plagiarism_copyleaks'), null, ['style' => $errormessagestyle]);
 } else {
     // Incase students not allowed to see the plagiairsm score.
     if (!$isinstructor) {
-        echo html_writer::div(get_string('clnopageaccess', 'plagiarism_copyleaks'), null, array('style' => $errormessagestyle));
+        echo html_writer::div(get_string('clnopageaccess', 'plagiarism_copyleaks'), null, ['style' => $errormessagestyle]);
     } else {
         // Proceed to displaying the settings.
         if ($isinstructor) {
@@ -164,7 +165,7 @@ if (!$isnewmodulesettings && !$isadminview && !$clmoduleenabled) {
             echo html_writer::tag(
                 'iframe',
                 null,
-                array(
+                [
                     'title' => 'Copyleaks Settings',
                     'srcdoc' =>
                     "<form target='_self'" .
@@ -178,11 +179,11 @@ if (!$isnewmodulesettings && !$isadminview && !$clmoduleenabled) {
                         "<script type='text/javascript'>" .
                         "window.document.forms[0].submit();" .
                         "</script>",
-                    'style' => 'width: 100%; height: 100%; margin: 0px; padding: 0px; border: none;'
-                )
+                    'style' => 'width: 100%; height: 100%; margin: 0px; padding: 0px; border: none;',
+                ]
             );
         } else {
-            echo html_writer::div(get_string('clnopageaccess', 'plagiarism_copyleaks'), null, array('style' => $errormessagestyle));
+            echo html_writer::div(get_string('clnopageaccess', 'plagiarism_copyleaks'), null, ['style' => $errormessagestyle]);
         }
     }
 }

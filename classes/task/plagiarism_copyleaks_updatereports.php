@@ -13,6 +13,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
  * Copyleaks Plagiarism Plugin - Handle plagiairsm check similarity score update
  * @package   plagiarism_copyleaks
@@ -62,14 +63,14 @@ class plagiarism_copyleaks_updatereports extends \core\task\scheduled_task {
         $maxdataloadloops = PLAGIARISM_COPYLEAKS_CRON_MAX_DATA_LOOP;
 
         while ($canloadmoredata && (--$maxdataloadloops) > 0) {
-            $submissionsinstances = array();
+            $submissionsinstances = [];
 
             $expectedfinishtime = strtotime('- 1 minutes');
 
             $submissions = $DB->get_records_select(
                 "plagiarism_copyleaks_files",
                 "statuscode = ? AND lastmodified < ? AND (similarityscore IS NULL)",
-                array('pending', $expectedfinishtime),
+                ['pending', $expectedfinishtime],
                 '',
                 '*',
                 0,
@@ -122,7 +123,6 @@ class plagiarism_copyleaks_updatereports extends \core\task\scheduled_task {
                                 $clscaninstance->isCheatingDetected,
                                 $clscaninstance->errorMessage,
                             );
-                              
                         }
                     }
                 } catch (\Exception $e) {

@@ -23,13 +23,13 @@
  */
 
 /**
- * Copyleaks web service exception 
+ * Copyleaks web service exception
  */
 class plagiarism_copyleaks_webservice_exception extends moodle_exception {
-  /**
-   * constructor
-   */
-  public function __construct($errorcode) {
-    parent::__construct($errorcode, 'plagiarism_copyleaks');
-  }
+    /**
+     * constructor
+     */
+    public function __construct($errorcode) {
+        parent::__construct($errorcode, 'plagiarism_copyleaks');
+    }
 }

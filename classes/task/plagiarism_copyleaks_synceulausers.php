@@ -13,6 +13,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
  * Copyleaks Plagiarism Plugin - Handle Resubmit Files
  * @package   plagiarism_copyleaks
@@ -64,9 +65,9 @@ class plagiarism_copyleaks_synceulausers extends \core\task\scheduled_task {
         global $DB;
         $canloadmoredata = true;
         $limitfrom = 0;
-        $condition = array('is_synced' => false);
+        $condition = ['is_synced' => false];
         $cl = new \plagiarism_copyleaks_comms();
-        $useridstosync = array();
+        $useridstosync = [];
         $maxdataloadloops = PLAGIARISM_COPYLEAKS_CRON_MAX_DATA_LOOP;
 
         while ($canloadmoredata && (--$maxdataloadloops) > 0) {
@@ -88,7 +89,7 @@ class plagiarism_copyleaks_synceulausers extends \core\task\scheduled_task {
 
                 $model = $this->arrange_request_model($eulausers);
                 $result = $cl->upsert_synced_eula($model);
-                $useridstosync = isset($result->usersIds) ? $result->usersIds : array();
+                $useridstosync = isset($result->usersIds) ? $result->usersIds : [];
             } catch (\Exception $e) {
                 \plagiarism_copyleaks_logs::add(
                     "Update eula users tasks failed, " . $e->getMessage(),
@@ -125,14 +126,14 @@ class plagiarism_copyleaks_synceulausers extends \core\task\scheduled_task {
     private function arrange_request_model($eulausers) {
         $data = array_map(function ($record) {
             if (isset($record->ci_user_id)) {
-                return array(
+                return [
                     'userid' => $record->ci_user_id,
                     'version' => $record->version,
-                    'date' => date('Y-m-d H:i:s', $record->accepted_at)
-                );
+                    'date' => date('Y-m-d H:i:s', $record->accepted_at),
+                ];
             }
         }, $eulausers);
         $data = array_values($data);
-        return array('eulaUsersData' => $data);
+        return ['eulaUsersData' => $data];
     }
 }

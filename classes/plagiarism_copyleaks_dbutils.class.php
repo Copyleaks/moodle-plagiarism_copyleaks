@@ -13,6 +13,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
  * copyleaks_comms.class.php - used for communications between Moodle and Copyleaks
  * @package   plagiarism_copyleaks
@@ -46,8 +47,7 @@ class plagiarism_copyleaks_dbutils {
         $records = $DB->get_record_select(
             'plagiarism_copyleaks_request',
             "cmid = ? AND endpoint = ?",
-            array($cmid, $endpoint)
-
+            [$cmid, $endpoint]
         );
 
         if (!$records) {
@@ -80,7 +80,7 @@ class plagiarism_copyleaks_dbutils {
         global $DB;
         $configeula = $DB->get_record(
             'plagiarism_copyleaks_config',
-            array('cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID, 'name' => PLAGIARISM_COPYLEAKS_EULA_FIELD_NAME)
+            ['cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID, 'name' => PLAGIARISM_COPYLEAKS_EULA_FIELD_NAME]
         );
 
         if ($configeula) {
@@ -92,12 +92,12 @@ class plagiarism_copyleaks_dbutils {
                 );
             }
         } else {
-            $configeula = array(
+            $configeula = [
                 'cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID,
                 'name' => PLAGIARISM_COPYLEAKS_EULA_FIELD_NAME,
                 'value' => $version,
-                'config_hash' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID . "_" . PLAGIARISM_COPYLEAKS_EULA_FIELD_NAME
-            );
+                'config_hash' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID . "_" . PLAGIARISM_COPYLEAKS_EULA_FIELD_NAME,
+            ];
             if (!$DB->insert_record('plagiarism_copyleaks_config', $configeula)) {
                 throw new moodle_exception(get_string('clinserterror', 'plagiarism_copyleaks'));
             }
@@ -112,7 +112,7 @@ class plagiarism_copyleaks_dbutils {
     public static function is_user_eula_uptodate($userid) {
         global $DB;
 
-        $user = $DB->get_record('plagiarism_copyleaks_users', array('userid' => $userid));
+        $user = $DB->get_record('plagiarism_copyleaks_users', ['userid' => $userid]);
         if (!$user || !isset($user)) {
             return false;
         }
@@ -127,11 +127,11 @@ class plagiarism_copyleaks_dbutils {
      */
     public static function upsert_eula_by_user_id($userid) {
         global $DB;
-        $user = $DB->get_record('plagiarism_copyleaks_users', array('userid' => $userid));
+        $user = $DB->get_record('plagiarism_copyleaks_users', ['userid' => $userid]);
         $curreulaversion = self::get_copyleaks_eula_version();
 
         if (!$user) {
-            if (!$DB->insert_record('plagiarism_copyleaks_users', array('userid' => $userid))) {
+            if (!$DB->insert_record('plagiarism_copyleaks_users', ['userid' => $userid])) {
                 \plagiarism_copyleaks_logs::add(
                     "failed to insert new database record for : " .
                         "plagiarism_copyleaks_users, Cannot create new user record for user $userid",
@@ -140,12 +140,12 @@ class plagiarism_copyleaks_dbutils {
             }
         }
 
-        $newusereula = array(
+        $newusereula = [
             "ci_user_id" => $userid,
             "version" => $curreulaversion,
             "is_synced" => false,
-            "accepted_at" => time()
-        );
+            "accepted_at" => time(),
+        ];
 
         if (
             !self::is_eula_version_update_by_userid($userid, $curreulaversion)
@@ -166,10 +166,10 @@ class plagiarism_copyleaks_dbutils {
         global $DB;
         $record = $DB->get_record(
             'plagiarism_copyleaks_config',
-            array(
+            [
                 'cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID,
-                'name' => PLAGIARISM_COPYLEAKS_EULA_FIELD_NAME
-            )
+                'name' => PLAGIARISM_COPYLEAKS_EULA_FIELD_NAME,
+            ]
         );
         if ($record) {
             return $record->value;
@@ -178,6 +178,7 @@ class plagiarism_copyleaks_dbutils {
     }
 
     /**
+     * Is eula version updated by user id.
      * @param string $userid check by user id if updated.
      * @param string $version id the user id up-to-date the version
      * @return object
@@ -187,34 +188,35 @@ class plagiarism_copyleaks_dbutils {
         $result = $DB->record_exists_select(
             "plagiarism_copyleaks_eula",
             "ci_user_id = ? AND version = ?",
-            array($userid, $version)
+            [$userid, $version]
         );
         return $result;
     }
 
     /**
+     * Update config scanning detection.
      * @param object $detectiondata - detections value flags to detect.
      */
     public static function update_config_scanning_detection($detectiondata) {
         global $DB;
-        $scandetections = array(
+        $scandetections = [
             PLAGIARISM_COPYLEAKS_DETECT_WF_ISSUES_FIELD_NAME,
             PLAGIARISM_COPYLEAKS_SCAN_AI_FIELD_NAME,
-            PLAGIARISM_COPYLEAKS_SCAN_PLAGIARISM_FIELD_NAME
-        );
-        $savedvalues = array(
+            PLAGIARISM_COPYLEAKS_SCAN_PLAGIARISM_FIELD_NAME,
+        ];
+        $savedvalues = [
             $detectiondata->showWritingFeedbackIssues,
             $detectiondata->showAI,
-            $detectiondata->showPlagiarism
-        );
+            $detectiondata->showPlagiarism,
+        ];
         $idx = 0;
         foreach ($scandetections as $fieldname) {
             $field = $DB->get_record(
                 'plagiarism_copyleaks_config',
-                array(
+                [
                     'cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID,
-                    'name' => $fieldname
-                )
+                    'name' => $fieldname,
+                ]
             );
             if (!$field || !isset($field)) {
                 $newfield = new stdClass();
@@ -238,19 +240,19 @@ class plagiarism_copyleaks_dbutils {
      */
     public static function get_config_scanning_detection() {
         global $DB;
-        $scandetections = array(
+        $scandetections = [
             PLAGIARISM_COPYLEAKS_DETECT_WF_ISSUES_FIELD_NAME,
             PLAGIARISM_COPYLEAKS_SCAN_AI_FIELD_NAME,
-            PLAGIARISM_COPYLEAKS_SCAN_PLAGIARISM_FIELD_NAME
-        );
-        $detectiondata = array();
+            PLAGIARISM_COPYLEAKS_SCAN_PLAGIARISM_FIELD_NAME,
+        ];
+        $detectiondata = [];
         foreach ($scandetections as $fieldname) {
             $field = $DB->get_record(
                 'plagiarism_copyleaks_config',
-                array(
+                [
                     'cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID,
-                    'name' => $fieldname
-                )
+                    'name' => $fieldname,
+                ]
             );
             $detectiondata[$fieldname] = $field->value == "1";
         }
@@ -258,16 +260,17 @@ class plagiarism_copyleaks_dbutils {
     }
 
     /**
+     * Update config api connection status.
      * @param bool $connectionstatus - true - active / false - inactive.
      */
     public static function upsert_config_api_connection_status($connectionstatus) {
         global $DB;
         $field = $DB->get_record(
             'plagiarism_copyleaks_config',
-            array(
+            [
                 'cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID,
-                'name' => PLAGIARISM_COPYLEAKS_API_CONNECTION_STATUS_FIELD_NAME
-            )
+                'name' => PLAGIARISM_COPYLEAKS_API_CONNECTION_STATUS_FIELD_NAME,
+            ]
         );
         if (!$field || !isset($field)) {
             $newfield = new stdClass();
@@ -292,10 +295,10 @@ class plagiarism_copyleaks_dbutils {
         global $DB;
         $field = $DB->get_record(
             'plagiarism_copyleaks_config',
-            array(
+            [
                 'cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID,
-                'name' => PLAGIARISM_COPYLEAKS_API_CONNECTION_STATUS_FIELD_NAME
-            )
+                'name' => PLAGIARISM_COPYLEAKS_API_CONNECTION_STATUS_FIELD_NAME,
+            ]
         );
 
         if ($field) {
@@ -304,8 +307,8 @@ class plagiarism_copyleaks_dbutils {
 
         return false;
     }
-    
-    /** 
+
+    /**
      * Check if the course module is duplicated and error message.
      * @param int $cmid
      * @return bool
@@ -345,7 +348,7 @@ class plagiarism_copyleaks_dbutils {
      */
     private static function get_cm_duplicate($cmid) {
         global $DB;
-        return $DB->get_record('plagiarism_copyleaks_cm_copy', array('new_cm_id' => $cmid));
+        return $DB->get_record('plagiarism_copyleaks_cm_copy', ['new_cm_id' => $cmid]);
     }
 
     /**
@@ -366,7 +369,7 @@ class plagiarism_copyleaks_dbutils {
 
         $defaultconfig = $DB->get_record(
             'plagiarism_copyleaks_config',
-            array('name' => $name, 'cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID)
+            ['name' => $name, 'cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID]
         );
 
         if ($defaultconfig) {
@@ -375,7 +378,7 @@ class plagiarism_copyleaks_dbutils {
 
         $config = $DB->get_record(
             'plagiarism_copyleaks_config',
-            array('name' => $name, 'cm' => $cmid)
+            ['name' => $name, 'cm' => $cmid]
         );
 
         return $config ? $config->value : true;
@@ -384,14 +387,14 @@ class plagiarism_copyleaks_dbutils {
     /**
      * Save the request to Syncs Copyleaks integration data.
      * @param array $data
-     * @param string $plagiarism_copyleaks_key
+     * @param string $plagiarismcopyleakskey
      */
-    public static function queue_copyleaks_integration_data_sync_request($data, $plagiarism_copyleaks_key) {
+    public static function queue_copyleaks_integration_data_sync_request($data, $plagiarismcopyleakskey) {
         global $DB;
         $request = new stdClass();
         $request->created_date = time();
         $request->cmid = 0;
-        $request->endpoint = "/api/moodle/plugin/$plagiarism_copyleaks_key/task/upsert-plugin-integraion-data";
+        $request->endpoint = "/api/moodle/plugin/$plagiarismcopyleakskey/task/upsert-plugin-integraion-data";
         $request->total_retry_attempts = 0;
         $request->data = json_encode($data);
         $request->priority = plagiarism_copyleaks_priority::HIGH;
