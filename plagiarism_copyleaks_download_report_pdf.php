@@ -29,6 +29,7 @@ require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_assignmodule.class.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_utils.class.php');
 
+global $CFG, $USER, $DB;
 
 // Get url params.
 $cmid = required_param('cmid', PARAM_INT);
@@ -97,7 +98,7 @@ if (empty($clmoduleenabled) || empty($modulesettings['plagiarism_copyleaks_enabl
             );
 
             $cl = new plagiarism_copyleaks_comms();
-            $scanaccesstoken = $cl->request_access_for_report($plagiarismfiles->externalid, $isinstructor);
+            $scanaccesstoken = $cl->request_access_for_report($plagiarismfiles->externalid, $isinstructor, $USER->id);
             $lang = plagiarism_copyleaks_utils::get_lang();
             $isdownloadpage = 1;
             echo html_writer::tag(
