@@ -13,6 +13,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
  * Copyleaks grades
  * @package   plagiarism_copyleaks
@@ -21,6 +22,8 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+defined('MOODLE_INTERNAL') || die();
+
 require_once($CFG->libdir . "/externallib.php");
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/exceptions/plagiarism_copyleaks_webserviceexception.class.php');
 require_once("$CFG->libdir/grade/grade_scale.php");
@@ -28,14 +31,14 @@ require_once("$CFG->libdir/grade/grade_scale.php");
 class plagiarism_copyleaks_grades extends external_api {
 
 
-  /**
-   * Returns the description of the get_multiple_scales_values() parameters.
-   *
-   * @return external_function_parameters
-   */
-  public static function get_multiple_scales_values_parameters() {
-    return new external_function_parameters(
-      [
+    /**
+     * Returns the description of the get_multiple_scales_values() parameters.
+     *
+     * @return external_function_parameters
+     */
+    public static function get_multiple_scales_values_parameters() {
+        return new external_function_parameters(
+        [
         'scales' => new external_multiple_structure(
           new external_single_structure(
             [
@@ -43,70 +46,66 @@ class plagiarism_copyleaks_grades extends external_api {
             ]
           )
         )
-      ]
-    );
-  }
-
-  /**
-   * Get the values associated with multiple scales.
-   *
-   * @param array $scales Array of Scales with IDs
-   * @return array Values for each scale.
-   */
-  public static function get_multiple_scales_values($scales) {
-    $params = self::validate_parameters(
-      self::get_multiple_scales_values_parameters(),
-      array(
-        'scales' => $scales,
-      )
-    );
-    $context = context_system::instance();
-    self::validate_context($context);
-
-    $scalesvalues = array();
-    foreach ($params['scales'] as $scale) {
-      $scaleid = $scale['id'];
-      // Retrieve the scale value from the database.
-      $scale = grade_scale::fetch(array('id' => $scaleid));
-      if ($scale) {
-        $scalevalues = $scale->load_items();
-        $formattedvalues = array();
-        foreach ($scalevalues as $key => $value) {
-          // Add a key (make the first value 1).
-          $formattedvalues[] = array(
-            'id' => $key + 1,
-            'name' => external_format_string($value, $context->id)
-          );
-        }
-        $scalesvalues[] = array(
-          'scaleid' => $scaleid,
-          'values' => $formattedvalues
+        ]
         );
-      }
     }
-    return array('scales' => $scalesvalues);
-  }
 
-  /**
-   * Returns description of get_multiple_scales_values() result value.
-   *
-   * @return external_multiple_structure
-   */
-  public static function get_multiple_scales_values_returns() {
-    return new external_single_structure(
-      array(
+    /**
+     * Get the values associated with multiple scales.
+     *
+     * @param array $scales Array of Scales with IDs
+     * @return array Values for each scale.
+     */
+    public static function get_multiple_scales_values($scales) {
+        $params = self::validate_parameters(
+        self::get_multiple_scales_values_parameters(),
+            ['scales' => $scales]
+        );
+        $context = context_system::instance();
+        self::validate_context($context);
+
+        $scalesvalues = [];
+        foreach ($params['scales'] as $scale) {
+            $scaleid = $scale['id'];
+            // Retrieve the scale value from the database.
+            $scale = grade_scale::fetch(['id' => $scaleid]);
+            if ($scale) {
+                $scalevalues = $scale->load_items();
+                $formattedvalues = [];
+                foreach ($scalevalues as $key => $value) {
+                    // Add a key (make the first value 1).
+                    $formattedvalues[] = [
+                        'id' => $key + 1,
+                        'name' => external_format_string($value, $context->id),
+                    ];
+                }
+                $scalesvalues[] = [
+                    'scaleid' => $scaleid,
+                    'values' => $formattedvalues,
+                ];
+            }
+        }
+        return ['scales' => $scalesvalues];
+    }
+
+    /**
+     * Returns description of get_multiple_scales_values() result value.
+     *
+     * @return external_multiple_structure
+     */
+    public static function get_multiple_scales_values_returns() {
+        return new external_single_structure(
+        [
         'scales' => new external_multiple_structure(
-          new external_single_structure(array(
+          new external_single_structure([
             'scaleid' => new external_value(PARAM_INT, 'Scale ID'),
             'values' => new external_multiple_structure(
-              new external_single_structure(array(
+              new external_single_structure([
                 'id' => new external_value(PARAM_INT, 'Scale value ID'),
                 'name' => new external_value(PARAM_RAW, 'Scale value name'),
-              ))
+              ])
             )
-          ))
-        )
-      )
-    );
-  }
+          ])
+        )]);
+    }
 }

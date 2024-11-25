@@ -368,7 +368,8 @@ class plagiarism_copyleaks_observer {
                 $finalgrade = 0;
             }
 
-            // If the grade type is "1" (points), format the final grade to two decimal places to ensure consistency in stored values.
+            // If the grade type is "1" (points),
+            // Format the final grade to two decimal places to ensure consistency in stored values.
             if ($item->gradetype == "1") {
                 $finalgrade = number_format((float)$finalgrade, 2, '.', '');
             }
