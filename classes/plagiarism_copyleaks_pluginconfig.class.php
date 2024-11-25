@@ -13,6 +13,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
  * plugin configurations helpers methods
  * @package   plagiarism_copyleaks
@@ -64,7 +65,7 @@ class plagiarism_copyleaks_pluginconfig {
      * @return array admin config properties for Copyleaks plugin
      */
     public static function admin_config_properties() {
-        return array(
+        return [
             "version",
             "enabled",
             "copyleaks_use",
@@ -76,8 +77,8 @@ class plagiarism_copyleaks_pluginconfig {
             "plagiarism_copyleaks_mod_forum",
             "plagiarism_copyleaks_mod_workshop",
             "plagiarism_copyleaks_mod_quiz",
-            'plagiarism_copyleaks_studentdisclosure'
-        );
+            'plagiarism_copyleaks_studentdisclosure',
+        ];
     }
 
     /**

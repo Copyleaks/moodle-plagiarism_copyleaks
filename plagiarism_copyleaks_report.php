@@ -13,6 +13,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
  * Copyleaks report page
  * @package   plagiarism_copyleaks
@@ -40,7 +41,7 @@ $errormessagestyle = 'color:red; display:flex; width:100%; justify-content:cente
 
 // Get instance modules.
 $cm = get_coursemodule_from_id($modulename, $cmid, 0, false, MUST_EXIST);
-$course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
+$course = $DB->get_record('course', ['id' => $cm->course], '*', MUST_EXIST);
 
 // Request login.
 require_login($course, true, $cm);
@@ -51,15 +52,15 @@ $PAGE->set_course($course);
 $PAGE->set_cm($cm);
 $PAGE->set_pagelayout('incourse');
 $PAGE->add_body_class('cl-report-page');
-$PAGE->set_url('/moodle/plagiarism/copyleaks/plagiarism_copyleaks_report.php', array(
+$PAGE->set_url('/moodle/plagiarism/copyleaks/plagiarism_copyleaks_report.php', [
     'cmid' => $cmid,
     'userid' => $userid,
     'identifier' => $identifier,
-    'modulename' => $modulename
-));
+    'modulename' => $modulename,
+]);
 
 // Setup page title and header.
-$user = $DB->get_record('user', array('id' => $userid), '*', MUST_EXIST);
+$user = $DB->get_record('user', ['id' => $userid], '*', MUST_EXIST);
 $fs = get_file_storage();
 $file = $fs->get_file_by_hash($identifier);
 if ($file) {
@@ -76,7 +77,7 @@ if ($viewmode == 'course') {
 }
 
 // Copyleaks course settings.
-$modulesettings = $DB->get_records_menu('plagiarism_copyleaks_config', array('cm' => $cmid), '', 'name,value');
+$modulesettings = $DB->get_records_menu('plagiarism_copyleaks_config', ['cm' => $cmid], '', 'name,value');
 
 $isinstructor = plagiarism_copyleaks_assignmodule::is_instructor($context);
 
@@ -85,15 +86,15 @@ $clmoduleenabled = plagiarism_copyleaks_pluginconfig::is_plugin_configured('mod_
 
 // Check if copyleaks plugin is disabled.
 if (empty($clmoduleenabled) || empty($modulesettings['plagiarism_copyleaks_enable'])) {
-    echo html_writer::div(get_string('cldisabledformodule', 'plagiarism_copyleaks'), null, array('style' => $errormessagestyle));
+    echo html_writer::div(get_string('cldisabledformodule', 'plagiarism_copyleaks'), null, ['style' => $errormessagestyle]);
 } else {
     // Incase students not allowed to see the plagiairsm score.
     if (!$isinstructor && empty($modulesettings['plagiarism_copyleaks_allowstudentaccess'])) {
-        echo html_writer::div(get_string('clnopageaccess', 'plagiarism_copyleaks'), null, array('style' => $errormessagestyle));
+        echo html_writer::div(get_string('clnopageaccess', 'plagiarism_copyleaks'), null, ['style' => $errormessagestyle]);
     } else {
-        $moduledata = $DB->get_record($cm->modname, array('id' => $cm->instance));
+        $moduledata = $DB->get_record($cm->modname, ['id' => $cm->instance]);
 
-        $owners = array($userid);
+        $owners = [$userid];
 
         if ($cm->modname == 'assign' && $moduledata->teamsubmission) {
             require_once($CFG->dirroot . '/mod/assign/locallib.php');
@@ -113,11 +114,11 @@ if (empty($clmoduleenabled) || empty($modulesettings['plagiarism_copyleaks_enabl
             // Get submission db ref.
             $plagiarismfiles = $DB->get_record(
                 'plagiarism_copyleaks_files',
-                array(
+                [
                     'cm' => $cmid,
                     'userid' => $userid,
-                    'identifier' => $identifier
-                ),
+                    'identifier' => $identifier,
+                ],
                 '*',
                 MUST_EXIST
             );
@@ -141,7 +142,7 @@ if (empty($clmoduleenabled) || empty($modulesettings['plagiarism_copyleaks_enabl
                     "$CFG->wwwroot/plagiarism/copyleaks/plagiarism_copyleaks_report.php" .
                         "?cmid=$cmid&userid=$userid&identifier=$identifier&modulename=$modulename&view=fullscreen",
                     get_string('clopenfullscreen', 'plagiarism_copyleaks'),
-                    array('title' => get_string('clopenfullscreen', 'plagiarism_copyleaks'))
+                    ['title' => get_string('clopenfullscreen', 'plagiarism_copyleaks')]
                 );
             }
 
@@ -151,7 +152,7 @@ if (empty($clmoduleenabled) || empty($modulesettings['plagiarism_copyleaks_enabl
             echo html_writer::tag(
                 'iframe',
                 null,
-                array(
+                [
                     'title' => 'Copyleaks Report',
                     'srcdoc' =>
                     "<form target='_self'" .
@@ -168,11 +169,11 @@ if (empty($clmoduleenabled) || empty($modulesettings['plagiarism_copyleaks_enabl
                     'style' =>
                     $viewmode == 'course' ?
                         'width: 100%; height: calc(100vh - 87px); margin: 0px; padding: 0px; border: none;' :
-                        'width: 100%; height: 100%; margin: 0px; padding: 0px; border: none;'
-                )
+                        'width: 100%; height: 100%; margin: 0px; padding: 0px; border: none;',
+                ]
             );
         } else {
-            echo html_writer::div(get_string('clnopageaccess', 'plagiarism_copyleaks'), null, array('style' => $errormessagestyle));
+            echo html_writer::div(get_string('clnopageaccess', 'plagiarism_copyleaks'), null, ['style' => $errormessagestyle]);
         }
     }
 }

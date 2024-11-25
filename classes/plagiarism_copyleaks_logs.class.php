@@ -13,6 +13,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
  * admins logs helper for Copyleaks plugin
  * @package   plagiarism_copyleaks
@@ -41,7 +42,7 @@ class plagiarism_copyleaks_logs {
         }
 
         $directoryref = opendir($directorypath);
-        $dirfiles = array();
+        $dirfiles = [];
 
         while ($file = readdir($directoryref)) {
             // Make sure the file includes the prefix.
@@ -95,7 +96,7 @@ class plagiarism_copyleaks_logs {
                         echo $OUTPUT->box(html_writer::link(
                             $CFG->wwwroot . '/plagiarism/copyleaks/settings.php?tab=copyleakslogs' . '&date=' . $date,
                             $displayedfilename,
-                            array('target' => '_blank')
+                            ['target' => '_blank']
                         ), '');
                     }
                 }

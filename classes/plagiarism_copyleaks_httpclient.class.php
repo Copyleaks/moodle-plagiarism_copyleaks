@@ -58,14 +58,14 @@ class plagiarism_copyleaks_http_client {
             require_once($CFG->libdir . '/filelib.php');
         }
 
-        $c = new curl(array('proxy' => true));
-        $c->setopt(array());
+        $c = new curl(['proxy' => true]);
+        $c->setopt([]);
         $c->setopt(
-            array(
+            [
                 'CURLOPT_RETURNTRANSFER' => 1,
                 'CURLOPT_TIMEOUT' => 70, // Set to 70 seconds according to the Copyleaks API docs.
-                'CURLOPT_HTTPAUTH' => CURLAUTH_BASIC
-            )
+                'CURLOPT_HTTPAUTH' => CURLAUTH_BASIC,
+            ]
         );
 
         $domain = (new moodle_url('/'))->out(false);
@@ -75,7 +75,7 @@ class plagiarism_copyleaks_http_client {
         $headers = (array)[
             'Content-Type' => $contenttype,
             'Plugin-Version' => "$version",
-            'x-plugin-domain' => $domain
+            'x-plugin-domain' => $domain,
         ];
 
         if ($requireauth) {
@@ -83,12 +83,12 @@ class plagiarism_copyleaks_http_client {
             $authorization = "Authorization: Bearer $cljwttoken";
             $pluginversion = "Plugin-Version: $version";
             $domain = "x-plugin-domain: $domain";
-            $headers = array(
+            $headers = [
                 'Content-Type: ' . $contenttype,
                 $authorization,
                 $pluginversion,
-                $domain
-            );
+                $domain,
+            ];
         }
 
         $c->setHeader($headers);

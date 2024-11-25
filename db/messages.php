@@ -13,6 +13,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
  * Copyleaks services
  * @package   plagiarism_copyleaks
@@ -20,8 +21,10 @@
  * @copyright 2021 Copyleaks
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-$messageproviders = array(
 
-  // checkout notification
-  'copyleaks_notification' => array(),
-);
+defined('MOODLE_INTERNAL') || die();
+
+$messageproviders = [
+  // Checkout notification.
+  'copyleaks_notification' => [],
+];

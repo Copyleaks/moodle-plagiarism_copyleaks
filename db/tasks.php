@@ -24,86 +24,86 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$tasks = array(
-    array(
+$tasks = [
+    [
         'classname' => 'plagiarism_copyleaks\task\plagiarism_copyleaks_updatereports',
         'blocking' => 0,
         'minute' => '*/1',
         'hour' => '*',
         'day' => '*',
         'dayofweek' => '*',
-        'month' => '*'
-    ),
-    array(
+        'month' => '*',
+    ],
+    [
         'classname' => 'plagiarism_copyleaks\task\plagiarism_copyleaks_resubmittedreports',
         'blocking' => 0,
         'minute' => '*/10',
         'hour' => '*',
         'day' => '*',
         'dayofweek' => '*',
-        'month' => '*'
-    ),
-    array(
+        'month' => '*',
+    ],
+    [
         'classname' => 'plagiarism_copyleaks\task\plagiarism_copyleaks_sendsubmissions',
         'blocking' => 0,
         'minute' => '*/1',
         'hour' => '*',
         'day' => '*',
         'dayofweek' => '*',
-        'month' => '*'
-    ),
-    array(
+        'month' => '*',
+    ],
+    [
         'classname' => 'plagiarism_copyleaks\task\plagiarism_copyleaks_requestsqueue',
         'blocking' => 0,
         'minute' => '*/1',
         'hour' => '*',
         'day' => '*',
         'dayofweek' => '*',
-        'month' => '*'
-    ),
-    array(
+        'month' => '*',
+    ],
+    [
         'classname' => 'plagiarism_copyleaks\task\plagiarism_copyleaks_synceulausers',
         'blocking' => 0,
         'minute' => '*',
         'hour' => '*/2',
         'day' => '*',
         'dayofweek' => '*',
-        'month' => '*'
-    ),
-    array(
+        'month' => '*',
+    ],
+    [
         'classname' => 'plagiarism_copyleaks\task\plagiarism_copyleaks_background_task',
         'blocking' => 0,
         'minute' => '0',
         'hour' => '12',
         'day' => '*',
         'dayofweek' => '1',
-        'month' => '*'
-    ),
-    array(
+        'month' => '*',
+    ],
+    [
         'classname' => 'plagiarism_copyleaks\task\plagiarism_copyleaks_syncoriginalityscore',
         'blocking' => 0,
         'minute' => '*/1',
         'hour' => '*',
         'day' => '*',
         'dayofweek' => '*',
-        'month' => '*'
-    ),
-    array(
+        'month' => '*',
+    ],
+    [
         'classname' => 'plagiarism_copyleaks\task\plagiarism_copyleaks_synconfig',
         'blocking' => 0,
         'minute' => '*/1',
         'hour' => '*',
         'day' => '*',
         'dayofweek' => '*',
-        'month' => '*'
-    ),
-    array(
+        'month' => '*',
+    ],
+    [
         'classname' => 'plagiarism_copyleaks\task\plagiarism_copyleaks_cm_duplicate',
         'blocking' => 0,
         'minute' => '*/1',
         'hour' => '*',
         'day' => '*',
         'dayofweek' => '*',
-        'month' => '*'
-    )
-);
+        'month' => '*',
+    ],
+];

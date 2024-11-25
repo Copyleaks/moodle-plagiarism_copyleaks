@@ -13,6 +13,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
  * Plugin capabilities are defined here.
  * @package   plagiarism_copyleaks
@@ -23,21 +24,21 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$capabilities = array(
-    'plagiarism/copyleaks:enable' => array(
+$capabilities = [
+    'plagiarism/copyleaks:enable' => [
         'captype' => 'write',
         'contextlevel' => CONTEXT_COURSE,
-        'legacy' => array(
+        'legacy' => [
             'editingteacher' => CAP_ALLOW,
-            'manager' => CAP_ALLOW
-        )
-    ),
-    'plagiarism/copyleaks:viewfullreport' => array(
+            'manager' => CAP_ALLOW,
+        ],
+    ],
+    'plagiarism/copyleaks:viewfullreport' => [
         'captype' => 'read',
         'contextlevel' => CONTEXT_COURSE,
-        'legacy' => array(
+        'legacy' => [
             'editingteacher' => CAP_ALLOW,
-            'manager' => CAP_ALLOW
-        )
-    ),
-);
+            'manager' => CAP_ALLOW,
+        ],
+    ],
+];

@@ -13,6 +13,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
  * Copyleaks Plagiarism Plugin - Handle restore operations
  * @package   plagiarism_copyleaks
@@ -27,14 +28,26 @@ require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/enums/plagiarism_cop
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_comms.class.php');
 require_once($CFG->dirroot . '/course/lib.php');
 
-
+/**
+ * Class restore_plagiarism_copyleaks_plugin
+ *
+ * Handles the restoration process for the Copyleaks plagiarism plugin in Moodle.
+ * This class defines the structure for restoring module and course-level data,
+ * ensuring that Copyleaks configurations and related data are accurately restored
+ * after a backup.
+ *
+ * The class includes methods to:
+ * - Define plugin structure for module and course restoration.
+ * - Process Copyleaks configurations during module restoration.
+ * - Handle post-restore actions, such as syncing course data with Copyleaks servers.
+ */
 class restore_plagiarism_copyleaks_plugin extends restore_plagiarism_plugin {
 
     /**
      * Return the paths of the module data along with the function used for restoring that data.
      */
     protected function define_module_plugin_structure() {
-        $paths = array();
+        $paths = [];
         $paths[] = new restore_path_element('copyleaks_config', $this->get_pathfor('copyleaks_configs/copyleaks_config'));
 
         return $paths;
@@ -89,12 +102,12 @@ class restore_plagiarism_copyleaks_plugin extends restore_plagiarism_plugin {
         $originalcmid = $this->task->get_old_moduleid();
 
         if ($plan->type === "course" || $plan->type === "activity") {
-            $moduledata = array(
+            $moduledata = [
             'course_id' => $courseid,
             'original_cm_id' => $originalcmid,
             'new_cm_id' => $newcmid,
             'status' => plagiarism_copyleaks_cm_duplication_status::QUEUED,
-            );
+            ];
 
             if (!$DB->insert_record('plagiarism_copyleaks_cm_copy', $moduledata)) {
                 \plagiarism_copyleaks_logs::add(
@@ -149,14 +162,11 @@ class restore_plagiarism_copyleaks_plugin extends restore_plagiarism_plugin {
         $data = [
             "id" => $courseid,
             "name" => $course->fullname,
-            "startdate" => $startdate
+            "startdate" => $startdate,
         ];
 
-        /**
-         * Sync course data (users, groups, groupings).
-         * If the Copyleaks API connection is available.
-         * And the couse has at last one assignment with copyleaks enabled.
-         */
+        // Sync course data (users, groups, groupings) if the Copyleaks API connection is available
+        // and the course has at least one assignment with Copyleaks enabled.
         if (
             plagiarism_copyleaks_dbutils::is_copyleaks_api_connected() &&
             plagiarism_copyleaks_moduleconfig::is_copyleaks_enabled_for_any_module($courseid, "assign")

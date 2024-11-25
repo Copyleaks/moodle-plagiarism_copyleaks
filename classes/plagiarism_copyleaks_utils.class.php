@@ -13,6 +13,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
  * plagiarism_copyleaks_utils.class.php
  * @package   plagiarism_copyleaks
@@ -41,13 +42,12 @@ class plagiarism_copyleaks_utils {
         $defaultlangcode = 'en';
         try {
             $langcode = str_replace("_utf8", "", current_language());
-            $langarray = array(
+            $langarray = [
                 'en' => $defaultlangcode,
                 'en_us' => $defaultlangcode,
                 'fr' => 'fr',
                 'fr_ca' => 'fr',
                 'es' => 'es',
-                'fr' => 'fr',
                 'pt' => 'pt',
                 'hi' => 'hi',
                 'zh' => 'zh',
@@ -56,8 +56,8 @@ class plagiarism_copyleaks_utils {
                 'de' => 'de',
                 'tr' => 'tr',
                 'ru' => 'ru',
-                'ar' => 'ar'
-            );
+                'ar' => 'ar',
+            ];
             return (isset($langarray[$langcode])) ? $langarray[$langcode] : $defaultlangcode;
         } catch (Exception $e) {
             return $defaultlangcode;
@@ -154,11 +154,11 @@ class plagiarism_copyleaks_utils {
         }
 
         $content = $isbtndisabled ?
-            html_writer::div($text, null, array(
+            html_writer::div($text, null, [
                 'style' => 'color:#8c8c8c',
-                'title' => get_string('cldisablesettingstooltip', 'plagiarism_copyleaks')
-            )) :
-            html_writer::link("$settingsurl", $text, array('target' => '_blank'));
+            'title' => get_string('cldisablesettingstooltip', 'plagiarism_copyleaks'),
+        ]) :
+            html_writer::link("$settingsurl", $text, ['target' => '_blank']);
         return
             "<div class='form-group row'>" .
             "<div class='col-md-3'></div>" .
@@ -180,11 +180,11 @@ class plagiarism_copyleaks_utils {
         $analyticsurl = "$CFG->wwwroot/plagiarism/copyleaks/plagiarism_copyleaks_analytics.php" . "?cmid=" . $cmid;
         $analyticstext = get_string('clanalyticsbtntxt', 'plagiarism_copyleaks');
         $contentanalytics = $isanalyticsdisabled ?
-            html_writer::div($analyticstext, null, array(
+            html_writer::div($analyticstext, null, [
                 'style' => 'color:#8c8c8c',
-                'title' => get_string('cldisablesettingstooltip', 'plagiarism_copyleaks')
-            )) :
-            html_writer::link("$analyticsurl", $analyticstext, array('target' => '_blank'));
+            'title' => get_string('cldisablesettingstooltip', 'plagiarism_copyleaks'),
+        ]) :
+            html_writer::link("$analyticsurl", $analyticstext, ['target' => '_blank']);
         return
             "<div class='form-group row'>" .
             "<div class='col-md-3'></div>" .
@@ -214,7 +214,7 @@ class plagiarism_copyleaks_utils {
             $data = $DB->get_record_select(
                 $coursemodule->modname,
                 'id = ?',
-                array($coursemodule->instance),
+                [$coursemodule->instance],
                 '*'
             );
 
@@ -280,6 +280,7 @@ class plagiarism_copyleaks_utils {
     }
 
     /**
+     * Time left to date.
      * @param DateTime $targetdate - given date to know how much time left to the date.
      */
     public static function time_left_to_date($targetdate) {
@@ -335,6 +336,7 @@ class plagiarism_copyleaks_utils {
     }
 
     /**
+     * Get time left str.
      * @param stdClass $value - contains the enum time type and its value
      */
     public static function get_time_left_str($timeobj) {

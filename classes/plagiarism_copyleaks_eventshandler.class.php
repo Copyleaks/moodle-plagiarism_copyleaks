@@ -85,7 +85,7 @@ class plagiarism_copyleaks_eventshandler {
         // Get course module ref.
         $cmdata = $DB->get_record(
             $coursemodule->modname,
-            array('id' => $coursemodule->instance)
+            ['id' => $coursemodule->instance]
         );
 
         // Support draft submission only for assignment module.
@@ -120,20 +120,20 @@ class plagiarism_copyleaks_eventshandler {
 
             $submissionref = $DB->get_record(
                 'assign_submission',
-                array('id' => $data['objectid']),
+                ['id' => $data['objectid']],
                 'id'
             );
 
             // Handle uploaded Files.
-            $data['other']['pathnamehashes'] = array();
+            $data['other']['pathnamehashes'] = [];
             if ($uploadedfiles = $DB->get_records(
                 'files',
-                array(
+                [
                     'component' => 'assignsubmission_file',
                     'itemid' => $submissionref->id,
                     'userid' => ($cmdata->submissiondrafts &&
-                        $this->is_instructor_submit($data)) ? $data['userid'] : $authoruserid
-                )
+                        $this->is_instructor_submit($data)) ? $data['userid'] : $authoruserid,
+                ]
             )) {
                 foreach ($uploadedfiles as $uploadedfile) {
                     $data['other']['pathnamehashes'][] = $uploadedfile->pathnamehash;
@@ -143,9 +143,9 @@ class plagiarism_copyleaks_eventshandler {
             // Handle text content.
             if ($txtsubmissionref = $DB->get_record(
                 'assignsubmission_onlinetext',
-                array(
-                    'submission' => $submissionref->id
-                ),
+                [
+                    'submission' => $submissionref->id,
+                ],
                 'onlinetext'
             )) {
                 $data['other']['content'] = $txtsubmissionref->onlinetext;
@@ -167,10 +167,10 @@ class plagiarism_copyleaks_eventshandler {
             !empty($data['other']['content']) &&
             in_array(
                 $this->eventtype,
-                array(
+                [
                     "content_uploaded",
-                    "assessable_submitted"
-                )
+                    "assessable_submitted",
+                ]
             )
         ) {
             $result = $this->queue_text_content($data, $coursemodule, $authoruserid, $submitteruserid, $cmdata);
@@ -217,7 +217,7 @@ class plagiarism_copyleaks_eventshandler {
 
             $submissionref = $DB->get_record(
                 'assign_submission',
-                array('id' => $data['objectid']),
+                ['id' => $data['objectid']],
                 'id, groupid'
             );
 
@@ -247,7 +247,7 @@ class plagiarism_copyleaks_eventshandler {
         if ($coursemodule->modname == 'workshop' && !isset($data['other']['content'])) {
             $workshopsubmissions = $DB->get_record(
                 'workshop_submissions',
-                array('id' => $data['objectid'])
+                ['id' => $data['objectid']]
             );
             $data['other']['content'] = $workshopsubmissions->content;
         }
@@ -268,7 +268,7 @@ class plagiarism_copyleaks_eventshandler {
             $DB->delete_records_select(
                 'plagiarism_copyleaks_files',
                 " cm = ? AND itemid = ? AND " . $typefield . " = ?",
-                array($coursemodule->id, $data['objectid'], $typefieldvalue)
+                [$coursemodule->id, $data['objectid'], $typefieldvalue]
             );
 
             return $this->queue_submission_to_copyleaks(
@@ -398,7 +398,7 @@ class plagiarism_copyleaks_eventshandler {
     private function check_existing_file_identifier($pathnamehash, $coursemodule, $authoruserid) {
         global $DB, $CFG;
 
-        $filerecord = $DB->get_record('files', array('pathnamehash' => $pathnamehash));
+        $filerecord = $DB->get_record('files', ['pathnamehash' => $pathnamehash]);
         $hashedcontent = null;
 
         if ($filerecord) {
@@ -409,7 +409,7 @@ class plagiarism_copyleaks_eventshandler {
             $savedfiles = $DB->get_records_select(
                 'plagiarism_copyleaks_files',
                 " cm = ? AND userid = ? AND " . $typefield . " = ? AND identifier = ?",
-                array($coursemodule->id, $authoruserid, "file", $pathnamehash)
+                [$coursemodule->id, $authoruserid, "file", $pathnamehash]
             );
 
             if (count($savedfiles) > 0) {
@@ -419,7 +419,7 @@ class plagiarism_copyleaks_eventshandler {
                     $DB->delete_records_select(
                         'plagiarism_copyleaks_files',
                         " cm = ? AND userid = ? AND " . $typefield . " = ? AND identifier = ?",
-                        array($coursemodule->id, $authoruserid, "file", $pathnamehash)
+                        [$coursemodule->id, $authoruserid, "file", $pathnamehash]
                     );
                 }
             }
@@ -464,7 +464,7 @@ class plagiarism_copyleaks_eventshandler {
         if ($DB->get_records_select(
             'plagiarism_copyleaks_files',
             " cm = ? AND itemid = ? AND " . $typefield . " = ? AND identifier = ? AND hashedcontent = ?",
-            array($coursemodule->id, $itemid, $subtype, $identifier, $hashedcontent),
+            [$coursemodule->id, $itemid, $subtype, $identifier, $hashedcontent],
             'id',
             'id'
         )) {
@@ -505,7 +505,7 @@ class plagiarism_copyleaks_eventshandler {
             // Get module settings.
             $clmoduleconfig = $DB->get_records_menu(
                 'plagiarism_copyleaks_config',
-                array('cm' => $coursemodule->id),
+                ['cm' => $coursemodule->id],
                 '',
                 'name,value'
             );
@@ -515,7 +515,6 @@ class plagiarism_copyleaks_eventshandler {
                 $scheduledscandate = $cmdata->duedate - (1 * 60);
             }
         }
-
 
         $submitstatus = $errormessage == null ? 'queued' : 'error';
 
@@ -535,7 +534,15 @@ class plagiarism_copyleaks_eventshandler {
                 $errormessage
             )) {
                 if ($this->modulename == 'assign') {
-                    list($data, $submissionid) = $this->get_assign_submission_data($itemid, $coursemodule, $authoruserid, $cmdata, $identifier, $subtype, $scheduledscandate);
+                    list($data, $submissionid) = $this->get_assign_submission_data(
+                        $itemid,
+                        $coursemodule,
+                        $authoruserid,
+                        $cmdata,
+                        $identifier,
+                        $subtype,
+                        $scheduledscandate
+                    );
                     $cl->upsert_submission($data, $submissionid);
                 }
                 return true;
@@ -577,7 +584,7 @@ class plagiarism_copyleaks_eventshandler {
         $userid = $data['objectid'];
 
         // Check if the user not agreed already.
-        $isuseragreed = $DB->record_exists("plagiarism_copyleaks_users", array('userid' => $userid));
+        $isuseragreed = $DB->record_exists("plagiarism_copyleaks_users", ['userid' => $userid]);
 
         if ($isuseragreed) {
             if (!($DB->delete_records($usertable, ['userid' => $userid]))) {
@@ -587,7 +594,7 @@ class plagiarism_copyleaks_eventshandler {
                 );
             };
         }
-        $isuseragreed = $DB->record_exists("plagiarism_copyleaks_eula", array('ci_user_id' => $userid));
+        $isuseragreed = $DB->record_exists("plagiarism_copyleaks_eula", ['ci_user_id' => $userid]);
         if ($isuseragreed) {
             if (!($DB->delete_records('plagiarism_copyleaks_eula', ['ci_user_id' => $userid]))) {
                 \plagiarism_copyleaks_logs::add(
@@ -608,13 +615,13 @@ class plagiarism_copyleaks_eventshandler {
         global $DB;
         $usertable = "plagiarism_copyleaks_users";
         // Check if the user not agreed already.
-        $isuseragreed = $DB->record_exists("plagiarism_copyleaks_users", array('userid' => $data["userid"]));
+        $isuseragreed = $DB->record_exists("plagiarism_copyleaks_users", ['userid' => $data["userid"]]);
 
         if (!$isuseragreed) {
-            $dataobject = array(
+            $dataobject = [
                 "userid" => $data["userid"],
-                "user_eula_accepted" => 1
-            );;
+                "user_eula_accepted" => 1,
+            ];
 
             if (!($DB->insert_record($usertable, $dataobject, true, false)) && !$isretry) {
                 $this->handle_eula_acceptance($data, true);
@@ -639,13 +646,21 @@ class plagiarism_copyleaks_eventshandler {
      * @param string $subtype
      * @param int $scheduledscandate
      */
-    private function get_assign_submission_data($itemid, $coursemodule, $authoruserid, $cmdata, $identifier, $submissiontype, $scheduledscandate) {
+    private function get_assign_submission_data(
+        $itemid,
+        $coursemodule,
+        $authoruserid,
+        $cmdata,
+        $identifier,
+        $submissiontype,
+        $scheduledscandate
+    ) {
         global $DB;
 
-        $submissiondata = array();
+        $submissiondata = [];
         $submissionrecord = $DB->get_record(
             'assign_submission',
-            array('id' => $itemid)
+            ['id' => $itemid]
         );
 
         $submissionid = $submissionrecord->id;
@@ -658,7 +673,7 @@ class plagiarism_copyleaks_eventshandler {
         }
 
         if ($cmdata->teamsubmission == "1") {
-            $group = $DB->get_record('groups', array('id' => $submissionrecord->groupid), 'id, name');
+            $group = $DB->get_record('groups', ['id' => $submissionrecord->groupid], 'id, name');
             if ($group) {
                 $submissiondata['groupId'] = $group->id;
             }
@@ -683,15 +698,15 @@ class plagiarism_copyleaks_eventshandler {
 
         $reportdata = (array)[
             'courseModuleId' => $coursemodule->id,
-            'moodleUserId' =>  $authoruserid,
+            'moodleUserId' => $authoruserid,
             'identifier' => $identifier,
             'submissionType' => $submissiontype,
             'fileName' => $filename,
-            'scheduledScanDate' => $scandate->format('Y-m-d H:i:s')
+            'scheduledScanDate' => $scandate->format('Y-m-d H:i:s'),
         ];
         $data = (array)[
             'submission' => $submissiondata,
-            'report' => $reportdata
+            'report' => $reportdata,
         ];
 
         return [$data, $submissionid];

@@ -13,6 +13,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
  * Copyleaks Plagiarism Plugin - Handle Resubmit Files
  * @package   plagiarism_copyleaks
@@ -57,8 +58,8 @@ class plagiarism_copyleaks_requestsqueue extends \core\task\scheduled_task {
     private function handle_queued_requests() {
         global $DB;
 
-        $successrequestsids = array();
-        $failedrequests = array();
+        $successrequestsids = [];
+        $failedrequests = [];
 
         $canloadmoredata = true;
         $startqueryfrom = 0;
@@ -69,7 +70,7 @@ class plagiarism_copyleaks_requestsqueue extends \core\task\scheduled_task {
             $queuedrequests = $DB->get_records_select(
                 'plagiarism_copyleaks_request',
                 'total_retry_attempts < ?',
-                array(PLAGIARISM_COPYLEAKS_MAX_RETRY),
+                [PLAGIARISM_COPYLEAKS_MAX_RETRY],
                 'created_date ASC',
                 '*',
                 $startqueryfrom,
@@ -139,7 +140,7 @@ class plagiarism_copyleaks_requestsqueue extends \core\task\scheduled_task {
                     );
                 }
             }
-            $failedrequests = array();
+            $failedrequests = [];
         }
     }
 }

@@ -13,6 +13,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
  * Upgrade such as database scheme changes and other things that must happen when the plugin is being upgraded are defined here
  * @package   plagiarism_copyleaks
@@ -49,7 +50,7 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         // Get saved db settings.
         $saveddefaultvalue = $DB->get_records_menu(
             'plagiarism_copyleaks_config',
-            array('cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID),
+            ['cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID],
             '',
             'name,value'
         );
@@ -69,10 +70,10 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
             $savedfield->id = $DB->get_field(
                 'plagiarism_copyleaks_config',
                 'id',
-                (array(
+                ([
                     'cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID,
-                    'name' => $fieldname
-                ))
+                    'name' => $fieldname,
+                ])
             );
             if (!$DB->update_record('plagiarism_copyleaks_config', $savedfield)) {
                 throw new moodle_exception(get_string('clupdateerror', 'plagiarism_copyleaks'));
@@ -86,7 +87,7 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         // Get saved db settings.
         $saveddefaultvalue = $DB->get_records_menu(
             'plagiarism_copyleaks_config',
-            array('cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID),
+            ['cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID],
             '',
             'name,value'
         );
@@ -106,10 +107,10 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
             $savedfield->id = $DB->get_field(
                 'plagiarism_copyleaks_config',
                 'id',
-                (array(
+                ([
                     'cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID,
-                    'name' => $fieldname
-                ))
+                    'name' => $fieldname,
+                ])
             );
             if (!$DB->update_record('plagiarism_copyleaks_config', $savedfield)) {
                 throw new moodle_exception(get_string('clupdateerror', 'plagiarism_copyleaks'));
@@ -123,7 +124,7 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         // Get saved db settings.
         $saveddefaultvalue = $DB->get_records_menu(
             'plagiarism_copyleaks_config',
-            array('cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID),
+            ['cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID],
             '',
             'name,value'
         );
@@ -143,10 +144,10 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
             $savedfield->id = $DB->get_field(
                 'plagiarism_copyleaks_config',
                 'id',
-                (array(
+                ([
                     'cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID,
-                    'name' => $fieldname
-                ))
+                    'name' => $fieldname,
+                ])
             );
             if (!$DB->update_record('plagiarism_copyleaks_config', $savedfield)) {
                 throw new moodle_exception(get_string('clupdateerror', 'plagiarism_copyleaks'));
@@ -165,8 +166,8 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         $table->add_field('user_eula_accepted', XMLDB_TYPE_INTEGER, '1', !XMLDB_UNSIGNED, !XMLDB_NOTNULL, !XMLDB_SEQUENCE, 0);
 
         // Adding keys and indexes to table plagiarism_copyleaks_users.
-        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
-        $table->add_index('userid', XMLDB_INDEX_UNIQUE, array('userid'));
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_index('userid', XMLDB_INDEX_UNIQUE, ['userid']);
 
         // Conditionally launch create table for plagiarism_copyleaks_users.
         if (!$dbman->table_exists($table)) {
@@ -180,7 +181,7 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         // Get saved db settings.
         $saveddefaultvalue = $DB->get_records_menu(
             'plagiarism_copyleaks_config',
-            array('cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID),
+            ['cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID],
             '',
             'name,value'
         );
@@ -200,10 +201,10 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
             $savedfield->id = $DB->get_field(
                 'plagiarism_copyleaks_config',
                 'id',
-                (array(
+                ([
                     'cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID,
-                    'name' => $fieldname
-                ))
+                    'name' => $fieldname,
+                ])
             );
             if (!$DB->update_record('plagiarism_copyleaks_config', $savedfield)) {
                 throw new moodle_exception(get_string('clupdateerror', 'plagiarism_copyleaks'));
@@ -229,10 +230,10 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         $table->add_field('require_auth', XMLDB_TYPE_NUMBER, '1', XMLDB_UNSIGNED, XMLDB_NOTNULL);
 
         // Adding keys and indexes to table plagiarism_copyleaks_request.
-        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
 
-        $table->add_index('created_date', XMLDB_INDEX_NOTUNIQUE, array('created_date'));
-        $table->add_index('copyleaks_cmid', XMLDB_INDEX_NOTUNIQUE, array('cmid'));
+        $table->add_index('created_date', XMLDB_INDEX_NOTUNIQUE, ['created_date']);
+        $table->add_index('copyleaks_cmid', XMLDB_INDEX_NOTUNIQUE, ['cmid']);
 
         // Conditionally launch create table for plagiarism_copyleaks_request.
         if (!$dbman->table_exists($table)) {
@@ -255,10 +256,10 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         $table->add_field('is_synced', XMLDB_TYPE_NUMBER, '1', XMLDB_UNSIGNED, XMLDB_NOTNULL);
         $table->add_field('accepted_at', XMLDB_TYPE_INTEGER, '10');
 
-        $table->add_key('id', XMLDB_KEY_PRIMARY, array('id'));
+        $table->add_key('id', XMLDB_KEY_PRIMARY, ['id']);
 
-        $table->add_index('ci_user_id', XMLDB_INDEX_NOTUNIQUE, array('ci_user_id'));
-        $table->add_index('is_synced', XMLDB_INDEX_NOTUNIQUE, array('is_synced'));
+        $table->add_index('ci_user_id', XMLDB_INDEX_NOTUNIQUE, ['ci_user_id']);
+        $table->add_index('is_synced', XMLDB_INDEX_NOTUNIQUE, ['is_synced']);
 
         if (!$dbman->table_exists($table)) {
             $dbman->create_table($table);
@@ -267,7 +268,7 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         // Insert to Config table a value of eula data.
         $saveddefaultvalue = $DB->get_records_menu(
             'plagiarism_copyleaks_config',
-            array('cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID)
+            ['cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID]
         );
 
         $fieldname = PLAGIARISM_COPYLEAKS_EULA_FIELD_NAME;
@@ -285,10 +286,10 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
             $savedfield->id = $DB->get_field(
                 'plagiarism_copyleaks_config',
                 'id',
-                (array(
+                ([
                     'cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID,
-                    'name' => $fieldname
-                ))
+                    'name' => $fieldname,
+                ])
             );
             if (!$DB->update_record('plagiarism_copyleaks_config', $savedfield)) {
                 throw new moodle_exception(get_string('clupdateerror', 'plagiarism_copyleaks'));
@@ -301,7 +302,7 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
     if ($oldversion < 2023110202) {
         $table = new xmldb_table('plagiarism_copyleaks_eula');
         $datefield = new xmldb_field('date');
-        $datefieldidx = new xmldb_index('date', XMLDB_INDEX_NOTUNIQUE, array('date'));
+        $datefieldidx = new xmldb_index('date', XMLDB_INDEX_NOTUNIQUE, ['date']);
         $acceptedatfield = new xmldb_field('accepted_at', XMLDB_TYPE_INTEGER, '10');
 
         if ($dbman->table_exists($table)) {
@@ -327,8 +328,8 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         $table->add_field('task', XMLDB_TYPE_INTEGER, '10', !XMLDB_UNSIGNED, XMLDB_NOTNULL, !XMLDB_SEQUENCE);
 
         // Adding keys and indexes to table plagiarism_copyleaks_backgroundtasks.
-        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
-        $table->add_index('task', XMLDB_INDEX_UNIQUE, array('task'));
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_index('task', XMLDB_INDEX_UNIQUE, ['task']);
 
         if (!$dbman->table_exists($table)) {
             $dbman->create_table($table);
@@ -338,11 +339,11 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/enums/plagiarism_copyleaks_enums.php');
         $DB->insert_record(
             'plagiarism_copyleaks_bgtasks',
-            array('task' => plagiarism_copyleaks_background_tasks::SYNC_USERS_DATA)
+            ['task' => plagiarism_copyleaks_background_tasks::SYNC_USERS_DATA]
         );
         $DB->insert_record(
             'plagiarism_copyleaks_bgtasks',
-            array('task' => plagiarism_copyleaks_background_tasks::SYNC_COURSES_DATA)
+            ['task' => plagiarism_copyleaks_background_tasks::SYNC_COURSES_DATA]
         );
 
         // Add AI score and grammar cases to plagiarism_copyleaks_files.
@@ -359,15 +360,15 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
             }
         }
 
-        $scandetections = array(
+        $scandetections = [
             PLAGIARISM_COPYLEAKS_DETECT_GRAMMAR_FIELD_NAME,
             PLAGIARISM_COPYLEAKS_SCAN_PLAGIARISM_FIELD_NAME,
-            PLAGIARISM_COPYLEAKS_SCAN_AI_FIELD_NAME
-        );
+            PLAGIARISM_COPYLEAKS_SCAN_AI_FIELD_NAME,
+        ];
 
         $saveddefaultvalue = $DB->get_records_menu(
             'plagiarism_copyleaks_config',
-            array('cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID),
+            ['cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID],
             '',
             'name,value'
         );
@@ -387,10 +388,10 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
                 $newfield->id = $DB->get_field(
                     'plagiarism_copyleaks_config',
                     'id',
-                    (array(
+                    ([
                         'cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID,
-                        'name' => $fieldname
-                    ))
+                        'name' => $fieldname,
+                    ])
                 );
                 if (!$DB->update_record('plagiarism_copyleaks_config', $newfield)) {
                     throw new moodle_exception(get_string('clupdateerror', 'plagiarism_copyleaks'));
@@ -431,10 +432,10 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         // Delete config enable grammar.
         if (!$DB->delete_records(
             'plagiarism_copyleaks_config',
-            array(
+            [
                 'cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID,
-                'name' => PLAGIARISM_COPYLEAKS_DETECT_GRAMMAR_FIELD_NAME
-            ),
+                'name' => PLAGIARISM_COPYLEAKS_DETECT_GRAMMAR_FIELD_NAME,
+            ],
             IGNORE_MISSING
         )) {
             throw new moodle_exception(get_string('clupdateerror', 'plagiarism_copyleaks'));
@@ -442,7 +443,7 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
 
         $saveddefaultvalue = $DB->get_records_menu(
             'plagiarism_copyleaks_config',
-            array('cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID),
+            ['cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID],
             '',
             'name,value'
         );
@@ -461,10 +462,10 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
             $newfield->id = $DB->get_field(
                 'plagiarism_copyleaks_config',
                 'id',
-                (array(
+                ([
                     'cm' => PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID,
-                    'name' => $fieldname
-                ))
+                    'name' => $fieldname,
+                ])
             );
             if (!$DB->update_record('plagiarism_copyleaks_config', $newfield)) {
                 throw new moodle_exception(get_string('clupdateerror', 'plagiarism_copyleaks'));
@@ -520,9 +521,9 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         $table->add_field('errormsg', XMLDB_TYPE_TEXT, null, null, null, null, null);
 
         // Adding keys and indexes to table plagiarism_copyleaks_cm_copy.
-        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
-        $table->add_index('new_cm_id', XMLDB_INDEX_NOTUNIQUE, array('new_cm_id'));
-        $table->add_index('status', XMLDB_INDEX_NOTUNIQUE, array('status'));
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_index('new_cm_id', XMLDB_INDEX_NOTUNIQUE, ['new_cm_id']);
+        $table->add_index('status', XMLDB_INDEX_NOTUNIQUE, ['status']);
 
         if (!$dbman->table_exists($table)) {
             $dbman->create_table($table);
@@ -534,13 +535,13 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
 
     if ($oldversion < 2024102801) {
         $config = plagiarism_copyleaks_pluginconfig::admin_config();
-        //check if the plugin key is set and not empty
+        // Check if the plugin key is set and not empty.
         if (isset($config->plagiarism_copyleaks_key) && !empty($config->plagiarism_copyleaks_key)) {
             $domain = (new moodle_url('/'))->out(false);
             $domain = rtrim($domain, '/');
             $plugindata = (array)[
                 'domain' => $domain,
-                'pluginVersion' => 2024082815
+                'pluginVersion' => 2024082815,
             ];
             plagiarism_copyleaks_dbutils::queue_copyleaks_integration_data_sync_request(
                 $plugindata,

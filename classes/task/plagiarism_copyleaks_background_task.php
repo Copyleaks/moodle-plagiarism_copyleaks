@@ -13,6 +13,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
  * Copyleaks Plagiarism Plugin - Handle Resubmit Files
  *
@@ -56,12 +57,13 @@ class plagiarism_copyleaks_background_task extends \core\task\scheduled_task {
     }
 
     /**
+     * Handle the task once.
      * @param number $type - determine which task to run.
      */
     private function handle_task_once($type) {
         try {
             global $DB;
-            if ($DB->get_record('plagiarism_copyleaks_bgtasks', array('task' => $type))) {
+            if ($DB->get_record('plagiarism_copyleaks_bgtasks', ['task' => $type])) {
                 $this->run_task_in_background($type);
                 if (!($DB->delete_records('plagiarism_copyleaks_bgtasks', ['task' => $type]))) {
                     \plagiarism_copyleaks_logs::add(
@@ -79,6 +81,7 @@ class plagiarism_copyleaks_background_task extends \core\task\scheduled_task {
     }
 
     /**
+     * Run the task in the background.
      * @param number $type - determine which task to run.
      */
     private function run_task_in_background($type) {

@@ -13,6 +13,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
  * Copyleaks Plagiarism Plugin - Handle course moudles duplication
  * @package   plagiarism_copyleaks
@@ -63,7 +64,7 @@ class plagiarism_copyleaks_cm_duplicate extends \core\task\scheduled_task {
             $cmstocopy = $DB->get_records_select(
                 "plagiarism_copyleaks_cm_copy",
                 "status = ?",
-                array(\plagiarism_copyleaks_cm_duplication_status::QUEUED),
+                [\plagiarism_copyleaks_cm_duplication_status::QUEUED],
                 '',
                 '*',
                 0,
@@ -78,13 +79,13 @@ class plagiarism_copyleaks_cm_duplicate extends \core\task\scheduled_task {
 
             // A set to check for chained duplication requests.
             // This is for cases were we duplicated newly duplicated activity and it's not finished it's duplication proccess.
-            $chainedduplicationchecker = array();
+            $chainedduplicationchecker = [];
             foreach ($cmstocopy as $cmduplicationdata) {
                 $chainedduplicationchecker[$cmduplicationdata->new_cm_id] = true;
             }
 
             // Add course modules to the request.
-            $coursemodules = array();
+            $coursemodules = [];
             foreach ($cmstocopy as $cmduplicationdata) {
                 if (\plagiarism_copyleaks_moduleconfig::is_course_module_request_queued($cmduplicationdata->original_cm_id)) {
                     continue;
@@ -99,12 +100,12 @@ class plagiarism_copyleaks_cm_duplicate extends \core\task\scheduled_task {
 
                 if ($cm = get_coursemodule_from_id('', $cmduplicationdata->new_cm_id)) {
                     $datetime = new DateTime();
-                    $coursemodules[] = array(
+                    $coursemodules[] = [
                         'coursemoduleid' => $cmduplicationdata->new_cm_id,
                         'oldcoursemoduleid' => $cmduplicationdata->original_cm_id,
                         'courseid' => $cmduplicationdata->course_id,
                         'createddate' => $datetime->setTimestamp($cm->added)->format('Y-m-d H:i:s'),
-                    );
+                    ];
                 } else {
                     \plagiarism_copyleaks_logs::add(
                         "Duplicate module failed (CM: " . $cm->id . ") - ",
@@ -123,7 +124,7 @@ class plagiarism_copyleaks_cm_duplicate extends \core\task\scheduled_task {
             if (count($coursemodules) > 0) {
                 try {
                     $cl = new \plagiarism_copyleaks_comms();
-                    $response = $cl->duplicate_course_modules(array('duplicatedmodules' => $coursemodules));
+                    $response = $cl->duplicate_course_modules(['duplicatedmodules' => $coursemodules]);
 
                     // Delete the successfully duplicated modules.
                     if (count($response->successded) > 0) {

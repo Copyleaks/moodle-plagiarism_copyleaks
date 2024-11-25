@@ -13,6 +13,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
  * settings.php - allows the admin to configure the plugin
  * @package   plagiarism_copyleaks
@@ -45,7 +46,7 @@ if ($copyleakssetupform->is_cancelled()) {
     redirect(new moodle_url('/admin/category.php?category=plagiarism'));
 }
 
-$pagetabs = array();
+$pagetabs = [];
 $pagetabs[] = new tabobject(
     'copyleaksconfiguration',
     'settings.php',

@@ -13,6 +13,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
  * copyleaks_setupform.class.php - Plugin setup form for plagiarism_copyleaks component
  * @package   plagiarism_copyleaks
@@ -63,7 +64,7 @@ class plagiarism_copyleaks_adminform extends moodleform {
 
         // Get all modules that support plagiarism plugin.
         $plagiarismmodules = array_keys(core_component::get_plugin_list('mod'));
-        $supportedmodules = array('assign', 'forum', 'workshop', 'quiz');
+        $supportedmodules = ['assign', 'forum', 'workshop', 'quiz'];
         foreach ($plagiarismmodules as $module) {
             // For now we only support assignments.
             if (in_array($module, $supportedmodules) && plugin_supports('mod', $module, FEATURE_PLAGIARISM)) {
@@ -145,22 +146,22 @@ class plagiarism_copyleaks_adminform extends moodleform {
                 try {
                     $cljwttoken = plagiarism_copyleaks_comms::login_to_copyleaks($newapiurl, $newconfigkey, $newconfigsecret, true);
                     if (isset($cljwttoken)) {
-                        return array();
+                        return [];
                     } else {
                         return (array)[
-                            "plagiarism_copyleaks_secret" => get_string('clinvalidkeyorsecret', 'plagiarism_copyleaks')
+                            "plagiarism_copyleaks_secret" => get_string('clinvalidkeyorsecret', 'plagiarism_copyleaks'),
                         ];
                     }
                 } catch (plagiarism_copyleaks_exception $ex) {
                     switch ($ex->getCode()) {
                         case 404:
                             return (array)[
-                                "plagiarism_copyleaks_secret" => get_string('clinvalidkeyorsecret', 'plagiarism_copyleaks')
+                                "plagiarism_copyleaks_secret" => get_string('clinvalidkeyorsecret', 'plagiarism_copyleaks'),
                             ];
                             break;
                         case 0:
                             return (array)[
-                                "plagiarism_copyleaks_apiurl" => $ex->getMessage()
+                                "plagiarism_copyleaks_apiurl" => $ex->getMessage(),
                             ];
                             break;
                         default:
@@ -169,18 +170,18 @@ class plagiarism_copyleaks_adminform extends moodleform {
                     }
                 } catch (plagiarism_copyleaks_auth_exception $ex) {
                     return (array)[
-                        "plagiarism_copyleaks_secret" => get_string('clinvalidkeyorsecret', 'plagiarism_copyleaks')
+                        "plagiarism_copyleaks_secret" => get_string('clinvalidkeyorsecret', 'plagiarism_copyleaks'),
                     ];
                 }
             }
         } else {
             if (!isset($newconfigsecret) || !isset($newconfigkey) || empty($newconfigkey) || empty($newconfigsecret)) {
                 return (array)[
-                    "plagiarism_copyleaks_secret" => get_string('clinvalidkeyorsecret', 'plagiarism_copyleaks')
+                    "plagiarism_copyleaks_secret" => get_string('clinvalidkeyorsecret', 'plagiarism_copyleaks'),
                 ];
             }
         }
-        return array();
+        return [];
     }
 
     /**
@@ -262,7 +263,7 @@ class plagiarism_copyleaks_adminform extends moodleform {
             $pluginversion = get_config('plagiarism_copyleaks', 'version');
             $plugindata = (array)[
                 'domain' => $domain,
-                'pluginVersion' => $pluginversion
+                'pluginVersion' => $pluginversion,
             ];
             plagiarism_copyleaks_dbutils::queue_copyleaks_integration_data_sync_request(
                 $plugindata,

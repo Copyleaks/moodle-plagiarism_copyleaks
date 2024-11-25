@@ -13,6 +13,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
  * Copyleaks Plagiarism Plugin - Handle Queued Files
  * @package   plagiarism_copyleaks
@@ -68,7 +69,7 @@ class plagiarism_copyleaks_sendsubmissions extends \core\task\scheduled_task {
             $queuedsubmissions = $DB->get_records_select(
                 "plagiarism_copyleaks_files",
                 "statuscode = ? AND scheduledscandate < ?",
-                array('queued', $currentdate),
+                ['queued', $currentdate],
                 '',
                 '*',
                 0,
@@ -125,31 +126,29 @@ class plagiarism_copyleaks_sendsubmissions extends \core\task\scheduled_task {
 
                 // Handle submission data according to the submission type.
                 if ($submission->submissiontype == 'text_content') {
-                    $moduledata = $DB->get_record($coursemodule->modname, array('id' => $coursemodule->instance));
+                    $moduledata = $DB->get_record($coursemodule->modname, ['id' => $coursemodule->instance]);
 
                     if ($coursemodule->modname == 'workshop') {
                         $workshopsubmission = $DB->get_record(
                             'workshop_submissions',
-                            array('id' => $submission->itemid),
+                            ['id' => $submission->itemid],
                             'content'
                         );
                         $submittedtextcontent = $workshopsubmission->content;
                     } else if ($coursemodule->modname == 'assign') {
                         $submissionref = $DB->get_record(
                             'assign_submission',
-                            array(
+                            [
                                 'id' => $submission->itemid,
                                 'userid' => ($moduledata->teamsubmission) ? 0 : $submission->userid,
-                                'assignment' => $coursemodule->instance
-                            ),
+                                'assignment' => $coursemodule->instance,
+                            ],
                             'id'
                         );
 
                         $txtsubmissionref = $DB->get_record(
                             'assignsubmission_onlinetext',
-                            array(
-                                'submission' => $submissionref->id
-                            ),
+                            ['submission' => $submissionref->id],
                             'onlinetext'
                         );
                         $submittedtextcontent = $txtsubmissionref->onlinetext;
@@ -167,7 +166,7 @@ class plagiarism_copyleaks_sendsubmissions extends \core\task\scheduled_task {
                     $forumpost = $DB->get_record_select(
                         'forum_posts',
                         " userid = ? AND id = ? ",
-                        array($userid, $submission->itemid)
+                        [$userid, $submission->itemid]
                     );
                     if ($forumpost) {
                         $filename = 'forumpost_'
@@ -286,7 +285,7 @@ class plagiarism_copyleaks_sendsubmissions extends \core\task\scheduled_task {
             $extension = '.' . array_pop($parts);
         }
 
-        $filestring = array($parts[0], $cmid);
+        $filestring = [$parts[0], $cmid];
         $filename = implode('_', $filestring);
         $filename = str_replace(' ', '_', $filename);
         $filename = clean_param(strip_tags($filename), PARAM_FILE);

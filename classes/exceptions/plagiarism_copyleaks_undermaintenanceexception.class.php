@@ -13,6 +13,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
  * Copyleaks under maintenance exception
  * @package   plagiarism_copyleaks
@@ -21,7 +22,9 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-/** Copyleaks under maintenance exception */
+/**
+ *  Copyleaks under maintenance exception
+ */
 class plagiarism_copyleaks_under_maintenance_exception extends Exception {
     /**
      * constructor

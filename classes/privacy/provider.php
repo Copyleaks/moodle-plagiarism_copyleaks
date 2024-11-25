@@ -13,6 +13,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
  * Privacy Subsystem implementation for plagiarism_copyleaks.
  *
@@ -98,7 +99,7 @@ class provider implements
         $params = [
             'modulename' => 'assign',
             'contextlevel' => CONTEXT_MODULE,
-            'userid' => $userid
+            'userid' => $userid,
         ];
 
         $sql = "SELECT ctx.id " .
@@ -131,7 +132,7 @@ class provider implements
             return;
         }
 
-        $user = $DB->get_record('user', array('id' => $userid));
+        $user = $DB->get_record('user', ['id' => $userid]);
 
         $params = ['userid' => $user->id];
 

@@ -13,6 +13,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
  * lib.php - Contains Plagiarism plugin specific functions called by Modules.
  * @package   plagiarism_copyleaks
@@ -25,7 +26,7 @@ defined('MOODLE_INTERNAL') || die();
 
 // Constants.
 define('PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID', 0);
-$clsupportedsubmissiontypes = array('file', 'text_content', 'forum_post', 'quiz_answer');
+$clsupportedsubmissiontypes = ['file', 'text_content', 'forum_post', 'quiz_answer'];
 define('PLAGIARISM_COPYLEAKS_SUPPORTED_SUBMISSION_TYPES', $clsupportedsubmissiontypes);
 
 
@@ -39,7 +40,7 @@ define('PLAGIARISM_COPYLEAKS_LOGS_PREFIX', 'log_');
 
 
 // Copyleaks support file types.
-$copyleaksacceptedfiles = array(
+$copyleaksacceptedfiles = [
     // Textual.
     '.html', '.txt', '.csv', '.rtf', '.xml', '.htm',
     // Non-Textual.
@@ -51,13 +52,13 @@ $copyleaksacceptedfiles = array(
     '.cpp', '.hpp', '.cc', '.hh', '.java', '.js', '.swift',
     '.rb', '.pl', '.php', '.sh', '.m', '.scala',
     // OCR.
-    '.gif', '.png', '.bmp', '.jpg', '.jpeg'
-);
+    '.gif', '.png', '.bmp', '.jpg', '.jpeg',
+];
 define('PLAGIARISM_COPYLEAKS_ACCEPTED_FILES', $copyleaksacceptedfiles);
 define('DEFAULT_DATABASE_COPYLEAKSDB_ID', 'DEFAULT_DATABASE_COPYLEAKSDB_ID');
 
 // Copyleaks retry array in seconds.
-define('PLAGIARISM_COPYLEAKS_RETRY', array(0, 2.5, 3, 5, 10));
+define('PLAGIARISM_COPYLEAKS_RETRY', [0, 2.5, 3, 5, 10]);
 define('PLAGIARISM_COPYLEAKS_MAX_RETRY', 5);
 define('PLAGIARISM_COPYLEAKS_MAX_AUTO_RETRY', 10);
 define('PLAGIARISM_COPYLEAKS_DEFUALT_EULA_VERSION', '2023032700');
