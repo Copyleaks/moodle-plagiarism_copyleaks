@@ -28,6 +28,10 @@ require_once($CFG->libdir . "/externallib.php");
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/exceptions/plagiarism_copyleaks_webserviceexception.class.php');
 require_once("$CFG->libdir/grade/grade_scale.php");
 
+
+/**
+ * plagiarism_copyleaks_grades external API class
+ */
 class plagiarism_copyleaks_grades extends external_api {
 
 
@@ -44,8 +48,7 @@ class plagiarism_copyleaks_grades extends external_api {
             [
               'id' => new external_value(PARAM_INT, 'the id of the scale'),
             ]
-          )
-        )
+          )),
         ]
         );
     }
@@ -103,8 +106,7 @@ class plagiarism_copyleaks_grades extends external_api {
               new external_single_structure([
                 'id' => new external_value(PARAM_INT, 'Scale value ID'),
                 'name' => new external_value(PARAM_RAW, 'Scale value name'),
-              ])
-            )
+              ])),
           ])
         )]);
     }

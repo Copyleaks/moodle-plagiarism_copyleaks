@@ -364,7 +364,7 @@ class plagiarism_copyleaks_observer {
             $userid     = ($eventdata['relateduserid']) ? $eventdata['relateduserid'] : $eventdata['userid'];
 
             $finalgrade = $eventdata['other']['finalgrade'];
-            if (is_string($finalgrade) && str_contains($finalgrade, "0.")) {
+            if (is_string($finalgrade) && strpos($finalgrade, "0.") !== false) {
                 $finalgrade = 0;
             }
 
