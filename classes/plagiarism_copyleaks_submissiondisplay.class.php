@@ -553,7 +553,7 @@ class plagiarism_copyleaks_submissiondisplay {
                                         'copyleaks-logo-new',
                                         $clpoweredbycopyleakstxt,
                                         'plagiarism_copyleaks',
-                                        ['class' => 'cls-icon-no-margin cls-logo-new']
+                                        ['class' => 'cls-logo-new']
                                     ),
                                     ['class' => 'cls-icon']
                                 ) .
@@ -644,7 +644,7 @@ class plagiarism_copyleaks_submissiondisplay {
                                             'copyleaks-logo-new',
                                             $clpoweredbycopyleakstxt,
                                             'plagiarism_copyleaks',
-                                            ['class' => 'cls-icon-no-margin cls-logo-new']
+                                            ['class' => 'cls-logo-new']
                                         ),
                                         ['class' => 'cls-icon']
                                     ) .
