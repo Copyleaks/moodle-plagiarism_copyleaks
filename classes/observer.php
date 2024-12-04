@@ -643,6 +643,11 @@ class plagiarism_copyleaks_observer {
             return;
         }
 
+        // Check if the groupid is empty.
+        if (empty($eventdata['other']['groupid'])) {
+            return;
+        }
+
         $cl = new \plagiarism_copyleaks_comms();
         $groupingname = groups_get_grouping_name($eventdata['objectid']);
         $groupingdata = (array)[
