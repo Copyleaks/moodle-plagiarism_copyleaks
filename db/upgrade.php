@@ -533,7 +533,7 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2024081401, 'plagiarism', 'copyleaks');
     }
 
-    if ($oldversion < 2024102801) {
+    if ($oldversion < 2024112501) {
         $config = plagiarism_copyleaks_pluginconfig::admin_config();
         // Check if the plugin key is set and not empty.
         if (isset($config->plagiarism_copyleaks_key) && !empty($config->plagiarism_copyleaks_key)) {
@@ -550,7 +550,7 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         }
 
         // Copyleaks savepoint reached.
-        upgrade_plugin_savepoint(true, 2024102801, 'plagiarism', 'copyleaks');
+        upgrade_plugin_savepoint(true, 2024112501, 'plagiarism', 'copyleaks');
     }
 
     return true;

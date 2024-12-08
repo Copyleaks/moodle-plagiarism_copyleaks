@@ -553,7 +553,7 @@ class plagiarism_copyleaks_comms {
         $endpoint = "/api/moodle/plugin/$this->key/webhooks/course/$courseid/groups/create-group";
         $verb = 'POST';
         try {
-            plagiarism_copyleaks_http_client::execute_retry(
+            plagiarism_copyleaks_http_client::execute(
                 $verb,
                 $this->copyleaks_api_url() . $endpoint,
                 true,
@@ -574,7 +574,7 @@ class plagiarism_copyleaks_comms {
         $endpoint = "/api/moodle/plugin/$this->key/webhooks/course/$courseid/groups/delete-group";
         $verb = 'POST';
         try {
-            plagiarism_copyleaks_http_client::execute_retry(
+            plagiarism_copyleaks_http_client::execute(
                 $verb,
                 $this->copyleaks_api_url() . $endpoint,
                 true,
@@ -595,7 +595,7 @@ class plagiarism_copyleaks_comms {
         $endpoint = "/api/moodle/plugin/$this->key/webhooks/course/$courseid/groups/update-group";
         $verb = 'POST';
         try {
-            plagiarism_copyleaks_http_client::execute_retry(
+            plagiarism_copyleaks_http_client::execute(
                 $verb,
                 $this->copyleaks_api_url() . $endpoint,
                 true,
@@ -616,7 +616,7 @@ class plagiarism_copyleaks_comms {
         $endpoint = "/api/moodle/plugin/$this->key/webhooks/course/$courseid/groups/add-group-member";
         $verb = 'POST';
         try {
-            plagiarism_copyleaks_http_client::execute_retry(
+            plagiarism_copyleaks_http_client::execute(
                 $verb,
                 $this->copyleaks_api_url() . $endpoint,
                 true,
@@ -637,7 +637,7 @@ class plagiarism_copyleaks_comms {
         $endpoint = "/api/moodle/plugin/$this->key/webhooks/course/$courseid/groups/remove-group-member";
         $verb = 'POST';
         try {
-            plagiarism_copyleaks_http_client::execute_retry(
+            plagiarism_copyleaks_http_client::execute(
                 $verb,
                 $this->copyleaks_api_url() . $endpoint,
                 true,
@@ -658,7 +658,7 @@ class plagiarism_copyleaks_comms {
         $endpoint = "/api/moodle/plugin/$this->key/webhooks/course/$courseid/groups/create-grouping";
         $verb = 'POST';
         try {
-            plagiarism_copyleaks_http_client::execute_retry(
+            plagiarism_copyleaks_http_client::execute(
                 $verb,
                 $this->copyleaks_api_url() . $endpoint,
                 true,
@@ -679,7 +679,7 @@ class plagiarism_copyleaks_comms {
         $endpoint = "/api/moodle/plugin/$this->key/webhooks/course/$courseid/groups/delete-grouping";
         $verb = 'POST';
         try {
-            plagiarism_copyleaks_http_client::execute_retry(
+            plagiarism_copyleaks_http_client::execute(
                 $verb,
                 $this->copyleaks_api_url() . $endpoint,
                 true,
@@ -700,7 +700,7 @@ class plagiarism_copyleaks_comms {
         $endpoint = "/api/moodle/plugin/$this->key/webhooks/course/$courseid/groups/update-grouping";
         $verb = 'POST';
         try {
-            plagiarism_copyleaks_http_client::execute_retry(
+            plagiarism_copyleaks_http_client::execute(
                 $verb,
                 $this->copyleaks_api_url() . $endpoint,
                 true,
@@ -721,7 +721,7 @@ class plagiarism_copyleaks_comms {
         $endpoint = "/api/moodle/plugin/$this->key/webhooks/course/$courseid/groups/add-grouping-group";
         $verb = 'POST';
         try {
-            plagiarism_copyleaks_http_client::execute_retry(
+            plagiarism_copyleaks_http_client::execute(
                 $verb,
                 $this->copyleaks_api_url() . $endpoint,
                 true,
@@ -742,7 +742,7 @@ class plagiarism_copyleaks_comms {
         $endpoint = "/api/moodle/plugin/$this->key/webhooks/course/$courseid/groups/remove-grouping-group";
         $verb = 'POST';
         try {
-            plagiarism_copyleaks_http_client::execute_retry(
+            plagiarism_copyleaks_http_client::execute(
                 $verb,
                 $this->copyleaks_api_url() . $endpoint,
                 true,
@@ -784,7 +784,7 @@ class plagiarism_copyleaks_comms {
         $endpoint = "/api/moodle/plugin/$this->key/webhooks/course/$courseid/users/unenrol-user";
         $verb = 'POST';
         try {
-            plagiarism_copyleaks_http_client::execute_retry(
+            plagiarism_copyleaks_http_client::execute(
                 $verb,
                 $this->copyleaks_api_url() . $endpoint,
                 true,
@@ -805,7 +805,7 @@ class plagiarism_copyleaks_comms {
         $endpoint = "/api/moodle/plugin/$this->key/webhooks/course/$courseid/users/unassign-role";
         $verb = 'POST';
         try {
-            plagiarism_copyleaks_http_client::execute_retry(
+            plagiarism_copyleaks_http_client::execute(
                 $verb,
                 $this->copyleaks_api_url() . $endpoint,
                 true,
