@@ -142,8 +142,8 @@ class plagiarism_copyleaks_submissiondisplay {
                 $subidentifier = $file->get_pathnamehash();
             }
 
-            // Passed userid is 0 for group submissions, change it to the current userid.
-            if ($submissionref['userid'] == 0 && !$isinstructor) {
+            // Passed userid is 0 for group submissions or if its a group submission, change it to the current userid.
+            if ($submissionref['userid'] == 0  && !$isinstructor) {
                 $submissionref['userid'] = $USER->id;
             }
 
@@ -156,6 +156,7 @@ class plagiarism_copyleaks_submissiondisplay {
                 ['id' => $subitemid],
                 'id, groupid'
             );
+
             if ((!empty($assignsubmission->groupid)) && ($coursemodule->modname == "assign")) {
                 $submittedfiles = $DB->get_records(
                     'plagiarism_copyleaks_files',
@@ -276,7 +277,7 @@ class plagiarism_copyleaks_submissiondisplay {
                             $results["writingfeedbackissues"] = $submittedfile->writingfeedbackissues;
                             $results['reporturl'] =
                                 "$CFG->wwwroot/plagiarism/copyleaks/plagiarism_copyleaks_report.php" .
-                                "?cmid=$submittedfile->cm&userid=$submittedfile->userid" .
+                                "?cmid=$submittedfile->cm&userid=" . (!$isinstructor ? $USER->id : $submittedfile->userid) .
                                 "&identifier=$submittedfile->identifier&modulename=$coursemodule->modname";
 
                             // Download PDF URL.
@@ -303,18 +304,18 @@ class plagiarism_copyleaks_submissiondisplay {
                                     html_writer::tag(
                                         'div',
                                         get_string('claicontentscore', 'plagiarism_copyleaks'),
-                                    ['class' => 'cls-text-result']
+                                        ['class' => 'cls-text-result']
                                     ) .
                                         html_writer::tag(
                                             'div',
                                             (isset($results["aiscore"]) && $enableairesultviewforstudent ? html_writer::tag(
                                                 'span',
                                                 '',
-                                        ['class' => "score-level $aiscorelevel"]
+                                                ['class' => "score-level $aiscorelevel"]
                                             ) . $results["aiscore"]  . '%' : 'N/A'),
-                                    ['class' => 'cls-score-container']
+                                            ['class' => 'cls-score-container']
                                         ),
-                                ['class' => 'cls-result-item']
+                                    ['class' => 'cls-result-item']
                                 ) : '');
                             // Plagiarism details.
                             $plagiarismdetails = ($detectiondata[PLAGIARISM_COPYLEAKS_SCAN_PLAGIARISM_FIELD_NAME] ?
@@ -323,7 +324,7 @@ class plagiarism_copyleaks_submissiondisplay {
                                     html_writer::tag(
                                         'div',
                                         get_string('clplagiarismscore', 'plagiarism_copyleaks'),
-                                    ['class' => 'cls-text-result']
+                                        ['class' => 'cls-text-result']
                                     ) .
                                         // Cheat detection alert.
                                         ($submittedfile->ischeatingdetected ? $cheatdetectionicon : '') .
@@ -332,11 +333,11 @@ class plagiarism_copyleaks_submissiondisplay {
                                             (isset($results["score"]) && $enableplagiarismresultviewforstudent ? html_writer::tag(
                                                 'span',
                                                 '',
-                                        ['class' => "score-level $scorelevelclass"]
+                                                ['class' => "score-level $scorelevelclass"]
                                             ) . $results["score"]  . '%' : 'N/A'),
-                                    ['class' => 'cls-score-container']
+                                            ['class' => 'cls-score-container']
                                         ),
-                                ['class' => 'cls-result-item']
+                                    ['class' => 'cls-result-item']
                                 ) : '');
 
                             // Writing Feedbacl issues.
@@ -346,7 +347,7 @@ class plagiarism_copyleaks_submissiondisplay {
                                     html_writer::tag(
                                         'div',
                                         get_string('clwritingfeedbackissues', 'plagiarism_copyleaks'),
-                                    ['class' => 'cls-text-result']
+                                        ['class' => 'cls-text-result']
                                     ) .
                                         html_writer::tag(
                                             'div',
@@ -354,11 +355,11 @@ class plagiarism_copyleaks_submissiondisplay {
                                                 html_writer::tag(
                                                     'span',
                                                     '',
-                                        ['class' => "score-level"]
+                                                    ['class' => "score-level"]
                                                 ) . $results["writingfeedbackissues"] : 'N/A'),
-                                    ['class' => 'cls-score-container']
+                                            ['class' => 'cls-score-container']
                                         ),
-                                ['class' => 'cls-result-item']
+                                    ['class' => 'cls-result-item']
                                 ) : '');
 
                             $idx = (int)$submittedfile->id;
@@ -386,14 +387,14 @@ class plagiarism_copyleaks_submissiondisplay {
                                                     'copyleaks-download-icon',
                                                     get_string('cldownloadreport', 'plagiarism_copyleaks'),
                                                     'plagiarism_copyleaks',
-                                                ['class' => 'cls-icon-no-margin']
-                                            ),
+                                                    ['class' => 'cls-icon-no-margin']
+                                                ),
                                                 [
                                                     'href' => $downloadpdfurl,
                                                     'target' => '_blank',
                                                     'title' => get_string('clopenreport', 'plagiarism_copyleaks'),
                                                 ]
-                                        ) .
+                                            ) .
                                                 // Open report page.
                                                 html_writer::tag(
                                                     'a',
@@ -401,7 +402,7 @@ class plagiarism_copyleaks_submissiondisplay {
                                                         'copyleaks-open-url-icon',
                                                         get_string('clopenreport', 'plagiarism_copyleaks'),
                                                         'plagiarism_copyleaks',
-                                                ['class' => 'cls-icon-no-margin']
+                                                        ['class' => 'cls-icon-no-margin']
                                                     ),
                                                     [
                                                         'href' => $results['reporturl'],
@@ -416,7 +417,7 @@ class plagiarism_copyleaks_submissiondisplay {
                                                             'copyleaks-copy-icon',
                                                             get_string('clcopyreporturl', 'plagiarism_copyleaks'),
                                                             'plagiarism_copyleaks',
-                                                ['class' => 'cls-icon-no-margin']
+                                                            ['class' => 'cls-icon-no-margin']
                                                         ),
                                                         [
                                                             'id' => "cls-copy-container_" . $submittedfile->identifier,
@@ -424,7 +425,7 @@ class plagiarism_copyleaks_submissiondisplay {
                                                             "onclick" => "cl_copy_to_clipboard$idx()",
                                                         ]
                                                     ) : ''),
-                                        ['class' => 'cls-action']
+                                            ['class' => 'cls-action']
                                         ),
                                     ['class' => 'cls-details-header']
                                 ) .
@@ -432,7 +433,7 @@ class plagiarism_copyleaks_submissiondisplay {
                                     html_writer::tag(
                                         'div',
                                         $aidetails . $plagiarismdetails . $writingfeedbackissuesdata,
-                                    ['class' => 'cls-details-content']
+                                        ['class' => 'cls-details-content']
                                     ),
                                 ['class' => 'cls-large-report-details cls-mini-report']
                             );
@@ -499,14 +500,14 @@ class plagiarism_copyleaks_submissiondisplay {
                                                     'copyleaks-alert-icon',
                                                     $submittedfile->errormsg,
                                                     'plagiarism_copyleaks',
-                                                ['class' => 'cls-icon-no-margin']
+                                                    ['class' => 'cls-icon-no-margin']
                                                 ) .
                                                     html_writer::tag(
                                                         'span',
                                                         get_string('clscanfailedbtn', 'plagiarism_copyleaks'),
                                                         null
                                                     ),
-                                            ['class' => 'failed cls-content']
+                                                ['class' => 'failed cls-content']
                                             ) .
                                             // Retry buttom.
                                             html_writer::tag(
@@ -517,16 +518,16 @@ class plagiarism_copyleaks_submissiondisplay {
                                                         'copyleaks-retry-icon',
                                                         null,
                                                         'plagiarism_copyleaks',
-                                                    ['class' => 'cls-icon-no-margin']
+                                                        ['class' => 'cls-icon-no-margin']
                                                     ) .
                                                         html_writer::tag(
                                                             'span',
                                                             get_string('cltryagainbtn', 'plagiarism_copyleaks'),
                                                             null
                                                         ),
-                                                ['href' => $resubmiturl]
+                                                    ['href' => $resubmiturl]
                                                 ),
-                                            ['class' => 'retry cls-content']
+                                                ['class' => 'retry cls-content']
                                             ),
                                         ['class' => 'cls-small-report-details error cls-mini-report']
                                     );
@@ -563,14 +564,14 @@ class plagiarism_copyleaks_submissiondisplay {
                                         html_writer::tag(
                                             'div',
                                             '',
-                                        ['class' => 'cls-spinner']
+                                            ['class' => 'cls-spinner']
                                         ) .
                                             html_writer::tag(
                                                 'span',
                                                 get_string('clscaninprogress', 'plagiarism_copyleaks'),
                                                 null
                                             ),
-                                    ['class' => 'cls-content']
+                                        ['class' => 'cls-content']
                                     ),
                                 ['class' => 'cls-small-report-details cls-mini-report in-progress']
                             );
@@ -618,9 +619,9 @@ class plagiarism_copyleaks_submissiondisplay {
                                     html_writer::tag(
                                         'div',
                                         get_string('clplagiarismcontentscheduled', 'plagiarism_copyleaks'),
-                                    ['class' => 'cls-text-result']
+                                        ['class' => 'cls-text-result']
                                     ) . $dateicon,
-                                ['class' => 'cls-scheduled-item']
+                                    ['class' => 'cls-scheduled-item']
                                 ) : '');
                             // Grammar Schedule Content.
                             $writingfeedbackcheduleddetails = ($detectiondata[PLAGIARISM_COPYLEAKS_DETECT_WF_ISSUES_FIELD_NAME] ?
@@ -629,9 +630,9 @@ class plagiarism_copyleaks_submissiondisplay {
                                     html_writer::tag(
                                         'div',
                                         get_string('clwritingfeedbackcontentscheduled', 'plagiarism_copyleaks'),
-                                    ['class' => 'cls-text-result']
+                                        ['class' => 'cls-text-result']
                                     ) . $dateicon,
-                                ['class' => 'cls-scheduled-item']
+                                    ['class' => 'cls-scheduled-item']
                                 ) : '');
 
                             $queuedwrapper = html_writer::tag(
@@ -651,14 +652,14 @@ class plagiarism_copyleaks_submissiondisplay {
                                         html_writer::tag(
                                             'div',
                                             get_string('clscheduledintime', 'plagiarism_copyleaks', $timeleftstr),
-                                        ['class' => 'cls-scheduled-text']
+                                            ['class' => 'cls-scheduled-text']
                                         ),
                                     ['class' => 'cls-details-header']
                                 ) .
                                     html_writer::tag(
                                         'div',
                                         $aischeduleddetails . $plagiarismscheduleddetails . $writingfeedbackcheduleddetails,
-                                    ['class' => 'cls-content']
+                                        ['class' => 'cls-content']
                                     ),
                                 ['class' => 'cls-small-report-details cls-mini-report scheduled']
                             );
