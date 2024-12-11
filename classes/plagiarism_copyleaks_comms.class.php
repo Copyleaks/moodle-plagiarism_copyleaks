@@ -246,11 +246,14 @@ class plagiarism_copyleaks_comms {
      * request access for copyleaks report.
      * @return string $cmid for the settings and access.
      */
-    public function request_access_for_analytics($cmid) {
+    public function request_access_for_analytics($cmid, $userid) {
         if (isset($this->key) && isset($this->secret)) {
             $url = $this->copyleaks_api_url() . "/api/moodle/plugin/" . $this->key . "/analytics/request-access";
             if (isset($cmid)) {
                 $url = $url . "/$cmid";
+            }
+            if (isset($userid)) {
+                $url = $url . "?userId=$userid";
             }
             $result = plagiarism_copyleaks_http_client::execute(
                 'GET',

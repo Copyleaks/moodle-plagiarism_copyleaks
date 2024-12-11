@@ -61,7 +61,7 @@ echo html_writer::script(
 );
 
 $cl = new plagiarism_copyleaks_comms();
-$accesstoken = $cl->request_access_for_analytics($cmid);
+$accesstoken = $cl->request_access_for_analytics($cmid, $USER->id);
 
 $config = plagiarism_copyleaks_pluginconfig::admin_config();
 $actionurl = "$config->plagiarism_copyleaks_apiurl/api/moodle/plugin/$config->plagiarism_copyleaks_key/analytics/$cmid/index";
