@@ -669,7 +669,7 @@ class plagiarism_copyleaks_eventshandler {
         $submissiondata['moodleUserId'] = $authoruserid;
         $submissiondata['courseModuleId'] = $coursemodule->id;
         if (isset($submissionrecord->timecreated)) {
-            $submissiondata['createdAt'] = ((new DateTime())->setTimestamp($submissionrecord->timecreated))->format('Y-m-d H:i:s');
+            $submissiondata['createdAt'] = ((new DateTime('now', new DateTimeZone('UTC')))->setTimestamp($submissionrecord->timecreated))->format('Y-m-d H:i:s');
         }
 
         if ($cmdata->teamsubmission == "1") {
@@ -693,7 +693,7 @@ class plagiarism_copyleaks_eventshandler {
                 . $coursemodule->instance . '.txt';
         }
 
-        $scandate = new DateTime();
+        $scandate = new DateTime('now', new DateTimeZone('UTC'));
         $scandate->setTimestamp($scheduledscandate);
 
         $reportdata = (array)[

@@ -157,7 +157,7 @@ class restore_plagiarism_copyleaks_plugin extends restore_plagiarism_plugin {
         }
 
         $synccourse = false;
-        $startdate = isset($course->startdate) ? (new DateTime())->setTimestamp($course->startdate)->format('Y-m-d') : null;
+        $startdate = isset($course->startdate) ? (new DateTime('now', new DateTimeZone('UTC')))->setTimestamp($course->startdate)->format('Y-m-d') : null;
         // Prepare the course data for upsert.
         $data = [
             "id" => $courseid,

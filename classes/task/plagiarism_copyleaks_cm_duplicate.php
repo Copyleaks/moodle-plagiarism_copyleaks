@@ -25,6 +25,7 @@
 namespace plagiarism_copyleaks\task;
 
 use DateTime;
+use DateTimeZone;
 
 defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/plagiarism/copyleaks/constants/plagiarism_copyleaks.constants.php');
@@ -99,7 +100,7 @@ class plagiarism_copyleaks_cm_duplicate extends \core\task\scheduled_task {
                 }
 
                 if ($cm = get_coursemodule_from_id('', $cmduplicationdata->new_cm_id)) {
-                    $datetime = new DateTime();
+                    $datetime = new DateTime('now', new DateTimeZone('UTC'));
                     $coursemodules[] = [
                         'coursemoduleid' => $cmduplicationdata->new_cm_id,
                         'oldcoursemoduleid' => $cmduplicationdata->original_cm_id,

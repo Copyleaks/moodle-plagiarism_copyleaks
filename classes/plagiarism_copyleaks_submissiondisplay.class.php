@@ -588,7 +588,7 @@ class plagiarism_copyleaks_submissiondisplay {
                                 date("F j, Y, g:i a", $submittedfile->scheduledscandate)
                             );
 
-                            $date = new DateTime();
+                            $date = new DateTime('now', new DateTimeZone('UTC'));
                             $date->setTimestamp($submittedfile->scheduledscandate);
                             $timeleft = plagiarism_copyleaks_utils::time_left_to_date($date);
                             $timeleftstr = plagiarism_copyleaks_utils::get_time_left_str($timeleft);

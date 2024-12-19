@@ -280,7 +280,7 @@ class plagiarism_copyleaks_observer {
         }
 
         $cl = new \plagiarism_copyleaks_comms();
-        $datetime = new DateTime();
+        $datetime = new DateTime('now', new DateTimeZone('UTC'));
         $commentcontent = $DB->get_record('comments', ['id' => $eventdata['objectid']], 'content');
         $commentdata = (array)[
             'commentId' => $eventdata['objectid'],

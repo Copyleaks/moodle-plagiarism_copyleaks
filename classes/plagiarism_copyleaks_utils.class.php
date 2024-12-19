@@ -202,7 +202,7 @@ class plagiarism_copyleaks_utils {
     public static function get_course_module_duedate($cmid) {
         try {
             global $DB;
-            $datetime = new DateTime();
+            $datetime = new DateTime('now', new DateTimeZone('UTC'));
             $issetdate = false;
 
             $coursemodule = get_coursemodule_from_id('', $cmid);
@@ -264,7 +264,7 @@ class plagiarism_copyleaks_utils {
     public static function get_course_start_date($courseid) {
         try {
             $course = get_course($courseid);
-            $startdatetime = new DateTime();
+            $startdatetime = new DateTime('now', new DateTimeZone('UTC'));
             if (isset($course->startdate)) {
                 $startdatetime = $startdatetime->setTimestamp($course->startdate);
                 return $startdatetime->format('Y-m-d');
@@ -288,7 +288,7 @@ class plagiarism_copyleaks_utils {
         $targetdatetime = $targetdate;
 
         // Get current date and time.
-        $currentdatetime = new DateTime();
+        $currentdatetime = new DateTime('now', new DateTimeZone('UTC'));
 
         // Initialize the result object.
         $result = new stdClass();
