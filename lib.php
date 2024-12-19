@@ -146,7 +146,7 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
                 $updatedata['hideGraderIdentityFromStudents'] = $data->hidegrader == "1" ? true : false;
                 $updatedata['markingWorkflow'] = $data->markingworkflow == "1" ? true : false;
                 $updatedata['isGroup'] = $data->teamsubmission == "1" ? true : false;
-                $updatedata['groupingId'] = $data->teamsubmissiongroupingid;
+                $updatedata['groupingId'] = $data->teamsubmissiongroupingid != "0" ? $data->teamsubmissiongroupingid : null;
             }
 
             try {
