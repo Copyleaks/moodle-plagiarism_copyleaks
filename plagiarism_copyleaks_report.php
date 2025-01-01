@@ -33,6 +33,7 @@ global $CFG, $USER, $DB;
 // Get url params.
 $cmid = required_param('cmid', PARAM_INT);
 $userid = required_param('userid', PARAM_INT);
+$ownerid = required_param('ownerid', PARAM_INT);
 $identifier = required_param('identifier', PARAM_TEXT);
 $modulename = required_param('modulename', PARAM_TEXT);
 $viewmode = optional_param('view', 'course', PARAM_TEXT);
@@ -116,7 +117,7 @@ if (empty($clmoduleenabled) || empty($modulesettings['plagiarism_copyleaks_enabl
                 'plagiarism_copyleaks_files',
                 [
                     'cm' => $cmid,
-                    'userid' => $userid,
+                    'userid' => $ownerid,
                     'identifier' => $identifier,
                 ],
                 '*',
