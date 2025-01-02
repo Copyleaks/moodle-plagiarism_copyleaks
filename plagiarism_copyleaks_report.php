@@ -141,7 +141,7 @@ if (empty($clmoduleenabled) || empty($modulesettings['plagiarism_copyleaks_enabl
             if ($viewmode == 'course') {
                 echo html_writer::link(
                     "$CFG->wwwroot/plagiarism/copyleaks/plagiarism_copyleaks_report.php" .
-                        "?cmid=$cmid&userid=$userid&identifier=$identifier&modulename=$modulename&view=fullscreen",
+                        "?cmid=$cmid&userid=$userid&identifier=$identifier&modulename=$modulename&view=fullscreen&&ownerid=$ownerid",
                     get_string('clopenfullscreen', 'plagiarism_copyleaks'),
                     ['title' => get_string('clopenfullscreen', 'plagiarism_copyleaks')]
                 );
