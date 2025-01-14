@@ -134,6 +134,8 @@ a.copyleaks-settings-link:hover {
 .cls-logo-new {
     width: 69px !important;
     height: 18px !important;
+    max-height: none !important;
+    max-width: none !important;
 }
 .cls-icon-no-margin {
     margin-right: 0 !important;
