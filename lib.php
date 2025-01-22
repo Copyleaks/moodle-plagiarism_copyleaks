@@ -75,12 +75,12 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
             $DB->delete_records('plagiarism_copyleaks_cm_copy', ['new_cm_id' => $data->coursemodule]);
         }
 
+        // If the record exists with status:QUEUED, do nothing.
+        if (plagiarism_copyleaks_dbutils::is_cm_duplicated_queued($data->coursemodule)) {
+            return;
+        }
+
         if ($data->plagiarism_copyleaks_enable) {
-
-            if (plagiarism_copyleaks_dbutils::is_cm_duplicated_queued($data->coursemodule)) {
-                return;
-            }
-
             $course = get_course($data->course);
             $duedate = plagiarism_copyleaks_utils::get_course_module_duedate($data->coursemodule);
             $coursestartdate = plagiarism_copyleaks_utils::get_course_start_date($data->course);
