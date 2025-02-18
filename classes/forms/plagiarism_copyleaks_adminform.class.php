@@ -115,8 +115,18 @@ class plagiarism_copyleaks_adminform extends moodleform {
         );
 
         if (\plagiarism_copyleaks_comms::test_copyleaks_connection('admin_settings_page', true)) {
-            $btn = plagiarism_copyleaks_utils::get_copyleaks_settings_button_link(null, true);
-            $mform->addElement('html', $btn);
+            $settingsbtn = plagiarism_copyleaks_utils::get_copyleaks_settings_button_link(null, true);
+            $mform->addElement('html', $settingsbtn);
+
+            // add the hidden iframe so that the button's request loads in it.
+            $mform->addElement('html', html_writer::tag('iframe', '', array(
+                'name'  => 'hiddenframe',
+                'style' => 'display:none;'
+            )));
+            $rescanbtn = plagiarism_copyleaks_utils::get_resubmit_failed_scans_button_link();
+            // Add the HTML into your form.
+            $mform->addElement('html', $rescanbtn);
+          
         }
 
         $this->add_action_buttons();

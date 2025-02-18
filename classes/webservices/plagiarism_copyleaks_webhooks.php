@@ -52,24 +52,26 @@ class plagiarism_copyleaks_webhooks extends external_api {
             'writingfeedbackissues' => new external_value(PARAM_INT, 'Writing feedback issues', VALUE_DEFAULT, null),
             'ischeatingdetected' => new external_value(PARAM_BOOL, 'Is cheating detected', VALUE_DEFAULT, false),
             'errormessage' => new external_value(PARAM_TEXT, 'Error message', VALUE_DEFAULT, null),
+        'errorcode' => new external_value(PARAM_INT, 'Error Code', VALUE_DEFAULT, null),
           ]
         );
     }
 
-    /**
-     * Update report webhook
-     * @param  string $coursemoduleid  Course module ID
-     * @param  string $moodleuserid    Moodle user ID
-     * @param  string $identifier      Identifier
-     * @param  string $scanid          Scan ID
-     * @param  int    $status          Report scan status
-     * @param  float  $plagiarismscore Plagiarism score
-     * @param  float  $aiscore         AI score
-     * @param  int    $writingfeedbackissues Writing feedback issues
-     * @param  bool   $ischeatingdetected    Is cheating detected
-     * @param  string $errormessage    Error message
-     * @return array  Warnings and success status
-     */
+  /**
+   * Update report webhook
+   * @param  string $coursemoduleid        Course module ID
+   * @param  string $moodleuserid          Moodle user ID
+   * @param  string $identifier            Identifier
+   * @param  string $scanid                Scan ID
+   * @param  int    $status                Report scan status
+   * @param  float  $plagiarismscore       Plagiarism score
+   * @param  float  $aiscore               AI score
+   * @param  int    $writingfeedbackissues Writing feedback issues
+   * @param  bool   $ischeatingdetected    Is cheating detected
+   * @param  string $errormessage          Error message
+   * @param  int    $errorcode             Error Code
+   * @return array  Warnings and success status
+   */
     public static function update_report_webhook(
     $coursemoduleid,
     $moodleuserid,
@@ -80,7 +82,8 @@ class plagiarism_copyleaks_webhooks extends external_api {
     $aiscore = null,
     $writingfeedbackissues = null,
     $ischeatingdetected = false,
-    $errormessage = null
+    $errormessage = null,
+    $errorcode = null
     ) {
         // Validate parameters.
         $params = self::validate_parameters(self::update_report_webhook_parameters(), [
@@ -94,6 +97,7 @@ class plagiarism_copyleaks_webhooks extends external_api {
           'writingfeedbackissues' => $writingfeedbackissues,
           'ischeatingdetected' => $ischeatingdetected,
           'errormessage' => $errormessage,
+          'errorcode' => $errorcode,
         ]);
 
         $result = \plagiarism_copyleaks_submissions::update_report(
@@ -107,6 +111,7 @@ class plagiarism_copyleaks_webhooks extends external_api {
           $params['writingfeedbackissues'],
           $params['ischeatingdetected'],
           $params['errormessage'],
+          $params['errorcode'],
         );
         if (!$result) {
             throw new plagiarism_copyleaks_webservice_exception('clreportupdatefailed');

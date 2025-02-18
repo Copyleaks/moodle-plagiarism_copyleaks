@@ -87,7 +87,8 @@ class plagiarism_copyleaks_submissions {
         $itemid,
         $submissiontype,
         $scheduledscandate,
-        $errormsg = null
+        $errormsg = null,
+        $errorcode = null
     ) {
         global $DB;
 
@@ -102,6 +103,7 @@ class plagiarism_copyleaks_submissions {
         $file->similarityscore = null;
         $file->externalid = $clsubmissionid;
         $file->errormsg = $errormsg;
+        $file->errorcode = $errorcode;
         $file->lastmodified = time();
         $file->submissiontype = $submissiontype;
         $file->itemid = $itemid;
@@ -134,7 +136,7 @@ class plagiarism_copyleaks_submissions {
      * @param string $fileid submission id
      * @param string $errormsg error message (optional)
      */
-    public static function mark_error($fileid, $errormsg = null, $failedafterretry = false) {
+    public static function mark_error($fileid, $errormsg = null, $errorcode = null, $failedafterretry = false) {
         global $DB;
 
         $file = new stdClass();
@@ -150,6 +152,7 @@ class plagiarism_copyleaks_submissions {
 
         if (!empty($errormsg)) {
             $file->errormsg = $errormsg;
+            $file->errorcode = $errorcode;
         }
 
         if (!$DB->update_record('plagiarism_copyleaks_files', $file)) {
@@ -240,6 +243,7 @@ class plagiarism_copyleaks_submissions {
         );
         $record->statuscode = "queued";
         $record->errormsg = null;
+        $record->errorcode = null;
         if ($record) {
             if (!$DB->update_record('plagiarism_copyleaks_files', $record)) {
                 \plagiarism_copyleaks_logs::add(
@@ -251,14 +255,94 @@ class plagiarism_copyleaks_submissions {
     }
 
     /**
+     * Update all failed scans for a given course module to queued, if they have resubmittable errors.
+     * 
+     * @param int $cmid The course module ID.
+     */
+    public static function change_cm_failed_scans_to_queued($cmid) {
+        global $DB;
+
+        // Get all failed scans for this module with an error.
+        $records = $DB->get_records_select(
+            'plagiarism_copyleaks_files',
+            "cm = ? AND statuscode = 'error'",
+            [$cmid],
+            '',
+            'id, errorcode'
+        );
+
+        foreach ($records as $record) {
+            if (self::is_resubmittable_error($record->errorcode)) {
+                $DB->execute(
+                    "UPDATE {plagiarism_copyleaks_files} 
+                          SET statuscode = ?, errormsg = ?, errorcode = ?
+                          WHERE id = ?",
+                    ['queued', null, null, $record->id]
+                );
+            }
+        }
+    }
+
+    /**
+     * Update all failed scans modified in the last 10 days to queued if they have resubmittable errors.
+     */
+    public static function change_all_failed_scans_to_queued() {
+        global $DB;
+
+        // Get timestamp for 10 days ago.
+        $timecutoff = time() - (10 * 24 * 60 * 60);
+
+        // Get all failed scans within the last 10 days.
+        $records = $DB->get_records_select(
+            'plagiarism_copyleaks_files',
+            "statuscode = 'error' AND lastmodified >= ?",
+            [$timecutoff],
+            '',
+            'id, errorcode'
+        );
+
+        foreach ($records as $record) {
+            if (self::is_resubmittable_error($record->errorcode)) {
+                $DB->execute(
+                    "UPDATE {plagiarism_copyleaks_files} 
+                          SET statuscode = ?, errormsg = ?, errorcode = ?
+                          WHERE id = ?",
+                    ['queued', null, null, $record->id]
+                );
+            }
+        }
+    }
+
+    /**
+     * Check if an error code is eligible for resubmission.
+     * 
+     * @param int $errorcode The error code from the scan.
+     * @return bool True if the scan can be resubmitted, false otherwise.
+     */
+    public static function is_resubmittable_error($errorcode) {
+        $resubmittableErrors = [
+            plagiarism_copyleaks_errorcode::TEMPORARILY_UNAVAILABLE,
+            plagiarism_copyleaks_errorcode::INSUFFICIENT_CREDITS,
+            plagiarism_copyleaks_errorcode::NO_CREDITS_AVAILABLE,
+            plagiarism_copyleaks_errorcode::SINGLE_FILE_UPLOAD_ONLY,
+            plagiarism_copyleaks_errorcode::INTERNAL_SERVER_ERROR,
+            plagiarism_copyleaks_errorcode::EXCEEDED_CREDITS_LIMIT
+        ];
+
+        return in_array((int)$errorcode, $resubmittableErrors, true);
+    }
+
+
+    /**
      * Handle submission error.
      * @param object $submission - will update the submission reference.
      * @param string $errormessage
+     * @param int $errorcode
      */
-    public static function handle_submission_error(&$submission, $errormessage = '') {
+    public static function handle_submission_error(&$submission, $errormessage = '', $errorcode = null) {
         global $DB;
         if (isset($submission->retrycnt) && $submission->retrycnt > PLAGIARISM_COPYLEAKS_MAX_AUTO_RETRY) {
-            self::mark_error($submission->id, $errormessage, true);
+            self::mark_error($submission->id, $errormessage, $errorcode, true);
             return;
         }
 
@@ -304,8 +388,8 @@ class plagiarism_copyleaks_submissions {
         $aiscore,
         $writingfeedbackissues,
         $ischeatingdetected,
-        $errormessage
-
+        $errormessage,
+        $errorcode
     ) {
         global $DB;
         $submission = $DB->get_record(
@@ -339,6 +423,7 @@ class plagiarism_copyleaks_submissions {
             } else if ($status == 2) {
                 $submission->statuscode = 'error';
                 $submission->errormsg = $errormessage;
+                $submission->errorcode = $errorcode;
                 if (!$DB->update_record('plagiarism_copyleaks_files', $submission)) {
                     \plagiarism_copyleaks_logs::add(
                         "Update record failed (CM: " . $coursemoduleid . ", User: "

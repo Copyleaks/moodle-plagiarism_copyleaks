@@ -451,6 +451,7 @@ class plagiarism_copyleaks_eventshandler {
         global $DB, $CFG;
 
         $errormessage = null;
+        $errorcode = null;
         $clsubmissionid = null;
         $cl = new plagiarism_copyleaks_comms();
 
@@ -489,6 +490,7 @@ class plagiarism_copyleaks_eventshandler {
                 PLAGIARISM_COPYLEAKS_ACCEPTED_FILES
             )) {
                 $errormessage = 'File type is not supported.';
+                $errorcode = plagiarism_copyleaks_errorcode::UNSUPPORTED_FILE_TYPE;
             }
         }
 
@@ -496,6 +498,7 @@ class plagiarism_copyleaks_eventshandler {
         if ($subtype == 'file') {
             if ($fileref->get_filesize() > PLAGIARISM_COPYLEAKS_MAX_FILE_UPLOAD_SIZE) {
                 $errormessage = 'Exceeded the maximum allowed file size';
+                $errorcode = plagiarism_copyleaks_errorcode::FILE_TOO_LARGE;
             }
         }
 
@@ -531,7 +534,8 @@ class plagiarism_copyleaks_eventshandler {
                 $itemid,
                 $subtype,
                 $scheduledscandate,
-                $errormessage
+                $errormessage,
+                $errorcode
             )) {
                 if ($this->modulename == 'assign') {
                     list($data, $submissionid) = $this->get_assign_submission_data(
@@ -560,7 +564,8 @@ class plagiarism_copyleaks_eventshandler {
             $itemid,
             $subtype,
             $scheduledscandate,
-            $errormessage
+            $errormessage,
+            $errorcode
         );
     }
 

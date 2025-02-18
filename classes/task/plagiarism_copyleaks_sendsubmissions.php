@@ -82,9 +82,18 @@ class plagiarism_copyleaks_sendsubmissions extends \core\task\scheduled_task {
                 return;
             }
 
+            // create a counter id for the batch
+            $copyleakscomms = new \plagiarism_copyleaks_comms();
+            $response = $copyleakscomms->create_scan_Batch_counter([
+                "countervalue" => count($queuedsubmissions),
+            ]);
+            $counterid = $response->counterId;
+
+           
             foreach ($queuedsubmissions as $submission) {
                 $submittedtextcontent = "";
                 $errormessage = "";
+                $errorcode = null;
                 // Check if submission type is supported.
                 $subtype = $submission->submissiontype;
                 if (!in_array(
@@ -93,12 +102,15 @@ class plagiarism_copyleaks_sendsubmissions extends \core\task\scheduled_task {
                 )) {
                     \plagiarism_copyleaks_submissions::mark_error(
                         $submission->id,
-                        'Submission type is not supported.'
+                        'Submission type is not supported.',
+                        \plagiarism_copyleaks_errorcode::INTERNAL_PLUGIN_ERROR_NOT_RESCANNABLE
                     );
+                    $copyleakscomms->start_scan_when_ready($counterid);
                     continue;
                 }
 
                 if (\plagiarism_copyleaks_moduleconfig::is_course_module_request_queued($submission->cm)) {
+                    $copyleakscomms->start_scan_when_ready($counterid);
                     continue;
                 }
 
@@ -107,8 +119,10 @@ class plagiarism_copyleaks_sendsubmissions extends \core\task\scheduled_task {
                 if (empty($coursemodule)) {
                     \plagiarism_copyleaks_submissions::handle_submission_error(
                         $submission,
-                        "Course Module wasnt found for this record."
+                        "Course Module wasnt found for this record.",
+                        \plagiarism_copyleaks_errorcode::INTERNAL_PLUGIN_ERROR_NOT_RESCANNABLE
                     );
+                    $copyleakscomms->start_scan_when_ready($counterid);
                     continue;
                 }
 
@@ -121,7 +135,12 @@ class plagiarism_copyleaks_sendsubmissions extends \core\task\scheduled_task {
 
                 // Mark as error if user id is 0 (user id should never be 0).
                 if (empty($submission->userid)) {
-                    \plagiarism_copyleaks_submissions::handle_submission_error($submission,  'User Id should never be 0.');
+                    \plagiarism_copyleaks_submissions::handle_submission_error(
+                        $submission,
+                        'User Id should never be 0.',
+                        \plagiarism_copyleaks_errorcode::INTERNAL_PLUGIN_ERROR_NOT_RESCANNABLE
+                    );
+                    $copyleakscomms->start_scan_when_ready($counterid);
                     continue;
                 }
 
@@ -155,6 +174,7 @@ class plagiarism_copyleaks_sendsubmissions extends \core\task\scheduled_task {
                         $submittedtextcontent = $txtsubmissionref->onlinetext;
                     } else {
                         $errormessage = 'Content not found for the submission.';
+                        $errorcode = \plagiarism_copyleaks_errorcode::INTERNAL_PLUGIN_ERROR_NOT_RESCANNABLE;
                     }
 
                     $filename = 'online_text_'
@@ -179,6 +199,7 @@ class plagiarism_copyleaks_sendsubmissions extends \core\task\scheduled_task {
                         $submittedtextcontent = html_to_text(strip_tags($forumpost->message));
                     } else {
                         $errormessage = 'Content not found for the submission.';
+                        $errorcode = \plagiarism_copyleaks_errorcode::INTERNAL_PLUGIN_ERROR_NOT_RESCANNABLE;
                     }
                 } else if ($submission->submissiontype == 'quiz_answer') {
                     try {
@@ -193,6 +214,7 @@ class plagiarism_copyleaks_sendsubmissions extends \core\task\scheduled_task {
                         }
                     } catch (\Throwable $th) {
                         $errormessage = 'Connot find quiz attempt.';
+                        $errorcode = \plagiarism_copyleaks_errorcode::INTERNAL_PLUGIN_ERROR_NOT_RESCANNABLE;
                     }
 
                     if (!empty($submittedtextcontent)) {
@@ -204,6 +226,7 @@ class plagiarism_copyleaks_sendsubmissions extends \core\task\scheduled_task {
                             . $submission->itemid . '.txt';
                     } else {
                         $errormessage = 'Content not found for the submission.';
+                        $errorcode = \plagiarism_copyleaks_errorcode::INTERNAL_PLUGIN_ERROR_NOT_RESCANNABLE;
                     }
                 } else {
                     // In case $submission->submissiontype == 'file'.
@@ -212,19 +235,22 @@ class plagiarism_copyleaks_sendsubmissions extends \core\task\scheduled_task {
 
                     if (!$fileref) {
                         $errormessage = 'File/Content not found for the submission.';
+                        $errorcode = \plagiarism_copyleaks_errorcode::INTERNAL_PLUGIN_ERROR_NOT_RESCANNABLE;
                     } else {
                         try {
                             $filename = $fileref->get_filename();
                             $submittedtextcontent = $fileref->get_content();
                         } catch (\Exception $e) {
                             $errormessage = 'File/Content not found for the submission.';
+                            $errorcode = \plagiarism_copyleaks_errorcode::INTERNAL_PLUGIN_ERROR_NOT_RESCANNABLE;
                         }
                     }
                 }
 
                 // If $errormessage is not empty, then there was an error.
                 if (isset($errormessage) && $errormessage != "") {
-                    \plagiarism_copyleaks_submissions::handle_submission_error($submission,  $errormessage);
+                    \plagiarism_copyleaks_submissions::handle_submission_error($submission,  $errormessage, $errorcode);
+                    $copyleakscomms->start_scan_when_ready($counterid);
                     continue;
                 }
 
@@ -232,7 +258,8 @@ class plagiarism_copyleaks_sendsubmissions extends \core\task\scheduled_task {
                     // Read the submited work into a temp file for submitting.
                     $tempfilepath = $this->create_copyleaks_tempfile($coursemodule->id, $filename);
                 } catch (\Exception $e) {
-                    \plagiarism_copyleaks_submissions::handle_submission_error($submission,  "Fail to create a tempfile.");
+                    \plagiarism_copyleaks_submissions::handle_submission_error($submission,  "Fail to create a tempfile.", \plagiarism_copyleaks_errorcode::INTERNAL_PLUGIN_ERROR_NOT_RESCANNABLE);
+                    $copyleakscomms->start_scan_when_ready($counterid);
                     continue;
                 }
 
@@ -241,7 +268,6 @@ class plagiarism_copyleaks_sendsubmissions extends \core\task\scheduled_task {
                 fclose($fileref);
 
                 try {
-                    $copyleakscomms = new \plagiarism_copyleaks_comms();
                     $copyleakscomms->submit_for_plagiarism_scan(
                         $tempfilepath,
                         $filename,
@@ -249,6 +275,7 @@ class plagiarism_copyleaks_sendsubmissions extends \core\task\scheduled_task {
                         $userid,
                         $submission->identifier,
                         $submission->submissiontype,
+                        $counterid,
                         $submission->externalid
                     );
                     \plagiarism_copyleaks_submissions::mark_pending($submission->id);
@@ -259,10 +286,11 @@ class plagiarism_copyleaks_sendsubmissions extends \core\task\scheduled_task {
                         'plagiarism_copyleaks'
                     ) . ' ' . $e->getMessage();
                     if ($errorcode < 500 && $errorcode != 429) {
-                        \plagiarism_copyleaks_submissions::mark_error($submission->id,  $error);
+                        \plagiarism_copyleaks_submissions::mark_error($submission->id,  $error, \plagiarism_copyleaks_errorcode::INTERNAL_SERVER_ERROR);
                     } else {
                         \plagiarism_copyleaks_logs::add($error, 'API_ERROR_RETRY_WILL_BE_DONE');
                     }
+                    $copyleakscomms->start_scan_when_ready($counterid);
                 }
 
                 // After finished the scan proccess, delete the temp file (if it exists).

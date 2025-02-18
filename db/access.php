@@ -41,4 +41,20 @@ $capabilities = [
             'manager' => CAP_ALLOW,
         ],
     ],
+    'plagiarism/copyleaks:adminresubmitfailedscans' => [
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_SYSTEM,
+        'archetypes' => [
+            'manager' => CAP_ALLOW, // Admins
+        ],
+    ],
+    'plagiarism/copyleaks:resubmitfailedscans' => [
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_MODULE,
+        'archetypes' => [
+            'manager' => CAP_ALLOW, // Admins
+            'editingteacher' => CAP_ALLOW, // Teachers with editing rights
+            'teacher' => CAP_ALLOW // Non-editing teachers
+        ],
+    ],
 ];

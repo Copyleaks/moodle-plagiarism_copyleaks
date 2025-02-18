@@ -131,3 +131,91 @@ class plagiarism_copyleaks_cm_duplication_status {
     /** @var int duplication process failed */
     const ERROR = 2;
 }
+
+/**
+ * This class is used as an enum in order to define error codes and their meanings.
+ */
+class plagiarism_copyleaks_errorcode {
+    /** @var int Exceeded credits limit . occurs when a scan requires more than 200 credits.*/
+    const EXCEEDED_CREDITS_LIMIT = -2;
+    /** @var int Bad request. One or several required parameters are missing or incorrect. */
+    const BAD_REQUEST = 1;
+    /** @var int Invalid login credentials. */
+    const INVALID_CREDENTIALS = 2;
+    /** @var int To use your account, you need to confirm the email address. */
+    const EMAIL_CONFIRMATION_REQUIRED = 3;
+    /** @var int This user is disabled. Contact support for help. */
+    const USER_DISABLED = 4;
+    /** @var int Failed to download the requested URL. */
+    const URL_DOWNLOAD_FAILED = 5;
+    /** @var int Cannot complete the scan request because the file is too large. */
+    const FILE_TOO_LARGE = 6;
+    /** @var int Failed reading the submitted text. */
+    const TEXT_READING_FAILED = 7;
+    /** @var int The image quality is too low to scan. */
+    const IMAGE_QUALITY_TOO_LOW = 8;
+    /** @var int Temporarily unavailable. Please try again later. */
+    const TEMPORARILY_UNAVAILABLE = 9;
+    /** @var int This file type is not supported. */
+    const UNSUPPORTED_FILE_TYPE = 10;
+    /** @var int Not enough text to scan. The minimum text length is 30 characters and at least 6 words. */
+    const INSUFFICIENT_TEXT = 11;
+    /** @var int This document is too long. */
+    const DOCUMENT_TOO_LONG = 12;
+    /** @var int You don't have enough credits to complete the request. */
+    const INSUFFICIENT_CREDITS = 13;
+    /** @var int The submitted file is invalid. */
+    const INVALID_FILE = 14;
+    /** @var int The submitted URL is invalid. */
+    const INVALID_URL = 15;
+    /** @var int Internal server error. */
+    const INTERNAL_SERVER_ERROR = 16;
+    /** @var int You have no credits. You need to purchase credits in order to complete the request. */
+    const NO_CREDITS_AVAILABLE = 17;
+    /** @var int Copyshield widget is not showing on your webpage. */
+    const COPYSHIELD_WIDGET_NOT_VISIBLE = 18;
+    /** @var int Headers are too long. */
+    const HEADERS_TOO_LONG = 19;
+    /** @var int Only MIME multipart content type is allowed. */
+    const INVALID_CONTENT_TYPE = 20;
+    /** @var int You can upload one file at a time. */
+    const SINGLE_FILE_UPLOAD_ONLY = 21;
+    /** @var int Unable to determine file size. */
+    const UNABLE_TO_DETERMINE_FILE_SIZE = 22;
+    /** @var int Bad filename. */
+    const BAD_FILENAME = 24;
+    /** @var int Undefined language. */
+    const UNDEFINED_LANGUAGE = 25;
+    /** @var int The request cannot be completed because the process is still running. */
+    const PROCESS_RUNNING = 26;
+    /** @var int Unknown process id. */
+    const UNKNOWN_PROCESS_ID = 27;
+    /** @var int Missing header value. */
+    const MISSING_HEADER_VALUE = 30;
+    /** @var int Bad parameter. */
+    const BAD_PARAMETER = 31;
+    /** @var int Too many failed login attempts. Please try again later. */
+    const TOO_MANY_FAILED_LOGINS = 32;
+    /** @var int HTTP header key is too long. */
+    const HEADER_KEY_TOO_LONG = 33;
+    /** @var int Authorization has been denied for this request. */
+    const AUTHORIZATION_DENIED = 37;
+    /** @var int Internal plugin error. can be rescanned.*/
+    const INTERNAL_PLUGIN_ERROR_RESCANNABLE = 38;
+    /** @var int Internal plugin error. can't be rescanned.*/
+    const INTERNAL_PLUGIN_ERROR_NOT_RESCANNABLE = 39;
+}
+
+/**
+ * This class is used as an enum to define different rescan modes for plagiarism checks.
+ */
+class plagiarism_copyleaks_rescan_mode {
+    /** @var int Rescan all failed scans (Admin only). */
+    const RESCAN_ALL = 0;
+
+    /** @var int Rescan a specific failed scan (Teacher only). */
+    const RESCAN_SINGLE = 1;
+
+    /** @var int Rescan all failed scans in a specific module/activity (Teacher only). */
+    const RESCAN_MODULE = 2;
+}

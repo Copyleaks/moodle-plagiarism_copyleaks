@@ -31,6 +31,7 @@ require_once($CFG->dirroot . '/plagiarism/copyleaks/constants/plagiarism_copylea
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_assignmodule.class.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_logs.class.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_dbutils.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/enums/plagiarism_copyleaks_enums.php');
 
 /**
  * submission display helpers methods
@@ -471,13 +472,14 @@ class plagiarism_copyleaks_submissiondisplay {
 
                                 $cmid = $submissionref['cmid'];
                                 $courseid = $COURSE->id;
+                                $rescanmode = plagiarism_copyleaks_rescan_mode::RESCAN_SINGLE;
                                 $sid = optional_param('sid', null, PARAM_TEXT);
                                 $action = optional_param('action', null, PARAM_TEXT);
                                 $returnaction = optional_param('returnaction', null, PARAM_TEXT);
                                 $pluginparam = optional_param('plugin', null, PARAM_TEXT);
 
                                 $resubmiturl = "$CFG->wwwroot/plagiarism/copyleaks/plagiarism_copyleaks_resubmit_handler.php" .
-                                    "?fileid=$submittedfile->id&cmid=$cmid&courseid=$courseid" .
+                                    "?rescanmode=$rescanmode&fileid=$submittedfile->id&cmid=$cmid&courseid=$courseid" .
                                     "&route=$route&sid=$sid&action=$action&returnaction=$returnaction&plugin=$pluginparam";
 
                                 try {
