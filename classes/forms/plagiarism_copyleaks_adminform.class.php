@@ -88,6 +88,120 @@ class plagiarism_copyleaks_adminform extends moodleform {
             'plagiarism_copyleaks'
         );
 
+        $elem = <<<HTML
+        <style>
+            .slider-container {
+                position: relative;
+                width: 320px;
+                margin-top: 10px;
+            }
+        
+            .range-slider {
+                position: relative;
+                width: 100%;
+                height: 8px;
+                background: linear-gradient(to right, red 0%, red 30%, yellow 30%, yellow 70%, green 70%, green 100%);
+                border-radius: 5px;
+            }
+        
+            input[type="range"] {
+                position: absolute;
+                width: 100%;
+                height: 8px;
+                -webkit-appearance: none;
+                background: transparent;
+                pointer-events: all;
+                top: 1px;
+            }
+        
+            input[type="range"]::-webkit-slider-thumb {
+                -webkit-appearance: none;
+                width: 15px;
+                height: 15px;
+                background: white;
+                border: 3px solid black;
+                border-radius: 50%;
+                cursor: pointer;
+                pointer-events: all;
+                position: relative;
+                z-index: 3;
+            }
+        </style>
+        
+        <div class="slider-container">
+            <div class="range-slider" id="sliderRange"></div>
+        
+            <!-- Use the correct Moodle field names so values are submitted -->
+            <input type="range" min="0" max="100" value="30" id="slider1" name="val1">
+            <input type="range" min="0" max="100" value="70" id="slider2" name="val2">
+        
+            <div style="margin-top: 10px;">
+                <p>First Threshold: <span id="range1">0 - 30</span></p>
+                <p>Second Threshold: <span id="range2">31 - 70</span></p>
+                <p>Third Threshold: <span id="range3">71 - 100</span></p>
+            </div>
+        </div>
+        
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                var slider1 = document.getElementById("slider1");
+                var slider2 = document.getElementById("slider2");
+                var sliderRange = document.getElementById("sliderRange");
+        
+                var range1 = document.getElementById("range1");
+                var range2 = document.getElementById("range2");
+                var range3 = document.getElementById("range3");
+        
+                function updateSlider() {
+                    var val1 = parseInt(slider1.value);
+                    var val2 = parseInt(slider2.value);
+        
+                    if (val1 >= val2) {
+                        slider1.value = val2 - 1;
+                        val1 = val2 - 1;
+                    }
+        
+                    var percent1 = (val1 / 100) * 100;
+                    var percent2 = (val2 / 100) * 100;
+        
+                    // Update threshold text
+                    range1.textContent = "0 - " + val1;
+                    range2.textContent = (val1 + 1) + " - " + val2;
+                    range3.textContent = (val2 + 1) + " - 100";
+        
+                    // Update gradient background
+                    sliderRange.style.background = "linear-gradient(to right, " +
+                        "red 0%, " +
+                        "red " + percent1 + "%, " +
+                        "yellow " + percent1 + "%, " +
+                        "yellow " + percent2 + "%, " +
+                        "green " + percent2 + "%, " +
+                        "green 100%)";
+                }
+        
+                slider1.addEventListener("input", updateSlider);
+                slider2.addEventListener("input", updateSlider);
+        
+                updateSlider();
+            });
+        </script>
+        HTML;
+
+        // Add the section with the label and HTML
+        $mform->addElement(
+            'static',
+            'plagiarism_copyleaks_threshhold',
+            get_string('clsthreshhold', 'plagiarism_copyleaks'),
+            $elem // The HTML content
+        );
+
+
+        $mform->addElement('hidden', 'val1', '');
+        $mform->setType('val1', PARAM_RAW);
+
+        $mform->addElement('hidden', 'val2', '');
+        $mform->setType('val2', PARAM_RAW);
+
         // Copyleaks Account Configurations.
         $mform->addElement(
             'header',
