@@ -78,6 +78,8 @@ class plagiarism_copyleaks_pluginconfig {
             "plagiarism_copyleaks_mod_workshop",
             "plagiarism_copyleaks_mod_quiz",
             'plagiarism_copyleaks_studentdisclosure',
+            'plagiarism_copyleaks_lowmatchcontentthreshold',
+            'plagiarism_copyleaks_midmatchcontentthreshold'
         ];
     }
 

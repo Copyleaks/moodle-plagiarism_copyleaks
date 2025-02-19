@@ -83,6 +83,11 @@ $string['clplagiarisescanning'] = 'Scanning for plagiarism...';
 $string['clplagiarisequeued'] = 'Scheduled for plagiarism scan at {$a}';
 $string['cldisabledformodule'] = 'Copyleaks plugin is disabled for this module.';
 $string['clnopageaccess'] = 'You dont have access to this page.';
+$string['cldetectionthreshold'] = 'Detection Thresholds';
+$string['cllowcontentmatchthreshold'] = 'Low Content Match:';
+$string['clmidcontentmatchthreshold'] = 'Moderate  Content Match:';
+$string['clhighcontentmatchthreshold'] = 'high Content Match:';
+
 
 $string['claicontentscore'] = 'AI content score';
 $string['clplagiarismscore'] = 'Plagiarism score';

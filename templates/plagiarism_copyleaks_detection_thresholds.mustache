@@ -1,0 +1,58 @@
+<div class="slider-container">
+    <div class="range-slider" id="sliderRange"></div>
+
+    <!-- Initialize sliders with correct values from PHP -->
+    <input type="range" min="0" max="100" value="{{lowmatchcontentthreshold}}" id="slider1" name="plagiarism_copyleaks_lowmatchcontentthreshold">
+    <input type="range" min="0" max="100" value="{{midmatchcontentthreshold}}" id="slider2" name="plagiarism_copyleaks_midmatchcontentthreshold">
+
+    <div style="margin-top: 10px;">
+        <p>{{#str}} cllowcontentmatchthreshold, plagiarism_copyleaks {{/str}} <span id="range1">0 - {{lowmatchcontentthreshold}}</span></p>
+        <p>{{#str}} clmidcontentmatchthreshold, plagiarism_copyleaks {{/str}} <span id="range2">{{lowmatchcontentthreshold}} - {{midmatchcontentthreshold}}</span></p>
+        <p>{{#str}} clhighcontentmatchthreshold, plagiarism_copyleaks {{/str}} <span id="range3">{{midmatchcontentthreshold}} - 100</span></p>
+    </div>
+</div>
+
+{{#js}}
+
+var slider1 = document.getElementById("slider1");
+var slider2 = document.getElementById("slider2");
+var sliderRange = document.getElementById("sliderRange");
+
+var range1 = document.getElementById("range1");
+var range2 = document.getElementById("range2");
+var range3 = document.getElementById("range3");
+
+function updateSlider() {
+    var lowmatchcontentthreshold = parseInt(slider1.value);
+    var midmatchcontentthreshold = parseInt(slider2.value);
+
+    if (lowmatchcontentthreshold >= midmatchcontentthreshold) {
+        slider1.value = midmatchcontentthreshold - 1;
+        lowmatchcontentthreshold = midmatchcontentthreshold - 1;
+    }
+
+    var percent1 = (lowmatchcontentthreshold / 100) * 100;
+    var percent2 = (midmatchcontentthreshold / 100) * 100;
+
+    // Update threshold text
+    range1.textContent = "0 - " + lowmatchcontentthreshold;
+    range2.textContent = (lowmatchcontentthreshold + 1) + " - " + midmatchcontentthreshold;
+    range3.textContent = (midmatchcontentthreshold + 1) + " - 100";
+
+    // Update gradient background
+    sliderRange.style.background = "linear-gradient(to right, " +
+        "red 0%, " +
+        "red " + percent1 + "%, " +
+        "yellow " + percent1 + "%, " +
+        "yellow " + percent2 + "%, " +
+        "green " + percent2 + "%, " +
+        "green 100%)";
+}
+
+// Attach event listeners
+slider1.addEventListener("input", updateSlider);
+slider2.addEventListener("input", updateSlider);
+
+updateSlider();
+{{/js}}
+
