@@ -1,58 +1,87 @@
 <div class="slider-container">
-    <div class="range-slider" id="sliderRange"></div>
+    <div class="range-slider" data-slider="{{uid}}"></div>
 
-    <!-- Initialize sliders with correct values from PHP -->
-    <input type="range" min="0" max="100" value="{{lowmatchcontentthreshold}}" id="slider1" name="plagiarism_copyleaks_lowmatchcontentthreshold">
-    <input type="range" min="0" max="100" value="{{midmatchcontentthreshold}}" id="slider2" name="plagiarism_copyleaks_midmatchcontentthreshold">
+    <input type="range" min="0" max="100" value="{{lowtomidthreshold}}" data-slider-low-to-mid="{{uid}}" name="{{lowtomidfieldname}}">
+    <input type="range" min="0" max="100" value="{{midtohighthreshold}}" data-slider-mid-to-high="{{uid}}" name="{{midtohighfieldname}}">
 
     <div style="margin-top: 10px;">
-        <p>{{#str}} cllowcontentmatchthreshold, plagiarism_copyleaks {{/str}} <span id="range1">0 - {{lowmatchcontentthreshold}}</span></p>
-        <p>{{#str}} clmidcontentmatchthreshold, plagiarism_copyleaks {{/str}} <span id="range2">{{lowmatchcontentthreshold}} - {{midmatchcontentthreshold}}</span></p>
-        <p>{{#str}} clhighcontentmatchthreshold, plagiarism_copyleaks {{/str}} <span id="range3">{{midmatchcontentthreshold}} - 100</span></p>
+        <p>{{#str}} cllowcontentmatchthreshold, plagiarism_copyleaks {{/str}} <span data-range-low="{{uid}}">0% - {{lowtomidthreshold}}%</span></p>
+        <p>{{#str}} clmidcontentmatchthreshold, plagiarism_copyleaks {{/str}} <span data-range-mid="{{uid}}">{{lowtomidthreshold}}% - {{midtohighthreshold}}%</span></p>
+        <p>{{#str}} clhighcontentmatchthreshold, plagiarism_copyleaks {{/str}} <span data-range-high="{{uid}}">{{midtohighthreshold}}% - 100%</span></p>
     </div>
 </div>
 
 {{#js}}
+(function() {
+    let uid = "{{uid}}";
+    let lowToMidSlider = document.querySelector(`[data-slider-low-to-mid="${uid}"]`);
+    let midToHighSlider = document.querySelector(`[data-slider-mid-to-high="${uid}"]`);
+    let rangeLow = document.querySelector(`[data-range-low="${uid}"]`);
+    let rangeMid = document.querySelector(`[data-range-mid="${uid}"]`);
+    let rangeHigh = document.querySelector(`[data-range-high="${uid}"]`);
+    let rangeSlider = document.querySelector(`[data-slider="${uid}"]`);
 
-var slider1 = document.getElementById("slider1");
-var slider2 = document.getElementById("slider2");
-var sliderRange = document.getElementById("sliderRange");
+    function updateSlider() {
+        let lowToMidValue = parseInt(lowToMidSlider.value);
+        let midToHighValue = parseInt(midToHighSlider.value);
 
-var range1 = document.getElementById("range1");
-var range2 = document.getElementById("range2");
-var range3 = document.getElementById("range3");
+        // Ensure lowToMidValue never exceeds 98
+        lowToMidValue = Math.min(lowToMidValue, 98);
+        lowToMidSlider.value = lowToMidValue;
 
-function updateSlider() {
-    var lowmatchcontentthreshold = parseInt(slider1.value);
-    var midmatchcontentthreshold = parseInt(slider2.value);
+        // Ensure midToHighValue never drops below lowToMidValue + 1
+        midToHighValue = Math.max(midToHighValue, lowToMidValue + 1);
+        midToHighSlider.value = midToHighValue;
 
-    if (lowmatchcontentthreshold >= midmatchcontentthreshold) {
-        slider1.value = midmatchcontentthreshold - 1;
-        lowmatchcontentthreshold = midmatchcontentthreshold - 1;
+        // Ensure midToHighValue never exceeds 100
+        midToHighValue = Math.min(midToHighValue, 100);
+
+        // Adjust moderate range properly
+        let moderateStart = lowToMidValue + 1;
+        let moderateEnd = midToHighValue === 100 ? 99 : midToHighValue;
+        let highStart = midToHighValue === 100 ? 100 : midToHighValue + 1;
+
+        // Update displayed values
+        rangeLow.textContent = `0% - ${lowToMidValue}%`;
+        rangeMid.textContent = `${moderateStart}% - ${moderateEnd}%`;
+        rangeHigh.textContent = `${highStart}% - 100%`;
+
+        // Update slider background
+        rangeSlider.style.background = `linear-gradient(to right, 
+            #008001 0%, 
+            #008001 ${lowToMidValue}%, 
+            #ffa503 ${lowToMidValue}%, 
+            #ffa503 ${moderateEnd}%, 
+            #f44336 ${moderateEnd}%, 
+            #f44336 100%)`;
     }
 
-    var percent1 = (lowmatchcontentthreshold / 100) * 100;
-    var percent2 = (midmatchcontentthreshold / 100) * 100;
+    function adjustLowToMid() {
+        lowToMidSlider.value = Math.min(parseInt(lowToMidSlider.value), 98); // Never let it reach 99
+        if (parseInt(lowToMidSlider.value) >= parseInt(midToHighSlider.value)) {
+            midToHighSlider.value = parseInt(lowToMidSlider.value) + 1;
+        }
+        updateSlider();
+    }
 
-    // Update threshold text
-    range1.textContent = "0 - " + lowmatchcontentthreshold;
-    range2.textContent = (lowmatchcontentthreshold + 1) + " - " + midmatchcontentthreshold;
-    range3.textContent = (midmatchcontentthreshold + 1) + " - 100";
+    function adjustMidToHigh() {
+        if (parseInt(midToHighSlider.value) <= parseInt(lowToMidSlider.value)) {
+            midToHighSlider.value = parseInt(lowToMidSlider.value) + 1;
+        }
+        updateSlider();
+    }
 
-    // Update gradient background
-    sliderRange.style.background = "linear-gradient(to right, " +
-        "red 0%, " +
-        "red " + percent1 + "%, " +
-        "yellow " + percent1 + "%, " +
-        "yellow " + percent2 + "%, " +
-        "green " + percent2 + "%, " +
-        "green 100%)";
-}
+    lowToMidSlider.addEventListener("input", adjustLowToMid);
+    midToHighSlider.addEventListener("input", adjustMidToHigh);
 
-// Attach event listeners
-slider1.addEventListener("input", updateSlider);
-slider2.addEventListener("input", updateSlider);
-
-updateSlider();
+    updateSlider();
+})();
 {{/js}}
+
+
+
+
+
+
+
 

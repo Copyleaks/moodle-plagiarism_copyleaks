@@ -83,10 +83,23 @@ $string['clplagiarisescanning'] = 'Scanning for plagiarism...';
 $string['clplagiarisequeued'] = 'Scheduled for plagiarism scan at {$a}';
 $string['cldisabledformodule'] = 'Copyleaks plugin is disabled for this module.';
 $string['clnopageaccess'] = 'You dont have access to this page.';
-$string['cldetectionthreshold'] = 'Detection Thresholds';
-$string['cllowcontentmatchthreshold'] = 'Low Content Match:';
-$string['clmidcontentmatchthreshold'] = 'Moderate  Content Match:';
-$string['clhighcontentmatchthreshold'] = 'high Content Match:';
+$string['clplagiarismdetectionthresholds'] = 'Plagiarism Detection Thresholds';
+$string['claicontentdetectionthresholds'] = 'AI Content Detection Thresholds';
+$string['cllowcontentmatchthreshold'] = 'Low Severity:';
+$string['clmidcontentmatchthreshold'] = 'Moderate Severity:';
+$string['clhighcontentmatchthreshold'] = 'High Severity:';
+$string['clplagiarismthresholdshelpbtn_help'] = '<b>Plagiarism Severity Color Coding:</b>  
+<ul>  
+<li><span style="color:green;"><b>Green:</b></span> Low severity.</li>  
+<li><span style="color:orange;"><b>Yellow:</b></span> Moderate severity.</li>  
+<li><span style="color:red;"><b>Red:</b></span> High severity.</li>  
+</ul> ';
+$string['claicontentthresholdshelpbtn_help'] = '<b>AI Content Severity Color Coding:</b>  
+<ul>  
+<li><span style="color:green;"><b>Green:</b></span> Low severity.</li>  
+<li><span style="color:orange;"><b>Yellow:</b></span> Moderate severity.</li>  
+<li><span style="color:red;"><b>Red:</b></span> High severity.</li>  
+</ul> ';
 
 
 $string['claicontentscore'] = 'AI content score';

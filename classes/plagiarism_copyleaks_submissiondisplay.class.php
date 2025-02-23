@@ -251,21 +251,30 @@ class plagiarism_copyleaks_submissiondisplay {
                                 $submissionref["cmid"]
                             );
 
+                            $config = (array) plagiarism_copyleaks_pluginconfig::admin_config();
+
+                            $plgiarismlowtomidthreshold = $config['plagiarism_copyleaks_plagiarismlowtomidthreshold'];
+                            $plgiarismmidtohighthreshold = $config['plagiarism_copyleaks_plagiarismmidtohighthreshold'];
+
                             // Plagiarism Score level class.
                             $scorelevelclass = '';
-                            if ($submittedfile->similarityscore <= 40) {
+                            if ($submittedfile->similarityscore <= $plgiarismlowtomidthreshold) {
                                 $scorelevelclass = "cls-plag-score-level-low";
-                            } else if ($submittedfile->similarityscore <= 80) {
+                            } else if ($submittedfile->similarityscore <= $plgiarismmidtohighthreshold) {
                                 $scorelevelclass = "cls-plag-score-level-mid";
                             } else {
                                 $scorelevelclass = "cls-plag-score-level-high";
                             }
 
+                            $aicontentlowtomidthreshold = $config['plagiarism_copyleaks_aicontentlowtomidthreshold'];
+                            $aicontentmidtohighthreshold = $config['plagiarism_copyleaks_aicontentmidtohighthreshold'];
+
                             // AI Score level class.
                             $aiscorelevel = '';
-                            if ($submittedfile->aiscore <= 40) {
+                            if ($submittedfile->aiscore <= $aicontentlowtomidthreshold
+                            ) {
                                 $aiscorelevel = "cls-ai-score-level-low";
-                            } else if ($submittedfile->aiscore <= 80) {
+                            } else if ($submittedfile->aiscore <= $aicontentmidtohighthreshold) {
                                 $aiscorelevel = "cls-ai-score-level-mid";
                             } else {
                                 $aiscorelevel = "cls-ai-score-level-high";
