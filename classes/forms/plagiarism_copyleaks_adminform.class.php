@@ -87,12 +87,12 @@ class plagiarism_copyleaks_adminform extends moodleform {
             'clstudentdisclosure',
             'plagiarism_copyleaks'
         );
-
-        // Get values from the submitted form (if available), otherwise use saved values from DB.
+        
+        // Get values from the submitted form (if available), otherwise use saved values from DB (admin config).
         $plagiarismlowtomidthreshold = optional_param('plagiarism_copyleaks_plagiarismlowtomidthreshold', null, PARAM_INT);
         $plagiarismmidtohighthreshold = optional_param('plagiarism_copyleaks_plagiarismmidtohighthreshold', null, PARAM_INT);
 
-        // If no form submission values exist, fetch saved values from the database.
+        // If no form submission values exist, fetch saved values from the database (admin config).
         if (is_null($plagiarismlowtomidthreshold)) {
             $config = (array) plagiarism_copyleaks_pluginconfig::admin_config();
             $plagiarismlowtomidthreshold = isset($config['plagiarism_copyleaks_plagiarismlowtomidthreshold']) ?
@@ -124,7 +124,7 @@ class plagiarism_copyleaks_adminform extends moodleform {
 
         $mform->addHelpButton(
             'plagiarism_copyleaks_plagiarismthresholds',
-            'clplagiarismthresholdshelpbtn',
+            'clplagiarismdetectionthresholds',
             'plagiarism_copyleaks'
         );
 
@@ -136,11 +136,11 @@ class plagiarism_copyleaks_adminform extends moodleform {
         $mform->setType('plagiarism_copyleaks_plagiarismmidtohighthreshold', PARAM_INT);
 
 
-        // Get values from the submitted form (if available), otherwise use saved values from DB.
+        // Get values from the submitted form (if available), otherwise use saved values from DB (admin config).
         $aicontentlowtomidthreshold = optional_param('plagiarism_copyleaks_aicontentlowtomidthreshold', null, PARAM_INT);
         $aicontentmidtohighthreshold = optional_param('plagiarism_copyleaks_aicontentmidtohighthreshold', null, PARAM_INT);
 
-        // If no form submission values exist, fetch saved values from the database.
+        // If no form submission values exist, fetch saved values from the database (admin config).
         if (is_null($aicontentlowtomidthreshold)) {
             $config = (array) plagiarism_copyleaks_pluginconfig::admin_config();
             $aicontentlowtomidthreshold = isset($config['plagiarism_copyleaks_aicontentlowtomidthreshold']) ?
@@ -172,7 +172,7 @@ class plagiarism_copyleaks_adminform extends moodleform {
 
         $mform->addHelpButton(
             'plagiarism_copyleaks_aicontentthresholds',
-            'claicontentthresholdshelpbtn',
+            'claicontentdetectionthresholds',
             'plagiarism_copyleaks'
         );
 
@@ -210,10 +210,10 @@ class plagiarism_copyleaks_adminform extends moodleform {
             get_string('claccountsecret', 'plagiarism_copyleaks')
         );
 
-        // if (\plagiarism_copyleaks_comms::test_copyleaks_connection('admin_settings_page', true)) {
-        //     $btn = plagiarism_copyleaks_utils::get_copyleaks_settings_button_link(null, true);
-        //     $mform->addElement('html', $btn);
-        // }
+        if (\plagiarism_copyleaks_comms::test_copyleaks_connection('admin_settings_page', true)) {
+            $btn = plagiarism_copyleaks_utils::get_copyleaks_settings_button_link(null, true);
+            $mform->addElement('html', $btn);
+        }
 
         $this->add_action_buttons();
     }
@@ -380,19 +380,19 @@ class plagiarism_copyleaks_adminform extends moodleform {
 
         $cache = cache::make('core', 'config');
         $cache->delete('plagiarism_copyleaks');
-        // if (\plagiarism_copyleaks_comms::test_copyleaks_connection('admin_settings_page', true)) {
-        //     $config = plagiarism_copyleaks_pluginconfig::admin_config();
-        //     $domain = (new moodle_url('/'))->out(false);
-        //     $domain = rtrim($domain, '/');
-        //     $pluginversion = get_config('plagiarism_copyleaks', 'version');
-        //     $plugindata = (array)[
-        //         'domain' => $domain,
-        //         'pluginVersion' => $pluginversion,
-        //     ];
-        //     plagiarism_copyleaks_dbutils::queue_copyleaks_integration_data_sync_request(
-        //         $plugindata,
-        //         $config->plagiarism_copyleaks_key
-        //     );
-        // }
+        if (\plagiarism_copyleaks_comms::test_copyleaks_connection('admin_settings_page', true)) {
+            $config = plagiarism_copyleaks_pluginconfig::admin_config();
+            $domain = (new moodle_url('/'))->out(false);
+            $domain = rtrim($domain, '/');
+            $pluginversion = get_config('plagiarism_copyleaks', 'version');
+            $plugindata = (array)[
+                'domain' => $domain,
+                'pluginVersion' => $pluginversion,
+            ];
+            plagiarism_copyleaks_dbutils::queue_copyleaks_integration_data_sync_request(
+                $plugindata,
+                $config->plagiarism_copyleaks_key
+            );
+        }
     }
 }

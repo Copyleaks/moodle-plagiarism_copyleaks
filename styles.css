@@ -334,7 +334,7 @@ a.copyleaks-settings-link:hover {
     margin-top: 10px;
 }
 
-.range-slider {
+.slider-container .range-slider {
     position: relative;
     width: 100%;
     height: 8px;
@@ -342,7 +342,7 @@ a.copyleaks-settings-link:hover {
     border-radius: 5px;
 }
 
-input[type="range"] {
+.slider-container input[type="range"] {
     position: absolute;
     width: 100%;
     height: 8px;
@@ -352,7 +352,7 @@ input[type="range"] {
     top: 1px;
 }
 
-input[type="range"]::-webkit-slider-thumb {
+.slider-container input[type="range"]::-webkit-slider-thumb {
     -webkit-appearance: none;
     width: 15px;
     height: 15px;
@@ -364,6 +364,7 @@ input[type="range"]::-webkit-slider-thumb {
     position: relative;
     z-index: 3;
 }
+
 @keyframes spin {
     0% {
         -webkit-transform: rotate(0deg);

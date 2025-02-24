@@ -253,8 +253,8 @@ class plagiarism_copyleaks_submissiondisplay {
 
                             $config = (array) plagiarism_copyleaks_pluginconfig::admin_config();
 
-                            $plgiarismlowtomidthreshold = $config['plagiarism_copyleaks_plagiarismlowtomidthreshold'];
-                            $plgiarismmidtohighthreshold = $config['plagiarism_copyleaks_plagiarismmidtohighthreshold'];
+                            $plgiarismlowtomidthreshold = $config['plagiarism_copyleaks_plagiarismlowtomidthreshold'] ?? 30;
+                            $plgiarismmidtohighthreshold = $config['plagiarism_copyleaks_plagiarismmidtohighthreshold'] ?? 70;
 
                             // Plagiarism Score level class.
                             $scorelevelclass = '';
@@ -266,8 +266,8 @@ class plagiarism_copyleaks_submissiondisplay {
                                 $scorelevelclass = "cls-plag-score-level-high";
                             }
 
-                            $aicontentlowtomidthreshold = $config['plagiarism_copyleaks_aicontentlowtomidthreshold'];
-                            $aicontentmidtohighthreshold = $config['plagiarism_copyleaks_aicontentmidtohighthreshold'];
+                            $aicontentlowtomidthreshold = $config['plagiarism_copyleaks_aicontentlowtomidthreshold'] ?? 30;
+                            $aicontentmidtohighthreshold = $config['plagiarism_copyleaks_aicontentmidtohighthreshold'] ?? 70;
 
                             // AI Score level class.
                             $aiscorelevel = '';
