@@ -106,12 +106,12 @@ class plagiarism_copyleaks_sendsubmissions extends \core\task\scheduled_task {
                             'Submission type is not supported.',
                             \plagiarism_copyleaks_errorcode::INTERNAL_PLUGIN_ERROR_NOT_RESCANNABLE
                         );
-                        $copyleakscomms->start_scan_when_ready($counterid);
+                        $copyleakscomms->handle_failed_to_submit($counterid);
                         continue;
                     }
 
                     if (\plagiarism_copyleaks_moduleconfig::is_course_module_request_queued($submission->cm)) {
-                        $copyleakscomms->start_scan_when_ready($counterid);
+                        $copyleakscomms->handle_failed_to_submit($counterid);
                         continue;
                     }
 
@@ -121,9 +121,9 @@ class plagiarism_copyleaks_sendsubmissions extends \core\task\scheduled_task {
                         \plagiarism_copyleaks_submissions::handle_submission_error(
                             $submission,
                             "Course Module wasnt found for this record.",
+                            $counterid,
                             \plagiarism_copyleaks_errorcode::INTERNAL_PLUGIN_ERROR_NOT_RESCANNABLE
                         );
-                        $copyleakscomms->start_scan_when_ready($counterid);
                         continue;
                     }
 
@@ -139,9 +139,9 @@ class plagiarism_copyleaks_sendsubmissions extends \core\task\scheduled_task {
                         \plagiarism_copyleaks_submissions::handle_submission_error(
                             $submission,
                             'User Id should never be 0.',
+                            $counterid,
                             \plagiarism_copyleaks_errorcode::INTERNAL_PLUGIN_ERROR_NOT_RESCANNABLE
                         );
-                        $copyleakscomms->start_scan_when_ready($counterid);
                         continue;
                     }
 
@@ -250,8 +250,7 @@ class plagiarism_copyleaks_sendsubmissions extends \core\task\scheduled_task {
 
                     // If $errormessage is not empty, then there was an error.
                     if (isset($errormessage) && $errormessage != "") {
-                        \plagiarism_copyleaks_submissions::handle_submission_error($submission,  $errormessage, $errorcode);
-                        $copyleakscomms->start_scan_when_ready($counterid);
+                        \plagiarism_copyleaks_submissions::handle_submission_error($submission,  $errormessage, $counterid, $errorcode);
                         continue;
                     }
 
@@ -259,8 +258,7 @@ class plagiarism_copyleaks_sendsubmissions extends \core\task\scheduled_task {
                         // Read the submited work into a temp file for submitting.
                         $tempfilepath = $this->create_copyleaks_tempfile($coursemodule->id, $filename);
                     } catch (\Exception $e) {
-                        \plagiarism_copyleaks_submissions::handle_submission_error($submission,  "Fail to create a tempfile.", \plagiarism_copyleaks_errorcode::INTERNAL_PLUGIN_ERROR_NOT_RESCANNABLE);
-                        $copyleakscomms->start_scan_when_ready($counterid);
+                        \plagiarism_copyleaks_submissions::handle_submission_error($submission,  "Fail to create a tempfile.", $counterid, \plagiarism_copyleaks_errorcode::INTERNAL_PLUGIN_ERROR_NOT_RESCANNABLE);
                         continue;
                     }
 
@@ -291,7 +289,7 @@ class plagiarism_copyleaks_sendsubmissions extends \core\task\scheduled_task {
                         } else {
                             \plagiarism_copyleaks_logs::add($error, 'API_ERROR_RETRY_WILL_BE_DONE');
                         }
-                        $copyleakscomms->start_scan_when_ready($counterid);
+                        $copyleakscomms->handle_failed_to_submit($counterid);
                     }
 
                     // After finished the scan proccess, delete the temp file (if it exists).

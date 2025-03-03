@@ -1028,8 +1028,8 @@ class plagiarism_copyleaks_comms {
      * Decrease the counter and start the batch scans if ready (counter = 0).
      * @param string $batchid
      */
-    public function start_scan_when_ready($batchid) {
-        $endpoint = "/api/moodle/plugin/$this->key/task/$batchid/start-scan-when-ready";
+    public function handle_failed_to_submit($batchid) {
+        $endpoint = "/api/moodle/plugin/$this->key/task/$batchid/handle-failed-to-submit";
         try {
             return plagiarism_copyleaks_http_client::execute_retry(
                 'POST',

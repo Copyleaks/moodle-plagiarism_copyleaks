@@ -255,63 +255,70 @@ class plagiarism_copyleaks_submissions {
     }
 
     /**
-     * Update all failed scans for a given course module to queued, if they have resubmittable errors.
+     * Update failed scans to queued if they have resubmittable errors.
      * 
-     * @param int $cmid The course module ID.
+     * If a course module ID is provided, only failed scans for that module are updated.
+     * Otherwise, all failed scans modified in the last 10 days are updated.
+     * 
+     * @param int|null $cmid The course module ID. If null, updates all failed scans.
      */
-    public static function change_cm_failed_scans_to_queued($cmid) {
-        global $DB;
-
-        // Get all failed scans for this module with an error.
-        $records = $DB->get_records_select(
-            'plagiarism_copyleaks_files',
-            "cm = ? AND statuscode = 'error'",
-            [$cmid],
-            '',
-            'id, errorcode'
-        );
-
-        foreach ($records as $record) {
-            if (self::is_resubmittable_error($record->errorcode)) {
-                $DB->execute(
-                    "UPDATE {plagiarism_copyleaks_files} 
-                          SET statuscode = ?, errormsg = ?, errorcode = ?
-                          WHERE id = ?",
-                    ['queued', null, null, $record->id]
-                );
-            }
-        }
-    }
-
-    /**
-     * Update all failed scans modified in the last 10 days to queued if they have resubmittable errors.
-     */
-    public static function change_all_failed_scans_to_queued() {
+    public static function change_failed_scans_to_queued($cmid = null) {
         global $DB;
 
         // Get timestamp for 10 days ago.
         $timecutoff = time() - (10 * 24 * 60 * 60);
 
-        // Get all failed scans within the last 10 days.
-        $records = $DB->get_records_select(
-            'plagiarism_copyleaks_files',
-            "statuscode = 'error' AND lastmodified >= ?",
-            [$timecutoff],
-            '',
-            'id, errorcode'
-        );
+        // Build the SQL condition dynamically
+        $conditions = ["statuscode = 'error'"];
+        $params = [];
 
-        foreach ($records as $record) {
-            if (self::is_resubmittable_error($record->errorcode)) {
-                $DB->execute(
-                    "UPDATE {plagiarism_copyleaks_files} 
-                          SET statuscode = ?, errormsg = ?, errorcode = ?
-                          WHERE id = ?",
-                    ['queued', null, null, $record->id]
-                );
-            }
+        if ($cmid !== null) {
+            $conditions[] = "cm = ?";
+            $params[] = $cmid;
+        } else {
+            $conditions[] = "lastmodified >= ?";
+            $params[] = $timecutoff;
         }
+
+        // Construct the where clause
+        $whereClause = implode(' AND ', $conditions);
+
+        $limit = PLAGIARISM_COPYLEAKS_CRON_QUERY_LIMIT; // Number of records to fetch at a time
+        $offset = 0;   // Start from the first record
+
+        do {
+            // Get a batch of failed scans based on the condition
+            $records = $DB->get_records_select(
+                'plagiarism_copyleaks_files',
+                $whereClause,
+                $params,
+                '',
+                'id, errorcode',
+                $offset,
+                $limit
+            );
+
+            foreach ($records as $record) {
+                if (self::is_resubmittable_error($record->errorcode)) {
+                    $DB->execute(
+                        "UPDATE {plagiarism_copyleaks_files} 
+                              SET statuscode = ?, errormsg = ?, errorcode = ?
+                              WHERE id = ?",
+                        ['queued',
+                            null,
+                            null,
+                            $record->id
+                        ]
+                    );
+                }
+            }
+
+            // Move to the next batch
+            $offset += $limit;
+        } while (count($records) === $limit); // Continue if we got a full batch
     }
+    
+    
 
     /**
      * Check if an error code is eligible for resubmission.
@@ -339,8 +346,9 @@ class plagiarism_copyleaks_submissions {
      * @param string $errormessage
      * @param int $errorcode
      */
-    public static function handle_submission_error(&$submission, $errormessage = '', $errorcode = null) {
+    public static function handle_submission_error(&$submission, $errormessage = '', $counterid, $errorcode = null) {
         global $DB;
+        $copyleakscomms = new \plagiarism_copyleaks_comms();
         if (isset($submission->retrycnt) && $submission->retrycnt > PLAGIARISM_COPYLEAKS_MAX_AUTO_RETRY) {
             self::mark_error($submission->id, $errormessage, $errorcode, true);
             return;
@@ -361,6 +369,8 @@ class plagiarism_copyleaks_submissions {
                 "UPDATE_RECORD_FAILED"
             );
         }
+
+        $copyleakscomms->handle_failed_to_submit($counterid);
     }
 
 

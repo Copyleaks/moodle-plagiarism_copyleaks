@@ -551,7 +551,7 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
 
         // Add error code field to plagiarism_copyleaks_files.
         $table = new xmldb_table('plagiarism_copyleaks_files');
-        $errorcodefield = new xmldb_field('errorcode', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'errormsg');
+        $errorcodefield = new xmldb_field('errorcode', XMLDB_TYPE_INTEGER, '2', null, null, null, null, 'errormsg');
 
         if ($dbman->table_exists($table)) {
             if (!$dbman->field_exists($table, $errorcodefield)) {

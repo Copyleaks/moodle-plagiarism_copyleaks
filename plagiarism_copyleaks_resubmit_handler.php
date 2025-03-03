@@ -66,7 +66,7 @@ switch ($rescanmode) {
         if (!$hasadminpermission) {
             throw new moodle_exception('nopermission', 'error');
         }
-        plagiarism_copyleaks_submissions::change_all_failed_scans_to_queued();
+        plagiarism_copyleaks_submissions::change_failed_scans_to_queued();
 
         break;
 
@@ -82,7 +82,7 @@ switch ($rescanmode) {
 
         require_login($cm->course, false, $cm);
 
-        plagiarism_copyleaks_submissions::change_cm_failed_scans_to_queued($cmid);
+        plagiarism_copyleaks_submissions::change_failed_scans_to_queued($cmid);
 
         break;
 
