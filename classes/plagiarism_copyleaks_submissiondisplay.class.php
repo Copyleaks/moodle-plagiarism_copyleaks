@@ -253,28 +253,28 @@ class plagiarism_copyleaks_submissiondisplay {
 
                             $config = (array) plagiarism_copyleaks_pluginconfig::admin_config();
 
-                            $plgiarismlowtomidthreshold = $config['plagiarism_copyleaks_plagiarismlowtomidthreshold'] ?? 30;
-                            $plgiarismmidtohighthreshold = $config['plagiarism_copyleaks_plagiarismmidtohighthreshold'] ?? 70;
+                            $plgiarismmidthreshold = $config['plagiarism_copyleaks_plagiarismmidthreshold'] ?? 30;
+                            $plgiarismhighthreshold = $config['plagiarism_copyleaks_plagiarismhighthreshold'] ?? 70;
 
                             // Plagiarism Score level class.
                             $scorelevelclass = '';
-                            if ($submittedfile->similarityscore <= $plgiarismlowtomidthreshold) {
+                            if ($submittedfile->similarityscore <= $plgiarismmidthreshold) {
                                 $scorelevelclass = "cls-plag-score-level-low";
-                            } else if ($submittedfile->similarityscore <= $plgiarismmidtohighthreshold) {
+                            } else if ($submittedfile->similarityscore <= $plgiarismhighthreshold) {
                                 $scorelevelclass = "cls-plag-score-level-mid";
                             } else {
                                 $scorelevelclass = "cls-plag-score-level-high";
                             }
 
-                            $aicontentlowtomidthreshold = $config['plagiarism_copyleaks_aicontentlowtomidthreshold'] ?? 30;
-                            $aicontentmidtohighthreshold = $config['plagiarism_copyleaks_aicontentmidtohighthreshold'] ?? 70;
+                            $aicontentmidthreshold = $config['plagiarism_copyleaks_aicontentmidthreshold'] ?? 30;
+                            $aicontenthighthreshold = $config['plagiarism_copyleaks_aicontenthighthreshold'] ?? 70;
 
                             // AI Score level class.
                             $aiscorelevel = '';
-                            if ($submittedfile->aiscore <= $aicontentlowtomidthreshold
+                            if ($submittedfile->aiscore <= $aicontentmidthreshold
                             ) {
                                 $aiscorelevel = "cls-ai-score-level-low";
-                            } else if ($submittedfile->aiscore <= $aicontentmidtohighthreshold) {
+                            } else if ($submittedfile->aiscore <= $aicontenthighthreshold) {
                                 $aiscorelevel = "cls-ai-score-level-mid";
                             } else {
                                 $aiscorelevel = "cls-ai-score-level-high";

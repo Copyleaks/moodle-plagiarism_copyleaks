@@ -89,28 +89,28 @@ class plagiarism_copyleaks_adminform extends moodleform {
         );
         
         // Get values from the submitted form (if available), otherwise use saved values from DB (admin config).
-        $plagiarismlowtomidthreshold = optional_param('plagiarism_copyleaks_plagiarismlowtomidthreshold', null, PARAM_INT);
-        $plagiarismmidtohighthreshold = optional_param('plagiarism_copyleaks_plagiarismmidtohighthreshold', null, PARAM_INT);
+        $plagiarismmidthreshold = optional_param('plagiarism_copyleaks_plagiarismmidthreshold', null, PARAM_INT);
+        $plagiarismhighthreshold = optional_param('plagiarism_copyleaks_plagiarismhighthreshold', null, PARAM_INT);
 
         // If no form submission values exist, fetch saved values from the database (admin config).
-        if (is_null($plagiarismlowtomidthreshold)) {
+        if (is_null($plagiarismmidthreshold)) {
             $config = (array) plagiarism_copyleaks_pluginconfig::admin_config();
-            $plagiarismlowtomidthreshold = isset($config['plagiarism_copyleaks_plagiarismlowtomidthreshold']) ?
-                $config['plagiarism_copyleaks_plagiarismlowtomidthreshold'] : 30;
+            $plagiarismmidthreshold = isset($config['plagiarism_copyleaks_plagiarismmidthreshold']) ?
+                $config['plagiarism_copyleaks_plagiarismmidthreshold'] : 30;
         }
 
-        if (is_null($plagiarismmidtohighthreshold)) {
+        if (is_null($plagiarismhighthreshold)) {
             $config = (array) plagiarism_copyleaks_pluginconfig::admin_config();
-            $plagiarismmidtohighthreshold = isset($config['plagiarism_copyleaks_plagiarismmidtohighthreshold']) ?
-            $config['plagiarism_copyleaks_plagiarismmidtohighthreshold'] : 70;
+            $plagiarismhighthreshold = isset($config['plagiarism_copyleaks_plagiarismhighthreshold']) ?
+            $config['plagiarism_copyleaks_plagiarismhighthreshold'] : 70;
         }
 
         // Prepare data for rendering Mustache template
         $plagiarismthresholdsliderdata  = [
-            'lowtomidthreshold' => $plagiarismlowtomidthreshold,
-            'midtohighthreshold' => $plagiarismmidtohighthreshold,
-            'lowtomidfieldname' => 'plagiarism_copyleaks_plagiarismlowtomidthreshold',
-            'midtohighfieldname' => 'plagiarism_copyleaks_plagiarismmidtohighthreshold',
+            'midthreshold' => $plagiarismmidthreshold,
+            'highthreshold' => $plagiarismhighthreshold,
+            'midfieldname' => 'plagiarism_copyleaks_plagiarismmidthreshold',
+            'highfieldname' => 'plagiarism_copyleaks_plagiarismhighthreshold',
             'uid' => 'plagiarism_copyleaks_plagiarismthresholds',
         ];
 
@@ -129,36 +129,36 @@ class plagiarism_copyleaks_adminform extends moodleform {
         );
 
         // Ensure hidden fields always get the latest values
-        $mform->addElement('hidden', 'plagiarism_copyleaks_plagiarismlowtomidthreshold', $plagiarismlowtomidthreshold);
-        $mform->setType('plagiarism_copyleaks_plagiarismlowtomidthreshold', PARAM_INT);
+        $mform->addElement('hidden', 'plagiarism_copyleaks_plagiarismmidthreshold', $plagiarismmidthreshold);
+        $mform->setType('plagiarism_copyleaks_plagiarismmidthreshold', PARAM_INT);
 
-        $mform->addElement('hidden', 'plagiarism_copyleaks_plagiarismmidtohighthreshold', $plagiarismmidtohighthreshold);
-        $mform->setType('plagiarism_copyleaks_plagiarismmidtohighthreshold', PARAM_INT);
+        $mform->addElement('hidden', 'plagiarism_copyleaks_plagiarismhighthreshold', $plagiarismhighthreshold);
+        $mform->setType('plagiarism_copyleaks_plagiarismhighthreshold', PARAM_INT);
 
 
         // Get values from the submitted form (if available), otherwise use saved values from DB (admin config).
-        $aicontentlowtomidthreshold = optional_param('plagiarism_copyleaks_aicontentlowtomidthreshold', null, PARAM_INT);
-        $aicontentmidtohighthreshold = optional_param('plagiarism_copyleaks_aicontentmidtohighthreshold', null, PARAM_INT);
+        $aicontentmidthreshold = optional_param('plagiarism_copyleaks_aicontentmidthreshold', null, PARAM_INT);
+        $aicontenthighthreshold = optional_param('plagiarism_copyleaks_aicontenthighthreshold', null, PARAM_INT);
 
         // If no form submission values exist, fetch saved values from the database (admin config).
-        if (is_null($aicontentlowtomidthreshold)) {
+        if (is_null($aicontentmidthreshold)) {
             $config = (array) plagiarism_copyleaks_pluginconfig::admin_config();
-            $aicontentlowtomidthreshold = isset($config['plagiarism_copyleaks_aicontentlowtomidthreshold']) ?
-            $config['plagiarism_copyleaks_aicontentlowtomidthreshold'] : 30;
+            $aicontentmidthreshold = isset($config['plagiarism_copyleaks_aicontentmidthreshold']) ?
+            $config['plagiarism_copyleaks_aicontentmidthreshold'] : 30;
         }
 
-        if (is_null($aicontentmidtohighthreshold)) {
+        if (is_null($aicontenthighthreshold)) {
             $config = (array) plagiarism_copyleaks_pluginconfig::admin_config();
-            $aicontentmidtohighthreshold = isset($config['plagiarism_copyleaks_aicontentmidtohighthreshold']) ?
-            $config['plagiarism_copyleaks_aicontentmidtohighthreshold'] : 70;
+            $aicontenthighthreshold = isset($config['plagiarism_copyleaks_aicontenthighthreshold']) ?
+            $config['plagiarism_copyleaks_aicontenthighthreshold'] : 70;
         }
 
         // Prepare data for rendering Mustache template
         $aicontentthresholdsliderdata  = [
-            'lowtomidthreshold' => $aicontentlowtomidthreshold,
-            'midtohighthreshold' => $aicontentmidtohighthreshold,
-            'lowtomidfieldname' => 'plagiarism_copyleaks_aicontentlowtomidthreshold',
-            'midtohighfieldname' => 'plagiarism_copyleaks_aicontentmidtohighthreshold',
+            'midthreshold' => $aicontentmidthreshold,
+            'highthreshold' => $aicontenthighthreshold,
+            'midfieldname' => 'plagiarism_copyleaks_aicontentmidthreshold',
+            'highfieldname' => 'plagiarism_copyleaks_aicontenthighthreshold',
             'uid' => 'plagiarism_copyleaks_aicontentthresholds',
         ];
 
@@ -177,11 +177,11 @@ class plagiarism_copyleaks_adminform extends moodleform {
         );
 
         // Ensure hidden fields always get the latest values
-        $mform->addElement('hidden', 'plagiarism_copyleaks_aicontentlowtomidthreshold', $aicontentlowtomidthreshold);
-        $mform->setType('plagiarism_copyleaks_aicontentlowtomidthreshold', PARAM_INT);
+        $mform->addElement('hidden', 'plagiarism_copyleaks_aicontentmidthreshold', $aicontentmidthreshold);
+        $mform->setType('plagiarism_copyleaks_aicontentmidthreshold', PARAM_INT);
 
-        $mform->addElement('hidden', 'plagiarism_copyleaks_aicontentmidtohighthreshold', $aicontentmidtohighthreshold);
-        $mform->setType('plagiarism_copyleaks_aicontentmidtohighthreshold', PARAM_INT);
+        $mform->addElement('hidden', 'plagiarism_copyleaks_aicontenthighthreshold', $aicontenthighthreshold);
+        $mform->setType('plagiarism_copyleaks_aicontenthighthreshold', PARAM_INT);
 
 
         // Copyleaks Account Configurations.
@@ -305,31 +305,31 @@ class plagiarism_copyleaks_adminform extends moodleform {
         }
 
         if (
-            !isset($plagiarismsettings['plagiarism_copyleaks_plagiarismlowtomidthreshold']) ||
-            empty($plagiarismsettings['plagiarism_copyleaks_plagiarismlowtomidthreshold'])
+            !isset($plagiarismsettings['plagiarism_copyleaks_plagiarismmidthreshold']) ||
+            empty($plagiarismsettings['plagiarism_copyleaks_plagiarismmidthreshold'])
         ) {
-            $plagiarismsettings['plagiarism_copyleaks_plagiarismlowtomidthreshold'] = 30;
+            $plagiarismsettings['plagiarism_copyleaks_plagiarismmidthreshold'] = 30;
         }
 
         if (
-            !isset($plagiarismsettings['plagiarism_copyleaks_plagiarismmidtohighthreshold']) ||
-            empty($plagiarismsettings['plagiarism_copyleaks_plagiarismmidtohighthreshold'])
+            !isset($plagiarismsettings['plagiarism_copyleaks_plagiarismhighthreshold']) ||
+            empty($plagiarismsettings['plagiarism_copyleaks_plagiarismhighthreshold'])
         ) {
-            $plagiarismsettings['plagiarism_copyleaks_plagiarismmidtohighthreshold'] = 70;
+            $plagiarismsettings['plagiarism_copyleaks_plagiarismhighthreshold'] = 70;
         }
 
         if (
-            !isset($plagiarismsettings['plagiarism_copyleaks_aicontentlowtomidthreshold']) ||
-            empty($plagiarismsettings['plagiarism_copyleaks_aicontentlowtomidthreshold'])
+            !isset($plagiarismsettings['plagiarism_copyleaks_aicontentmidthreshold']) ||
+            empty($plagiarismsettings['plagiarism_copyleaks_aicontentmidthreshold'])
         ) {
-            $plagiarismsettings['plagiarism_copyleaks_aicontentlowtomidthreshold'] = 30;
+            $plagiarismsettings['plagiarism_copyleaks_aicontentmidthreshold'] = 30;
         }
 
         if (
-            !isset($plagiarismsettings['plagiarism_copyleaks_aicontentmidtohighthreshold']) ||
-            empty($plagiarismsettings['plagiarism_copyleaks_aicontentmidtohighthreshold'])
+            !isset($plagiarismsettings['plagiarism_copyleaks_aicontenthighthreshold']) ||
+            empty($plagiarismsettings['plagiarism_copyleaks_aicontenthighthreshold'])
         ) {
-            $plagiarismsettings['plagiarism_copyleaks_aicontentmidtohighthreshold'] = 70;
+            $plagiarismsettings['plagiarism_copyleaks_aicontenthighthreshold'] = 70;
         }
         
         $this->set_data($plagiarismsettings);
