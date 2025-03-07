@@ -48,7 +48,7 @@ class plagiarism_copyleaks_adminform extends moodleform {
      * Define the form
      * */
     public function definition() {
-        global $CFG, $OUTPUT;
+        global $OUTPUT;
         $mform = &$this->_form;
 
         // Plugin Configurations.
@@ -87,7 +87,7 @@ class plagiarism_copyleaks_adminform extends moodleform {
             'clstudentdisclosure',
             'plagiarism_copyleaks'
         );
-        
+
         // Get values from the submitted form (if available), otherwise use saved values from DB (admin config).
         $plagiarismmidthreshold = optional_param('plagiarism_copyleaks_plagiarismmidthreshold', null, PARAM_INT);
         $plagiarismhighthreshold = optional_param('plagiarism_copyleaks_plagiarismhighthreshold', null, PARAM_INT);
@@ -102,7 +102,7 @@ class plagiarism_copyleaks_adminform extends moodleform {
         if (is_null($plagiarismhighthreshold)) {
             $config = (array) plagiarism_copyleaks_pluginconfig::admin_config();
             $plagiarismhighthreshold = isset($config['plagiarism_copyleaks_plagiarismhighthreshold']) ?
-            $config['plagiarism_copyleaks_plagiarismhighthreshold'] : 70;
+                $config['plagiarism_copyleaks_plagiarismhighthreshold'] : 70;
         }
 
         // Prepare data for rendering Mustache template
@@ -144,13 +144,13 @@ class plagiarism_copyleaks_adminform extends moodleform {
         if (is_null($aicontentmidthreshold)) {
             $config = (array) plagiarism_copyleaks_pluginconfig::admin_config();
             $aicontentmidthreshold = isset($config['plagiarism_copyleaks_aicontentmidthreshold']) ?
-            $config['plagiarism_copyleaks_aicontentmidthreshold'] : 30;
+                $config['plagiarism_copyleaks_aicontentmidthreshold'] : 30;
         }
 
         if (is_null($aicontenthighthreshold)) {
             $config = (array) plagiarism_copyleaks_pluginconfig::admin_config();
             $aicontenthighthreshold = isset($config['plagiarism_copyleaks_aicontenthighthreshold']) ?
-            $config['plagiarism_copyleaks_aicontenthighthreshold'] : 70;
+                $config['plagiarism_copyleaks_aicontenthighthreshold'] : 70;
         }
 
         // Prepare data for rendering Mustache template
@@ -331,7 +331,7 @@ class plagiarism_copyleaks_adminform extends moodleform {
         ) {
             $plagiarismsettings['plagiarism_copyleaks_aicontenthighthreshold'] = 70;
         }
-        
+
         $this->set_data($plagiarismsettings);
     }
 
@@ -351,7 +351,7 @@ class plagiarism_copyleaks_adminform extends moodleform {
      * @param stdClass $data
      */
     public function save(stdClass $data) {
-        global $DB, $CFG;
+        global $CFG;
 
         // Save admin settings.
         $configproperties = plagiarism_copyleaks_pluginconfig::admin_config_properties();
