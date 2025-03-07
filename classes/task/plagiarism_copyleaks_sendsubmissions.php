@@ -84,7 +84,7 @@ class plagiarism_copyleaks_sendsubmissions extends \core\task\scheduled_task {
 
             // create a counter id for the batch
             $copyleakscomms = new \plagiarism_copyleaks_comms();
-            $response = $copyleakscomms->create_scan_Batch_counter([
+            $response = $copyleakscomms->create_scan_batch_counter([
                 "countervalue" => count($queuedsubmissions),
             ]);
             $counterid = $response->counterId;
@@ -221,7 +221,7 @@ class plagiarism_copyleaks_sendsubmissions extends \core\task\scheduled_task {
                         if (!empty($submittedtextcontent)) {
                             $submittedtextcontent = strip_tags($submittedtextcontent);
                             $filename = 'quizanswer_'
-                            . $userid . "_"
+                                . $userid . "_"
                                 . $coursemodule->id . "_"
                                 . $coursemodule->instance . "_"
                                 . $submission->itemid . '.txt';
@@ -298,7 +298,6 @@ class plagiarism_copyleaks_sendsubmissions extends \core\task\scheduled_task {
                     }
                 }
             }
-            
         }
     }
 

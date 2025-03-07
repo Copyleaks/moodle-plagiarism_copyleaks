@@ -1009,7 +1009,7 @@ class plagiarism_copyleaks_comms {
      * Update course module temp id at Copyleaks server.
      * @param array $data
      */
-    public function create_scan_Batch_counter($data) {
+    public function create_scan_batch_counter($data) {
         $endpoint = "/api/moodle/plugin/$this->key/task/create-scan-batch-counter";
         try {
             return plagiarism_copyleaks_http_client::execute_retry(

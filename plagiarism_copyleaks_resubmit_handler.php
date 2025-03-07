@@ -40,98 +40,112 @@ $sid = optional_param('sid', null, PARAM_TEXT);
 $pluginparam = optional_param('plugin', null, PARAM_TEXT);
 $returnaction = optional_param('returnaction', null, PARAM_TEXT);
 
-// Get system context (for admin check)
-$system_context = context_system::instance();
-$hasadminpermission = has_capability('plagiarism/copyleaks:adminresubmitfailedscans', $system_context);
-
-// Get module context (for teacher check, only if cmid is provided)
-$hasteacherpermission = false;
-if ($cmid) {
-    $cm = get_coursemodule_from_id('', $cmid);
-    if (!$cm) {
-        throw new moodle_exception('invalidcoursemodule');
-    }
-    $context = context_module::instance($cm->id);
-    $hasteacherpermission = has_capability('plagiarism/copyleaks:resubmitfailedscans', $context);
-}
-
-// Block unauthorized access **before switch**
-if (!$hasadminpermission && !$hasteacherpermission) {
-    throw new moodle_exception('nopermission', 'error');
-}
+validations($cmid, $rescanmode);
 
 switch ($rescanmode) {
     case plagiarism_copyleaks_rescan_mode::RESCAN_ALL:
-        // ADMIN: Rescanning all failed scans
-        if (!$hasadminpermission) {
-            throw new moodle_exception('nopermission', 'error');
-        }
         plagiarism_copyleaks_submissions::change_failed_scans_to_queued();
-
         break;
-
     case plagiarism_copyleaks_rescan_mode::RESCAN_MODULE:
-        // TEACHER: Rescanning all failed scans in a module
+        require_login($cm->course, false, $cm);
+        plagiarism_copyleaks_submissions::change_failed_scans_to_queued($cmid);
+        break;
+    case plagiarism_copyleaks_rescan_mode::RESCAN_SINGLE:
+        rescan_single($fileid, $cmid, $courseid, $route, $action, $workshopid, $sid, $pluginparam, $returnaction, $cm);
+        break;
+    default:
+        throw new moodle_exception('invalidparameter', 'error');
+}
+
+/**
+ * Validations
+ * @param int $cmid
+ * @param bool $hasadminpermission
+ * @param int $rescanmode
+ */
+function validations($cmid, $rescanmode) {
+    if ($rescanmode != plagiarism_copyleaks_rescan_mode::RESCAN_ALL) {
+        // TEACHER: Rescanning all failed scans in a module or single scan
         if (!$cmid) {
             throw new moodle_exception('missingparam', 'error', '', 'cmid');
         }
 
-        if (!$hasteacherpermission) {
+        $cm = get_coursemodule_from_id('', $cmid);
+
+        if (!$cm) {
+            throw new moodle_exception('invalidcoursemodule');
+        }
+        // Get module context (for teacher check, only if cmid is provided)
+        $context = context_module::instance($cm->id);
+        // Block unauthorized access **before switch**
+        if (!has_capability('plagiarism/copyleaks:resubmitfailedscans', $context)) {
             throw new moodle_exception('nopermission', 'error');
         }
+        return;
+    }
+    // Get system context (for admin check)
+    $system_context = context_system::instance();
+    $hasadminpermission = has_capability('plagiarism/copyleaks:adminresubmitfailedscans', $system_context);
+    // Block unauthorized access **before switch**
+    if ($rescanmode == plagiarism_copyleaks_rescan_mode::RESCAN_ALL && !$hasadminpermission) {
+        throw new moodle_exception('nopermission', 'error');
+    }
+}
 
-        require_login($cm->course, false, $cm);
+/**
+ * Rescanning a specific failed scan
+ * @param int $fileid
+ * @param int $cmid
+ * @param int $courseid
+ * @param string $route
+ * @param string $action
+ * @param int $workshopid
+ * @param int $sid
+ * @param string $pluginparam
+ * @param string $returnaction
+ * @param object $cm
+ */
+function rescan_single($fileid, $cmid, $courseid, $route, $action, $workshopid, $sid, $pluginparam, $returnaction, $cm) {
+    // TEACHER: Rescanning a specific failed scan
+    if (!$fileid || !$cmid || !$courseid || !$route) {
+        throw new moodle_exception('missingparam', 'error');
+    }
 
-        plagiarism_copyleaks_submissions::change_failed_scans_to_queued($cmid);
+    require_login($courseid, false, $cm);
 
-        break;
-
-    case plagiarism_copyleaks_rescan_mode::RESCAN_SINGLE:
-        // TEACHER: Rescanning a specific failed scan
-        if (!$fileid || !$cmid || !$courseid || !$route) {
-            throw new moodle_exception('missingparam', 'error');
+    plagiarism_copyleaks_submissions::change_failed_scan_to_queued($fileid);
+    global $CFG;
+    $path = $CFG->wwwroot . $route;
+    $querypos = strpos($path, '?');
+    if ($action) {
+        if ($querypos) {
+            $path = $path . "&action=$action";
+        } else {
+            $path = $path . "?action=$action";
         }
+    }
 
-        require_login($courseid, false, $cm);
-
-        plagiarism_copyleaks_submissions::change_failed_scan_to_queued($fileid);
-
-        $path = $CFG->wwwroot . $route;
-        $querypos = strpos($path, '?');
-        if ($action) {
-            if ($querypos) {
-                $path = $path . "&action=$action";
-            } else {
-                $path = $path . "?action=$action";
-            }
+    if (
+        $workshopid && $cm->modname == "workshop"
+    ) {
+        if ($querypos) {
+            $path = $path . "&id=$workshopid";
+        } else {
+            $path = $path . "?id=$workshopid";
         }
+    }
 
-        if (
-            $workshopid && $cm->modname == "workshop"
-        ) {
-            if ($querypos) {
-                $path = $path . "&id=$workshopid";
-            } else {
-                $path = $path . "?id=$workshopid";
-            }
-        }
+    if ($sid) {
+        $path .= "&sid=$sid";
+    }
 
-        if ($sid) {
-            $path .= "&sid=$sid";
-        }
+    if ($returnaction) {
+        $path .= "&returnaction=$returnaction";
+    }
 
-        if ($returnaction) {
-            $path .= "&returnaction=$returnaction";
-        }
+    if ($pluginparam) {
+        $path .= "&plugin=$pluginparam";
+    }
 
-        if ($pluginparam) {
-            $path .= "&plugin=$pluginparam";
-        }
-
-        redirect($path);
-
-        break;
-
-    default:
-        throw new moodle_exception('invalidparameter', 'error');
+    redirect($path);
 }
