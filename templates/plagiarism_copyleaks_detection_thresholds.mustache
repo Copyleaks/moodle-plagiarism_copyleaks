@@ -1,0 +1,123 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template plagiarism_copyleaks/plagiarism_copyleaks_detection_thresholds
+
+    Context variables required for this template:
+    * midthreshold - The threshold between low and mid detection score color coding.
+    * highthreshold - The threshold between mid and high detection score color coding.
+    * midfieldname - The form field name for low to mid threshold.
+    * highfieldname - The form field name for mid to high threshold.
+    * uid - Unique identifier.
+
+    Example context (json):
+    {
+        "midthreshold": 30,
+        "highthreshold": 70,
+        "midfieldname": "plagiarism_copyleaks_aicontentmidthreshold",
+        "highfieldname": "plagiarism_copyleaks_aicontenthighthreshold",
+        "uid": "plagiarism_copyleaks_aicontentthresholds"
+    }
+}}
+
+<div class="slider-container">
+    <div class="range-slider" data-slider="{{uid}}"></div>
+
+    <input type="range" min="0" max="100" value="{{midthreshold}}" data-slider-low-to-mid="{{uid}}" name="{{midfieldname}}">
+    <input type="range" min="0" max="100" value="{{highthreshold}}" data-slider-mid-to-high="{{uid}}" name="{{highfieldname}}">
+
+    <div style="margin-top: 10px;">
+        <p>{{#str}} cllowcontentmatchthreshold, plagiarism_copyleaks {{/str}} <span data-range-low="{{uid}}">0% - {{midthreshold}}%</span></p>
+        <p>{{#str}} clmidcontentmatchthreshold, plagiarism_copyleaks {{/str}} <span data-range-mid="{{uid}}">{{midthreshold}}% - {{highthreshold}}%</span></p>
+        <p>{{#str}} clhighcontentmatchthreshold, plagiarism_copyleaks {{/str}} <span data-range-high="{{uid}}">{{highthreshold}}% - 100%</span></p>
+    </div>
+</div>
+
+{{#js}}
+(function() {
+    let uid = "{{uid}}";
+    let midSlider = document.querySelector(`[data-slider-low-to-mid="${uid}"]`);
+    let highSlider = document.querySelector(`[data-slider-mid-to-high="${uid}"]`);
+    let rangeLow = document.querySelector(`[data-range-low="${uid}"]`);
+    let rangeMid = document.querySelector(`[data-range-mid="${uid}"]`);
+    let rangeHigh = document.querySelector(`[data-range-high="${uid}"]`);
+    let rangeSlider = document.querySelector(`[data-slider="${uid}"]`);
+
+    function updateSlider() {
+        let midValue = parseInt(midSlider.value);
+        let highValue = parseInt(highSlider.value);
+
+        // Ensure midValue never exceeds 98
+        midValue = Math.min(midValue, 98);
+        midSlider.value = midValue;
+
+        // Ensure highValue never drops below midValue + 1
+        highValue = Math.max(highValue, midValue + 1);
+        highSlider.value = highValue;
+
+        // Ensure highValue never exceeds 100
+        highValue = Math.min(highValue, 100);
+
+        // Adjust moderate range properly
+        let moderateStart = midValue + 1;
+        let moderateEnd = highValue === 100 ? 99 : highValue;
+        let highStart = highValue === 100 ? 100 : highValue + 1;
+
+        // Update displayed values
+        rangeLow.textContent = `0% - ${midValue}%`;
+        rangeMid.textContent = `${moderateStart}% - ${moderateEnd}%`;
+        rangeHigh.textContent = `${highStart}% - 100%`;
+
+        // Update slider background
+        rangeSlider.style.background = `linear-gradient(to right, 
+            #008001 0%, 
+            #008001 ${midValue}%, 
+            #ffa503 ${midValue}%, 
+            #ffa503 ${moderateEnd}%, 
+            #f44336 ${moderateEnd}%, 
+            #f44336 100%)`;
+    }
+
+    function adjustMid() {
+        midSlider.value = Math.min(parseInt(midSlider.value), 98); // Never let it reach 99
+        if (parseInt(midSlider.value) >= parseInt(highSlider.value)) {
+            highSlider.value = parseInt(midSlider.value) + 1;
+        }
+        updateSlider();
+    }
+
+    function adjustHigh() {
+        if (parseInt(highSlider.value) <= parseInt(midSlider.value)) {
+            highSlider.value = parseInt(midSlider.value) + 1;
+        }
+        updateSlider();
+    }
+
+    midSlider.addEventListener("input", adjustMid);
+    highSlider.addEventListener("input", adjustHigh);
+
+    updateSlider();
+})();
+{{/js}}
+
+
+
+
+
+
+
+

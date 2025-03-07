@@ -252,21 +252,30 @@ class plagiarism_copyleaks_submissiondisplay {
                                 $submissionref["cmid"]
                             );
 
+                            $config = (array) plagiarism_copyleaks_pluginconfig::admin_config();
+
+                            $plgiarismmidthreshold = $config['plagiarism_copyleaks_plagiarismmidthreshold'] ?? 30;
+                            $plgiarismhighthreshold = $config['plagiarism_copyleaks_plagiarismhighthreshold'] ?? 70;
+
                             // Plagiarism Score level class.
                             $scorelevelclass = '';
-                            if ($submittedfile->similarityscore <= 40) {
+                            if ($submittedfile->similarityscore <= $plgiarismmidthreshold) {
                                 $scorelevelclass = "cls-plag-score-level-low";
-                            } else if ($submittedfile->similarityscore <= 80) {
+                            } else if ($submittedfile->similarityscore <= $plgiarismhighthreshold) {
                                 $scorelevelclass = "cls-plag-score-level-mid";
                             } else {
                                 $scorelevelclass = "cls-plag-score-level-high";
                             }
 
+                            $aicontentmidthreshold = $config['plagiarism_copyleaks_aicontentmidthreshold'] ?? 30;
+                            $aicontenthighthreshold = $config['plagiarism_copyleaks_aicontenthighthreshold'] ?? 70;
+
                             // AI Score level class.
                             $aiscorelevel = '';
-                            if ($submittedfile->aiscore <= 40) {
+                            if ($submittedfile->aiscore <= $aicontentmidthreshold
+                            ) {
                                 $aiscorelevel = "cls-ai-score-level-low";
-                            } else if ($submittedfile->aiscore <= 80) {
+                            } else if ($submittedfile->aiscore <= $aicontenthighthreshold) {
                                 $aiscorelevel = "cls-ai-score-level-mid";
                             } else {
                                 $aiscorelevel = "cls-ai-score-level-high";
