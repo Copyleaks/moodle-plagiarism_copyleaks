@@ -219,12 +219,6 @@ class plagiarism_copyleaks_utils {
                             localStorage.setItem('$lastresumbitclick', Date.now());
                             disableLink(link);
                         }
-    
-                        // Remove storage key and re-enable after one hour
-                        setTimeout(() => {
-                            localStorage.removeItem('$lastresumbitclick');
-                            enableLink(link);
-                        }, oneHour);
                     });
     
                     function disableLink(link) {
@@ -453,6 +447,10 @@ class plagiarism_copyleaks_utils {
      * @return bool True if the scan can be resubmitted, false otherwise.
      */
     public static function is_resubmittable_error($errorcode) {
+        if ($errorcode === null) {
+            return true;
+        }
+
         $resubmittableErrors = [
             plagiarism_copyleaks_errorcode::TEMPORARILY_UNAVAILABLE,
             plagiarism_copyleaks_errorcode::INSUFFICIENT_CREDITS,
