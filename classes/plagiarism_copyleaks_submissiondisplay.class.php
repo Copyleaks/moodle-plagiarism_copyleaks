@@ -272,7 +272,8 @@ class plagiarism_copyleaks_submissiondisplay {
 
                             // AI Score level class.
                             $aiscorelevel = '';
-                            if ($submittedfile->aiscore <= $aicontentmidthreshold
+                            if (
+                                $submittedfile->aiscore <= $aicontentmidthreshold
                             ) {
                                 $aiscorelevel = "cls-ai-score-level-low";
                             } else if ($submittedfile->aiscore <= $aicontenthighthreshold) {
@@ -288,7 +289,8 @@ class plagiarism_copyleaks_submissiondisplay {
                             $results['reporturl'] =
                                 "$CFG->wwwroot/plagiarism/copyleaks/plagiarism_copyleaks_report.php" .
                                 "?cmid=$submittedfile->cm&userid=" . (!$isinstructor ? $USER->id : $submittedfile->userid) .
-                                "&identifier=$submittedfile->identifier&modulename=$coursemodule->modname&ownerid=$submittedfile->userid";
+                                "&identifier=$submittedfile->identifier&" .
+                                "modulename=$coursemodule->modname&ownerid=$submittedfile->userid";
 
                             // Download PDF URL.
                             $downloadpdfurl = "$CFG->wwwroot/plagiarism/copyleaks/plagiarism_copyleaks_download_report_pdf.php" .

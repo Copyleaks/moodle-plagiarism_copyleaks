@@ -170,7 +170,7 @@ class plagiarism_copyleaks_utils {
 
     /**
      * Get Copyleaks button for resubmit failed scans.
-     * @param string $cmid - course module id
+     * @param string $cmid - course module id.
      * @return string
      */
     public static function get_resubmit_failed_scans_button_link($cmid = null) {
@@ -178,9 +178,9 @@ class plagiarism_copyleaks_utils {
 
         $btntext = get_string('clresubmitfailedscans', 'plagiarism_copyleaks');
         $disabledbtntext = get_string('clresubmitfailedscansdisabled', 'plagiarism_copyleaks');
-        $linkId = "resubmitFailedScansLink"; // Unique ID for the <a> tag
+        $linkid = "resubmitFailedScansLink"; // Unique ID for the <a> tag.
         $url = "$CFG->wwwroot/plagiarism/copyleaks/plagiarism_copyleaks_resubmit_handler.php";
-        // Determine localStorage key based on role
+        // Determine localStorage key based on role.
         if ($cmid) {
             $lastresumbitclick = 'teacherLastResubmitClick' . $cmid;
             $resubmiturl = new moodle_url($url, array(
@@ -194,53 +194,48 @@ class plagiarism_copyleaks_utils {
             ));
         }
 
-        // The <a> tag with data attributes
-        $linkHtml = "<a id='$linkId' href='$resubmiturl' target='hiddenframe' 
-                        data-default-text='$btntext' 
-                        data-disabled-text='$disabledbtntext'>$btntext</a>";
+        // The <a> tag with data attributes.
+        $linkhtml = "<a id='$linkid' href='$resubmiturl' target='hiddenframe'" .
+            "data-default-text='$btntext'" .
+            "data-disabled-text='$disabledbtntext'>$btntext</a>";
 
-        // Optimized JavaScript
+        // Optimized JavaScript.
         $script = "
-            <script>
-                document.addEventListener('DOMContentLoaded', function() {
-                    const link = document.getElementById('$linkId');
-                    const lastClick = localStorage.getItem('$lastresumbitclick');
-                    const oneHour = 60 * 60 * 1000;
-                    const now = Date.now();
-    
-                    if (lastClick && (now - lastClick < oneHour)) {
-                        disableLink(link);
-                    }
-    
-                    link.addEventListener('click', function(event) {
-                        if (link.style.pointerEvents === 'none') {
-                            event.preventDefault(); // Only prevent if it's already disabled
-                        } else {
-                            localStorage.setItem('$lastresumbitclick', Date.now());
-                            disableLink(link);
-                        }
-                    });
-    
-                    function disableLink(link) {
-                        link.style.pointerEvents = 'none';
-                        link.style.color = '#8c8c8c';
-                        link.innerText = link.getAttribute('data-disabled-text');
-                    }
-    
-                    function enableLink(link) {
-                        link.style.pointerEvents = 'auto';
-                        link.style.color = ''; 
-                        link.innerText = link.getAttribute('data-default-text');
-                    }
-                });
-            </script>
-        ";
+            <script>" .
+            "document.addEventListener('DOMContentLoaded', function() {" .
+            "const link = document.getElementById('$linkid');" .
+            "const lastClick = localStorage.getItem('$lastresumbitclick');" .
+            "const oneHour = 60 * 60 * 1000;" .
+            "const now = Date.now();" .
+            "if (lastClick && (now - lastClick < oneHour)) {" .
+            "disableLink(link);" .
+            "}" .
+            "link.addEventListener('click', function(event) {" .
+            "if (link.style.pointerEvents === 'none') {" .
+            "event.preventDefault();" .
+            "} else {" .
+            "localStorage.setItem('$lastresumbitclick', Date.now());" .
+            "disableLink(link);" .
+            "}" .
+            "});" .
+            "function disableLink(link) {" .
+            "link.style.pointerEvents = 'none';" .
+            "link.style.color = '#8c8c8c';" .
+            "link.innerText = link.getAttribute('data-disabled-text');" .
+            "}" .
+            "function enableLink(link) {" .
+            "link.style.pointerEvents = 'auto';" .
+            "link.style.color = '';" .
+            "link.innerText = link.getAttribute('data-default-text');" .
+            "}" .
+            "});" .
+            "</script>";
 
         return "
             <div class='form-group row'>
                 <div class='col-md-3'></div>
                 <div class='col-md-9'>
-                    $linkHtml
+                    $linkhtml
                 </div>
             </div>
             $script
@@ -442,7 +437,6 @@ class plagiarism_copyleaks_utils {
 
     /**
      * Check if an error code is eligible for resubmission.
-     * 
      * @param int $errorcode The error code from the scan.
      * @return bool True if the scan can be resubmitted, false otherwise.
      */
@@ -451,7 +445,7 @@ class plagiarism_copyleaks_utils {
             return true;
         }
 
-        $resubmittableErrors = [
+        $resubmittableerrors = [
             plagiarism_copyleaks_errorcode::TEMPORARILY_UNAVAILABLE,
             plagiarism_copyleaks_errorcode::INSUFFICIENT_CREDITS,
             plagiarism_copyleaks_errorcode::NO_CREDITS_AVAILABLE,
@@ -460,6 +454,6 @@ class plagiarism_copyleaks_utils {
             plagiarism_copyleaks_errorcode::EXCEEDED_CREDITS_LIMIT
         ];
 
-        return in_array((int)$errorcode, $resubmittableErrors, true);
+        return in_array((int)$errorcode, $resubmittableerrors, true);
     }
 }
