@@ -550,7 +550,7 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         }
     }
 
-    if ($oldversion < 2025031701) {
+    if ($oldversion < 2025031800) {
         // Add error code field to plagiarism_copyleaks_files.
         $table = new xmldb_table('plagiarism_copyleaks_files');
         $errorcodefield = new xmldb_field('errorcode', XMLDB_TYPE_INTEGER, '2', null, null, null, null, 'errormsg');
@@ -562,7 +562,7 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         }
     }
     // Copyleaks savepoint reached.
-    upgrade_plugin_savepoint(true, 2025031701, 'plagiarism', 'copyleaks');
+    upgrade_plugin_savepoint(true, 2025031800, 'plagiarism', 'copyleaks');
 
     return true;
 }
