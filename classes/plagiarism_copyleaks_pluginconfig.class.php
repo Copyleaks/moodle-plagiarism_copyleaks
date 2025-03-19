@@ -82,6 +82,8 @@ class plagiarism_copyleaks_pluginconfig {
             'plagiarism_copyleaks_plagiarismhighthreshold',
             'plagiarism_copyleaks_aicontentmidthreshold',
             'plagiarism_copyleaks_aicontenthighthreshold',
+            'plagiarism_copyleaks_enable_by_default',
+            'plagiarism_copyleaks_allowstudentaccess_by_default',
         ];
     }
 

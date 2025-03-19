@@ -78,6 +78,19 @@ class plagiarism_copyleaks_adminform extends moodleform {
         }
 
         $mform->addElement(
+            'advcheckbox',
+            'plagiarism_copyleaks_enable_by_default',
+            get_string('cldefaultsettings', 'plagiarism_copyleaks'),
+            get_string('clenablebydefault', 'plagiarism_copyleaks')
+        );
+
+        $mform->addElement(
+            'advcheckbox',
+            'plagiarism_copyleaks_allowstudentaccess_by_default',
+            get_string('clallowstudentaccessbydefault', 'plagiarism_copyleaks')
+        );
+
+        $mform->addElement(
             'textarea',
             'plagiarism_copyleaks_studentdisclosure',
             get_string('clstudentdisclosure', 'plagiarism_copyleaks')
