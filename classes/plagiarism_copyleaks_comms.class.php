@@ -1010,7 +1010,7 @@ class plagiarism_copyleaks_comms {
      * @param array $data
      */
     public function create_scan_batch_counter($data) {
-        $endpoint = "/api/moodle/plugin/$this->key/task/create-scan-batch-counter";
+        $endpoint = "/api/moodle/plugin/$this->key/scans/create-scan-batch-counter";
         try {
             return plagiarism_copyleaks_http_client::execute_retry(
                 'POST',
@@ -1029,7 +1029,7 @@ class plagiarism_copyleaks_comms {
      * @param string $batchid
      */
     public function handle_failed_to_submit($batchid) {
-        $endpoint = "/api/moodle/plugin/$this->key/task/$batchid/handle-failed-to-submit";
+        $endpoint = "/api/moodle/plugin/$this->key/scans/$batchid/handle-failed-to-submit";
         try {
             return plagiarism_copyleaks_http_client::execute_retry(
                 'POST',

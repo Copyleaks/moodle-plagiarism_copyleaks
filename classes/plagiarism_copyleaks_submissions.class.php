@@ -290,12 +290,22 @@ class plagiarism_copyleaks_submissions {
                 $whereclause,
                 $params,
                 '',
-                'id, errorcode',
+                '*',
                 $offset,
                 $limit
             );
 
             foreach ($records as $record) {
+                if ($record->retrycnt > PLAGIARISM_COPYLEAKS_MAX_AUTO_RETRY) {
+                    $record->errormsg = $record->errormsg . " - Max retry count reached";
+                    if (!$DB->update_record('plagiarism_copyleaks_files', $record)) {
+                        \plagiarism_copyleaks_logs::add(
+                            "failed to change failed scans to max retry error, fileid: " . $record->id,
+                            "UPDATE_RECORD_FAILED"
+                        );
+                    }
+                    continue;
+                }
                 if (plagiarism_copyleaks_utils::is_resubmittable_error($record->errorcode)) {
                     $record->statuscode = 'queued';
                     $record->errormsg = null;
@@ -303,6 +313,14 @@ class plagiarism_copyleaks_submissions {
                     if (!$DB->update_record('plagiarism_copyleaks_files', $record)) {
                         \plagiarism_copyleaks_logs::add(
                             "failed to change failed scans to queued, fileid: " . $record->id,
+                            "UPDATE_RECORD_FAILED"
+                        );
+                    }
+                } else {
+                    $record->errormsg = $record->errormsg . " (Not rescannable by Copyleaks)";
+                    if (!$DB->update_record('plagiarism_copyleaks_files', $record)) {
+                        \plagiarism_copyleaks_logs::add(
+                            "failed to change failed scans to not rescannable error, fileid: " . $record->id,
                             "UPDATE_RECORD_FAILED"
                         );
                     }

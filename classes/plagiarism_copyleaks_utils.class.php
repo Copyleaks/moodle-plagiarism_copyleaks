@@ -446,6 +446,7 @@ class plagiarism_copyleaks_utils {
         }
 
         $resubmittableerrors = [
+            plagiarism_copyleaks_errorcode::UNKNOWN,
             plagiarism_copyleaks_errorcode::TEMPORARILY_UNAVAILABLE,
             plagiarism_copyleaks_errorcode::INSUFFICIENT_CREDITS,
             plagiarism_copyleaks_errorcode::NO_CREDITS_AVAILABLE,
@@ -454,6 +455,6 @@ class plagiarism_copyleaks_utils {
             plagiarism_copyleaks_errorcode::EXCEEDED_CREDITS_LIMIT
         ];
 
-        return in_array((int)$errorcode, $resubmittableerrors, true);
+        return in_array((int)$errorcode, $resubmittableerrors, true) || $errorcode >= 100;
     }
 }
