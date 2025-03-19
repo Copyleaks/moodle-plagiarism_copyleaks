@@ -76,18 +76,32 @@ class plagiarism_copyleaks_adminform extends moodleform {
                 );
             }
         }
-
+        $mform->addElement(
+            'html',
+            get_string('cldefaultsettings', 'plagiarism_copyleaks')
+        );
         $mform->addElement(
             'advcheckbox',
             'plagiarism_copyleaks_enable_by_default',
-            get_string('cldefaultsettings', 'plagiarism_copyleaks'),
             get_string('clenablebydefault', 'plagiarism_copyleaks')
+        );
+
+        $mform->addHelpButton(
+            'plagiarism_copyleaks_enable_by_default',
+            'clenablebydefault',
+            'plagiarism_copyleaks'
         );
 
         $mform->addElement(
             'advcheckbox',
             'plagiarism_copyleaks_allowstudentaccess_by_default',
             get_string('clallowstudentaccessbydefault', 'plagiarism_copyleaks')
+        );
+
+        $mform->addHelpButton(
+            'plagiarism_copyleaks_allowstudentaccess_by_default',
+            'clallowstudentaccessbydefault',
+            'plagiarism_copyleaks'
         );
 
         $mform->addElement(

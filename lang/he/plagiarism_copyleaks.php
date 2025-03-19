@@ -39,6 +39,7 @@ $string['cladminconfig'] = 'תצורת תוסף גניבה ספרותית של C
 $string['clpluginintro'] = 'בודק הגניבה הספרותית של Copyleaks הוא פתרון מקיף ומדויק המסייע למורים ולסטודנטים לבדוק אם התוכן שלהם מקורי.<br>למידע נוסף על אופן ההגדרה והשימוש בתוסף, אנא בדוק את <a target="_blank" href="https://lti.copyleaks.com/guides/select-moodle-integration">המדריכים שלנו</a>.</br></br></br>';
 $string['clenable'] = 'הפעלת Copyleaks';
 $string['clenablebydefault'] = 'הפעל את Copyleaks כברירת מחדל';
+$string['clenablebydefault_help'] = 'הפעלת Copyleaks כברירת מחדל מבטיחה כי זיהוי גניבה ספרותית יופעל אוטומטית עבור כל פעילות חדשה התומכת בבדיקת גניבה ספרותית.';
 $string['clenablemodulefor'] = 'הפעלת Copyleaks עבור {$a}';
 $string['claccountconfig'] = "תצורת חשבון Copyleaks";
 $string['clapiurl'] = 'כתובת API של Copyleaks';
@@ -46,6 +47,7 @@ $string['claccountkey'] = "מפתח Copyleaks";
 $string['claccountsecret'] = "סיסמת Copyleaks";
 $string['clallowstudentaccess'] = 'אפשר לסטודנטים גישה לדוחות גניבה ספרותית';
 $string['clallowstudentaccessbydefault'] = 'אפשר לסטודנטים לצפות בדוח גניבה ספרותית של Copyleaks';
+$string['clallowstudentaccessbydefault_help'] = 'אם אפשרות זו מופעלת כברירת מחדל, סטודנטים יקבלו גישה אוטומטית לצפייה בדוח הדמיון של Copyleaks עבור כל הפעילויות הנתמכות.';
 $string['clinvalidkeyorsecret'] = 'מפתח או סיסמה לא תקינים';
 $string['clfailtosavedata'] = 'כישלון בשמירת נתוני Copyleaks';
 $string['clplagiarised'] = 'ציון דמיון';
