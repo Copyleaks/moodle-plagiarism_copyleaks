@@ -109,7 +109,7 @@ $string['claicontentdetectionthresholds_help'] = '<b>קידוד צבעים לח�
 $string['cldefaultsettings'] = 'הגדרות ברירת מחדל של Copyleaks';
 
 
-$string['claicontentscore'] = 'ציון תוכן מבוסס בינה מלאכותית';
+$string['claicontentscore'] = 'ציון תוכן AI';
 $string['clplagiarismscore'] = 'ציון גניבה ספרותית';
 $string['clwritingfeedbackissues'] = 'תיקוני כתיבה';
 $string['clscanfailedbtn'] = 'הסריקה נכשלה';
@@ -122,7 +122,7 @@ $string['clplagiarismcontentscheduled'] = 'סריקת גניבה ספרותית'
 $string['clwritingfeedbackcontentscheduled'] = 'תיקוני כתיבה';
 $string['cldownloadreport'] = 'הורדת דוח PDF';
 $string['clopenreport'] = 'פתיחת עמוד הדוח';
-$string['clcopyreporturl'] = 'העתקת קישור לעמוד הדוח ללוח העריכה';
+$string['clcopyreporturl'] = 'העתקת קישור עמוד הדוח ללוח העריכה';
 $string['cltimesoon'] = 'בקרוב';
 $string['cltimeminutes'] = 'דקות';
 $string['cltimehours'] = 'שעות';
