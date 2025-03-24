@@ -345,6 +345,18 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
                 $isanalyticsdisabled = $isnewactivity || !plagiarism_copyleaks_moduleconfig::is_module_enabled($cm->modname, $cmid);
                 $btn = plagiarism_copyleaks_utils::get_copyleaks_analytics_button_link($cmid,  $isanalyticsdisabled);
                 $mform->addElement('html', $btn);
+
+                if (!$isnewactivity) {
+                    // Add the hidden iframe so that the button's request loads in it.
+                    $mform->addElement('html', html_writer::tag('iframe', '', array(
+                        'name'  => 'hiddenframe',
+                        'style' => 'display:none;'
+                    )));
+
+                    $btn = plagiarism_copyleaks_utils::get_resubmit_failed_scans_button_link($cmid);
+                    // Add the HTML into your form.
+                    $mform->addElement('html', $btn);
+                }
             }
 
             $settingsdisplayed = true;

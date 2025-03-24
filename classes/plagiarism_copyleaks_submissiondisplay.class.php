@@ -31,6 +31,7 @@ require_once($CFG->dirroot . '/plagiarism/copyleaks/constants/plagiarism_copylea
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_assignmodule.class.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_logs.class.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_dbutils.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/enums/plagiarism_copyleaks_enums.php');
 
 /**
  * submission display helpers methods
@@ -251,21 +252,31 @@ class plagiarism_copyleaks_submissiondisplay {
                                 $submissionref["cmid"]
                             );
 
+                            $config = (array) plagiarism_copyleaks_pluginconfig::admin_config();
+
+                            $plgiarismmidthreshold = $config['plagiarism_copyleaks_plagiarismmidthreshold'] ?? 30;
+                            $plgiarismhighthreshold = $config['plagiarism_copyleaks_plagiarismhighthreshold'] ?? 70;
+
                             // Plagiarism Score level class.
                             $scorelevelclass = '';
-                            if ($submittedfile->similarityscore <= 40) {
+                            if ($submittedfile->similarityscore <= $plgiarismmidthreshold) {
                                 $scorelevelclass = "cls-plag-score-level-low";
-                            } else if ($submittedfile->similarityscore <= 80) {
+                            } else if ($submittedfile->similarityscore <= $plgiarismhighthreshold) {
                                 $scorelevelclass = "cls-plag-score-level-mid";
                             } else {
                                 $scorelevelclass = "cls-plag-score-level-high";
                             }
 
+                            $aicontentmidthreshold = $config['plagiarism_copyleaks_aicontentmidthreshold'] ?? 30;
+                            $aicontenthighthreshold = $config['plagiarism_copyleaks_aicontenthighthreshold'] ?? 70;
+
                             // AI Score level class.
                             $aiscorelevel = '';
-                            if ($submittedfile->aiscore <= 40) {
+                            if (
+                                $submittedfile->aiscore <= $aicontentmidthreshold
+                            ) {
                                 $aiscorelevel = "cls-ai-score-level-low";
-                            } else if ($submittedfile->aiscore <= 80) {
+                            } else if ($submittedfile->aiscore <= $aicontenthighthreshold) {
                                 $aiscorelevel = "cls-ai-score-level-mid";
                             } else {
                                 $aiscorelevel = "cls-ai-score-level-high";
@@ -278,7 +289,8 @@ class plagiarism_copyleaks_submissiondisplay {
                             $results['reporturl'] =
                                 "$CFG->wwwroot/plagiarism/copyleaks/plagiarism_copyleaks_report.php" .
                                 "?cmid=$submittedfile->cm&userid=" . (!$isinstructor ? $USER->id : $submittedfile->userid) .
-                                "&identifier=$submittedfile->identifier&modulename=$coursemodule->modname&ownerid=$submittedfile->userid";
+                                "&identifier=$submittedfile->identifier&" .
+                                "modulename=$coursemodule->modname&ownerid=$submittedfile->userid";
 
                             // Download PDF URL.
                             $downloadpdfurl = "$CFG->wwwroot/plagiarism/copyleaks/plagiarism_copyleaks_download_report_pdf.php" .
@@ -471,13 +483,14 @@ class plagiarism_copyleaks_submissiondisplay {
 
                                 $cmid = $submissionref['cmid'];
                                 $courseid = $COURSE->id;
+                                $rescanmode = plagiarism_copyleaks_rescan_mode::RESCAN_SINGLE;
                                 $sid = optional_param('sid', null, PARAM_TEXT);
                                 $action = optional_param('action', null, PARAM_TEXT);
                                 $returnaction = optional_param('returnaction', null, PARAM_TEXT);
                                 $pluginparam = optional_param('plugin', null, PARAM_TEXT);
 
                                 $resubmiturl = "$CFG->wwwroot/plagiarism/copyleaks/plagiarism_copyleaks_resubmit_handler.php" .
-                                    "?fileid=$submittedfile->id&cmid=$cmid&courseid=$courseid" .
+                                    "?rescanmode=$rescanmode&fileid=$submittedfile->id&cmid=$cmid&courseid=$courseid" .
                                     "&route=$route&sid=$sid&action=$action&returnaction=$returnaction&plugin=$pluginparam";
 
                                 try {

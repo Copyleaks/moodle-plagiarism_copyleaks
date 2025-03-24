@@ -48,6 +48,8 @@ $string['clinvalidkeyorsecret'] = 'Invalid key or secret';
 $string['clfailtosavedata'] = 'Fail to save Copyleaks data';
 $string['clplagiarised'] = 'Similarity score';
 $string['clresubmitfailed'] = 'Try again';
+$string['clresubmitfailedscans'] = 'Resubmit failed scans';
+$string['clresubmitfailedscansdisabled'] = 'Resubmit failed scans (available once every one hour)';
 $string['clopenreport'] = 'Click to open Copyleaks report';
 $string['clscoursesettings'] = 'Copyleaks settings';
 $string['clupdateerror'] = 'Error while trying to update records in database';
@@ -83,6 +85,23 @@ $string['clplagiarisescanning'] = 'Scanning for plagiarism...';
 $string['clplagiarisequeued'] = 'Scheduled for plagiarism scan at {$a}';
 $string['cldisabledformodule'] = 'Copyleaks plugin is disabled for this module.';
 $string['clnopageaccess'] = 'You dont have access to this page.';
+$string['clplagiarismdetectionthresholds'] = 'Plagiarism Detection Thresholds';
+$string['claicontentdetectionthresholds'] = 'AI Content Detection Thresholds';
+$string['cllowcontentmatchthreshold'] = 'Low Severity:';
+$string['clmidcontentmatchthreshold'] = 'Moderate Severity:';
+$string['clhighcontentmatchthreshold'] = 'High Severity:';
+$string['clplagiarismdetectionthresholds_help'] = '<b>Plagiarism Severity Color Coding:</b>
+<ul>
+<li><span style="color:green;"><b>Green:</b></span> Low severity.</li>
+<li><span style="color:orange;"><b>Yellow:</b></span> Moderate severity.</li>
+<li><span style="color:red;"><b>Red:</b></span> High severity.</li>
+</ul> ';
+$string['claicontentdetectionthresholds_help'] = '<b>AI Content Severity Color Coding:</b>
+<ul>
+<li><span style="color:green;"><b>Green:</b></span> Low severity.</li>
+<li><span style="color:orange;"><b>Yellow:</b></span> Moderate severity.</li>
+<li><span style="color:red;"><b>Red:</b></span> High severity.</li>
+</ul> ';
 
 $string['claicontentscore'] = 'AI content score';
 $string['clplagiarismscore'] = 'Plagiarism score';

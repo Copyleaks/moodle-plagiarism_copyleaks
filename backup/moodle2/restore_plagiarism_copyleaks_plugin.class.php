@@ -73,8 +73,8 @@ class restore_plagiarism_copyleaks_plugin extends restore_plagiarism_plugin {
         if (!$DB->insert_record('plagiarism_copyleaks_config', $data)) {
             \plagiarism_copyleaks_logs::add(
                 "failed to insert new database record for : " .
-                "plagiarism_copyleaks_config, Cannot create new config record for cmid: $data->cm " .
-                "config name: $data->name",
+                    "plagiarism_copyleaks_config, Cannot create new config record for cmid: $data->cm " .
+                    "config name: $data->name",
                 "INSERT_RECORD_FAILED"
             );
         }
@@ -103,17 +103,17 @@ class restore_plagiarism_copyleaks_plugin extends restore_plagiarism_plugin {
 
         if ($plan->type === "course" || $plan->type === "activity") {
             $moduledata = [
-            'course_id' => $courseid,
-            'original_cm_id' => $originalcmid,
-            'new_cm_id' => $newcmid,
-            'status' => plagiarism_copyleaks_cm_duplication_status::QUEUED,
+                'course_id' => $courseid,
+                'original_cm_id' => $originalcmid,
+                'new_cm_id' => $newcmid,
+                'status' => plagiarism_copyleaks_cm_duplication_status::QUEUED,
             ];
 
             if (!$DB->insert_record('plagiarism_copyleaks_cm_copy', $moduledata)) {
                 \plagiarism_copyleaks_logs::add(
-                "failed to insert new database record for : " .
-                "plagiarism_copyleaks_cm_copy, Cannot create new cm duplication record for cmid $newcmid",
-                "INSERT_RECORD_FAILED"
+                    "failed to insert new database record for : " .
+                        "plagiarism_copyleaks_cm_copy, Cannot create new cm duplication record for cmid $newcmid",
+                    "INSERT_RECORD_FAILED"
                 );
             }
         }
@@ -157,7 +157,9 @@ class restore_plagiarism_copyleaks_plugin extends restore_plagiarism_plugin {
         }
 
         $synccourse = false;
-        $startdate = isset($course->startdate) ? (new DateTime('now', new DateTimeZone('UTC')))->setTimestamp($course->startdate)->format('Y-m-d') : null;
+        $startdate = isset($course->startdate) ?
+            (new DateTime('now', new DateTimeZone('UTC')))->setTimestamp($course->startdate)->format('Y-m-d') :
+            null;
         // Prepare the course data for upsert.
         $data = [
             "id" => $courseid,

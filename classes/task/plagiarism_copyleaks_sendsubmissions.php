@@ -78,196 +78,238 @@ class plagiarism_copyleaks_sendsubmissions extends \core\task\scheduled_task {
 
             $canloadmoredata = count($queuedsubmissions) == PLAGIARISM_COPYLEAKS_CRON_QUERY_LIMIT;
 
-            if (count($queuedsubmissions) > 0 && !\plagiarism_copyleaks_comms::test_copyleaks_connection('scheduler_task')) {
+            if (count($queuedsubmissions) == 0 || !\plagiarism_copyleaks_comms::test_copyleaks_connection('scheduler_task')) {
                 return;
             }
 
-            foreach ($queuedsubmissions as $submission) {
-                $submittedtextcontent = "";
-                $errormessage = "";
-                // Check if submission type is supported.
-                $subtype = $submission->submissiontype;
-                if (!in_array(
-                    $subtype,
-                    PLAGIARISM_COPYLEAKS_SUPPORTED_SUBMISSION_TYPES
-                )) {
-                    \plagiarism_copyleaks_submissions::mark_error(
-                        $submission->id,
-                        'Submission type is not supported.'
-                    );
-                    continue;
-                }
+            // Create a counter id for the batch.
+            $copyleakscomms = new \plagiarism_copyleaks_comms();
+            $response = $copyleakscomms->create_scan_batch_counter([
+                "countervalue" => count($queuedsubmissions),
+            ]);
+            $counterid = $response->counterId;
 
-                if (\plagiarism_copyleaks_moduleconfig::is_course_module_request_queued($submission->cm)) {
-                    continue;
-                }
-
-                // Check if course module exists.
-                $coursemodule = get_coursemodule_from_id('', $submission->cm);
-                if (empty($coursemodule)) {
-                    \plagiarism_copyleaks_submissions::handle_submission_error(
-                        $submission,
-                        "Course Module wasnt found for this record."
-                    );
-                    continue;
-                }
-
-                $userid = $submission->userid;
-
-                // Set submitter if it was not set previously.
-                if (empty($submission->submitter)) {
-                    $submission->submitter = $submission->userid;
-                }
-
-                // Mark as error if user id is 0 (user id should never be 0).
-                if (empty($submission->userid)) {
-                    \plagiarism_copyleaks_submissions::handle_submission_error($submission,  'User Id should never be 0.');
-                    continue;
-                }
-
-                // Handle submission data according to the submission type.
-                if ($submission->submissiontype == 'text_content') {
-                    $moduledata = $DB->get_record($coursemodule->modname, ['id' => $coursemodule->instance]);
-
-                    if ($coursemodule->modname == 'workshop') {
-                        $workshopsubmission = $DB->get_record(
-                            'workshop_submissions',
-                            ['id' => $submission->itemid],
-                            'content'
+            // Additional check to make sure counterid ( batchid ) is not null.
+            if (isset($counterid)) {
+                foreach ($queuedsubmissions as $submission) {
+                    $submittedtextcontent = "";
+                    $errormessage = "";
+                    $errorcode = null;
+                    // Check if submission type is supported.
+                    $subtype = $submission->submissiontype;
+                    if (!in_array(
+                        $subtype,
+                        PLAGIARISM_COPYLEAKS_SUPPORTED_SUBMISSION_TYPES
+                    )) {
+                        \plagiarism_copyleaks_submissions::mark_error(
+                            $submission->id,
+                            'Submission type is not supported.',
+                            \plagiarism_copyleaks_errorcode::INTERNAL_PLUGIN_ERROR_NOT_RESCANNABLE
                         );
-                        $submittedtextcontent = $workshopsubmission->content;
-                    } else if ($coursemodule->modname == 'assign') {
-                        $submissionref = $DB->get_record(
-                            'assign_submission',
-                            [
-                                'id' => $submission->itemid,
-                                'userid' => ($moduledata->teamsubmission) ? 0 : $submission->userid,
-                                'assignment' => $coursemodule->instance,
-                            ],
-                            'id'
-                        );
-
-                        $txtsubmissionref = $DB->get_record(
-                            'assignsubmission_onlinetext',
-                            ['submission' => $submissionref->id],
-                            'onlinetext'
-                        );
-                        $submittedtextcontent = $txtsubmissionref->onlinetext;
-                    } else {
-                        $errormessage = 'Content not found for the submission.';
+                        $copyleakscomms->handle_failed_to_submit($counterid);
+                        continue;
                     }
 
-                    $filename = 'online_text_'
-                        . $userid . "_"
-                        . $coursemodule->id . "_"
-                        . $coursemodule->instance . '.txt';
+                    if (\plagiarism_copyleaks_moduleconfig::is_course_module_request_queued($submission->cm)) {
+                        $copyleakscomms->handle_failed_to_submit($counterid);
+                        continue;
+                    }
 
-                    $submittedtextcontent = html_to_text($submittedtextcontent);
-                } else if ($submission->submissiontype == 'forum_post') {
-                    $forumpost = $DB->get_record_select(
-                        'forum_posts',
-                        " userid = ? AND id = ? ",
-                        [$userid, $submission->itemid]
-                    );
-                    if ($forumpost) {
-                        $filename = 'forumpost_'
+                    // Check if course module exists.
+                    $coursemodule = get_coursemodule_from_id('', $submission->cm);
+                    if (empty($coursemodule)) {
+                        \plagiarism_copyleaks_submissions::handle_submission_error(
+                            $submission,
+                            "Course Module wasnt found for this record.",
+                            $counterid,
+                            \plagiarism_copyleaks_errorcode::INTERNAL_PLUGIN_ERROR_NOT_RESCANNABLE
+                        );
+                        continue;
+                    }
+
+                    $userid = $submission->userid;
+
+                    // Set submitter if it was not set previously.
+                    if (empty($submission->submitter)) {
+                        $submission->submitter = $submission->userid;
+                    }
+
+                    // Mark as error if user id is 0 (user id should never be 0).
+                    if (empty($submission->userid)) {
+                        \plagiarism_copyleaks_submissions::handle_submission_error(
+                            $submission,
+                            'User Id should never be 0.',
+                            $counterid,
+                            \plagiarism_copyleaks_errorcode::INTERNAL_PLUGIN_ERROR_NOT_RESCANNABLE
+                        );
+                        continue;
+                    }
+
+                    // Handle submission data according to the submission type.
+                    if ($submission->submissiontype == 'text_content') {
+                        $moduledata = $DB->get_record($coursemodule->modname, ['id' => $coursemodule->instance]);
+
+                        if ($coursemodule->modname == 'workshop') {
+                            $workshopsubmission = $DB->get_record(
+                                'workshop_submissions',
+                                ['id' => $submission->itemid],
+                                'content'
+                            );
+                            $submittedtextcontent = $workshopsubmission->content;
+                        } else if ($coursemodule->modname == 'assign') {
+                            $submissionref = $DB->get_record(
+                                'assign_submission',
+                                [
+                                    'id' => $submission->itemid,
+                                    'userid' => ($moduledata->teamsubmission) ? 0 : $submission->userid,
+                                    'assignment' => $coursemodule->instance,
+                                ],
+                                'id'
+                            );
+
+                            $txtsubmissionref = $DB->get_record(
+                                'assignsubmission_onlinetext',
+                                ['submission' => $submissionref->id],
+                                'onlinetext'
+                            );
+                            $submittedtextcontent = $txtsubmissionref->onlinetext;
+                        } else {
+                            $errormessage = 'Content not found for the submission.';
+                            $errorcode = \plagiarism_copyleaks_errorcode::INTERNAL_PLUGIN_ERROR_NOT_RESCANNABLE;
+                        }
+
+                        $filename = 'online_text_'
                             . $userid . "_"
                             . $coursemodule->id . "_"
-                            . $coursemodule->instance . "_"
-                            . $submission->itemid . '.txt';
+                            . $coursemodule->instance . '.txt';
 
-                        $submittedtextcontent = html_to_text(strip_tags($forumpost->message));
+                        $submittedtextcontent = html_to_text($submittedtextcontent);
+                    } else if ($submission->submissiontype == 'forum_post') {
+                        $forumpost = $DB->get_record_select(
+                            'forum_posts',
+                            " userid = ? AND id = ? ",
+                            [$userid, $submission->itemid]
+                        );
+                        if ($forumpost) {
+                            $filename = 'forumpost_'
+                                . $userid . "_"
+                                . $coursemodule->id . "_"
+                                . $coursemodule->instance . "_"
+                                . $submission->itemid . '.txt';
+
+                            $submittedtextcontent = html_to_text(strip_tags($forumpost->message));
+                        } else {
+                            $errormessage = 'Content not found for the submission.';
+                            $errorcode = \plagiarism_copyleaks_errorcode::INTERNAL_PLUGIN_ERROR_NOT_RESCANNABLE;
+                        }
+                    } else if ($submission->submissiontype == 'quiz_answer') {
+                        try {
+                            require_once($CFG->dirroot . '/mod/quiz/locallib.php');
+                            $quizattempt = \quiz_attempt::create($submission->itemid);
+                            foreach ($quizattempt->get_slots() as $slot) {
+                                $questionattempt = $quizattempt->get_question_attempt($slot);
+                                if ($submission->identifier == sha1($questionattempt->get_response_summary())) {
+                                    $submittedtextcontent = $questionattempt->get_response_summary();
+                                    break;
+                                }
+                            }
+                        } catch (\Throwable $th) {
+                            $errormessage = 'Connot find quiz attempt.';
+                            $errorcode = \plagiarism_copyleaks_errorcode::INTERNAL_PLUGIN_ERROR_NOT_RESCANNABLE;
+                        }
+
+                        if (!empty($submittedtextcontent)) {
+                            $submittedtextcontent = strip_tags($submittedtextcontent);
+                            $filename = 'quizanswer_'
+                                . $userid . "_"
+                                . $coursemodule->id . "_"
+                                . $coursemodule->instance . "_"
+                                . $submission->itemid . '.txt';
+                        } else {
+                            $errormessage = 'Content not found for the submission.';
+                            $errorcode = \plagiarism_copyleaks_errorcode::INTERNAL_PLUGIN_ERROR_NOT_RESCANNABLE;
+                        }
                     } else {
-                        $errormessage = 'Content not found for the submission.';
-                    }
-                } else if ($submission->submissiontype == 'quiz_answer') {
-                    try {
-                        require_once($CFG->dirroot . '/mod/quiz/locallib.php');
-                        $quizattempt = \quiz_attempt::create($submission->itemid);
-                        foreach ($quizattempt->get_slots() as $slot) {
-                            $questionattempt = $quizattempt->get_question_attempt($slot);
-                            if ($submission->identifier == sha1($questionattempt->get_response_summary())) {
-                                $submittedtextcontent = $questionattempt->get_response_summary();
-                                break;
+                        // In case $submission->submissiontype == 'file'.
+                        $filestorage = get_file_storage();
+                        $fileref = $filestorage->get_file_by_hash($submission->identifier);
+
+                        if (!$fileref) {
+                            $errormessage = 'File/Content not found for the submission.';
+                            $errorcode = \plagiarism_copyleaks_errorcode::INTERNAL_PLUGIN_ERROR_NOT_RESCANNABLE;
+                        } else {
+                            try {
+                                $filename = $fileref->get_filename();
+                                $submittedtextcontent = $fileref->get_content();
+                            } catch (\Exception $e) {
+                                $errormessage = 'File/Content not found for the submission.';
+                                $errorcode = \plagiarism_copyleaks_errorcode::INTERNAL_PLUGIN_ERROR_NOT_RESCANNABLE;
                             }
                         }
-                    } catch (\Throwable $th) {
-                        $errormessage = 'Connot find quiz attempt.';
                     }
 
-                    if (!empty($submittedtextcontent)) {
-                        $submittedtextcontent = strip_tags($submittedtextcontent);
-                        $filename = 'quizanswer_'
-                            . $userid . "_"
-                            . $coursemodule->id . "_"
-                            . $coursemodule->instance . "_"
-                            . $submission->itemid . '.txt';
-                    } else {
-                        $errormessage = 'Content not found for the submission.';
+                    // If $errormessage is not empty, then there was an error.
+                    if (isset($errormessage) && $errormessage != "") {
+                        \plagiarism_copyleaks_submissions::handle_submission_error(
+                            $submission,
+                            $errormessage,
+                            $counterid,
+                            $errorcode
+                        );
+                        continue;
                     }
-                } else {
-                    // In case $submission->submissiontype == 'file'.
-                    $filestorage = get_file_storage();
-                    $fileref = $filestorage->get_file_by_hash($submission->identifier);
 
-                    if (!$fileref) {
-                        $errormessage = 'File/Content not found for the submission.';
-                    } else {
-                        try {
-                            $filename = $fileref->get_filename();
-                            $submittedtextcontent = $fileref->get_content();
-                        } catch (\Exception $e) {
-                            $errormessage = 'File/Content not found for the submission.';
+                    try {
+                        // Read the submited work into a temp file for submitting.
+                        $tempfilepath = $this->create_copyleaks_tempfile($coursemodule->id, $filename);
+                    } catch (\Exception $e) {
+                        \plagiarism_copyleaks_submissions::handle_submission_error(
+                            $submission,
+                            "Fail to create a tempfile.",
+                            $counterid,
+                            \plagiarism_copyleaks_errorcode::INTERNAL_PLUGIN_ERROR_NOT_RESCANNABLE
+                        );
+                        continue;
+                    }
+
+                    $fileref = fopen($tempfilepath, "w");
+                    fwrite($fileref, $submittedtextcontent);
+                    fclose($fileref);
+
+                    try {
+                        $copyleakscomms->submit_for_plagiarism_scan(
+                            $tempfilepath,
+                            $filename,
+                            $coursemodule->id,
+                            $userid,
+                            $submission->identifier,
+                            $submission->submissiontype,
+                            $counterid,
+                            $submission->externalid
+                        );
+                        \plagiarism_copyleaks_submissions::mark_pending($submission->id);
+                    } catch (\Exception $e) {
+                        $errorcode = $e->getCode();
+                        $error = get_string(
+                            'clapisubmissionerror',
+                            'plagiarism_copyleaks'
+                        ) . ' ' . $e->getMessage();
+                        if ($errorcode < 500 && $errorcode != 429) {
+                            \plagiarism_copyleaks_submissions::mark_error(
+                                $submission->id,
+                                $error,
+                                \plagiarism_copyleaks_errorcode::INTERNAL_SERVER_ERROR
+                            );
+                        } else {
+                            \plagiarism_copyleaks_logs::add($error, 'API_ERROR_RETRY_WILL_BE_DONE');
                         }
+                        $copyleakscomms->handle_failed_to_submit($counterid);
                     }
-                }
 
-                // If $errormessage is not empty, then there was an error.
-                if (isset($errormessage) && $errormessage != "") {
-                    \plagiarism_copyleaks_submissions::handle_submission_error($submission,  $errormessage);
-                    continue;
-                }
-
-                try {
-                    // Read the submited work into a temp file for submitting.
-                    $tempfilepath = $this->create_copyleaks_tempfile($coursemodule->id, $filename);
-                } catch (\Exception $e) {
-                    \plagiarism_copyleaks_submissions::handle_submission_error($submission,  "Fail to create a tempfile.");
-                    continue;
-                }
-
-                $fileref = fopen($tempfilepath, "w");
-                fwrite($fileref, $submittedtextcontent);
-                fclose($fileref);
-
-                try {
-                    $copyleakscomms = new \plagiarism_copyleaks_comms();
-                    $copyleakscomms->submit_for_plagiarism_scan(
-                        $tempfilepath,
-                        $filename,
-                        $coursemodule->id,
-                        $userid,
-                        $submission->identifier,
-                        $submission->submissiontype,
-                        $submission->externalid
-                    );
-                    \plagiarism_copyleaks_submissions::mark_pending($submission->id);
-                } catch (\Exception $e) {
-                    $errorcode = $e->getCode();
-                    $error = get_string(
-                        'clapisubmissionerror',
-                        'plagiarism_copyleaks'
-                    ) . ' ' . $e->getMessage();
-                    if ($errorcode < 500 && $errorcode != 429) {
-                        \plagiarism_copyleaks_submissions::mark_error($submission->id,  $error);
-                    } else {
-                        \plagiarism_copyleaks_logs::add($error, 'API_ERROR_RETRY_WILL_BE_DONE');
+                    // After finished the scan proccess, delete the temp file (if it exists).
+                    if (!is_null($tempfilepath)) {
+                        unlink($tempfilepath);
                     }
-                }
-
-                // After finished the scan proccess, delete the temp file (if it exists).
-                if (!is_null($tempfilepath)) {
-                    unlink($tempfilepath);
                 }
             }
         }

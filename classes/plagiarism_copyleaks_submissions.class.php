@@ -27,6 +27,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_logs.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_utils.class.php');
 
 /**
  * submissions helpers methods
@@ -87,7 +88,8 @@ class plagiarism_copyleaks_submissions {
         $itemid,
         $submissiontype,
         $scheduledscandate,
-        $errormsg = null
+        $errormsg = null,
+        $errorcode = null
     ) {
         global $DB;
 
@@ -102,6 +104,7 @@ class plagiarism_copyleaks_submissions {
         $file->similarityscore = null;
         $file->externalid = $clsubmissionid;
         $file->errormsg = $errormsg;
+        $file->errorcode = $errorcode;
         $file->lastmodified = time();
         $file->submissiontype = $submissiontype;
         $file->itemid = $itemid;
@@ -134,7 +137,7 @@ class plagiarism_copyleaks_submissions {
      * @param string $fileid submission id
      * @param string $errormsg error message (optional)
      */
-    public static function mark_error($fileid, $errormsg = null, $failedafterretry = false) {
+    public static function mark_error($fileid, $errormsg = null, $errorcode = null, $failedafterretry = false) {
         global $DB;
 
         $file = new stdClass();
@@ -150,6 +153,7 @@ class plagiarism_copyleaks_submissions {
 
         if (!empty($errormsg)) {
             $file->errormsg = $errormsg;
+            $file->errorcode = $errorcode;
         }
 
         if (!$DB->update_record('plagiarism_copyleaks_files', $file)) {
@@ -240,6 +244,7 @@ class plagiarism_copyleaks_submissions {
         );
         $record->statuscode = "queued";
         $record->errormsg = null;
+        $record->errorcode = null;
         if ($record) {
             if (!$DB->update_record('plagiarism_copyleaks_files', $record)) {
                 \plagiarism_copyleaks_logs::add(
@@ -251,14 +256,93 @@ class plagiarism_copyleaks_submissions {
     }
 
     /**
+     * Update failed scans to queued if they have resubmittable errors.
+     * If a course module ID is provided, only failed scans for that module are updated.
+     * Otherwise, all failed scans modified in the last 10 days are updated.
+     * @param int|null $cmid The course module ID. If null, updates all failed scans.
+     */
+    public static function change_failed_scans_to_queued($cmid = null) {
+        global $DB;
+
+        // Build the SQL condition dynamically.
+        $conditions = ["statuscode = 'error'"];
+        $params = [];
+
+        if ($cmid !== null) {
+            $conditions[] = "cm = ?";
+            $params[] = $cmid;
+        } else {
+            $conditions[] = "lastmodified >= ?";
+            // Get timestamp for 10 days ago.
+            $params[] = time() - (10 * 24 * 60 * 60);
+        }
+
+        // Construct the where clause.
+        $whereclause = implode(' AND ', $conditions);
+
+        $limit = PLAGIARISM_COPYLEAKS_CRON_QUERY_LIMIT; // Number of records to fetch at a time.
+        $offset = 0;   // Start from the first record.
+
+        do {
+            // Get a batch of failed scans based on the condition.
+            $records = $DB->get_records_select(
+                'plagiarism_copyleaks_files',
+                $whereclause,
+                $params,
+                '',
+                '*',
+                $offset,
+                $limit
+            );
+
+            foreach ($records as $record) {
+                if ($record->retrycnt > PLAGIARISM_COPYLEAKS_MAX_AUTO_RETRY) {
+                    $record->errormsg = $record->errormsg . " - Max retry count reached";
+                    if (!$DB->update_record('plagiarism_copyleaks_files', $record)) {
+                        \plagiarism_copyleaks_logs::add(
+                            "failed to change failed scans to max retry error, fileid: " . $record->id,
+                            "UPDATE_RECORD_FAILED"
+                        );
+                    }
+                    continue;
+                }
+                if (plagiarism_copyleaks_utils::is_resubmittable_error($record->errorcode)) {
+                    $record->statuscode = 'queued';
+                    $record->errormsg = null;
+                    $record->errorcode = null;
+                    if (!$DB->update_record('plagiarism_copyleaks_files', $record)) {
+                        \plagiarism_copyleaks_logs::add(
+                            "failed to change failed scans to queued, fileid: " . $record->id,
+                            "UPDATE_RECORD_FAILED"
+                        );
+                    }
+                } else {
+                    $record->errormsg = $record->errormsg . " (Not rescannable by Copyleaks)";
+                    if (!$DB->update_record('plagiarism_copyleaks_files', $record)) {
+                        \plagiarism_copyleaks_logs::add(
+                            "failed to change failed scans to not rescannable error, fileid: " . $record->id,
+                            "UPDATE_RECORD_FAILED"
+                        );
+                    }
+                }
+            }
+
+            // Move to the next batch.
+            $offset += $limit;
+        } while (count($records) === $limit); // Continue if we got a full batch.
+    }
+
+    /**
      * Handle submission error.
      * @param object $submission - will update the submission reference.
-     * @param string $errormessage
+     * @param string $errormessage.
+     * @param int $errorcode.
      */
-    public static function handle_submission_error(&$submission, $errormessage = '') {
+    public static function handle_submission_error(&$submission, $errormessage = '', $counterid, $errorcode = null) {
         global $DB;
+        $copyleakscomms = new \plagiarism_copyleaks_comms();
         if (isset($submission->retrycnt) && $submission->retrycnt > PLAGIARISM_COPYLEAKS_MAX_AUTO_RETRY) {
-            self::mark_error($submission->id, $errormessage, true);
+            self::mark_error($submission->id, $errormessage, $errorcode, true);
             return;
         }
 
@@ -277,6 +361,8 @@ class plagiarism_copyleaks_submissions {
                 "UPDATE_RECORD_FAILED"
             );
         }
+
+        $copyleakscomms->handle_failed_to_submit($counterid);
     }
 
 
@@ -304,8 +390,8 @@ class plagiarism_copyleaks_submissions {
         $aiscore,
         $writingfeedbackissues,
         $ischeatingdetected,
-        $errormessage
-
+        $errormessage,
+        $errorcode
     ) {
         global $DB;
         $submission = $DB->get_record(
@@ -339,6 +425,7 @@ class plagiarism_copyleaks_submissions {
             } else if ($status == 2) {
                 $submission->statuscode = 'error';
                 $submission->errormsg = $errormessage;
+                $submission->errorcode = $errorcode;
                 if (!$DB->update_record('plagiarism_copyleaks_files', $submission)) {
                     \plagiarism_copyleaks_logs::add(
                         "Update record failed (CM: " . $coursemoduleid . ", User: "

@@ -38,14 +38,14 @@ class plagiarism_copyleaks_notifications extends external_api {
      */
     public static function send_notification_parameters() {
         return new external_function_parameters(
-          [
-            'userto'    => new external_value(PARAM_INT, 'User id'),
-            'subject' => new external_value(PARAM_TEXT, 'Notification subject'),
-            'fullmessage' => new external_value(PARAM_TEXT, 'Notification message'),
-            'userfrom' => new external_value(PARAM_INT, 'Notification message sender', VALUE_DEFAULT, null),
-            'contexturl' => new external_value(PARAM_URL, 'Notification message context URL', VALUE_DEFAULT, null),
-            'contexturlname' => new external_value(PARAM_TEXT, 'Notification message  context URL name', VALUE_DEFAULT, null),
-          ]
+            [
+                'userto'    => new external_value(PARAM_INT, 'User id'),
+                'subject' => new external_value(PARAM_TEXT, 'Notification subject'),
+                'fullmessage' => new external_value(PARAM_TEXT, 'Notification message'),
+                'userfrom' => new external_value(PARAM_INT, 'Notification message sender', VALUE_DEFAULT, null),
+                'contexturl' => new external_value(PARAM_URL, 'Notification message context URL', VALUE_DEFAULT, null),
+                'contexturlname' => new external_value(PARAM_TEXT, 'Notification message  context URL name', VALUE_DEFAULT, null),
+            ]
         );
     }
 
@@ -60,21 +60,22 @@ class plagiarism_copyleaks_notifications extends external_api {
      * @return array
      */
     public static function send_notification(
-      $userto,
-      $subject,
-      $fullmessage,
-      $userfrom = null,
-      $contexturl = null,
-      $contexturlname = null) {
+        $userto,
+        $subject,
+        $fullmessage,
+        $userfrom = null,
+        $contexturl = null,
+        $contexturlname = null
+    ) {
 
         // Validate parameters.
         $params = self::validate_parameters(self::send_notification_parameters(), [
-          'userto' => $userto,
-          'subject' => $subject,
-          'fullmessage' => $fullmessage,
-          'userfrom' => $userfrom,
-          'contexturl' => $contexturl,
-          'contexturlname' => $contexturlname,
+            'userto' => $userto,
+            'subject' => $subject,
+            'fullmessage' => $fullmessage,
+            'userfrom' => $userfrom,
+            'contexturl' => $contexturl,
+            'contexturlname' => $contexturlname,
         ]);
 
         if ($params['userfrom'] == null) {

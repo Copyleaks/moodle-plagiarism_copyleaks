@@ -70,6 +70,7 @@ class plagiarism_copyleaks_comms {
         string $userid,
         string $identifier,
         string $submissiontype,
+        string $counterid,
         $externalid = null
     ) {
         if (isset($this->key) && isset($this->secret)) {
@@ -92,6 +93,7 @@ class plagiarism_copyleaks_comms {
                     'duedate' => $duedate,
                     'coursestartdate' => $coursestartdate,
                     'oldScanId' => $externalid, // In case the insrtuctor pressed "Try again" button.
+                    'counterId' => $counterid,
                 ];
             } else {
                 $paramsmerge = (array)[
@@ -105,6 +107,7 @@ class plagiarism_copyleaks_comms {
                     'duedate' => $duedate,
                     'coursestartdate' => $coursestartdate,
                     'oldScanId' => $externalid,
+                    'counterId' => $counterid,
                 ];
             }
 
@@ -992,6 +995,43 @@ class plagiarism_copyleaks_comms {
         $endpoint = "/api/moodle/plugin/$this->key/course-module/$cmid/delete";
         try {
             plagiarism_copyleaks_http_client::execute_retry(
+                'POST',
+                $this->copyleaks_api_url() . $endpoint,
+                true
+            );
+        } catch (\Exception $e) {
+            $errormsg = get_string('cltaskfailedconnecting', 'plagiarism_copyleaks', $e->getMessage());
+            plagiarism_copyleaks_logs::add($errormsg, 'API_ERROR');
+        }
+    }
+
+    /**
+     * Update course module temp id at Copyleaks server.
+     * @param array $data
+     */
+    public function create_scan_batch_counter($data) {
+        $endpoint = "/api/moodle/plugin/$this->key/scans/create-scan-batch-counter";
+        try {
+            return plagiarism_copyleaks_http_client::execute_retry(
+                'POST',
+                $this->copyleaks_api_url() . $endpoint,
+                true,
+                json_encode($data)
+            );
+        } catch (\Exception $e) {
+            $errormsg = get_string('cltaskfailedconnecting', 'plagiarism_copyleaks', $e->getMessage());
+            plagiarism_copyleaks_logs::add($errormsg, 'API_ERROR');
+        }
+    }
+
+    /**
+     * Decrease the counter and start the batch scans if ready (counter = 0).
+     * @param string $batchid
+     */
+    public function handle_failed_to_submit($batchid) {
+        $endpoint = "/api/moodle/plugin/$this->key/scans/$batchid/handle-failed-to-submit";
+        try {
+            return plagiarism_copyleaks_http_client::execute_retry(
                 'POST',
                 $this->copyleaks_api_url() . $endpoint,
                 true

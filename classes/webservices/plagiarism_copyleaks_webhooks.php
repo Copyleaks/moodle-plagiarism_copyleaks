@@ -41,77 +41,82 @@ class plagiarism_copyleaks_webhooks extends external_api {
      */
     public static function update_report_webhook_parameters() {
         return new external_function_parameters(
-          [
-            'coursemoduleid' => new external_value(PARAM_TEXT, 'Course module ID'),
-            'moodleuserid' => new external_value(PARAM_TEXT, 'Moodle user ID'),
-            'identifier' => new external_value(PARAM_TEXT, 'Identifier'),
-            'scanid' => new external_value(PARAM_TEXT, 'Scan ID'),
-            'status' => new external_value(PARAM_INT, 'Report scan status'),
-            'plagiarismscore' => new external_value(PARAM_FLOAT, 'Plagiarism score', VALUE_DEFAULT, null),
-            'aiscore' => new external_value(PARAM_FLOAT, 'AI score', VALUE_DEFAULT, null),
-            'writingfeedbackissues' => new external_value(PARAM_INT, 'Writing feedback issues', VALUE_DEFAULT, null),
-            'ischeatingdetected' => new external_value(PARAM_BOOL, 'Is cheating detected', VALUE_DEFAULT, false),
-            'errormessage' => new external_value(PARAM_TEXT, 'Error message', VALUE_DEFAULT, null),
-          ]
+            [
+                'coursemoduleid' => new external_value(PARAM_TEXT, 'Course module ID'),
+                'moodleuserid' => new external_value(PARAM_TEXT, 'Moodle user ID'),
+                'identifier' => new external_value(PARAM_TEXT, 'Identifier'),
+                'scanid' => new external_value(PARAM_TEXT, 'Scan ID'),
+                'status' => new external_value(PARAM_INT, 'Report scan status'),
+                'plagiarismscore' => new external_value(PARAM_FLOAT, 'Plagiarism score', VALUE_DEFAULT, null),
+                'aiscore' => new external_value(PARAM_FLOAT, 'AI score', VALUE_DEFAULT, null),
+                'writingfeedbackissues' => new external_value(PARAM_INT, 'Writing feedback issues', VALUE_DEFAULT, null),
+                'ischeatingdetected' => new external_value(PARAM_BOOL, 'Is cheating detected', VALUE_DEFAULT, false),
+                'errormessage' => new external_value(PARAM_TEXT, 'Error message', VALUE_DEFAULT, null),
+                'errorcode' => new external_value(PARAM_INT, 'Error Code', VALUE_DEFAULT, null),
+            ]
         );
     }
 
     /**
      * Update report webhook
-     * @param  string $coursemoduleid  Course module ID
-     * @param  string $moodleuserid    Moodle user ID
-     * @param  string $identifier      Identifier
-     * @param  string $scanid          Scan ID
-     * @param  int    $status          Report scan status
-     * @param  float  $plagiarismscore Plagiarism score
-     * @param  float  $aiscore         AI score
+     * @param  string $coursemoduleid        Course module ID
+     * @param  string $moodleuserid          Moodle user ID
+     * @param  string $identifier            Identifier
+     * @param  string $scanid                Scan ID
+     * @param  int    $status                Report scan status
+     * @param  float  $plagiarismscore       Plagiarism score
+     * @param  float  $aiscore               AI score
      * @param  int    $writingfeedbackissues Writing feedback issues
      * @param  bool   $ischeatingdetected    Is cheating detected
-     * @param  string $errormessage    Error message
+     * @param  string $errormessage          Error message
+     * @param  int    $errorcode             Error Code
      * @return array  Warnings and success status
      */
     public static function update_report_webhook(
-    $coursemoduleid,
-    $moodleuserid,
-    $identifier,
-    $scanid,
-    $status,
-    $plagiarismscore = null,
-    $aiscore = null,
-    $writingfeedbackissues = null,
-    $ischeatingdetected = false,
-    $errormessage = null
+        $coursemoduleid,
+        $moodleuserid,
+        $identifier,
+        $scanid,
+        $status,
+        $plagiarismscore = null,
+        $aiscore = null,
+        $writingfeedbackissues = null,
+        $ischeatingdetected = false,
+        $errormessage = null,
+        $errorcode = null
     ) {
         // Validate parameters.
         $params = self::validate_parameters(self::update_report_webhook_parameters(), [
-          'coursemoduleid' => $coursemoduleid,
-          'moodleuserid' => $moodleuserid,
-          'identifier' => $identifier,
-          'scanid' => $scanid,
-          'status' => $status,
-          'plagiarismscore' => $plagiarismscore,
-          'aiscore' => $aiscore,
-          'writingfeedbackissues' => $writingfeedbackissues,
-          'ischeatingdetected' => $ischeatingdetected,
-          'errormessage' => $errormessage,
+            'coursemoduleid' => $coursemoduleid,
+            'moodleuserid' => $moodleuserid,
+            'identifier' => $identifier,
+            'scanid' => $scanid,
+            'status' => $status,
+            'plagiarismscore' => $plagiarismscore,
+            'aiscore' => $aiscore,
+            'writingfeedbackissues' => $writingfeedbackissues,
+            'ischeatingdetected' => $ischeatingdetected,
+            'errormessage' => $errormessage,
+            'errorcode' => $errorcode,
         ]);
 
         $result = \plagiarism_copyleaks_submissions::update_report(
-          $params['coursemoduleid'],
-          $params['moodleuserid'],
-          $params['identifier'],
-          $params['scanid'],
-          $params['status'],
-          $params['plagiarismscore'],
-          $params['aiscore'],
-          $params['writingfeedbackissues'],
-          $params['ischeatingdetected'],
-          $params['errormessage'],
+            $params['coursemoduleid'],
+            $params['moodleuserid'],
+            $params['identifier'],
+            $params['scanid'],
+            $params['status'],
+            $params['plagiarismscore'],
+            $params['aiscore'],
+            $params['writingfeedbackissues'],
+            $params['ischeatingdetected'],
+            $params['errormessage'],
+            $params['errorcode'],
         );
         if (!$result) {
             throw new plagiarism_copyleaks_webservice_exception('clreportupdatefailed');
         }
-         return null;
+        return null;
     }
 
     /**
@@ -131,10 +136,10 @@ class plagiarism_copyleaks_webhooks extends external_api {
      */
     public static function update_api_connection_webhook_parameters() {
         return new external_function_parameters(
-          [
-            'pluginintegrationkey' => new external_value(PARAM_TEXT, 'Plugin integration key'),
-            'isconnected' => new external_value(PARAM_BOOL, 'isconnected'),
-          ]
+            [
+                'pluginintegrationkey' => new external_value(PARAM_TEXT, 'Plugin integration key'),
+                'isconnected' => new external_value(PARAM_BOOL, 'isconnected'),
+            ]
         );
     }
 
@@ -148,8 +153,8 @@ class plagiarism_copyleaks_webhooks extends external_api {
     public static function update_api_connection_webhook($pluginintegrationkey, $isconnected) {
         // Validate parameters.
         self::validate_parameters(
-          self::update_api_connection_webhook_parameters(),
-          ['pluginintegrationkey' => $pluginintegrationkey, 'isconnected' => $isconnected]
+            self::update_api_connection_webhook_parameters(),
+            ['pluginintegrationkey' => $pluginintegrationkey, 'isconnected' => $isconnected]
         );
 
         if (!plagiarism_copyleaks_pluginconfig::validate_admin_config_key($pluginintegrationkey)) {
@@ -167,9 +172,9 @@ class plagiarism_copyleaks_webhooks extends external_api {
      */
     public static function update_api_connection_webhook_returns() {
         return new external_single_structure(
-          [
-            'successfullyUpdated' => new external_value(PARAM_BOOL, 'Successfully Updated'),
-          ]
+            [
+                'successfullyUpdated' => new external_value(PARAM_BOOL, 'Successfully Updated'),
+            ]
         );
     }
     // EndRegion Disconnect Web Service Webhook.

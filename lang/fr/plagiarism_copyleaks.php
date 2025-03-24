@@ -46,6 +46,8 @@ $string['clfailtosavedata'] = 'Échec de l\'enregistrement des données Copyleak
 $string['clgenereportimmediately'] = 'Générez des rapports immédiatement';
 $string['clgenereportonduedate'] = 'Générer des rapports à la date d\'échéance';
 $string['clresubmitfailed'] = 'Essayer à nouveau';
+$string['clresubmitfailedscans'] = 'Renvoyer les analyses échouées';
+$string['clresubmitfailedscansdisabled'] = 'Renvoyer les analyses échouées (disponible une fois par heure)';
 $string['clinserterror'] = 'Erreur lors de la tentative d\'insertion d\'enregistrements dans la base de données';
 $string['clinvalidkeyorsecret'] = 'Clé ou secret invalide';
 $string['cllogsheading'] = 'Journaux';
@@ -84,6 +86,24 @@ $string['clupdatereportscores'] = 'Plugin de plagiat Copyleaks - gérer la mise 
 $string['clduplicatecoursemodules'] = "Plugin de plagiat Copyleaks - gérer la duplication des modules de cours";
 $string['copyleaks'] = 'Copyleaks';
 $string['pluginname'] = 'Plugin de plagiat Copyleaks';
+$string['clplagiarismdetectionthresholds'] = 'Seuils de détection du plagiat';
+$string['claicontentdetectionthresholds'] = 'Seuils de détection du contenu IA';
+$string['cllowcontentmatchthreshold'] = 'Gravité faible :';
+$string['clmidcontentmatchthreshold'] = 'Gravité modérée :';
+$string['clhighcontentmatchthreshold'] = 'Gravité élevée :';
+$string['clplagiarismdetectionthresholds_help'] = '<b>Codage couleur de la gravité du plagiat :</b>
+<ul>
+<li><span style="color:green;"><b>Vert :</b></span> Gravité faible.</li>
+<li><span style="color:orange;"><b>Jaune :</b></span> Gravité modérée.</li>
+<li><span style="color:red;"><b>Rouge :</b></span> Gravité élevée.</li>
+</ul> ';
+$string['claicontentdetectionthresholds_help'] = '<b>Codage couleur de la gravité du contenu IA :</b>
+<ul>
+<li><span style="color:green;"><b>Vert :</b></span> Gravité faible.</li>
+<li><span style="color:orange;"><b>Jaune :</b></span> Gravité modérée.</li>
+<li><span style="color:red;"><b>Rouge :</b></span> Gravité élevée.</li>
+</ul> ';
+
 
 $string['claicontentscore'] = 'Score du contenu IA';
 $string['clplagiarismscore'] = 'Score de plagiat';

@@ -156,8 +156,8 @@ class plagiarism_copyleaks_utils {
         $content = $isbtndisabled ?
             html_writer::div($text, null, [
                 'style' => 'color:#8c8c8c',
-            'title' => get_string('cldisablesettingstooltip', 'plagiarism_copyleaks'),
-        ]) :
+                'title' => get_string('cldisablesettingstooltip', 'plagiarism_copyleaks'),
+            ]) :
             html_writer::link("$settingsurl", $text, ['target' => '_blank']);
         return
             "<div class='form-group row'>" .
@@ -167,6 +167,81 @@ class plagiarism_copyleaks_utils {
             . "</div>" .
             "</div>";
     }
+
+    /**
+     * Get Copyleaks button for resubmit failed scans.
+     * @param string $cmid - course module id.
+     * @return string
+     */
+    public static function get_resubmit_failed_scans_button_link($cmid = null) {
+        global $CFG;
+
+        $btntext = get_string('clresubmitfailedscans', 'plagiarism_copyleaks');
+        $disabledbtntext = get_string('clresubmitfailedscansdisabled', 'plagiarism_copyleaks');
+        $linkid = "resubmitFailedScansLink"; // Unique ID for the <a> tag.
+        $url = "$CFG->wwwroot/plagiarism/copyleaks/plagiarism_copyleaks_resubmit_handler.php";
+        // Determine localStorage key based on role.
+        if ($cmid) {
+            $lastresumbitclick = 'teacherLastResubmitClick' . $cmid;
+            $resubmiturl = new moodle_url($url, array(
+                'rescanmode' => plagiarism_copyleaks_rescan_mode::RESCAN_MODULE,
+                'cmid'   => $cmid,
+            ));
+        } else {
+            $lastresumbitclick = 'adminLastResubmitClick';
+            $resubmiturl = new moodle_url($url, array(
+                'rescanmode' => plagiarism_copyleaks_rescan_mode::RESCAN_ALL,
+            ));
+        }
+
+        // The <a> tag with data attributes.
+        $linkhtml = "<a id='$linkid' href='$resubmiturl' target='hiddenframe'" .
+            "data-default-text='$btntext'" .
+            "data-disabled-text='$disabledbtntext'>$btntext</a>";
+
+        // Optimized JavaScript.
+        $script = "
+            <script>" .
+            "document.addEventListener('DOMContentLoaded', function() {" .
+            "const link = document.getElementById('$linkid');" .
+            "const lastClick = localStorage.getItem('$lastresumbitclick');" .
+            "const oneHour = 60 * 60 * 1000;" .
+            "const now = Date.now();" .
+            "if (lastClick && (now - lastClick < oneHour)) {" .
+            "disableLink(link);" .
+            "}" .
+            "link.addEventListener('click', function(event) {" .
+            "if (link.style.pointerEvents === 'none') {" .
+            "event.preventDefault();" .
+            "} else {" .
+            "localStorage.setItem('$lastresumbitclick', Date.now());" .
+            "disableLink(link);" .
+            "}" .
+            "});" .
+            "function disableLink(link) {" .
+            "link.style.pointerEvents = 'none';" .
+            "link.style.color = '#8c8c8c';" .
+            "link.innerText = link.getAttribute('data-disabled-text');" .
+            "}" .
+            "function enableLink(link) {" .
+            "link.style.pointerEvents = 'auto';" .
+            "link.style.color = '';" .
+            "link.innerText = link.getAttribute('data-default-text');" .
+            "}" .
+            "});" .
+            "</script>";
+
+        return "
+            <div class='form-group row'>
+                <div class='col-md-3'></div>
+                <div class='col-md-9'>
+                    $linkhtml
+                </div>
+            </div>
+            $script
+        ";
+    }
+
 
     /**
      * Get Copyleaks buttom for analytics page.
@@ -182,8 +257,8 @@ class plagiarism_copyleaks_utils {
         $contentanalytics = $isanalyticsdisabled ?
             html_writer::div($analyticstext, null, [
                 'style' => 'color:#8c8c8c',
-            'title' => get_string('cldisablesettingstooltip', 'plagiarism_copyleaks'),
-        ]) :
+                'title' => get_string('cldisablesettingstooltip', 'plagiarism_copyleaks'),
+            ]) :
             html_writer::link("$analyticsurl", $analyticstext, ['target' => '_blank']);
         return
             "<div class='form-group row'>" .
@@ -358,5 +433,28 @@ class plagiarism_copyleaks_utils {
                 return get_string('cltimesoon', 'plagiarism_copyleaks');
         }
         return $retstr;
+    }
+
+    /**
+     * Check if an error code is eligible for resubmission.
+     * @param int $errorcode The error code from the scan.
+     * @return bool True if the scan can be resubmitted, false otherwise.
+     */
+    public static function is_resubmittable_error($errorcode) {
+        if ($errorcode === null) {
+            return true;
+        }
+
+        $resubmittableerrors = [
+            plagiarism_copyleaks_errorcode::UNKNOWN,
+            plagiarism_copyleaks_errorcode::TEMPORARILY_UNAVAILABLE,
+            plagiarism_copyleaks_errorcode::INSUFFICIENT_CREDITS,
+            plagiarism_copyleaks_errorcode::NO_CREDITS_AVAILABLE,
+            plagiarism_copyleaks_errorcode::SINGLE_FILE_UPLOAD_ONLY,
+            plagiarism_copyleaks_errorcode::INTERNAL_SERVER_ERROR,
+            plagiarism_copyleaks_errorcode::EXCEEDED_CREDITS_LIMIT
+        ];
+
+        return in_array((int)$errorcode, $resubmittableerrors, true) || $errorcode >= 100;
     }
 }
