@@ -1,7 +1,3 @@
-
-Warning: Module 'openssl' already loaded in Unknown on line 0
-
-Warning: Module 'openssl' already loaded in Unknown on line 0
 <?php
 // This file is part of Moodle - http://moodle.org/
 //
@@ -88,34 +84,38 @@ class plagiarism_copyleaks_adminform extends moodleform {
 
                         $mform->addElement('html', '<h5 style="margin-bottom: 25px;margin-top: 10px;font-weight: 400;">'.get_string('clsetmahara', 'plagiarism_copyleaks').'</h5>');
 
-                        $mform->addElement('text', 'plagiarism_copyleaks_maharawsurl_' . $module,
+                        $plagiarism_copyleaks_maharawsurl = "plagiarism_copyleaks_maharawsurl";
+                        $mform->addElement('text', $plagiarism_copyleaks_maharawsurl,
                                 get_string('clmaharawsurl', 'plagiarism_copyleaks'),
                                 array('maxlength' => 255, 'size' => 50));
-                        $mform->addHelpButton('plagiarism_copyleaks_maharawsurl_' . $module, 'clmaharawsurl', 'plagiarism_copyleaks');
-                        $mform->setDefault('plagiarism_copyleaks_maharawsurl_' . $module, '');
-                        $mform->setType('plagiarism_copyleaks_maharawsurl_' . $module, PARAM_URL);
+                        $mform->addHelpButton($plagiarism_copyleaks_maharawsurl, 'clmaharawsurl', 'plagiarism_copyleaks');
+                        $mform->setDefault($plagiarism_copyleaks_maharawsurl, '');
+                        $mform->setType($plagiarism_copyleaks_maharawsurl, PARAM_URL);
 
-                        $mform->addElement('text', 'plagiarism_copyleaks_maharawshtmllitekey_' . $module,
+                        $plagiarism_copyleaks_maharawshtmllitekey = "plagiarism_copyleaks_maharawshtmllitekey";
+                        $mform->addElement('text', $plagiarism_copyleaks_maharawshtmllitekey,
                                 get_string('clmaharawshtmllitekey', 'plagiarism_copyleaks'),
                                 array('maxlength' => 255, 'size' => 50));
-                        $mform->addHelpButton('plagiarism_copyleaks_maharawshtmllitekey_' . $module, 'clmaharawshtmllitekey', 'plagiarism_copyleaks');
-                        $mform->setDefault('plagiarism_copyleaks_maharawshtmllitekey_' . $module, '');
-                        $mform->setType('plagiarism_copyleaks_maharawshtmllitekey_' . $module, PARAM_ALPHANUM);
+                        $mform->addHelpButton($plagiarism_copyleaks_maharawshtmllitekey, 'clmaharawshtmllitekey', 'plagiarism_copyleaks');
+                        $mform->setDefault($plagiarism_copyleaks_maharawshtmllitekey , '');
+                        $mform->setType($plagiarism_copyleaks_maharawshtmllitekey, PARAM_ALPHANUM);
 
-                        $mform->addElement('text', 'plagiarism_copyleaks_maharawshtmllitesecret_' . $module,
+                        $plagiarism_copyleaks_maharawshtmllitesecret = "plagiarism_copyleaks_maharawshtmllitesecret";
+                        $mform->addElement('text', $plagiarism_copyleaks_maharawshtmllitesecret,
                                 get_string('clmaharawshtmllitesecret', 'plagiarism_copyleaks'),
                                 array('maxlength' => 255, 'size' => 50));
-                        $mform->addHelpButton('plagiarism_copyleaks_maharawshtmllitesecret_' . $module, 'clmaharawshtmllitesecret', 'plagiarism_copyleaks');
-                        $mform->setDefault('plagiarism_copyleaks_maharawshtmllitesecret_' . $module, '');
-                        $mform->setType('plagiarism_copyleaks_maharawshtmllitesecret_' . $module, PARAM_ALPHANUM);
+                        $mform->addHelpButton($plagiarism_copyleaks_maharawshtmllitesecret , 'clmaharawshtmllitesecret', 'plagiarism_copyleaks');
+                        $mform->setDefault($plagiarism_copyleaks_maharawshtmllitesecret , '');
+                        $mform->setType($plagiarism_copyleaks_maharawshtmllitesecret , PARAM_ALPHANUM);
 
-                        $mform->addElement('text', 'plagiarism_copyleaks_maharawshtmllitetoken_' . $module,
+                        $plagiarism_copyleaks_maharawshtmllitetoken = "plagiarism_copyleaks_maharawshtmllitetoken";
+                        $mform->addElement('text', $plagiarism_copyleaks_maharawshtmllitetoken,
                                 get_string('clmaharawshtmllitetoken', 'plagiarism_copyleaks'),
                                 array('maxlength' => 255, 'size' => 50));
-                        $mform->addHelpButton('plagiarism_copyleaks_maharawshtmllitetoken_' . $module, 'clmaharawshtmllitetoken', 'plagiarism_copyleaks');
-                        $mform->setDefault('plagiarism_copyleaks_maharawshtmllitetoken_' . $module, '');
-                        $mform->setType('plagiarism_copyleaks_maharawshtmllitetoken_' . $module, PARAM_ALPHANUM);
-
+                        $mform->addHelpButton($plagiarism_copyleaks_maharawshtmllitetoken, 'clmaharawshtmllitetoken', 'plagiarism_copyleaks');
+                        $mform->setDefault($plagiarism_copyleaks_maharawshtmllitetoken, '');
+                        $mform->setType($plagiarism_copyleaks_maharawshtmllitetoken, PARAM_ALPHANUM);
+                        
                         $mform->addElement('html', '</div>'); // End wrapper
                         $mform->addElement('html', '
                         <script>

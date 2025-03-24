@@ -82,6 +82,10 @@ class plagiarism_copyleaks_pluginconfig {
             'plagiarism_copyleaks_plagiarismhighthreshold',
             'plagiarism_copyleaks_aicontentmidthreshold',
             'plagiarism_copyleaks_aicontenthighthreshold',
+            'plagiarism_copyleaks_maharawsurl',
+            'plagiarism_copyleaks_maharawshtmllitekey',
+            'plagiarism_copyleaks_maharawshtmllitesecret',
+            'plagiarism_copyleaks_maharawshtmllitetoken'
         ];
     }
 
