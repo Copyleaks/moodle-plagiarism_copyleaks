@@ -1,3 +1,7 @@
+
+Warning: Module 'openssl' already loaded in Unknown on line 0
+
+Warning: Module 'openssl' already loaded in Unknown on line 0
 <?php
 // This file is part of Moodle - http://moodle.org/
 //
@@ -74,6 +78,61 @@ class plagiarism_copyleaks_adminform extends moodleform {
                     'plagiarism_copyleaks_mod_' . $module,
                     get_string('clenablemodulefor', 'plagiarism_copyleaks', ucfirst($module == 'assign' ? 'Assignment' : $module))
                 );
+                // Mahara setup.
+                if ($module == 'assign') {
+                    // Check if maharaws is enabled.
+                    $pm = \core_plugin_manager::instance();
+                    $submissionplugins = $pm->get_enabled_plugins('assignsubmission');
+                    if (!empty($submissionplugins) && key_exists('maharaws', $submissionplugins)) {
+                        $mform->addElement('html', '<div id="copyleaks-mahara-settings" style="display: block;padding: 15px;border: 1px solid #dfdfdf;border-radius: 10px;margin-bottom:20px;">');
+
+                        $mform->addElement('html', '<h5 style="margin-bottom: 25px;margin-top: 10px;font-weight: 400;">'.get_string('clsetmahara', 'plagiarism_copyleaks').'</h5>');
+
+                        $mform->addElement('text', 'plagiarism_copyleaks_maharawsurl_' . $module,
+                                get_string('clmaharawsurl', 'plagiarism_copyleaks'),
+                                array('maxlength' => 255, 'size' => 50));
+                        $mform->addHelpButton('plagiarism_copyleaks_maharawsurl_' . $module, 'clmaharawsurl', 'plagiarism_copyleaks');
+                        $mform->setDefault('plagiarism_copyleaks_maharawsurl_' . $module, '');
+                        $mform->setType('plagiarism_copyleaks_maharawsurl_' . $module, PARAM_URL);
+
+                        $mform->addElement('text', 'plagiarism_copyleaks_maharawshtmllitekey_' . $module,
+                                get_string('clmaharawshtmllitekey', 'plagiarism_copyleaks'),
+                                array('maxlength' => 255, 'size' => 50));
+                        $mform->addHelpButton('plagiarism_copyleaks_maharawshtmllitekey_' . $module, 'clmaharawshtmllitekey', 'plagiarism_copyleaks');
+                        $mform->setDefault('plagiarism_copyleaks_maharawshtmllitekey_' . $module, '');
+                        $mform->setType('plagiarism_copyleaks_maharawshtmllitekey_' . $module, PARAM_ALPHANUM);
+
+                        $mform->addElement('text', 'plagiarism_copyleaks_maharawshtmllitesecret_' . $module,
+                                get_string('clmaharawshtmllitesecret', 'plagiarism_copyleaks'),
+                                array('maxlength' => 255, 'size' => 50));
+                        $mform->addHelpButton('plagiarism_copyleaks_maharawshtmllitesecret_' . $module, 'clmaharawshtmllitesecret', 'plagiarism_copyleaks');
+                        $mform->setDefault('plagiarism_copyleaks_maharawshtmllitesecret_' . $module, '');
+                        $mform->setType('plagiarism_copyleaks_maharawshtmllitesecret_' . $module, PARAM_ALPHANUM);
+
+                        $mform->addElement('text', 'plagiarism_copyleaks_maharawshtmllitetoken_' . $module,
+                                get_string('clmaharawshtmllitetoken', 'plagiarism_copyleaks'),
+                                array('maxlength' => 255, 'size' => 50));
+                        $mform->addHelpButton('plagiarism_copyleaks_maharawshtmllitetoken_' . $module, 'clmaharawshtmllitetoken', 'plagiarism_copyleaks');
+                        $mform->setDefault('plagiarism_copyleaks_maharawshtmllitetoken_' . $module, '');
+                        $mform->setType('plagiarism_copyleaks_maharawshtmllitetoken_' . $module, PARAM_ALPHANUM);
+
+                        $mform->addElement('html', '</div>'); // End wrapper
+                        $mform->addElement('html', '
+                        <script>
+                            document.addEventListener("DOMContentLoaded", function () {
+                                let checkbox = document.getElementById("id_plagiarism_copyleaks_mod_assign");
+                                let settingsDiv = document.getElementById("copyleaks-mahara-settings");
+
+                                function toggleSettings() {
+                                    settingsDiv.style.display = checkbox.checked ? "block" : "none";
+                                }
+
+                                checkbox.addEventListener("change", toggleSettings);
+                                toggleSettings(); // Initial state
+                            });
+                         </script>');
+                    }
+                }
             }
         }
 
