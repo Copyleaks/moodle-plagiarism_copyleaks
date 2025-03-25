@@ -205,10 +205,9 @@ class plagiarism_copyleaks_submissions {
             $insql,
             $inparams
         ) = $DB->get_in_or_equal(
-            ['success', 'queued'],
+            ['success', 'queued', 'pending'],
             SQL_PARAMS_QM,
-            'param',
-            false
+            'param'
         );
 
         $typefield = ($CFG->dbtype == "oci") ?
