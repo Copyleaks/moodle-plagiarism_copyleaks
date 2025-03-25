@@ -136,6 +136,8 @@ class plagiarism_copyleaks_cm_duplication_status {
  * This class is used as an enum in order to define error codes and their meanings.
  */
 class plagiarism_copyleaks_errorcode {
+    /** @var int For any unknown reason that can effect the scanning process*/
+    const UNKNOWN = -1;
     /** @var int Exceeded credits limit . occurs when a scan requires more than 200 credits.*/
     const EXCEEDED_CREDITS_LIMIT = -2;
     /** @var int Bad request. One or several required parameters are missing or incorrect. */

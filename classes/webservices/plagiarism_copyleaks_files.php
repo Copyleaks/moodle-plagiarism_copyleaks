@@ -27,9 +27,9 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->libdir . "/externallib.php");
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/exceptions/plagiarism_copyleaks_webserviceexception.class.php');
 
-  /**
-   * plagiarism_copyleaks_files external API class
-   */
+/**
+ * plagiarism_copyleaks_files external API class
+ */
 class plagiarism_copyleaks_files extends external_api {
     /**
      * Returns description of method parameters
@@ -37,9 +37,9 @@ class plagiarism_copyleaks_files extends external_api {
      */
     public static function get_file_info_parameters() {
         return new external_function_parameters(
-          [
-            'identifier' => new external_value(PARAM_TEXT, 'Identifier'),
-          ]
+            [
+                'identifier' => new external_value(PARAM_TEXT, 'Identifier'),
+            ]
         );
     }
 
@@ -52,7 +52,7 @@ class plagiarism_copyleaks_files extends external_api {
         global $DB;
         // Validate parameters.
         $params = self::validate_parameters(self::get_file_info_parameters(), [
-          'identifier' => $identifier,
+            'identifier' => $identifier,
         ]);
 
         $identifier = $params['identifier'];
@@ -62,10 +62,11 @@ class plagiarism_copyleaks_files extends external_api {
 
         if (!$file) {
             $submission = $DB->get_record(
-            'plagiarism_copyleaks_files',
-            [
-                'identifier' => $identifier,
-            ]);
+                'plagiarism_copyleaks_files',
+                [
+                    'identifier' => $identifier,
+                ]
+            );
 
             if (!$submission) {
                 throw new plagiarism_copyleaks_webservice_exception('filenotfound');
@@ -83,26 +84,26 @@ class plagiarism_copyleaks_files extends external_api {
 
                 if ($coursemodule->modname == 'workshop') {
                     $workshopsubmission = $DB->get_record(
-                      'workshop_submissions',
-                      ['id' => $submission->itemid],
-                      'content'
+                        'workshop_submissions',
+                        ['id' => $submission->itemid],
+                        'content'
                     );
                     $submittedtextcontent = $workshopsubmission->content;
                 } else if ($coursemodule->modname == 'assign') {
                     $submissionref = $DB->get_record(
-                      'assign_submission',
-                      [
-                          'id' => $submission->itemid,
-                          'userid' => ($moduledata->teamsubmission) ? 0 : $submission->userid,
-                          'assignment' => $coursemodule->instance,
-                      ],
-                      'id'
+                        'assign_submission',
+                        [
+                            'id' => $submission->itemid,
+                            'userid' => ($moduledata->teamsubmission) ? 0 : $submission->userid,
+                            'assignment' => $coursemodule->instance,
+                        ],
+                        'id'
                     );
 
                     $txtsubmissionref = $DB->get_record(
-                      'assignsubmission_onlinetext',
-                      ['submission' => $submissionref->id],
-                      'onlinetext'
+                        'assignsubmission_onlinetext',
+                        ['submission' => $submissionref->id],
+                        'onlinetext'
                     );
                     $submittedtextcontent = $txtsubmissionref->onlinetext;
                 } else {
@@ -110,23 +111,23 @@ class plagiarism_copyleaks_files extends external_api {
                 }
 
                 $filename = 'online_text_'
-                  . $userid . "_"
-                  . $coursemodule->id . "_"
-                  . $coursemodule->instance . '.txt';
+                    . $userid . "_"
+                    . $coursemodule->id . "_"
+                    . $coursemodule->instance . '.txt';
 
                 $submittedtextcontent = html_to_text($submittedtextcontent);
             } else if ($submission->submissiontype == 'forum_post') {
                 $forumpost = $DB->get_record_select(
-                'forum_posts',
-                " userid = ? AND id = ? ",
-                [$userid, $submission->itemid]
+                    'forum_posts',
+                    " userid = ? AND id = ? ",
+                    [$userid, $submission->itemid]
                 );
                 if ($forumpost) {
                     $filename = 'forumpost_'
-                      . $userid . "_"
-                      . $coursemodule->id . "_"
-                      . $coursemodule->instance . "_"
-                      . $submission->itemid . '.txt';
+                        . $userid . "_"
+                        . $coursemodule->id . "_"
+                        . $coursemodule->instance . "_"
+                        . $submission->itemid . '.txt';
 
                     $submittedtextcontent = html_to_text(strip_tags($forumpost->message));
                 } else {
@@ -147,34 +148,34 @@ class plagiarism_copyleaks_files extends external_api {
                 if (!empty($submittedtextcontent)) {
                     $submittedtextcontent = strip_tags($submittedtextcontent);
                     $filename = 'quizanswer_'
-                      . $userid . "_"
-                      . $coursemodule->id . "_"
-                      . $coursemodule->instance . "_"
-                      . $submission->itemid . '.txt';
+                        . $userid . "_"
+                        . $coursemodule->id . "_"
+                        . $coursemodule->instance . "_"
+                        . $submission->itemid . '.txt';
                 } else {
                     throw new plagiarism_copyleaks_webservice_exception('Content not found for the submission.');
                 }
             }
 
             return [
-              'textcontent' => $submittedtextcontent,
-              'contextid'  => null,
-              'component'  => null,
-              'filearea'   => null,
-              'itemid'     => null,
-              'filepath'   => null,
-              'filename'   => $filename,
+                'textcontent' => $submittedtextcontent,
+                'contextid'  => null,
+                'component'  => null,
+                'filearea'   => null,
+                'itemid'     => null,
+                'filepath'   => null,
+                'filename'   => $filename,
             ];
         }
 
         return [
-          'textcontent' => null,
-          'contextid'  => $file->get_contextid(),
-          'component'  => $file->get_component(),
-          'filearea'   => $file->get_filearea(),
-          'itemid'     => $file->get_itemid(),
-          'filepath'   => $file->get_filepath(),
-          'filename'   => $file->get_filename(),
+            'textcontent' => null,
+            'contextid'  => $file->get_contextid(),
+            'component'  => $file->get_component(),
+            'filearea'   => $file->get_filearea(),
+            'itemid'     => $file->get_itemid(),
+            'filepath'   => $file->get_filepath(),
+            'filename'   => $file->get_filename(),
         ];
     }
 
@@ -184,15 +185,15 @@ class plagiarism_copyleaks_files extends external_api {
      */
     public static function get_file_info_returns() {
         return new external_single_structure(
-          [
-            'textcontent' => new external_value(PARAM_TEXT, 'The Text content of the submission in case of text submission'),
-            'contextid' => new external_value(PARAM_TEXT, 'The context ID of the file'),
-            'component' => new external_value(PARAM_TEXT, 'The component of the file'),
-            'filearea'  => new external_value(PARAM_TEXT, 'The file area'),
-            'itemid'    => new external_value(PARAM_TEXT, 'The item ID'),
-            'filepath'  => new external_value(PARAM_TEXT, 'The file path'),
-            'filename'  => new external_value(PARAM_TEXT, 'The file name'),
-          ]
+            [
+                'textcontent' => new external_value(PARAM_TEXT, 'The Text content of the submission in case of text submission'),
+                'contextid' => new external_value(PARAM_TEXT, 'The context ID of the file'),
+                'component' => new external_value(PARAM_TEXT, 'The component of the file'),
+                'filearea'  => new external_value(PARAM_TEXT, 'The file area'),
+                'itemid'    => new external_value(PARAM_TEXT, 'The item ID'),
+                'filepath'  => new external_value(PARAM_TEXT, 'The file path'),
+                'filename'  => new external_value(PARAM_TEXT, 'The file name'),
+            ]
         );
     }
 }

@@ -39,9 +39,9 @@ class plagiarism_copyleaks_course_groups extends external_api {
      */
     public static function get_course_groups_info_parameters() {
         return new external_function_parameters(
-          [
-            'courseid' => new external_value(PARAM_TEXT, 'Course ID'),
-          ]
+            [
+                'courseid' => new external_value(PARAM_TEXT, 'Course ID'),
+            ]
         );
     }
 
@@ -53,7 +53,7 @@ class plagiarism_copyleaks_course_groups extends external_api {
     public static function get_course_groups_info($courseid) {
         // Validate parameters.
         $params = self::validate_parameters(self::get_course_groups_info_parameters(), [
-          'courseid' => $courseid,
+            'courseid' => $courseid,
         ]);
 
         // Fetch the groups of the course.
@@ -72,9 +72,9 @@ class plagiarism_copyleaks_course_groups extends external_api {
 
             // Map the group and its members.
             $groupdata[] = [
-              'groupid' => $groupid,
-              'groupname' => $groupname,
-              'members' => $membersids,
+                'groupid' => $groupid,
+                'groupname' => $groupname,
+                'members' => $membersids,
             ];
         }
 
@@ -87,22 +87,22 @@ class plagiarism_copyleaks_course_groups extends external_api {
      */
     public static function get_course_groups_info_returns() {
         return new external_single_structure(
-          [
-          'groups' => new external_multiple_structure(
-          new external_single_structure(
             [
-              'groupid' => new external_value(PARAM_TEXT, 'Group ID'),
-              'groupname' => new external_value(PARAM_TEXT, 'Group Name'),
-              'members' => new external_multiple_structure(
-                new external_value(PARAM_TEXT, 'Member ID'),
-                'Members of the group'
-              ),
+                'groups' => new external_multiple_structure(
+                    new external_single_structure(
+                        [
+                            'groupid' => new external_value(PARAM_TEXT, 'Group ID'),
+                            'groupname' => new external_value(PARAM_TEXT, 'Group Name'),
+                            'members' => new external_multiple_structure(
+                                new external_value(PARAM_TEXT, 'Member ID'),
+                                'Members of the group'
+                            ),
+                        ]
+                    ),
+                    'Groups of the course',
+                    VALUE_OPTIONAL
+                ),
             ]
-          ),
-          'Groups of the course',
-          VALUE_OPTIONAL
-        ),
-          ]
         );
     }
 
@@ -115,9 +115,9 @@ class plagiarism_copyleaks_course_groups extends external_api {
      */
     public static function get_course_groupings_info_parameters() {
         return new external_function_parameters(
-          [
-           'courseid' => new external_value(PARAM_TEXT, 'Course ID'),
-          ]
+            [
+                'courseid' => new external_value(PARAM_TEXT, 'Course ID'),
+            ]
         );
     }
 
@@ -129,7 +129,7 @@ class plagiarism_copyleaks_course_groups extends external_api {
     public static function get_course_groupings_info($courseid) {
         // Validate parameters.
         $params = self::validate_parameters(self::get_course_groupings_info_parameters(), [
-          'courseid' => $courseid,
+            'courseid' => $courseid,
         ]);
 
         // Fetch the groupings of the course.
@@ -148,9 +148,9 @@ class plagiarism_copyleaks_course_groups extends external_api {
 
             // Map the grouping and its groups.
             $groupingdata[] = [
-              'groupingid' => $groupingid,
-              'groupingname' => $groupingname,
-              'groups' => $groupids,
+                'groupingid' => $groupingid,
+                'groupingname' => $groupingname,
+                'groups' => $groupids,
             ];
         }
 
@@ -163,21 +163,22 @@ class plagiarism_copyleaks_course_groups extends external_api {
      */
     public static function get_course_groupings_info_returns() {
         return new external_single_structure(
-        [
-          'groupings' => new external_multiple_structure(
-            new external_single_structure(
-              [
-                'groupingid' => new external_value(PARAM_TEXT, 'Grouping ID'),
-                'groupingname' => new external_value(PARAM_TEXT, 'Grouping Name'),
-                'groups' => new external_multiple_structure(
-                  new external_value(PARAM_TEXT, 'Group ID'),
-                  'Groups within the grouping',
-              ),
-              ]
-          ),
-          'Groupings of the course',
-          VALUE_OPTIONAL
-        ),
-        ]);
+            [
+                'groupings' => new external_multiple_structure(
+                    new external_single_structure(
+                        [
+                            'groupingid' => new external_value(PARAM_TEXT, 'Grouping ID'),
+                            'groupingname' => new external_value(PARAM_TEXT, 'Grouping Name'),
+                            'groups' => new external_multiple_structure(
+                                new external_value(PARAM_TEXT, 'Group ID'),
+                                'Groups within the grouping',
+                            ),
+                        ]
+                    ),
+                    'Groupings of the course',
+                    VALUE_OPTIONAL
+                ),
+            ]
+        );
     }
 }

@@ -42,14 +42,15 @@ class plagiarism_copyleaks_grades extends external_api {
      */
     public static function get_multiple_scales_values_parameters() {
         return new external_function_parameters(
-        [
-        'scales' => new external_multiple_structure(
-          new external_single_structure(
             [
-              'id' => new external_value(PARAM_INT, 'the id of the scale'),
+                'scales' => new external_multiple_structure(
+                    new external_single_structure(
+                        [
+                            'id' => new external_value(PARAM_INT, 'the id of the scale'),
+                        ]
+                    )
+                ),
             ]
-          )),
-        ]
         );
     }
 
@@ -61,7 +62,7 @@ class plagiarism_copyleaks_grades extends external_api {
      */
     public static function get_multiple_scales_values($scales) {
         $params = self::validate_parameters(
-        self::get_multiple_scales_values_parameters(),
+            self::get_multiple_scales_values_parameters(),
             ['scales' => $scales]
         );
         $context = context_system::instance();
@@ -98,16 +99,19 @@ class plagiarism_copyleaks_grades extends external_api {
      */
     public static function get_multiple_scales_values_returns() {
         return new external_single_structure(
-        [
-        'scales' => new external_multiple_structure(
-          new external_single_structure([
-            'scaleid' => new external_value(PARAM_INT, 'Scale ID'),
-            'values' => new external_multiple_structure(
-              new external_single_structure([
-                'id' => new external_value(PARAM_INT, 'Scale value ID'),
-                'name' => new external_value(PARAM_RAW, 'Scale value name'),
-              ])),
-          ])
-        )]);
+            [
+                'scales' => new external_multiple_structure(
+                    new external_single_structure([
+                        'scaleid' => new external_value(PARAM_INT, 'Scale ID'),
+                        'values' => new external_multiple_structure(
+                            new external_single_structure([
+                                'id' => new external_value(PARAM_INT, 'Scale value ID'),
+                                'name' => new external_value(PARAM_RAW, 'Scale value name'),
+                            ])
+                        ),
+                    ])
+                )
+            ]
+        );
     }
 }

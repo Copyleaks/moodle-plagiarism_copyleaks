@@ -65,7 +65,7 @@ switch ($rescanmode) {
  */
 function validations($cmid, $rescanmode) {
     if ($rescanmode != plagiarism_copyleaks_rescan_mode::RESCAN_ALL) {
-        // TEACHER: Rescanning all failed scans in a module or single scan
+        // TEACHER: Rescanning all failed scans in a module or single scan.
         if (!$cmid) {
             throw new moodle_exception('missingparam', 'error', '', 'cmid');
         }
@@ -75,18 +75,18 @@ function validations($cmid, $rescanmode) {
         if (!$cm) {
             throw new moodle_exception('invalidcoursemodule');
         }
-        // Get module context (for teacher check, only if cmid is provided)
+        // Get module context (for teacher check, only if cmid is provided).
         $context = context_module::instance($cm->id);
-        // Block unauthorized access **before switch**
+        // Block unauthorized access **before switch**.
         if (!has_capability('plagiarism/copyleaks:resubmitfailedscans', $context)) {
             throw new moodle_exception('nopermission', 'error');
         }
         return;
     }
-    // Get system context (for admin check)
-    $system_context = context_system::instance();
-    $hasadminpermission = has_capability('plagiarism/copyleaks:adminresubmitfailedscans', $system_context);
-    // Block unauthorized access **before switch**
+    // Get system context (for admin check).
+    $systemcontext = context_system::instance();
+    $hasadminpermission = has_capability('plagiarism/copyleaks:adminresubmitfailedscans', $systemcontext);
+    // Block unauthorized access **before switch**.
     if ($rescanmode == plagiarism_copyleaks_rescan_mode::RESCAN_ALL && !$hasadminpermission) {
         throw new moodle_exception('nopermission', 'error');
     }
@@ -106,7 +106,7 @@ function validations($cmid, $rescanmode) {
  * @param object $cm
  */
 function rescan_single($fileid, $cmid, $courseid, $route, $action, $workshopid, $sid, $pluginparam, $returnaction, $cm) {
-    // TEACHER: Rescanning a specific failed scan
+    // TEACHER: Rescanning a specific failed scan.
     if (!$fileid || !$cmid || !$courseid || !$route) {
         throw new moodle_exception('missingparam', 'error');
     }

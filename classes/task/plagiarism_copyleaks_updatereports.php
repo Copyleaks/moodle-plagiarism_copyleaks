@@ -48,9 +48,7 @@ class plagiarism_copyleaks_updatereports extends \core\task\scheduled_task {
         require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_dbutils.class.php');
         require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_submissions.class.php');
         // Execute only if the API is not connected.
-        if (!\plagiarism_copyleaks_dbutils::is_copyleaks_api_connected()) {
-            $this->update_reports();
-        }
+        $this->update_reports();
     }
 
     /**
@@ -90,7 +88,7 @@ class plagiarism_copyleaks_updatereports extends \core\task\scheduled_task {
                     array_push($submissionsinstances, $submissioninstance);
                 } else {
                     $clsubmission->statuscode = 'error';
-                    $clsubmission->errormsg = 'course module (cm) wasnt found for this record';
+                    $clsubmission->errormsg = 'course module (cm) was not found for this record';
                     if (!$DB->update_record('plagiarism_copyleaks_files', $clsubmission)) {
                         \plagiarism_copyleaks_logs::add(
                             "Update record failed (CM: " . $cm->id . ", User: " . $clsubmission->userid . ") - ",
@@ -122,6 +120,7 @@ class plagiarism_copyleaks_updatereports extends \core\task\scheduled_task {
                                 $clscaninstance->writingFeedbackIssues,
                                 $clscaninstance->isCheatingDetected,
                                 $clscaninstance->errorMessage,
+                                $clscaninstance->errorCode,
                             );
                         }
                     }
