@@ -117,4 +117,25 @@ class plagiarism_copyleaks_pluginconfig {
             isset($copyleaksadminconfig->plagiarism_copyleaks_key) &&
             $copyleaksadminconfig->plagiarism_copyleaks_key == $key;
     }
+
+    /**
+     * Check Mahara configuration settings for the copyleaks plagiarism plugin     
+     * @return bool if mahara is configured and enabled return true, otherwise false.
+     */
+    public static function is_mahara_configured() {
+        $config = self::admin_config();
+
+        if (            
+            empty($config->plagiarism_copyleaks_maharawsurl) ||
+            empty($config->plagiarism_copyleaks_maharawshtmllitekey) ||
+            empty($config->plagiarism_copyleaks_maharawshtmllitesecret) ||
+            empty($config->plagiarism_copyleaks_maharawshtmllitetoken)
+        ) {
+            // Mahara is not configured.
+            return false;
+        }
+       
+        // Mahara is configured.
+        return true;
+    }
 }

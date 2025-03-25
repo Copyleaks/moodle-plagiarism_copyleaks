@@ -150,6 +150,32 @@ class plagiarism_copyleaks_eventshandler {
             )) {
                 $data['other']['content'] = $txtsubmissionref->onlinetext;
             }
+            
+            // Handle Mahara submissions if plugin exists and enabled.        
+            if ( \plagiarism_copyleaks_pluginconfig::is_mahara_configured()) {
+                // Check if maharaws plugin is enabled.
+                $pm = \core_plugin_manager::instance();
+                $submissionplugins = $pm->get_enabled_plugins('assignsubmission');
+                if (!empty($submissionplugins) && key_exists('maharaws', $submissionplugins)) {    
+                    // Get Mahara submission details.
+                    $submissionid = $data['objectid'];
+                    $maharasubmission = $DB->get_record('assignsubmission_maharaws', array('submission' => $submissionid));
+                    if ($maharasubmission) {
+                        $cmid = $data['contextinstanceid'];
+                        $fildata = array(
+                            'instanceid' => $cmid,
+                            'submissionid' => $submissionid,
+                            'userid' => $submitteruserid,
+                            'relateduserid' => $authoruserid
+                        );
+                        $fildata = json_encode($fildata);
+
+                        // Save Mahara file details to temp file, so the download can be in the async task queue.
+                        $localfilepath = $this->create_temp_file($cmid, $data['courseid'], $submitteruserid, $submissionid, $fildata, false);                    
+                        $this->queue_mahara_files($data, $coursemodule, $authoruserid, $submitteruserid, $cmdata, $localfilepath);
+                    }
+                }
+            }
         }
 
         // Queue quizzes to be submitted to Copyleaks later by submission task.
@@ -390,6 +416,33 @@ class plagiarism_copyleaks_eventshandler {
     }
 
     /**
+     * queue mahara submission to be send to Copyleaks later by scan submission task.
+     * @param object $data
+     * @param object $coursemodule
+     * @param string $authoruserid
+     * @param string $submitteruserid
+     * @param object $cmdata
+     * @param string $localfilepath
+     */
+    private function queue_mahara_files($data, $coursemodule, $authoruserid, $submitteruserid, $cmdata,$localfilepath) {
+        $result = true;
+                
+        $contentidentifier = $localfilepath;
+
+        $result = $this->queue_submission_to_copyleaks(
+            $coursemodule,
+            $authoruserid,
+            $submitteruserid,
+            $contentidentifier,
+            'mahara',
+            $data['objectid'],
+            $cmdata
+        );
+
+        return $result;
+    }
+
+    /**
      * Check if same identifier already exists in copyleaks_files table,
      * in case the content is different it will be deleted.
      * @param string $pathnamehash
@@ -460,6 +513,11 @@ class plagiarism_copyleaks_eventshandler {
             $fileref = $filestorage->get_file_by_hash($identifier);
             $filename = $fileref->get_filename();
         }
+
+        if($subtype == 'mahara'){
+            $filename = basename($identifier);
+        }
+
         // Check if submission already exists.
         $typefield = ($CFG->dbtype == "oci") ? " to_char(submissiontype) " : " submissiontype ";
         if ($DB->get_records_select(
@@ -719,4 +777,60 @@ class plagiarism_copyleaks_eventshandler {
 
         return [$data, $submissionid];
     }
+
+    /**
+     * Create temp file with submission details.
+     * @param int $cmid
+     * @param int $courseid
+     * @param int $userid
+     * @param string $filecontent
+     * @param bool $formattempcontent
+     * @return string filepath
+     */
+    private function create_temp_file($cmid, $courseid, $userid, $submissionid, $filecontent, $formattempcontent = true) {
+        global $CFG;
+        if (!check_dir_exists($CFG->tempdir."/copyleaks", true, true)) {
+            mkdir($CFG->tempdir."/copyleaks", 0700);
+        }
+        $filename = "content-" . $courseid . "-" . $cmid . "-" . $userid ."-". random_string(8).".htm";
+        $filepath = $CFG->tempdir."/copyleaks/" . $filename;
+        $fd = fopen($filepath, 'wb');   // Create if not exist, write binary.
+    
+        // Write html and body tags.
+        $content = $this->format_temp_content($filecontent);
+        if ($formattempcontent) {
+            // Write html and body tags.
+            $content = $this->format_temp_content($filecontent);
+        } else {
+            $content = $filecontent;
+        }
+    
+        fwrite($fd, $content);
+        fclose($fd);
+        return $filepath;
+    }
+
+    /**
+    * Helper function used to add extra html around file contents.
+    *
+    * @param string $content - raw content of file.
+    * @param boolean $strippretag - should we strip tags first.
+    *
+    * @return string
+    */
+    private function format_temp_content($content, $strippretag = false) {
+       // See MDL-57886.
+       if ($strippretag) {
+           $content = substr($content, 25, strlen($content) - 31);
+       }
+       return '<html>' .
+              '<head>' .
+              '<meta charset="UTF-8">' .
+              '</head>' .
+              '<body>' .
+              $content .
+              '</body></html>';
+
+    }
+    
 }

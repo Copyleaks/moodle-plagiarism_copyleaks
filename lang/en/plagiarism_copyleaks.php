@@ -130,7 +130,7 @@ $string['clreportupdatefailed'] = 'Failed to update the report';
 $string['clsendnotificationfailed'] = 'Failed to send notification';
 $string['filenotfound'] = 'File not found';
 
-$string['clfetchmahara'] = 'Fetch Mahara portfolios for checking';
+$string['clsyncmaharasubmissions'] = 'Copyleaks plagiarism plugin - Sync Mahara submissions';
 $string['clsetmahara'] = 'Set the Mahara URL, and the HTML Lite OAuth secret and key here to check portfolio submissions.';
 $string['clmaharawshtmlliteenabled'] = 'Check Mahara portfolios';
 $string['clmaharawshtmllitekey'] = 'Mahara HTML Lite OAuth key';
