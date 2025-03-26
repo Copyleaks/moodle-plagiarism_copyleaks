@@ -26,7 +26,7 @@ defined('MOODLE_INTERNAL') || die();
 
 // Constants.
 define('PLAGIARISM_COPYLEAKS_DEFAULT_MODULE_CMID', 0);
-$clsupportedsubmissiontypes = ['file', 'text_content', 'forum_post', 'quiz_answer'];
+$clsupportedsubmissiontypes = ['file', 'text_content', 'forum_post', 'quiz_answer', 'mahara'];
 define('PLAGIARISM_COPYLEAKS_SUPPORTED_SUBMISSION_TYPES', $clsupportedsubmissiontypes);
 
 
