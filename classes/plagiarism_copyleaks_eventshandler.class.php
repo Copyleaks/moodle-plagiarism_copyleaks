@@ -171,7 +171,7 @@ class plagiarism_copyleaks_eventshandler {
                         $fildata = json_encode($fildata);
 
                         // Save Mahara file details to temp file, so the download can be in the async task queue.
-                        $localfilepath = $this->create_temp_file($cmid, $data['courseid'], $submitteruserid, $submissionid, $fildata, false);                    
+                        $localfilepath = $this->create_temp_file($cmid, $data['courseid'], $submitteruserid, $fildata);                    
                         $this->queue_mahara_files($data, $coursemodule, $authoruserid, $submitteruserid, $cmdata, $localfilepath);
                     }
                 }
@@ -784,53 +784,20 @@ class plagiarism_copyleaks_eventshandler {
      * @param int $courseid
      * @param int $userid
      * @param string $filecontent
-     * @param bool $formattempcontent
-     * @return string filepath
      */
-    private function create_temp_file($cmid, $courseid, $userid, $submissionid, $filecontent, $formattempcontent = true) {
+    private function create_temp_file($cmid, $courseid, $userid, $filecontent) {
         global $CFG;
+
         if (!check_dir_exists($CFG->tempdir."/copyleaks", true, true)) {
             mkdir($CFG->tempdir."/copyleaks", 0700);
         }
+
         $filename = "content-" . $courseid . "-" . $cmid . "-" . $userid ."-". random_string(8).".htm";
         $filepath = $CFG->tempdir."/copyleaks/" . $filename;
-        $fd = fopen($filepath, 'wb');   // Create if not exist, write binary.
+        $fd = fopen($filepath, 'wb');   // Create if not exist, write binary.        
     
-        // Write html and body tags.
-        $content = $this->format_temp_content($filecontent);
-        if ($formattempcontent) {
-            // Write html and body tags.
-            $content = $this->format_temp_content($filecontent);
-        } else {
-            $content = $filecontent;
-        }
-    
-        fwrite($fd, $content);
+        fwrite($fd, $filecontent);
         fclose($fd);
         return $filepath;
     }
-
-    /**
-    * Helper function used to add extra html around file contents.
-    *
-    * @param string $content - raw content of file.
-    * @param boolean $strippretag - should we strip tags first.
-    *
-    * @return string
-    */
-    private function format_temp_content($content, $strippretag = false) {
-       // See MDL-57886.
-       if ($strippretag) {
-           $content = substr($content, 25, strlen($content) - 31);
-       }
-       return '<html>' .
-              '<head>' .
-              '<meta charset="UTF-8">' .
-              '</head>' .
-              '<body>' .
-              $content .
-              '</body></html>';
-
-    }
-    
 }
