@@ -105,14 +105,5 @@ $tasks = [
         'day' => '*',
         'dayofweek' => '*',
         'month' => '*',
-    ],    
-    [
-        'classname' => 'plagiarism_copyleaks\task\plagiarism_copyleaks_syncmaharasubmissions',
-        'blocking' => 0,
-        'minute' => '*/5',
-        'hour' => '*',
-        'day' => '*',
-        'dayofweek' => '*',
-        'month' => '*'
     ]
 ];
