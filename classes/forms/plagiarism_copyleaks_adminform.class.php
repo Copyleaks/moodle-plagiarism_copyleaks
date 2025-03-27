@@ -69,10 +69,28 @@ class plagiarism_copyleaks_adminform extends moodleform {
             // For now we only support assignments.
             if (in_array($module, $supportedmodules) && plugin_supports('mod', $module, FEATURE_PLAGIARISM)) {
                 array_push($supportedmodules, $module);
+                $modulename = '';
+                switch ($module) {
+                    case 'assign':
+                        $modulename = get_string('classignment', 'plagiarism_copyleaks');
+                        break;
+                    case 'forum':
+                        $modulename = get_string('clforums', 'plagiarism_copyleaks');
+                        break;
+                    case 'workshop':
+                        $modulename = get_string('clworkshop', 'plagiarism_copyleaks');
+
+                    case 'quiz':
+                        $modulename = get_string('clquizzes', 'plagiarism_copyleaks');
+                        break;
+                    default:
+                        $modulename = $module;
+                        break;
+                }
                 $mform->addElement(
                     'advcheckbox',
                     'plagiarism_copyleaks_mod_' . $module,
-                    get_string('clenablemodulefor', 'plagiarism_copyleaks', ucfirst($module == 'assign' ? 'Assignment' : $module))
+                    get_string('clenablemodulefor', 'plagiarism_copyleaks', $modulename)
                 );
             }
         }

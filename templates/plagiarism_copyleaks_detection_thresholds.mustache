@@ -57,43 +57,46 @@
     let rangeHigh = document.querySelector(`[data-range-high="${uid}"]`);
     let rangeSlider = document.querySelector(`[data-slider="${uid}"]`);
 
+    let isRTL = document.documentElement.getAttribute("dir") === "rtl"; // Check if page is RTL
+
     function updateSlider() {
         let midValue = parseInt(midSlider.value);
         let highValue = parseInt(highSlider.value);
 
-        // Ensure midValue never exceeds 98
         midValue = Math.min(midValue, 98);
         midSlider.value = midValue;
 
-        // Ensure highValue never drops below midValue + 1
         highValue = Math.max(highValue, midValue + 1);
-        highSlider.value = highValue;
+        highSlider.value = Math.min(highValue, 100);
 
-        // Ensure highValue never exceeds 100
-        highValue = Math.min(highValue, 100);
-
-        // Adjust moderate range properly
         let moderateStart = midValue + 1;
         let moderateEnd = highValue === 100 ? 99 : highValue;
         let highStart = highValue === 100 ? 100 : highValue + 1;
 
-        // Update displayed values
         rangeLow.textContent = `0% - ${midValue}%`;
         rangeMid.textContent = `${moderateStart}% - ${moderateEnd}%`;
         rangeHigh.textContent = `${highStart}% - 100%`;
-
-        // Update slider background
-        rangeSlider.style.background = `linear-gradient(to right, 
-            #008001 0%, 
-            #008001 ${midValue}%, 
-            #ffa503 ${midValue}%, 
-            #ffa503 ${moderateEnd}%, 
-            #f44336 ${moderateEnd}%, 
-            #f44336 100%)`;
+        
+        // Update the gradient direction dynamically
+        rangeSlider.style.background = isRTL
+            ? `linear-gradient(to left, 
+                #008001 0%, 
+                #008001 ${midValue}%, 
+                #ffa503 ${midValue}%, 
+                #ffa503 ${moderateEnd}%, 
+                #f44336 ${moderateEnd}%, 
+                #f44336 100%)`
+            : `linear-gradient(to right, 
+                #008001 0%, 
+                #008001 ${midValue}%, 
+                #ffa503 ${midValue}%, 
+                #ffa503 ${moderateEnd}%, 
+                #f44336 ${moderateEnd}%, 
+                #f44336 100%)`;
     }
 
     function adjustMid() {
-        midSlider.value = Math.min(parseInt(midSlider.value), 98); // Never let it reach 99
+        midSlider.value = Math.min(parseInt(midSlider.value), 98);
         if (parseInt(midSlider.value) >= parseInt(highSlider.value)) {
             highSlider.value = parseInt(midSlider.value) + 1;
         }
@@ -112,6 +115,7 @@
 
     updateSlider();
 })();
+
 {{/js}}
 
 
