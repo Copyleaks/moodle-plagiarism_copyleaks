@@ -37,6 +37,9 @@ class plagiarism_copyleaks_maharaportfolio {
     private $submission;
     private $fileinfo;
     private $host;
+    private $oauthurl;
+    private $oauthkey;
+    private $oauthsecret;
     private $serviceUrl;
     private $wstoken;
     private $fileurl;
@@ -67,6 +70,9 @@ class plagiarism_copyleaks_maharaportfolio {
         // Set site config.
         $config = plagiarism_copyleaks_pluginconfig::admin_config();
         $this->host = $CFG->wwwroot;
+        $this->oauthurl = $config->plagiarism_copyleaks_maharawsurl;
+        $this->oauthkey = $config->plagiarism_copyleaks_maharawshtmllitekey;
+        $this->oauthsecret = $config->plagiarism_copyleaks_maharawshtmllitesecret;
         $this->serviceUrl = $config->plagiarism_copyleaks_maharawsurl;
         $this->wstoken = $config->plagiarism_copyleaks_maharawshtmllitetoken;
 
@@ -119,19 +125,17 @@ class plagiarism_copyleaks_maharaportfolio {
      *
      */
     private function get_fileurl() {
-        mtrace('Copyleaks: plagiarism_copyleaks_maharaportfolio: Calling Mahara HTML Lite API.');
+        mtrace('Copyleaks: plagiarism_copyleaks_maharaportfolio: Calling Mahara HTML Lite API.');  
 
         // Get fileurl.
-        $params = [
-            'views[0][viewid]' => $this->submission->viewid,
-            'views[0][iscollection]' => $this->submission->iscollection,
-            'views[0][submittedhost]' => $this->host,
-            'views[0][exporttype]' => 'htmllite'
-            // 'views[0][exporttype]' => 'pdflite'
-        ];
-
-        $this->fileurl = $this->webservice_call('mahara_submission_generate_view_for_plagiarism_test', $params);        
-    }
+        $params = array('viewid' => $this->submission->viewid,
+                'iscollection' => $this->submission->iscollection,
+                'submittedhost' => $this->host,
+                'exporttype' => 'htmllite');
+        $params = array('views' => array($params));
+        $data = $this->webservice_call('mahara_submission_generate_view_for_plagiarism_test', $params, $method = "POST");
+        $this->fileurl = $data[0]['fileurl'];
+    }    
 
     /**
      * Webservice call helper.
@@ -142,80 +146,44 @@ class plagiarism_copyleaks_maharaportfolio {
      *
      * @return mixed
      */
-    private function webservice_call($function, $params, $verb = "POST") {
+    private function webservice_call($function, $params, $method = "POST") {
         global $CFG;
 
-        if (!class_exists('curl')) {
-
-            require_once($CFG->libdir . '/filelib.php');
-        }
-
-        $url = $this->serviceUrl .
-            (preg_match('/\/$/', $this->serviceUrl) ? '' : '/') .
+        $endpoint = $this->oauthurl .
+            (preg_match('/\/$/', $this->oauthurl) ? '' : '/') .
             'webservice/rest/server.php';
 
-        $c = new curl(['proxy' => true]);
+        $args = array(
+            'oauth_consumer_key' => $this->oauthkey,
+            'oauth_consumer_secret' => $this->oauthsecret,
+            'oauth_callback' => 'about:blank',
+            'api_root' => $endpoint,
+        );
 
-        $params['wstoken'] = $this->wstoken;
-        $params['wsfunction'] = $function;                    
-
-        switch ($verb) {
-            case 'GET':
-                $result = $c->get($url);
-                break;
-            case 'POST':
-                $result = $c->post($url, $params);
-                break;
-            default:
-                throw new Exception('Unsupported HTTP verb: ' . $verb);
+        // Reuse the maharaws oauth client.
+        require_once($CFG->dirroot . '/mod/assign/submissionplugin.php');
+        require_once($CFG->dirroot . '/mod/assign/submission/maharaws/locallib.php');
+        $client = new \assignsubmission_maharaws\mahara_oauth($args);
+        if (!empty($CFG->disablesslchecks)) {
+            $options = array('CURLOPT_SSL_VERIFYPEER' => 0, 'CURLOPT_SSL_VERIFYHOST' => 0);
+            $client->setup_oauth_http_options($options);
         }
-
-        // Get status code.
-        $statuscode = $c->info['http_code'];
-
-        if ($statuscode >= 200 && $statuscode <= 299) {
-            if (isset($result)) {
-                $contenttype = $c->info['content_type'];
-                if ($contenttype == 'application/json; charset=utf-8') {
-                    return json_decode($result);
-                } else if($contenttype == 'application/xml; charset=utf-8') {
-                    // Convert XML response to PHP Array
-                    libxml_use_internal_errors(true);
-                    $xmlObject = simplexml_load_string($result, "SimpleXMLElement", LIBXML_NOCDATA);
-
-                    if ($xmlObject === false) {
-                        // If failed to parse the XML
-                        $errors = libxml_get_errors();
-                        foreach ($errors as $error) {
-                            echo "\n", $error->message;
-                        }
-                        throw new Exception('Failed to parse XML response.');
-                    }
-
-                    // Convert SimpleXML object to JSON string, then decode to associative array
-                    $jsonString = json_encode($xmlObject);
-                    $data = json_decode($jsonString, true);
-
-                    // Now extract the fileurl
-                    $fileurl = null;
-                    if (isset($data['MULTIPLE']['SINGLE']['KEY'])) {
-                        foreach ($data['MULTIPLE']['SINGLE']['KEY'] as $item) {
-                            if ($item['@attributes']['name'] === 'fileurl') {
-                                $fileurl = $item['VALUE'];
-                                break;
-                            }
-                        }
-                    }
-                    return $fileurl;
-                }else{
-                    return $result;
-                }
-            } else {
-                return;
+        // Have to flatten nested parameters into JSON as OAuth can't handle it.
+        foreach ($params as $k => $v) {
+            if (is_array($v)) {
+                $params[$k] = json_encode($v);
             }
-        }else{
-            throw new Exception($result, $statuscode);
         }
+        $content = $client->request($method, $endpoint,
+                             array_merge($params, array('wsfunction' => $function, 'alt' => 'json')),
+                             null,
+                             $this->oauthsecret);
+        $data = json_decode($content, true);
+
+        if (isset($data['error']) && $data['error'] == true ) {
+            throw new \Exception($data['error_rendered']);
+        }
+        return $data;
     }
 
     /**
