@@ -50,6 +50,7 @@ class plagiarism_copyleaks_sendsubmissions extends \core\task\scheduled_task {
         require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_comms.class.php');
         require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_assignmodule.class.php');
         require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_utils.class.php');
+        require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_maharaportfolio.class.php');
 
         $this->send_queued_submissions();
     }
@@ -229,7 +230,7 @@ class plagiarism_copyleaks_sendsubmissions extends \core\task\scheduled_task {
                             $errormessage = 'Content not found for the submission.';
                             $errorcode = \plagiarism_copyleaks_errorcode::INTERNAL_PLUGIN_ERROR_NOT_RESCANNABLE;
                         }
-                    } else {
+                    } else if ($submission->submissiontype == 'file'){
                         // In case $submission->submissiontype == 'file'.
                         $filestorage = get_file_storage();
                         $fileref = $filestorage->get_file_by_hash($submission->identifier);
@@ -246,6 +247,32 @@ class plagiarism_copyleaks_sendsubmissions extends \core\task\scheduled_task {
                                 $errorcode = \plagiarism_copyleaks_errorcode::INTERNAL_PLUGIN_ERROR_NOT_RESCANNABLE;
                             }
                         }
+                    } else if ($submission->submissiontype == 'mahara'){
+                        // Get Mahara file details from temp file.
+                        $data = json_decode(file_get_contents($submission->identifier));                        
+                        // Create helper with assignment submission details.
+                        $portfolio = new \plagiarism_copyleaks_maharaportfolio($data);
+                        $fileref = $portfolio->get_mahara_file();
+
+                        if (!$fileref) {
+                            $errormessage = 'File/Content not found for the submission.';
+                            $errorcode = \plagiarism_copyleaks_errorcode::INTERNAL_PLUGIN_ERROR_NOT_RESCANNABLE;
+                        } else {
+                            try {
+                                $filename = $fileref->get_filename();
+                                $submittedtextcontent = $fileref->get_content();
+                            } catch (\Exception $e) {
+                                $errormessage = 'File/Content not found for the submission.';
+                                $errorcode = \plagiarism_copyleaks_errorcode::INTERNAL_PLUGIN_ERROR_NOT_RESCANNABLE;
+                            }
+                        }
+                    } else{
+                        \plagiarism_copyleaks_submissions::mark_error(
+                            $submission->id,
+                            'Submission type is not supported.',
+                            \plagiarism_copyleaks_errorcode::INTERNAL_PLUGIN_ERROR_NOT_RESCANNABLE
+                        );                        
+                        continue;
                     }
 
                     // If $errormessage is not empty, then there was an error.

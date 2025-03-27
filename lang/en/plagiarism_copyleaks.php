@@ -130,6 +130,18 @@ $string['clreportupdatefailed'] = 'Failed to update the report';
 $string['clsendnotificationfailed'] = 'Failed to send notification';
 $string['filenotfound'] = 'File not found';
 
+$string['clsyncmaharasubmissions'] = 'Copyleaks plagiarism plugin - Sync Mahara submissions';
+$string['clsetmahara'] = 'Set the Mahara URL, and the HTML Lite OAuth secret and key here to check portfolio submissions.';
+$string['clmaharawshtmlliteenabled'] = 'Check Mahara portfolios';
+$string['clmaharawshtmllitekey'] = 'Mahara HTML Lite OAuth key';
+$string['clmaharawshtmllitekey_help'] = 'The HTML Lite OAuth key from the Mahara site.';
+$string['clmaharawshtmllitesecret'] = 'Mahara HTML Lite OAuth secret';
+$string['clmaharawshtmllitesecret_help'] = 'The HTML Lite OAuth secret from the Mahara site.';
+$string['clmaharawshtmllitetoken'] = 'Mahara HTML Lite access token';
+$string['clmaharawshtmllitetoken_help'] = 'The HTML Lite access token from the Mahara site.';
+$string['clmaharawsurl'] = 'Mahara site URL';
+$string['clmaharawsurl_help'] = 'The URL of the Mahara site.  (Must be the Mahara site URL defined in the <i>Mahara submissions</i> plugin.)';
+
 $string['privacy:metadata:core_files'] = 'Copyleaks stores files that have been uploaded to Moodle to form a Copyleaks submission.';
 $string['privacy:metadata:plagiarism_copyleaks_files'] = 'Information that links a Moodle submission to a Copyleaks submission.';
 $string['privacy:metadata:plagiarism_copyleaks_files:userid'] = 'The ID of the user who is the owner of the submission.';
