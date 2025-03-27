@@ -145,3 +145,8 @@ $string['privacy:metadata:plagiarism_copyleaks_client:submittion_userId'] = 'The
 $string['privacy:metadata:plagiarism_copyleaks_client:submittion_name'] = 'The submission name is sent to Copyleaks for identification purposes.';
 $string['privacy:metadata:plagiarism_copyleaks_client:submittion_type'] = 'The submission type is sent to Copyleaks for identification purposes.';
 $string['privacy:metadata:plagiarism_copyleaks_client:submittion_content'] = 'The submission content is sent to Copyleaks for scan processing.';
+
+$string['classignment'] = 'Assignment';
+$string['clquizzes'] = 'Quiz';
+$string['clforums'] = 'Forum';
+$string['clworkshop'] = 'Workshop';
