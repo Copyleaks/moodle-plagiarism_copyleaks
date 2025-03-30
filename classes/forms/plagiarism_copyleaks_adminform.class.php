@@ -79,7 +79,7 @@ class plagiarism_copyleaks_adminform extends moodleform {
                         break;
                     case 'workshop':
                         $modulename = get_string('clworkshop', 'plagiarism_copyleaks');
-
+                        break;
                     case 'quiz':
                         $modulename = get_string('clquizzes', 'plagiarism_copyleaks');
                         break;
