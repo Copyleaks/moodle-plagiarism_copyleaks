@@ -57,6 +57,7 @@ class plagiarism_copyleaks_utils {
                 'tr' => 'tr',
                 'ru' => 'ru',
                 'ar' => 'ar',
+                'he' => 'he',
             ];
             return (isset($langarray[$langcode])) ? $langarray[$langcode] : $defaultlangcode;
         } catch (Exception $e) {
