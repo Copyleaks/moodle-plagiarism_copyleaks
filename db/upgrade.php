@@ -562,7 +562,7 @@ function xmldb_plagiarism_copyleaks_upgrade($oldversion) {
         }
     }
     // Copyleaks savepoint reached.
-    upgrade_plugin_savepoint(true, 2025031800, 'plagiarism', 'copyleaks');
+    upgrade_plugin_savepoint(true, 2025033100, 'plagiarism', 'copyleaks');
 
     return true;
 }
