@@ -28,10 +28,15 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_pluginconfig.class.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/constants/plagiarism_copyleaks.constants.php');
-require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_assignmodule.class.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_logs.class.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_dbutils.class.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/enums/plagiarism_copyleaks_enums.php');
+
+// Include supported modules.
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/modules/plagiarism_copyleaks_assign.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/modules/plagiarism_copyleaks_forum.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/modules/plagiarism_copyleaks_quiz.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/modules/plagiarism_copyleaks_workshop.class.php');
 
 /**
  * submission display helpers methods
@@ -118,10 +123,13 @@ class plagiarism_copyleaks_submissiondisplay {
             $ctx = context_course::instance($coursemodule->course);
         }
 
+        $moduleclass = "plagiarism_copyleaks_" . $coursemodule->modname;
+        $moduleobject = new $moduleclass;
+
         // Check current user if instructor.
         static $isinstructor;
         if (empty($isinstructor)) {
-            $isinstructor = plagiarism_copyleaks_assignmodule::is_instructor($ctx);
+            $isinstructor = $moduleobject->is_instructor($ctx);
         }
 
         // Incase of students, check if he is allowed to view the plagiairsm report progress & results.
@@ -179,7 +187,7 @@ class plagiarism_copyleaks_submissiondisplay {
             } else if ($coursemodule->modname == "assign") {
                 $author = $submissionref['userid'];
                 if ($subitemid != 0) {
-                    $author = plagiarism_copyleaks_assignmodule::get_author($subitemid);
+                    $author = plagiarism_copyleaks_assign::get_author($subitemid);
                     $submissionref['userid'] = (!empty($author)) ? $author : $submissionref['userid'];
                 }
             }
