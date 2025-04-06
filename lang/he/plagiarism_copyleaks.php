@@ -36,14 +36,18 @@ $string['cladminconfigsavesuccess'] = 'הגדרות גניבה ספרותית ש
 $string['clpluginconfigurationtab'] = 'הגדרות';
 $string['cllogstab'] = 'יומנים';
 $string['cladminconfig'] = 'תצורת תוסף גניבה ספרותית של Copyleaks';
-$string['clpluginintro'] = 'בודק הגניבה הספרותית של Copyleaks הוא פתרון מקיף ומדויק המסייע למורים ולתלמידים לבדוק אם התוכן שלהם מקורי.<br>למידע נוסף על אופן ההגדרה והשימוש בתוסף, אנא בדוק את <a target="_blank" href="https://lti.copyleaks.com/guides/select-moodle-integration">המדריכים שלנו</a>.</br></br></br>';
+$string['clpluginintro'] = 'בודק הגניבה הספרותית של Copyleaks הוא פתרון מקיף ומדויק המסייע למורים ולסטודנטים לבדוק אם התוכן שלהם מקורי.<br>למידע נוסף על אופן ההגדרה והשימוש בתוסף, אנא בדוק את <a target="_blank" href="https://lti.copyleaks.com/guides/select-moodle-integration">המדריכים שלנו</a>.</br></br></br>';
 $string['clenable'] = 'הפעלת Copyleaks';
+$string['clenablebydefault'] = 'הפעל את Copyleaks כברירת מחדל';
+$string['clenablebydefault_help'] = 'הפעלת Copyleaks כברירת מחדל מבטיחה כי זיהוי גניבה ספרותית יופעל אוטומטית עבור כל פעילות חדשה התומכת בבדיקת גניבה ספרותית.';
 $string['clenablemodulefor'] = 'הפעלת Copyleaks עבור {$a}';
 $string['claccountconfig'] = "תצורת חשבון Copyleaks";
 $string['clapiurl'] = 'כתובת API של Copyleaks';
 $string['claccountkey'] = "מפתח Copyleaks";
 $string['claccountsecret'] = "סיסמת Copyleaks";
 $string['clallowstudentaccess'] = 'אפשר לסטודנטים גישה לדוחות גניבה ספרותית';
+$string['clallowstudentaccessbydefault'] = 'אפשר לסטודנטים לצפות בדוח גניבה ספרותית של Copyleaks';
+$string['clallowstudentaccessbydefault_help'] = 'אם אפשרות זו מופעלת כברירת מחדל, סטודנטים יקבלו גישה אוטומטית לצפייה בדוח הדמיון של Copyleaks עבור כל הפעילויות הנתמכות.';
 $string['clinvalidkeyorsecret'] = 'מפתח או סיסמה לא תקינים';
 $string['clfailtosavedata'] = 'כישלון בשמירת נתוני Copyleaks';
 $string['clplagiarised'] = 'ציון דמיון';
@@ -102,9 +106,10 @@ $string['claicontentdetectionthresholds_help'] = '<b>קידוד צבעים לח�
 <li><span style="color:orange;"><b>צהוב:</b></span> חומרה בינונית.</li>  
 <li><span style="color:red;"><b>אדום:</b></span> חומרה גבוהה.</li>  
 </ul> ';
+$string['cldefaultsettings'] = 'הגדרות ברירת מחדל של Copyleaks';
 
 
-$string['claicontentscore'] = 'ציון תוכן מבוסס בינה מלאכותית';
+$string['claicontentscore'] = 'ציון תוכן AI';
 $string['clplagiarismscore'] = 'ציון גניבה ספרותית';
 $string['clwritingfeedbackissues'] = 'תיקוני כתיבה';
 $string['clscanfailedbtn'] = 'הסריקה נכשלה';
@@ -117,7 +122,7 @@ $string['clplagiarismcontentscheduled'] = 'סריקת גניבה ספרותית'
 $string['clwritingfeedbackcontentscheduled'] = 'תיקוני כתיבה';
 $string['cldownloadreport'] = 'הורדת דוח PDF';
 $string['clopenreport'] = 'פתיחת עמוד הדוח';
-$string['clcopyreporturl'] = 'העתקת קישור לעמוד הדוח ללוח העריכה';
+$string['clcopyreporturl'] = 'העתקת קישור עמוד הדוח ללוח העריכה';
 $string['cltimesoon'] = 'בקרוב';
 $string['cltimeminutes'] = 'דקות';
 $string['cltimehours'] = 'שעות';
