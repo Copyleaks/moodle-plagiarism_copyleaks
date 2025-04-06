@@ -78,11 +78,11 @@ class plagiarism_copyleaks_sendsubmissions extends \core\task\scheduled_task {
 
             $canloadmoredata = count($queuedsubmissions) == PLAGIARISM_COPYLEAKS_CRON_QUERY_LIMIT;
 
-            if (count($queuedsubmissions) > 0 && !\plagiarism_copyleaks_comms::test_copyleaks_connection('scheduler_task')) {
+            if (count($queuedsubmissions) == 0 || !\plagiarism_copyleaks_comms::test_copyleaks_connection('scheduler_task')) {
                 return;
             }
 
-            // create a counter id for the batch
+            // Create a counter id for the batch.
             $copyleakscomms = new \plagiarism_copyleaks_comms();
             $response = $copyleakscomms->create_scan_batch_counter([
                 "countervalue" => count($queuedsubmissions),
@@ -250,7 +250,12 @@ class plagiarism_copyleaks_sendsubmissions extends \core\task\scheduled_task {
 
                     // If $errormessage is not empty, then there was an error.
                     if (isset($errormessage) && $errormessage != "") {
-                        \plagiarism_copyleaks_submissions::handle_submission_error($submission,  $errormessage, $counterid, $errorcode);
+                        \plagiarism_copyleaks_submissions::handle_submission_error(
+                            $submission,
+                            $errormessage,
+                            $counterid,
+                            $errorcode
+                        );
                         continue;
                     }
 
@@ -258,7 +263,12 @@ class plagiarism_copyleaks_sendsubmissions extends \core\task\scheduled_task {
                         // Read the submited work into a temp file for submitting.
                         $tempfilepath = $this->create_copyleaks_tempfile($coursemodule->id, $filename);
                     } catch (\Exception $e) {
-                        \plagiarism_copyleaks_submissions::handle_submission_error($submission,  "Fail to create a tempfile.", $counterid, \plagiarism_copyleaks_errorcode::INTERNAL_PLUGIN_ERROR_NOT_RESCANNABLE);
+                        \plagiarism_copyleaks_submissions::handle_submission_error(
+                            $submission,
+                            "Fail to create a tempfile.",
+                            $counterid,
+                            \plagiarism_copyleaks_errorcode::INTERNAL_PLUGIN_ERROR_NOT_RESCANNABLE
+                        );
                         continue;
                     }
 
@@ -285,7 +295,11 @@ class plagiarism_copyleaks_sendsubmissions extends \core\task\scheduled_task {
                             'plagiarism_copyleaks'
                         ) . ' ' . $e->getMessage();
                         if ($errorcode < 500 && $errorcode != 429) {
-                            \plagiarism_copyleaks_submissions::mark_error($submission->id,  $error, \plagiarism_copyleaks_errorcode::INTERNAL_SERVER_ERROR);
+                            \plagiarism_copyleaks_submissions::mark_error(
+                                $submission->id,
+                                $error,
+                                \plagiarism_copyleaks_errorcode::INTERNAL_SERVER_ERROR
+                            );
                         } else {
                             \plagiarism_copyleaks_logs::add($error, 'API_ERROR_RETRY_WILL_BE_DONE');
                         }

@@ -115,7 +115,7 @@ $string['clwritingfeedbackissues'] = 'תיקוני כתיבה';
 $string['clscanfailedbtn'] = 'הסריקה נכשלה';
 $string['cltryagainbtn'] = 'נסה שוב';
 $string['cltryagainmsg'] = 'שלח מחדש לסריקת Copyleaks';
-$string['clscaninprogress'] = 'הסריקה בעיצומה...';
+$string['clscaninprogress'] = 'הסריקה בתהליך...';
 $string['clscheduledintime'] = 'מתוזמן: {$a}';
 $string['claicontentscheduled'] = 'סריקת תוכן מבוסס בינה מלאכותית';
 $string['clplagiarismcontentscheduled'] = 'סריקת גניבה ספרותית';
@@ -152,3 +152,7 @@ $string['privacy:metadata:plagiarism_copyleaks_client:submittion_name'] = 'שם 
 $string['privacy:metadata:plagiarism_copyleaks_client:submittion_type'] = 'סוג ההגשה נשלח ל-Copyleaks למטרות זיהוי.';
 $string['privacy:metadata:plagiarism_copyleaks_client:submittion_content'] = 'תוכן ההגשה נשלח ל-Copyleaks לצורך עיבוד הסריקה.';
 
+$string['classignment'] = 'מטלה';
+$string['clquizzes'] = 'בוחן';
+$string['clforums'] = 'פורום';
+$string['clworkshop'] = 'הערכת עמיתים';

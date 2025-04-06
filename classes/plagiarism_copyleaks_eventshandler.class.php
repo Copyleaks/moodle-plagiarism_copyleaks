@@ -674,7 +674,10 @@ class plagiarism_copyleaks_eventshandler {
         $submissiondata['moodleUserId'] = $authoruserid;
         $submissiondata['courseModuleId'] = $coursemodule->id;
         if (isset($submissionrecord->timecreated)) {
-            $submissiondata['createdAt'] = ((new DateTime('now', new DateTimeZone('UTC')))->setTimestamp($submissionrecord->timecreated))->format('Y-m-d H:i:s');
+            $submissiondata['createdAt'] = ((new DateTime(
+                'now',
+                new DateTimeZone('UTC')
+            ))->setTimestamp($submissionrecord->timecreated))->format('Y-m-d H:i:s');
         }
 
         if ($cmdata->teamsubmission == "1") {

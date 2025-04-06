@@ -69,10 +69,28 @@ class plagiarism_copyleaks_adminform extends moodleform {
             // For now we only support assignments.
             if (in_array($module, $supportedmodules) && plugin_supports('mod', $module, FEATURE_PLAGIARISM)) {
                 array_push($supportedmodules, $module);
+                $modulename = '';
+                switch ($module) {
+                    case 'assign':
+                        $modulename = get_string('classignment', 'plagiarism_copyleaks');
+                        break;
+                    case 'forum':
+                        $modulename = get_string('clforums', 'plagiarism_copyleaks');
+                        break;
+                    case 'workshop':
+                        $modulename = get_string('clworkshop', 'plagiarism_copyleaks');
+                        break;
+                    case 'quiz':
+                        $modulename = get_string('clquizzes', 'plagiarism_copyleaks');
+                        break;
+                    default:
+                        $modulename = $module;
+                        break;
+                }
                 $mform->addElement(
                     'advcheckbox',
                     'plagiarism_copyleaks_mod_' . $module,
-                    get_string('clenablemodulefor', 'plagiarism_copyleaks', ucfirst($module == 'assign' ? 'Assignment' : $module))
+                    get_string('clenablemodulefor', 'plagiarism_copyleaks', $modulename)
                 );
             }
         }
@@ -132,7 +150,7 @@ class plagiarism_copyleaks_adminform extends moodleform {
                 $config['plagiarism_copyleaks_plagiarismhighthreshold'] : 70;
         }
 
-        // Prepare data for rendering Mustache template
+        // Prepare data for rendering Mustache template.
         $plagiarismthresholdsliderdata  = [
             'midthreshold' => $plagiarismmidthreshold,
             'highthreshold' => $plagiarismhighthreshold,
@@ -141,12 +159,15 @@ class plagiarism_copyleaks_adminform extends moodleform {
             'uid' => 'plagiarism_copyleaks_plagiarismthresholds',
         ];
 
-        // Add the section with the label and HTML
+        // Add the section with the label and HTML.
         $mform->addElement(
             'static',
             'plagiarism_copyleaks_plagiarismthresholds',
             get_string('clplagiarismdetectionthresholds', 'plagiarism_copyleaks'),
-            $OUTPUT->render_from_template('plagiarism_copyleaks/plagiarism_copyleaks_detection_thresholds', $plagiarismthresholdsliderdata)
+            $OUTPUT->render_from_template(
+                'plagiarism_copyleaks/plagiarism_copyleaks_detection_thresholds',
+                $plagiarismthresholdsliderdata
+            )
         );
 
         $mform->addHelpButton(
@@ -155,13 +176,12 @@ class plagiarism_copyleaks_adminform extends moodleform {
             'plagiarism_copyleaks'
         );
 
-        // Ensure hidden fields always get the latest values
+        // Ensure hidden fields always get the latest values.
         $mform->addElement('hidden', 'plagiarism_copyleaks_plagiarismmidthreshold', $plagiarismmidthreshold);
         $mform->setType('plagiarism_copyleaks_plagiarismmidthreshold', PARAM_INT);
 
         $mform->addElement('hidden', 'plagiarism_copyleaks_plagiarismhighthreshold', $plagiarismhighthreshold);
         $mform->setType('plagiarism_copyleaks_plagiarismhighthreshold', PARAM_INT);
-
 
         // Get values from the submitted form (if available), otherwise use saved values from DB (admin config).
         $aicontentmidthreshold = optional_param('plagiarism_copyleaks_aicontentmidthreshold', null, PARAM_INT);
@@ -180,7 +200,7 @@ class plagiarism_copyleaks_adminform extends moodleform {
                 $config['plagiarism_copyleaks_aicontenthighthreshold'] : 70;
         }
 
-        // Prepare data for rendering Mustache template
+        // Prepare data for rendering Mustache template.
         $aicontentthresholdsliderdata  = [
             'midthreshold' => $aicontentmidthreshold,
             'highthreshold' => $aicontenthighthreshold,
@@ -189,12 +209,15 @@ class plagiarism_copyleaks_adminform extends moodleform {
             'uid' => 'plagiarism_copyleaks_aicontentthresholds',
         ];
 
-        // Add the section with the label and HTML
+        // Add the section with the label and HTML.
         $mform->addElement(
             'static',
             'plagiarism_copyleaks_aicontentthresholds',
             get_string('claicontentdetectionthresholds', 'plagiarism_copyleaks'),
-            $OUTPUT->render_from_template('plagiarism_copyleaks/plagiarism_copyleaks_detection_thresholds', $aicontentthresholdsliderdata)
+            $OUTPUT->render_from_template(
+                'plagiarism_copyleaks/plagiarism_copyleaks_detection_thresholds',
+                $aicontentthresholdsliderdata
+            )
         );
 
         $mform->addHelpButton(
@@ -203,13 +226,12 @@ class plagiarism_copyleaks_adminform extends moodleform {
             'plagiarism_copyleaks'
         );
 
-        // Ensure hidden fields always get the latest values
+        // Ensure hidden fields always get the latest values.
         $mform->addElement('hidden', 'plagiarism_copyleaks_aicontentmidthreshold', $aicontentmidthreshold);
         $mform->setType('plagiarism_copyleaks_aicontentmidthreshold', PARAM_INT);
 
         $mform->addElement('hidden', 'plagiarism_copyleaks_aicontenthighthreshold', $aicontenthighthreshold);
         $mform->setType('plagiarism_copyleaks_aicontenthighthreshold', PARAM_INT);
-
 
         // Copyleaks Account Configurations.
         $mform->addElement(
@@ -218,7 +240,7 @@ class plagiarism_copyleaks_adminform extends moodleform {
             get_string('claccountconfig', 'plagiarism_copyleaks')
         );
         $mform->setExpanded('plagiarism_copyleaks_accountconfigheader');
-        // Thos settings will be save on Moodle database.
+        // Those settings will be save on Moodle database.
         $mform->addElement(
             'text',
             'plagiarism_copyleaks_apiurl',
@@ -241,7 +263,7 @@ class plagiarism_copyleaks_adminform extends moodleform {
             $settingsbtn = plagiarism_copyleaks_utils::get_copyleaks_settings_button_link(null, true);
             $mform->addElement('html', $settingsbtn);
 
-            // add the hidden iframe so that the button's request loads in it.
+            // Add the hidden iframe so that the button's request loads in it.
             $mform->addElement('html', html_writer::tag('iframe', '', array(
                 'name'  => 'hiddenframe',
                 'style' => 'display:none;'
@@ -249,7 +271,6 @@ class plagiarism_copyleaks_adminform extends moodleform {
             $rescanbtn = plagiarism_copyleaks_utils::get_resubmit_failed_scans_button_link();
             // Add the HTML into your form.
             $mform->addElement('html', $rescanbtn);
-          
         }
 
         $this->add_action_buttons();

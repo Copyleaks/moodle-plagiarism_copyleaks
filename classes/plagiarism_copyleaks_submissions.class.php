@@ -27,6 +27,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_logs.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_utils.class.php');
 
 /**
  * submissions helpers methods
@@ -204,10 +205,9 @@ class plagiarism_copyleaks_submissions {
             $insql,
             $inparams
         ) = $DB->get_in_or_equal(
-            ['success', 'queued'],
+            ['success', 'queued', 'pending'],
             SQL_PARAMS_QM,
-            'param',
-            false
+            'param'
         );
 
         $typefield = ($CFG->dbtype == "oci") ?
@@ -256,16 +256,14 @@ class plagiarism_copyleaks_submissions {
 
     /**
      * Update failed scans to queued if they have resubmittable errors.
-     * 
      * If a course module ID is provided, only failed scans for that module are updated.
      * Otherwise, all failed scans modified in the last 10 days are updated.
-     * 
      * @param int|null $cmid The course module ID. If null, updates all failed scans.
      */
     public static function change_failed_scans_to_queued($cmid = null) {
         global $DB;
 
-        // Build the SQL condition dynamically
+        // Build the SQL condition dynamically.
         $conditions = ["statuscode = 'error'"];
         $params = [];
 
@@ -278,25 +276,35 @@ class plagiarism_copyleaks_submissions {
             $params[] = time() - (10 * 24 * 60 * 60);
         }
 
-        // Construct the where clause
+        // Construct the where clause.
         $whereclause = implode(' AND ', $conditions);
 
-        $limit = PLAGIARISM_COPYLEAKS_CRON_QUERY_LIMIT; // Number of records to fetch at a time
-        $offset = 0;   // Start from the first record
+        $limit = PLAGIARISM_COPYLEAKS_CRON_QUERY_LIMIT; // Number of records to fetch at a time.
+        $offset = 0;   // Start from the first record.
 
         do {
-            // Get a batch of failed scans based on the condition
+            // Get a batch of failed scans based on the condition.
             $records = $DB->get_records_select(
                 'plagiarism_copyleaks_files',
                 $whereclause,
                 $params,
                 '',
-                'id, errorcode',
+                '*',
                 $offset,
                 $limit
             );
 
             foreach ($records as $record) {
+                if ($record->retrycnt > PLAGIARISM_COPYLEAKS_MAX_AUTO_RETRY) {
+                    $record->errormsg = $record->errormsg . " - Max retry count reached";
+                    if (!$DB->update_record('plagiarism_copyleaks_files', $record)) {
+                        \plagiarism_copyleaks_logs::add(
+                            "failed to change failed scans to max retry error, fileid: " . $record->id,
+                            "UPDATE_RECORD_FAILED"
+                        );
+                    }
+                    continue;
+                }
                 if (plagiarism_copyleaks_utils::is_resubmittable_error($record->errorcode)) {
                     $record->statuscode = 'queued';
                     $record->errormsg = null;
@@ -307,19 +315,27 @@ class plagiarism_copyleaks_submissions {
                             "UPDATE_RECORD_FAILED"
                         );
                     }
+                } else {
+                    $record->errormsg = $record->errormsg . " (Not rescannable by Copyleaks)";
+                    if (!$DB->update_record('plagiarism_copyleaks_files', $record)) {
+                        \plagiarism_copyleaks_logs::add(
+                            "failed to change failed scans to not rescannable error, fileid: " . $record->id,
+                            "UPDATE_RECORD_FAILED"
+                        );
+                    }
                 }
             }
 
-            // Move to the next batch
+            // Move to the next batch.
             $offset += $limit;
-        } while (count($records) === $limit); // Continue if we got a full batch
+        } while (count($records) === $limit); // Continue if we got a full batch.
     }
 
     /**
      * Handle submission error.
      * @param object $submission - will update the submission reference.
-     * @param string $errormessage
-     * @param int $errorcode
+     * @param string $errormessage.
+     * @param int $errorcode.
      */
     public static function handle_submission_error(&$submission, $errormessage = '', $counterid, $errorcode = null) {
         global $DB;

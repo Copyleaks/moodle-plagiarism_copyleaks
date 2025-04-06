@@ -96,17 +96,17 @@ $string['claicontentdetectionthresholds'] = 'Seuils de détection du contenu IA'
 $string['cllowcontentmatchthreshold'] = 'Gravité faible :';
 $string['clmidcontentmatchthreshold'] = 'Gravité modérée :';
 $string['clhighcontentmatchthreshold'] = 'Gravité élevée :';
-$string['clplagiarismdetectionthresholds_help'] = '<b>Codage couleur de la gravité du plagiat :</b>  
-<ul>  
-<li><span style="color:green;"><b>Vert :</b></span> Gravité faible.</li>  
-<li><span style="color:orange;"><b>Jaune :</b></span> Gravité modérée.</li>  
-<li><span style="color:red;"><b>Rouge :</b></span> Gravité élevée.</li>  
+$string['clplagiarismdetectionthresholds_help'] = '<b>Codage couleur de la gravité du plagiat :</b>
+<ul>
+<li><span style="color:green;"><b>Vert :</b></span> Gravité faible.</li>
+<li><span style="color:orange;"><b>Jaune :</b></span> Gravité modérée.</li>
+<li><span style="color:red;"><b>Rouge :</b></span> Gravité élevée.</li>
 </ul> ';
-$string['claicontentdetectionthresholds_help'] = '<b>Codage couleur de la gravité du contenu IA :</b>  
-<ul>  
-<li><span style="color:green;"><b>Vert :</b></span> Gravité faible.</li>  
-<li><span style="color:orange;"><b>Jaune :</b></span> Gravité modérée.</li>  
-<li><span style="color:red;"><b>Rouge :</b></span> Gravité élevée.</li>  
+$string['claicontentdetectionthresholds_help'] = '<b>Codage couleur de la gravité du contenu IA :</b>
+<ul>
+<li><span style="color:green;"><b>Vert :</b></span> Gravité faible.</li>
+<li><span style="color:orange;"><b>Jaune :</b></span> Gravité modérée.</li>
+<li><span style="color:red;"><b>Rouge :</b></span> Gravité élevée.</li>
 </ul> ';
 $string['cldefaultsettings'] = 'Paramètres par défaut de Copyleaks';
 
@@ -153,3 +153,8 @@ $string['privacy:metadata:plagiarism_copyleaks_files:lastmodified'] = 'Un horoda
 $string['privacy:metadata:plagiarism_copyleaks_files:similarityscore'] = 'Le score de similarité de la soumission.';
 $string['privacy:metadata:plagiarism_copyleaks_files:submitter'] = 'L\'ID de l\'utilisateur qui a effectué la soumission.';
 $string['privacy:metadata:plagiarism_copyleaks_files:userid'] = 'ID de l\'utilisateur qui est le propriétaire de la soumission.';
+
+$string['classignment'] = 'Devoir';
+$string['clquizzes'] = 'Quiz';
+$string['clforums'] = 'Forum';
+$string['clworkshop'] = 'Atelier';
