@@ -15,17 +15,17 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Copyleaks assign module helper
+ * Copyleaks forum module helper
  * @package   plagiarism_copyleaks
- * @copyright 2021 Copyleaks
- * @author    Bayan Abuawad <bayana@copyleaks.com>
+ * @copyright 2025 Copyleaks
+ * @author    Shade Amasha <shadea@copyleaks.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 /**
- * Copyleaks assign module helper
+ * Copyleaks forum module helper
  */
-class plagiarism_copyleaks_assignmodule {
+class plagiarism_copyleaks_forum {
     /**
      * check if current module user is instructor
      * @param mixed $context
@@ -39,21 +39,6 @@ class plagiarism_copyleaks_assignmodule {
      * get instructor capability
      */
     private static function get_instructor_capability() {
-        return 'mod/assign:grade';
-    }
-
-    /**
-     * get submittion author by item id
-     * @param string $itemid
-     * @return string user id
-     */
-    public static function get_author($itemid) {
-        global $DB;
-
-        if ($submission = $DB->get_record('assign_submission', ['id' => $itemid], 'userid')) {
-            return $submission->userid;
-        } else {
-            return 0;
-        }
+        return 'plagiarism/copyleaks:viewfullreport';
     }
 }

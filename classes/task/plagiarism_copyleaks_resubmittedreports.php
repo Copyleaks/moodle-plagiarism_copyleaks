@@ -49,7 +49,6 @@ class plagiarism_copyleaks_resubmittedreports extends \core\task\scheduled_task 
         global $CFG;
         require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_submissions.class.php');
         require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_comms.class.php');
-        require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_assignmodule.class.php');
 
         $this->handle_resubmitted_files();
     }
