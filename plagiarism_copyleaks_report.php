@@ -26,8 +26,13 @@ require(dirname(dirname(__FILE__)) . '/../config.php');
 
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_pluginconfig.class.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_comms.class.php');
-require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_assignmodule.class.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_utils.class.php');
+
+// Include supported modules.
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/modules/plagiarism_copyleaks_assign.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/modules/plagiarism_copyleaks_forum.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/modules/plagiarism_copyleaks_quiz.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/modules/plagiarism_copyleaks_workshop.class.php');
 
 global $CFG, $USER, $DB;
 // Get url params.
@@ -80,8 +85,11 @@ if ($viewmode == 'course') {
 // Copyleaks course settings.
 $modulesettings = $DB->get_records_menu('plagiarism_copyleaks_config', ['cm' => $cmid], '', 'name,value');
 
-$isinstructor = plagiarism_copyleaks_assignmodule::is_instructor($context);
 
+// Check if user is instructor.
+$moduleclass = "plagiarism_copyleaks_" . $cm->modname;
+$moduleobject = new $moduleclass;
+$isinstructor = $moduleobject::is_instructor($context);
 
 $clmoduleenabled = plagiarism_copyleaks_pluginconfig::is_plugin_configured('mod_' . $cm->modname);
 
