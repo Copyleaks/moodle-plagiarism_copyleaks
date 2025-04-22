@@ -313,10 +313,11 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
                         );
                     }
                 } else {
-                    $mform->setDefault('plagiarism_copyleaks_enable', false);
+                    $config = (array) plagiarism_copyleaks_pluginconfig::admin_config();
+                    $mform->setDefault('plagiarism_copyleaks_enable', $config['plagiarism_copyleaks_enable_by_default'] ?? 0);
+                    $mform->setDefault('plagiarism_copyleaks_allowstudentaccess', $config['plagiarism_copyleaks_allowstudentaccess_by_default'] ?? 0);
                     $mform->setDefault('plagiarism_copyleaks_draftsubmit', 0);
                     $mform->setDefault('plagiarism_copyleaks_reportgen', 0);
-                    $mform->setDefault('plagiarism_copyleaks_allowstudentaccess', 0);
                 }
 
                 $settingslinkparams = "?";
