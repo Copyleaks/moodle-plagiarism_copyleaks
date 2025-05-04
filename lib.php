@@ -333,7 +333,7 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
                     );
                     // Need to set type for Moodle's older version.
                     $mform->setType('plagiarism_copyleaks_tempcmid', PARAM_INT);
-                    $settingslinkparams = $settingslinkparams . "isnewactivity=$isnewactivity&courseid=$courseid&";
+                    $settingslinkparams = $settingslinkparams . "isnewactivity=$isnewactivity&courseid=$courseid&add=$addparam&";
                 }
 
                 $settingslinkparams = $settingslinkparams . "cmid=$cmid&modulename=$modulename";

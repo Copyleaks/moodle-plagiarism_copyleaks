@@ -41,10 +41,12 @@ $cmid = optional_param('cmid', null, PARAM_INT);
 $courseid = optional_param('courseid', null, PARAM_INT);
 $modulename = optional_param('modulename', null, PARAM_TEXT);
 $isnewmodulesettings = optional_param('isnewactivity', false, PARAM_TEXT);
+// Get 'add' from query string to identify the module type during creation.
+$addparam = optional_param('add', null, PARAM_TEXT);
 
 
 $isadminview = false;
-if (!isset($cmid) || !isset($modulename)) {
+if ((!isset($cmid) || !isset($modulename)) && !isset($addparam)) {
     $isadminview = true;
 }
 
@@ -108,10 +110,18 @@ if (!$isnewmodulesettings && !$isadminview && !$clmoduleenabled) {
     echo html_writer::div(get_string('cldisabledformodule', 'plagiarism_copyleaks'), null, ['style' => $errormessagestyle]);
 } else {
 
-    // Check if user is instructor.
-    $moduleclass = "plagiarism_copyleaks_" . $cm->modname;
+    // Determine the module class based on context.
+    if ($isadminview) {
+        $isinstructor = true;
+    } else {
+        if ($isnewmodulesettings) {
+            $moduleclass = "plagiarism_copyleaks_" . $addparam;
+        } else {
+            $moduleclass = "plagiarism_copyleaks_" . $cm->modname;
+        }
     $moduleobject = new $moduleclass;
     $isinstructor = $moduleobject::is_instructor($context);
+    }
 
     // Incase students not allowed to see the plagiairsm score.
     if (!$isinstructor) {
