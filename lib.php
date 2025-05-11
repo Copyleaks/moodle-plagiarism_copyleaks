@@ -149,16 +149,33 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
                 $updatedata['groupingId'] = $data->teamsubmissiongroupingid != "0" ? $data->teamsubmissiongroupingid : null;
             }
 
-            try {
-                $cl = new plagiarism_copyleaks_comms();
-                $cl->upsert_course_module($updatedata);
-            } catch (plagiarism_copyleaks_exception $ex) {
-                $errormessage = get_string('clfailtosavedata', 'plagiarism_copyleaks');
-                plagiarism_copyleaks_logs::add($errormessage . ': ' . $ex->getMessage(), 'API_ERROR');
-                throw new moodle_exception($errormessage);
-            } catch (plagiarism_copyleaks_auth_exception $ex) {
-                throw new moodle_exception(get_string('clinvalidkeyorsecret', 'plagiarism_copyleaks'));
+            // For queued requests,use the stored request data to retrieve the tempCourseModuleId.
+            // Then delete the request record.
+            // This allows the "Edit Scan Settings" button to be re-enabled for the course module.
+            if (\plagiarism_copyleaks_moduleconfig::is_course_module_request_queued($data->coursemodule)) {
+                $record = $DB->get_record('plagiarism_copyleaks_request', ['cmid' => $data->coursemodule], 'data');
+                // Check if the record exists, then decode the data and get the tempCourseModuleId.
+                if ($record) {
+                    if (!empty($record->data)) {
+                        $decodeddata = json_decode($record->data);
+
+                        if (!empty($decodeddata->tempCourseModuleId)) {
+                            $updatedata['tempCourseModuleId'] = $decodeddata->tempCourseModuleId;
+                        }
+                    }
+
+                    // Delete the request record.
+                    if (!$DB->delete_records('plagiarism_copyleaks_request', ['cmid' => $data->coursemodule])) {
+                        \plagiarism_copyleaks_logs::add(
+                            "Failed to delete plagiarism_copyleaks_request with cmid: $data->coursemodule after successful upsert.",
+                            "DELETE_RECORD_FAILED"
+                        );
+                    }
+                }
             }
+
+            $cl = new plagiarism_copyleaks_comms();
+            $cl->upsert_course_module($updatedata);
         }
 
         plagiarism_copyleaks_moduleconfig::set_module_config(

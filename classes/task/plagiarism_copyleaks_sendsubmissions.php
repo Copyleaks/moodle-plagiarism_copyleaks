@@ -110,7 +110,7 @@ class plagiarism_copyleaks_sendsubmissions extends \core\task\scheduled_task {
                         continue;
                     }
 
-                    if (\plagiarism_copyleaks_moduleconfig::is_course_module_request_queued($submission->cm)) {
+                    if (\plagiarism_copyleaks_moduleconfig::is_course_module_request_queued_and_retryable($submission->cm)) {
                         $copyleakscomms->handle_failed_to_submit($counterid);
                         continue;
                     }
