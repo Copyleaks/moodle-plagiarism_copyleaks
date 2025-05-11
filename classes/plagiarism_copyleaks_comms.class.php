@@ -404,6 +404,13 @@ class plagiarism_copyleaks_comms {
                 json_encode($data)
             );
         } catch (\Exception $e) {
+            if ($e instanceof \plagiarism_copyleaks_auth_exception) {
+                $errormessage = get_string('clinvalidkeyorsecret', 'plagiarism_copyleaks');
+            } else {
+                $errormessage = get_string('clfailtosavedata', 'plagiarism_copyleaks');
+            }
+            plagiarism_copyleaks_logs::add($errormessage . ': ' . $e->getMessage(), 'API_ERROR');
+
             plagiarism_copyleaks_dbutils::queued_failed_request(
                 $data['courseModuleId'],
                 $endpoint,

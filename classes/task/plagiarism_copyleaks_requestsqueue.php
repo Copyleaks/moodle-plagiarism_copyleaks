@@ -33,6 +33,7 @@ require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/enums/plagiarism_cop
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_logs.class.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_comms.class.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_httpclient.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_utils.class.php');
 
 /**
  * Copyleaks Plagiarism Plugin - Handle Resubmit Files
@@ -89,8 +90,27 @@ class plagiarism_copyleaks_requestsqueue extends \core\task\scheduled_task {
                     \plagiarism_copyleaks_http_client::execute($item->verb, $url, $item->require_auth, $item->data);
                     $successrequestsids[] = $item->id;
                 } catch (\Exception $e) {
+                    $remainingretryattempts = $item->total_retry_attempts + 1;
                     $item->fail_message = $e->getMessage();
-                    $item->total_retry_attempts = $item->total_retry_attempts + 1;
+                    $item->total_retry_attempts = $remainingretryattempts;
+
+                    // If the request failed due to a key mismatch, update the endpoint with the correct key.
+                    if ($remainingretryattempts < PLAGIARISM_COPYLEAKS_MAX_RETRY) {
+                        $pluginkey = \plagiarism_copyleaks_utils::extract_plugin_key_from_endpoint($item->endpoint);
+
+                        if (isset($pluginkey)) {
+                            $config = \plagiarism_copyleaks_pluginconfig::admin_config();
+
+                            if ($pluginkey !== $config->plagiarism_copyleaks_key) {
+                                // Update the endpoint with the correct key.
+                                $item->endpoint = preg_replace(
+                                    '#^(/api/moodle/plugin/)[^/]+#',
+                                    '${1}' . $config->plagiarism_copyleaks_key,
+                                    $item->endpoint
+                                );
+                            }
+                        }
+                    }
                     $failedrequests[] = $item;
                 }
             }

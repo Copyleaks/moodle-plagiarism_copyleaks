@@ -181,6 +181,24 @@ class plagiarism_copyleaks_moduleconfig {
     }
 
     /**
+     * Checks if a course module request is queued and has remaining retry attempts.
+     *
+     * @param int $cmid The course module ID.
+     * @return bool True if the request is queued and retryable (retry attempts < PLAGIARISM_COPYLEAKS_MAX_RETRY).
+     */
+    public static function is_course_module_request_queued_and_retryable($cmid) {
+        global $DB;
+
+        $record = $DB->get_record('plagiarism_copyleaks_request', ['cmid' => $cmid], '*');
+
+        if ($record && isset($record->total_retry_attempts)) {
+            return $record->total_retry_attempts < PLAGIARISM_COPYLEAKS_MAX_RETRY;
+        }
+
+        return false;
+    }
+
+    /**
      * Check if Copyleaks is enabled for any module in a course.
      *
      * @param int $courseid The course ID.
