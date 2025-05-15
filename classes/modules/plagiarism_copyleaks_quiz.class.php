@@ -32,13 +32,7 @@ class plagiarism_copyleaks_quiz {
      * @return boolean is instructor?
      */
     public static function is_instructor($context) {
-        return has_capability(self::get_instructor_capability(), $context);
-    }
-
-    /**
-     * get instructor capability
-     */
-    private static function get_instructor_capability() {
-        return 'mod/quiz:grade';
+        return has_capability('mod/quiz:grade', $context) &&
+            has_capability('mod/quiz:viewreports', $context);
     }
 }
