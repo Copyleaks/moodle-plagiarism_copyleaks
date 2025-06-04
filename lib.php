@@ -315,7 +315,10 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
                 } else {
                     $config = (array) plagiarism_copyleaks_pluginconfig::admin_config();
                     $mform->setDefault('plagiarism_copyleaks_enable', $config['plagiarism_copyleaks_enable_by_default'] ?? 0);
-                    $mform->setDefault('plagiarism_copyleaks_allowstudentaccess', $config['plagiarism_copyleaks_allowstudentaccess_by_default'] ?? 0);
+                    $mform->setDefault(
+                        'plagiarism_copyleaks_allowstudentaccess',
+                        $config['plagiarism_copyleaks_allowstudentaccess_by_default'] ?? 0
+                    );
                     $mform->setDefault('plagiarism_copyleaks_draftsubmit', 0);
                     $mform->setDefault('plagiarism_copyleaks_reportgen', 0);
                 }
@@ -348,10 +351,10 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
 
                 if (!$isnewactivity) {
                     // Add the hidden iframe so that the button's request loads in it.
-                    $mform->addElement('html', html_writer::tag('iframe', '', array(
+                    $mform->addElement('html', html_writer::tag('iframe', '', [
                         'name'  => 'hiddenframe',
-                        'style' => 'display:none;'
-                    )));
+                        'style' => 'display:none;',
+                    ]));
 
                     $btn = plagiarism_copyleaks_utils::get_resubmit_failed_scans_button_link($cmid);
                     // Add the HTML into your form.

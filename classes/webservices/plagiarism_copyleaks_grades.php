@@ -110,7 +110,7 @@ class plagiarism_copyleaks_grades extends external_api {
                             ])
                         ),
                     ])
-                )
+                ),
             ]
         );
     }

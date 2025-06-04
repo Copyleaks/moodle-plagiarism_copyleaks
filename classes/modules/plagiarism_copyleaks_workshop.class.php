@@ -39,6 +39,6 @@ class plagiarism_copyleaks_workshop {
      * get instructor capability
      */
     private static function get_instructor_capability() {
-      return 'plagiarism/copyleaks:viewfullreport';
+        return 'plagiarism/copyleaks:viewfullreport';
     }
 }

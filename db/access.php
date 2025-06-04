@@ -54,7 +54,7 @@ $capabilities = [
         'archetypes' => [
             'manager' => CAP_ALLOW, // Admins.
             'editingteacher' => CAP_ALLOW, // Teachers with editing rights.
-            'teacher' => CAP_ALLOW // Non-editing teachers.
+            'teacher' => CAP_ALLOW, // Non-editing teachers.
         ],
     ],
 ];

@@ -184,15 +184,15 @@ class plagiarism_copyleaks_utils {
         // Determine localStorage key based on role.
         if ($cmid) {
             $lastresumbitclick = 'teacherLastResubmitClick' . $cmid;
-            $resubmiturl = new moodle_url($url, array(
+            $resubmiturl = new moodle_url($url, [
                 'rescanmode' => plagiarism_copyleaks_rescan_mode::RESCAN_MODULE,
                 'cmid'   => $cmid,
-            ));
+            ]);
         } else {
             $lastresumbitclick = 'adminLastResubmitClick';
-            $resubmiturl = new moodle_url($url, array(
+            $resubmiturl = new moodle_url($url, [
                 'rescanmode' => plagiarism_copyleaks_rescan_mode::RESCAN_ALL,
-            ));
+            ]);
         }
 
         // The <a> tag with data attributes.
@@ -453,7 +453,7 @@ class plagiarism_copyleaks_utils {
             plagiarism_copyleaks_errorcode::NO_CREDITS_AVAILABLE,
             plagiarism_copyleaks_errorcode::SINGLE_FILE_UPLOAD_ONLY,
             plagiarism_copyleaks_errorcode::INTERNAL_SERVER_ERROR,
-            plagiarism_copyleaks_errorcode::EXCEEDED_CREDITS_LIMIT
+            plagiarism_copyleaks_errorcode::EXCEEDED_CREDITS_LIMIT,
         ];
 
         return in_array((int)$errorcode, $resubmittableerrors, true) || $errorcode >= 100;

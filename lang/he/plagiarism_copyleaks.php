@@ -94,18 +94,18 @@ $string['claicontentdetectionthresholds'] = 'ספי זיהוי תוכן מבוס
 $string['cllowcontentmatchthreshold'] = 'חומרה נמוכה:';
 $string['clmidcontentmatchthreshold'] = 'חומרה בינונית:';
 $string['clhighcontentmatchthreshold'] = 'חומרה גבוהה:';
-$string['clplagiarismdetectionthresholds_help'] = '<b>קידוד צבעים לחומרת גניבה ספרותית:</b>  
-<ul>  
-<li><span style="color:green;"><b>ירוק:</b></span> חומרה נמוכה.</li>  
-<li><span style="color:orange;"><b>צהוב:</b></span> חומרה בינונית.</li>  
-<li><span style="color:red;"><b>אדום:</b></span> חומרה גבוהה.</li>  
-</ul> ';
-$string['claicontentdetectionthresholds_help'] = '<b>קידוד צבעים לחומרת תוכן מבוסס בינה מלאכותית:</b>  
-<ul>  
-<li><span style="color:green;"><b>ירוק:</b></span> חומרה נמוכה.</li>  
-<li><span style="color:orange;"><b>צהוב:</b></span> חומרה בינונית.</li>  
-<li><span style="color:red;"><b>אדום:</b></span> חומרה גבוהה.</li>  
-</ul> ';
+$string['clplagiarismdetectionthresholds_help'] = '<b>קידוד צבעים לחומרת גניבה ספרותית:</b>
+<ul>
+<li><span style="color:green;"><b>ירוק:</b></span> חומרה נמוכה.</li>
+<li><span style="color:orange;"><b>צהוב:</b></span> חומרה בינונית.</li>
+<li><span style="color:red;"><b>אדום:</b></span> חומרה גבוהה.</li>
+</ul>';
+$string['claicontentdetectionthresholds_help'] = '<b>קידוד צבעים לחומרת תוכן מבוסס בינה מלאכותית:</b>
+<ul>
+<li><span style="color:green;"><b>ירוק:</b></span> חומרה נמוכה.</li>
+<li><span style="color:orange;"><b>צהוב:</b></span> חומרה בינונית.</li>
+<li><span style="color:red;"><b>אדום:</b></span> חומרה גבוהה.</li>
+</ul>';
 $string['cldefaultsettings'] = 'הגדרות ברירת מחדל של Copyleaks';
 
 
