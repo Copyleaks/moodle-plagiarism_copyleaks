@@ -264,10 +264,10 @@ class plagiarism_copyleaks_adminform extends moodleform {
             $mform->addElement('html', $settingsbtn);
 
             // Add the hidden iframe so that the button's request loads in it.
-            $mform->addElement('html', html_writer::tag('iframe', '', array(
+            $mform->addElement('html', html_writer::tag('iframe', '', [
                 'name'  => 'hiddenframe',
-                'style' => 'display:none;'
-            )));
+                'style' => 'display:none;',
+            ]));
             $rescanbtn = plagiarism_copyleaks_utils::get_resubmit_failed_scans_button_link();
             // Add the HTML into your form.
             $mform->addElement('html', $rescanbtn);

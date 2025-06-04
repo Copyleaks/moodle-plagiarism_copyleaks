@@ -94,18 +94,18 @@ $string['claicontentdetectionthresholds'] = 'AI content detection thresholds';
 $string['cllowcontentmatchthreshold'] = 'Low severity:';
 $string['clmidcontentmatchthreshold'] = 'Moderate severity:';
 $string['clhighcontentmatchthreshold'] = 'High severity:';
-$string['clplagiarismdetectionthresholds_help'] = '<b>Plagiarism severity color coding:</b>  
-<ul>  
-<li><span style="color:green;"><b>Green:</b></span> Low severity.</li>  
-<li><span style="color:orange;"><b>Yellow:</b></span> Moderate severity.</li>  
-<li><span style="color:red;"><b>Red:</b></span> High severity.</li>  
-</ul> ';
-$string['claicontentdetectionthresholds_help'] = '<b>AI content severity color coding:</b>  
-<ul>  
-<li><span style="color:green;"><b>Green:</b></span> Low severity.</li>  
-<li><span style="color:orange;"><b>Yellow:</b></span> Moderate severity.</li>  
-<li><span style="color:red;"><b>Red:</b></span> High severity.</li>  
-</ul> ';
+$string['clplagiarismdetectionthresholds_help'] = '<b>Plagiarism severity color coding:</b>
+<ul>
+<li><span style="color:green;"><b>Green:</b></span> Low severity.</li>
+<li><span style="color:orange;"><b>Yellow:</b></span> Moderate severity.</li>
+<li><span style="color:red;"><b>Red:</b></span> High severity.</li>
+</ul>';
+$string['claicontentdetectionthresholds_help'] = '<b>AI content severity color coding:</b>
+<ul>
+<li><span style="color:green;"><b>Green:</b></span> Low severity.</li>
+<li><span style="color:orange;"><b>Yellow:</b></span> Moderate severity.</li>
+<li><span style="color:red;"><b>Red:</b></span> High severity.</li>
+</ul>';
 $string['cldefaultsettings'] = 'Default Copyleaks settings';
 
 $string['claicontentscore'] = 'AI content score';

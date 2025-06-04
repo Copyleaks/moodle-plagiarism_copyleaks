@@ -119,8 +119,8 @@ class plagiarism_copyleaks_sendsubmissions extends \core\task\scheduled_task {
                     if (empty($coursemodule)) {
                         \plagiarism_copyleaks_submissions::handle_submission_error(
                             $submission,
-                            "Course Module wasnt found for this record.",
                             $counterid,
+                            "Course Module wasnt found for this record.",
                             \plagiarism_copyleaks_errorcode::INTERNAL_PLUGIN_ERROR_NOT_RESCANNABLE
                         );
                         continue;
@@ -137,8 +137,8 @@ class plagiarism_copyleaks_sendsubmissions extends \core\task\scheduled_task {
                     if (empty($submission->userid)) {
                         \plagiarism_copyleaks_submissions::handle_submission_error(
                             $submission,
-                            'User Id should never be 0.',
                             $counterid,
+                            'User Id should never be 0.',
                             \plagiarism_copyleaks_errorcode::INTERNAL_PLUGIN_ERROR_NOT_RESCANNABLE
                         );
                         continue;
@@ -251,8 +251,8 @@ class plagiarism_copyleaks_sendsubmissions extends \core\task\scheduled_task {
                     if (isset($errormessage) && $errormessage != "") {
                         \plagiarism_copyleaks_submissions::handle_submission_error(
                             $submission,
-                            $errormessage,
                             $counterid,
+                            $errormessage,
                             $errorcode
                         );
                         continue;
@@ -264,8 +264,8 @@ class plagiarism_copyleaks_sendsubmissions extends \core\task\scheduled_task {
                     } catch (\Exception $e) {
                         \plagiarism_copyleaks_submissions::handle_submission_error(
                             $submission,
-                            "Fail to create a tempfile.",
                             $counterid,
+                            "Fail to create a tempfile.",
                             \plagiarism_copyleaks_errorcode::INTERNAL_PLUGIN_ERROR_NOT_RESCANNABLE
                         );
                         continue;
