@@ -76,6 +76,13 @@ $functions = [
     'description' => 'Get multiple scales values',
     'type'        => 'read',
   ],
+  'plagiarism_copyleaks_get_student_report_access_by_cmids' => [
+    'classname'   => 'plagiarism_copyleaks_course_modules',
+    'methodname'  => 'get_student_report_access_by_cmids',
+    'classpath'   => 'plagiarism/copyleaks/classes/webservices/plagiarism_copyleaks_course_modules.php',
+    'description' => 'Returns student plagiarism report access flags for multiple course modules by their IDs.',
+    'type'        => 'read',
+  ],
 ];
 
 // Pre-built service.
@@ -89,6 +96,7 @@ $services = [
       'plagiarism_copyleaks_get_course_groupings_info',
       'plagiarism_copyleaks_get_multiple_scales_values',
       'plagiarism_copyleaks_get_file_info',
+      'plagiarism_copyleaks_get_student_report_access_by_cmids',
       'mod_assign_save_grade',
       'core_comment_add_comments',
       'core_comment_delete_comments',
