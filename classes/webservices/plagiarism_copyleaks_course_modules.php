@@ -64,7 +64,7 @@ public static function get_student_report_access_by_cmids($cmids) {
     // Validate parameters.
     $params = self::validate_parameters(self::get_student_report_access_by_cmids_parameters(), ['cmids' => $cmids]);
 
-    $reportAccessStatus = [];
+    $reportsaccesspermission = [];
 
     foreach ($params['cmids'] as $cm) {
         $cmid = $cm['id'];
@@ -80,14 +80,14 @@ public static function get_student_report_access_by_cmids($cmids) {
             isset($settings['plagiarism_copyleaks_allowstudentaccess']) &&
             $settings['plagiarism_copyleaks_allowstudentaccess'] === '1';
 
-        $reportsAccessStatus[] = [
+      $reportsaccesspermission[] = [
             'courseModuleId' => $cmid,
             'allowStudentReportAccess' => $allowaccess
         ];
     }
 
     return [
-        'reportsAccessStatus' => $reportsAccessStatus
+      'reportsAccessPermission' => $reportsaccesspermission
     ];
 }
 
@@ -98,7 +98,7 @@ public static function get_student_report_access_by_cmids($cmids) {
    */
   public static function get_student_report_access_by_cmids_returns() {
     return new external_single_structure([
-      'reportsAccessStatus' => new external_multiple_structure(
+      'reportsAccessPermission' => new external_multiple_structure(
         new external_single_structure([
           'courseModuleId' => new external_value(PARAM_INT, 'Course Module ID'),
           'allowStudentReportAccess' => new external_value(PARAM_BOOL, 'True if student access is allowed'),
