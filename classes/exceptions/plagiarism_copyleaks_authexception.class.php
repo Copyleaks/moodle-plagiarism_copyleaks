@@ -30,6 +30,6 @@ class plagiarism_copyleaks_auth_exception extends Exception {
      * constructor
      */
     public function __construct() {
-        parent::__construct("UnAuthorized, make sure you are using the right key & secret.");
+        parent::__construct("UnAuthorized, make sure you are using the right key & secret.", 401);
     }
 }
