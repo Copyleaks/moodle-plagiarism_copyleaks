@@ -330,43 +330,45 @@ a.copyleaks-settings-link:hover {
     animation: spin 1s linear infinite;
 }
 
-
-.slider-container {
+.cls-slider-container {
     position: relative;
     width: 320px;
     margin-top: 10px;
 }
 
 /* Default LTR gradient */
-.slider-container .range-slider {
-
+.cls-slider-container .cls-range-slider {
     position: relative;
     width: 100%;
     height: 8px;
     border-radius: 5px;
-    background: linear-gradient(to right,
-                #008001 0%,
-                #008001 30%,
-                #ffa503 30%,
-                #ffa503 70%,
-                #f44336 70%,
-                #f44336 100%);
+    background: linear-gradient(
+        to right,
+        #008001 0%,
+        #008001 30%,
+        #ffa503 30%,
+        #ffa503 70%,
+        #f44336 70%,
+        #f44336 100%
+    );
 }
 
-[dir="rtl"] .slider-container .range-slider {
+[dir="rtl"] .cls-slider-container .cls-range-slider {
     position: relative;
     width: 100%;
     height: 8px;
     border-radius: 5px;
-    background: linear-gradient(to left,
-            #008001 0%,
-            #008001 30%,
-            #ffa503 30%,
-            #ffa503 70%,
-            #f44336 70%,
-            #f44336 100%);
+    background: linear-gradient(
+        to left,
+        #008001 0%,
+        #008001 30%,
+        #ffa503 30%,
+        #ffa503 70%,
+        #f44336 70%,
+        #f44336 100%
+    );
 }
-.slider-container input[type="range"] {
+.cls-slider-container input[type="range"] {
     position: absolute;
     width: 100%;
     height: 8px;
@@ -376,7 +378,7 @@ a.copyleaks-settings-link:hover {
     top: 1px;
 }
 
-.slider-container input[type="range"]::-webkit-slider-thumb {
+.cls-slider-container input[type="range"]::-webkit-slider-thumb {
     -webkit-appearance: none;
     width: 15px;
     height: 15px;

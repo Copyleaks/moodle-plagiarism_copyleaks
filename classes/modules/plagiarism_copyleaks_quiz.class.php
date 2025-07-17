@@ -15,17 +15,30 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * version.php - Meta-data about the plugin.
+ * Copyleaks quiz module helper
  * @package   plagiarism_copyleaks
- * @author    Bayan Abuawad <bayana@copyleaks.com>
- * @copyright 2021 Copyleaks
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later.
+ * @copyright 2025 Copyleaks
+ * @author    Shade Amasha <shadea@copyleaks.com>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
-$plugin->version = 2025062400;
-$plugin->release = "3.5+";
-$plugin->requires = 2018051700;
-$plugin->component = 'plagiarism_copyleaks';
-$plugin->maturity = MATURITY_STABLE;
-$plugin->cron = 0;
+/**
+ * Copyleaks quiz module helper
+ */
+class plagiarism_copyleaks_quiz {
+    /**
+     * check if current module user is instructor
+     * @param mixed $context
+     * @return boolean is instructor?
+     */
+    public static function is_instructor($context) {
+        return has_capability(self::get_instructor_capability(), $context);
+    }
+
+    /**
+     * get instructor capability
+     */
+    private static function get_instructor_capability() {
+        return 'mod/quiz:grade';
+    }
+}

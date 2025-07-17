@@ -38,12 +38,16 @@ $string['cllogstab'] = 'Logs';
 $string['cladminconfig'] = 'Copyleaks plagiarism plugin configuration';
 $string['clpluginintro'] = 'The Copyleaks plagiarism checker is a comprehensive and accurate solution that helps teachers and students check if their content is original.<br>For more information on how to setup and use the plugin please check <a target="_blank" href="https://lti.copyleaks.com/guides/select-moodle-integration">our guides</a>.</br></br></br>';
 $string['clenable'] = 'Enable Copyleaks';
+$string['clenablebydefault'] = 'Enable Copyleaks integration by default';
+$string['clenablebydefault_help'] = 'Enabling Copyleaks integration by default ensures that plagiarism detection is automatically activated for all newly created activities that support plagiarism checking.';
 $string['clenablemodulefor'] = 'Enable Copyleaks for {$a}';
 $string['claccountconfig'] = "Copyleaks account configuration";
 $string['clapiurl'] = 'Copyleaks API-URL';
 $string['claccountkey'] = "Copyleaks key";
 $string['claccountsecret'] = "Copyleaks secret";
 $string['clallowstudentaccess'] = 'Allow students access to plagiarism reports';
+$string['clallowstudentaccessbydefault'] = 'Allow student to view Copyleaks Similarity Report';
+$string['clallowstudentaccessbydefault_help'] = 'If enabled by default, students will automatically have access to view the Copyleaks Similarity Report for all supported activities.';
 $string['clinvalidkeyorsecret'] = 'Invalid key or secret';
 $string['clfailtosavedata'] = 'Fail to save Copyleaks data';
 $string['clplagiarised'] = 'Similarity score';
@@ -85,23 +89,24 @@ $string['clplagiarisescanning'] = 'Scanning for plagiarism...';
 $string['clplagiarisequeued'] = 'Scheduled for plagiarism scan at {$a}';
 $string['cldisabledformodule'] = 'Copyleaks plugin is disabled for this module.';
 $string['clnopageaccess'] = 'You dont have access to this page.';
-$string['clplagiarismdetectionthresholds'] = 'Plagiarism Detection Thresholds';
-$string['claicontentdetectionthresholds'] = 'AI Content Detection Thresholds';
-$string['cllowcontentmatchthreshold'] = 'Low Severity:';
-$string['clmidcontentmatchthreshold'] = 'Moderate Severity:';
-$string['clhighcontentmatchthreshold'] = 'High Severity:';
-$string['clplagiarismdetectionthresholds_help'] = '<b>Plagiarism Severity Color Coding:</b>
-<ul>
-<li><span style="color:green;"><b>Green:</b></span> Low severity.</li>
-<li><span style="color:orange;"><b>Yellow:</b></span> Moderate severity.</li>
-<li><span style="color:red;"><b>Red:</b></span> High severity.</li>
+$string['clplagiarismdetectionthresholds'] = 'Plagiarism detection thresholds';
+$string['claicontentdetectionthresholds'] = 'AI content detection thresholds';
+$string['cllowcontentmatchthreshold'] = 'Low severity:';
+$string['clmidcontentmatchthreshold'] = 'Moderate severity:';
+$string['clhighcontentmatchthreshold'] = 'High severity:';
+$string['clplagiarismdetectionthresholds_help'] = '<b>Plagiarism severity color coding:</b>  
+<ul>  
+<li><span style="color:green;"><b>Green:</b></span> Low severity.</li>  
+<li><span style="color:orange;"><b>Yellow:</b></span> Moderate severity.</li>  
+<li><span style="color:red;"><b>Red:</b></span> High severity.</li>  
 </ul> ';
-$string['claicontentdetectionthresholds_help'] = '<b>AI Content Severity Color Coding:</b>
-<ul>
-<li><span style="color:green;"><b>Green:</b></span> Low severity.</li>
-<li><span style="color:orange;"><b>Yellow:</b></span> Moderate severity.</li>
-<li><span style="color:red;"><b>Red:</b></span> High severity.</li>
+$string['claicontentdetectionthresholds_help'] = '<b>AI content severity color coding:</b>  
+<ul>  
+<li><span style="color:green;"><b>Green:</b></span> Low severity.</li>  
+<li><span style="color:orange;"><b>Yellow:</b></span> Moderate severity.</li>  
+<li><span style="color:red;"><b>Red:</b></span> High severity.</li>  
 </ul> ';
+$string['cldefaultsettings'] = 'Default Copyleaks settings';
 
 $string['claicontentscore'] = 'AI content score';
 $string['clplagiarismscore'] = 'Plagiarism score';

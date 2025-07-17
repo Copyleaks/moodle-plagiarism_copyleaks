@@ -34,7 +34,6 @@ require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks
 require_once($CFG->dirroot . '/plagiarism/copyleaks/constants/plagiarism_copyleaks.constants.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/enums/plagiarism_copyleaks_enums.php');
 
-require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_assignmodule.class.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_utils.class.php');
 
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_comms.class.php');
@@ -331,10 +330,11 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
                         );
                     }
                 } else {
-                    $mform->setDefault('plagiarism_copyleaks_enable', false);
+                    $config = (array) plagiarism_copyleaks_pluginconfig::admin_config();
+                    $mform->setDefault('plagiarism_copyleaks_enable', $config['plagiarism_copyleaks_enable_by_default'] ?? 0);
+                    $mform->setDefault('plagiarism_copyleaks_allowstudentaccess', $config['plagiarism_copyleaks_allowstudentaccess_by_default'] ?? 0);
                     $mform->setDefault('plagiarism_copyleaks_draftsubmit', 0);
                     $mform->setDefault('plagiarism_copyleaks_reportgen', 0);
-                    $mform->setDefault('plagiarism_copyleaks_allowstudentaccess', 0);
                 }
 
                 $settingslinkparams = "?";
@@ -350,7 +350,7 @@ class plagiarism_plugin_copyleaks extends plagiarism_plugin {
                     );
                     // Need to set type for Moodle's older version.
                     $mform->setType('plagiarism_copyleaks_tempcmid', PARAM_INT);
-                    $settingslinkparams = $settingslinkparams . "isnewactivity=$isnewactivity&courseid=$courseid&";
+                    $settingslinkparams = $settingslinkparams . "isnewactivity=$isnewactivity&courseid=$courseid&add=$addparam&";
                 }
 
                 $settingslinkparams = $settingslinkparams . "cmid=$cmid&modulename=$modulename";

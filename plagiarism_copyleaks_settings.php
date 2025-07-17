@@ -26,9 +26,13 @@ require(dirname(dirname(__FILE__)) . '/../config.php');
 
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_comms.class.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_pluginconfig.class.php');
-require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_assignmodule.class.php');
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_utils.class.php');
 
+// Include supported modules.
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/modules/plagiarism_copyleaks_assign.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/modules/plagiarism_copyleaks_forum.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/modules/plagiarism_copyleaks_quiz.class.php');
+require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/modules/plagiarism_copyleaks_workshop.class.php');
 
 
 // Get url params.
@@ -37,10 +41,12 @@ $cmid = optional_param('cmid', null, PARAM_INT);
 $courseid = optional_param('courseid', null, PARAM_INT);
 $modulename = optional_param('modulename', null, PARAM_TEXT);
 $isnewmodulesettings = optional_param('isnewactivity', false, PARAM_TEXT);
+// Get 'add' from query string to identify the module type during creation.
+$addparam = optional_param('add', null, PARAM_TEXT);
 
 
 $isadminview = false;
-if (!isset($cmid) || !isset($modulename)) {
+if ((!isset($cmid) || !isset($modulename)) && !isset($addparam)) {
     $isadminview = true;
 }
 
@@ -92,10 +98,6 @@ if ($isadminview) {
 global $USER;
 $userid = $USER->id;
 
-
-$isinstructor = plagiarism_copyleaks_assignmodule::is_instructor($context);
-
-
 // Check if copyleaks plugin is disabled.
 $clmoduleenabled = true;
 if (isset($cm)) {
@@ -104,10 +106,23 @@ if (isset($cm)) {
 
 $errormessagestyle = 'color:red; display:flex; width:100%; justify-content:center;';
 
-
 if (!$isnewmodulesettings && !$isadminview && !$clmoduleenabled) {
     echo html_writer::div(get_string('cldisabledformodule', 'plagiarism_copyleaks'), null, ['style' => $errormessagestyle]);
 } else {
+
+    // Determine the module class based on context.
+    if ($isadminview) {
+        $isinstructor = true;
+    } else {
+        if ($isnewmodulesettings) {
+            $moduleclass = "plagiarism_copyleaks_" . $addparam;
+        } else {
+            $moduleclass = "plagiarism_copyleaks_" . $cm->modname;
+        }
+    $moduleobject = new $moduleclass;
+    $isinstructor = $moduleobject::is_instructor($context);
+    }
+
     // Incase students not allowed to see the plagiairsm score.
     if (!$isinstructor) {
         echo html_writer::div(get_string('clnopageaccess', 'plagiarism_copyleaks'), null, ['style' => $errormessagestyle]);

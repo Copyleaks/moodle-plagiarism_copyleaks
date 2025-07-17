@@ -28,11 +28,14 @@ defined('MOODLE_INTERNAL') || die();
 $string['claccountconfig'] = 'Configuration du compte Copyleaks';
 $string['claccountkey'] = 'Copyleaks clé';
 $string['copyleaks:enable'] = 'Activer Copyleaks';
+$string['clenablebydefualt'] = 'Activer Copyleaks pour tous les modules par défaut';
 $string['copyleaks:viewfullreport'] = 'Voir le rapport Web';
 $string['claccountsecret'] = 'Copyleaks secrète';
 $string['cladminconfig'] = 'Copyleaks configuration du plugin de plagiat';
 $string['cladminconfigsavesuccess'] = 'Copyleaks les paramètres de plagiat ont été enregistrés avec succès.';
 $string['clallowstudentaccess'] = 'Autoriser les étudiants à accéder aux rapports de plagiat';
+$string['clallowstudentaccessbydefault'] = 'Autoriser l’étudiant à voir le rapport de similarité de Copyleaks';
+$string['clallowstudentaccessbydefault_help'] = 'Si cette option est activée par défaut, les étudiants auront automatiquement accès au rapport de similarité Copyleaks pour toutes les activités prises en charge.';
 $string['clapisubmissionerror'] = 'Copyleaks a renvoyé une erreur lors de la tentative d\'envoi du fichier pour soumission -';
 $string['clapiurl'] = 'URL de l\'API Copyleaks';
 $string['clcheatingdetected'] = 'Tricherie détectée, ouvrir le rapport pour en savoir plus';
@@ -41,6 +44,8 @@ $string['cldisabledformodule'] = 'Le plugin Copyleaks est désactivé pour ce mo
 $string['cldraftsubmit'] = 'Soumettre les fichiers uniquement lorsque les étudiants cliquent sur le bouton Soumettre';
 $string['cldraftsubmit_help'] = 'Cette option n\'est disponible que si "Demander aux étudiants de cliquer sur le bouton d\'envoi" est Oui';
 $string['clenable'] = 'Activer Copyleaks';
+$string['clenablebydefault'] = 'Activer l’intégration de Copyleaks par défaut';
+$string['clenablebydefault_help'] = 'L’activation par défaut de l’intégration de Copyleaks garantit que la détection du plagiat est automatiquement activée pour toutes les nouvelles activités prenant en charge la vérification du plagiat.';
 $string['clenablemodulefor'] = 'Activer les fuites de copie pour {$a}';
 $string['clfailtosavedata'] = 'Échec de l\'enregistrement des données Copyleaks';
 $string['clgenereportimmediately'] = 'Générez des rapports immédiatement';
@@ -103,6 +108,7 @@ $string['claicontentdetectionthresholds_help'] = '<b>Codage couleur de la gravit
 <li><span style="color:orange;"><b>Jaune :</b></span> Gravité modérée.</li>
 <li><span style="color:red;"><b>Rouge :</b></span> Gravité élevée.</li>
 </ul> ';
+$string['cldefaultsettings'] = 'Paramètres par défaut de Copyleaks';
 
 
 $string['claicontentscore'] = 'Score du contenu IA';
