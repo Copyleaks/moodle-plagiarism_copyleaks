@@ -458,4 +458,21 @@ class plagiarism_copyleaks_utils {
 
         return in_array((int)$errorcode, $resubmittableerrors, true) || $errorcode >= 100;
     }
+
+    /**
+     * Extract plugin key from a Copyleaks API endpoint.
+     *
+     * This function parses the endpoint URL and retrieves the plugin key segment,
+     * @param string $endpoint The full API endpoint URL.
+     * @return string|null The extracted plugin key, or null if not found.
+     */
+    public static function extract_plugin_key_from_endpoint(string $endpoint) {
+        $prefix = "/api/moodle/plugin/";
+        if (strpos($endpoint, $prefix) === 0) {
+            $remaining = substr($endpoint, strlen($prefix));
+            $parts = explode('/', $remaining);
+            return $parts[0] ?? null;
+        }
+        return null;
+    }
 }
