@@ -330,7 +330,6 @@ a.copyleaks-settings-link:hover {
     animation: spin 1s linear infinite;
 }
 
-
 .cls-slider-container {
     position: relative;
     width: 320px;
@@ -339,18 +338,19 @@ a.copyleaks-settings-link:hover {
 
 /* Default LTR gradient */
 .cls-slider-container .cls-range-slider {
-
     position: relative;
     width: 100%;
     height: 8px;
     border-radius: 5px;
-    background: linear-gradient(to right,
-                #008001 0%,
-                #008001 30%,
-                #ffa503 30%,
-                #ffa503 70%,
-                #f44336 70%,
-                #f44336 100%);
+    background: linear-gradient(
+        to right,
+        #008001 0%,
+        #008001 30%,
+        #ffa503 30%,
+        #ffa503 70%,
+        #f44336 70%,
+        #f44336 100%
+    );
 }
 
 [dir="rtl"] .cls-slider-container .cls-range-slider {
@@ -358,13 +358,15 @@ a.copyleaks-settings-link:hover {
     width: 100%;
     height: 8px;
     border-radius: 5px;
-    background: linear-gradient(to left,
-            #008001 0%,
-            #008001 30%,
-            #ffa503 30%,
-            #ffa503 70%,
-            #f44336 70%,
-            #f44336 100%);
+    background: linear-gradient(
+        to left,
+        #008001 0%,
+        #008001 30%,
+        #ffa503 30%,
+        #ffa503 70%,
+        #f44336 70%,
+        #f44336 100%
+    );
 }
 .cls-slider-container input[type="range"] {
     position: absolute;
