@@ -337,7 +337,7 @@ class plagiarism_copyleaks_submissions {
      * @param string $errormessage.
      * @param int $errorcode.
      */
-    public static function handle_submission_error(&$submission, $errormessage = '', $counterid, $errorcode = null) {
+    public static function handle_submission_error(&$submission, $counterid, $errormessage = '', $errorcode = null) {
         global $DB;
         $copyleakscomms = new \plagiarism_copyleaks_comms();
         if (isset($submission->retrycnt) && $submission->retrycnt > PLAGIARISM_COPYLEAKS_MAX_AUTO_RETRY) {
