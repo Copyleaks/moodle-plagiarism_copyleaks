@@ -72,9 +72,11 @@ class plagiarism_copyleaks_http_client {
         $domain = rtrim($domain, '/');
 
         $version = get_config('plagiarism_copyleaks', 'version');
+        $moodleversion = get_config('core', 'version');
         $headers = (array)[
             'Content-Type' => $contenttype,
             'Plugin-Version' => "$version",
+            'Moodle-Version' => $moodleversion,
             'x-plugin-domain' => $domain,
         ];
 
@@ -87,6 +89,7 @@ class plagiarism_copyleaks_http_client {
                 'Content-Type: ' . $contenttype,
                 $authorization,
                 $pluginversion,
+                'Moodle-Version: ' . $moodleversion,
                 $domain,
             ];
         }
