@@ -292,7 +292,16 @@ class plagiarism_copyleaks_eventshandler {
     private function queue_quizzes($data, $coursemodule, $authoruserid, $submitteruserid, $cmdata) {
         $result = true;
 
-        $attempt = quiz_attempt::create($data['objectid']);
+        if (class_exists('\\mod_quiz\\quiz_attempt')) {
+            // Moodle 4.4+/5.x
+            $attempt = \mod_quiz\quiz_attempt::create($data['objectid']);
+        } else {
+            // Older Moodle – versions prior to 4.4.
+            global $CFG;
+            require_once($CFG->dirroot . '/mod/quiz/attemptlib.php');
+            $attempt = quiz_attempt::create($data['objectid']);
+        }
+
         foreach ($attempt->get_slots() as $slot) {
             $qa = $attempt->get_question_attempt($slot);
             if ($qa->get_question()->get_type_name() != 'essay') {
