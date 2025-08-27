@@ -411,8 +411,18 @@ class plagiarism_copyleaks_adminform extends moodleform {
     public function save(stdClass $data) {
         global $CFG;
 
-        // Save admin settings.
         $configproperties = plagiarism_copyleaks_pluginconfig::admin_config_properties();
+
+        $config = plagiarism_copyleaks_pluginconfig::admin_config();
+
+        if ($config->plagiarism_copyleaks_key &&  $config->plagiarism_copyleaks_key != $configproperties['plagiarism_copyleaks_key']) {
+            // Check API connection at Copyleaks end.
+
+            // If there is no connection for this integration then edit the API connection properties.
+
+        }
+
+        // Save admin settings.
         foreach ($configproperties as $property) {
             plagiarism_copyleaks_pluginconfig::set_admin_config($data, $property);
         }
