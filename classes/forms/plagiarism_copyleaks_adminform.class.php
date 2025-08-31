@@ -413,15 +413,6 @@ class plagiarism_copyleaks_adminform extends moodleform {
 
         $configproperties = plagiarism_copyleaks_pluginconfig::admin_config_properties();
 
-        $config = plagiarism_copyleaks_pluginconfig::admin_config();
-
-        if ($config->plagiarism_copyleaks_key &&  $config->plagiarism_copyleaks_key != $configproperties['plagiarism_copyleaks_key']) {
-            // Check API connection at Copyleaks end.
-
-            // If there is no connection for this integration then edit the API connection properties.
-
-        }
-
         // Save admin settings.
         foreach ($configproperties as $property) {
             plagiarism_copyleaks_pluginconfig::set_admin_config($data, $property);
@@ -461,6 +452,11 @@ class plagiarism_copyleaks_adminform extends moodleform {
                 $plugindata,
                 $config->plagiarism_copyleaks_key
             );
+
+            // Upsert Moodle API connection status.
+            $copyleakscomms = new plagiarism_copyleaks_comms();
+            $isconnected = $copyleakscomms->test_moodle_api_connection();
+            plagiarism_copyleaks_dbutils::upsert_config_api_connection_status($isconnected);
         }
     }
 }
