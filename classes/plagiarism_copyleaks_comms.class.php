@@ -391,7 +391,7 @@ class plagiarism_copyleaks_comms {
 
 
     /**
-     * Test if Moodle API is reachable.
+     * Test if Moodle API is connected.
      * @return bool
      */
     public function test_moodle_api_connection() {
@@ -400,8 +400,7 @@ class plagiarism_copyleaks_comms {
 
                 $result = plagiarism_copyleaks_http_client::execute_retry(
                     'GET',
-                    $this->copyleaks_api_url() . "/api/moodle/plugin/" .
-                        $this->key . "/test-moodle-api-connection",
+                    $this->copyleaks_api_url() . "/api/moodle/plugin/" . $this->key . "/test-moodle-api-connection",
                     true
                 );
 
