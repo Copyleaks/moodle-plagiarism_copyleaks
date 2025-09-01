@@ -389,6 +389,34 @@ class plagiarism_copyleaks_comms {
         }
     }
 
+
+    /**
+     * Test if Moodle API is connected.
+     * @return bool
+     */
+    public function test_moodle_api_connection() {
+        try {
+            if (isset($this->key) && isset($this->secret)) {
+
+                $result = plagiarism_copyleaks_http_client::execute_retry(
+                    'GET',
+                    $this->copyleaks_api_url() . "/api/moodle/plugin/" . $this->key . "/test-moodle-api-connection",
+                    true
+                );
+
+                if (isset($result) && isset($result->isConnected)) {
+                    return $result->isConnected;
+                } else {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+
     /**
      * Update course module temp id at Copyleaks server.
      * @param array $data

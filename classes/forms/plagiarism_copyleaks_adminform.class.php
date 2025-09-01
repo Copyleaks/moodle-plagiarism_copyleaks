@@ -411,8 +411,9 @@ class plagiarism_copyleaks_adminform extends moodleform {
     public function save(stdClass $data) {
         global $CFG;
 
-        // Save admin settings.
         $configproperties = plagiarism_copyleaks_pluginconfig::admin_config_properties();
+
+        // Save admin settings.
         foreach ($configproperties as $property) {
             plagiarism_copyleaks_pluginconfig::set_admin_config($data, $property);
         }
@@ -451,6 +452,11 @@ class plagiarism_copyleaks_adminform extends moodleform {
                 $plugindata,
                 $config->plagiarism_copyleaks_key
             );
+
+            // Upsert Moodle API connection status.
+            $copyleakscomms = new plagiarism_copyleaks_comms();
+            $isconnected = $copyleakscomms->test_moodle_api_connection();
+            plagiarism_copyleaks_dbutils::upsert_config_api_connection_status($isconnected);
         }
     }
 }
