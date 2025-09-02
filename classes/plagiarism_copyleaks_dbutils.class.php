@@ -376,11 +376,10 @@ class plagiarism_copyleaks_dbutils {
             return $defaultconfig->value;
         }
 
-        $cm = get_coursemodule_from_id('', $cmid);
-
+        $courseid = -1 * ((int)$COURSE->id);
         $courseconfig = $DB->get_record(
             'plagiarism_copyleaks_config',
-            ['name' => $name, 'cm' => 'course_' . $cm->course]
+            ['name' => $name, 'cm' => $courseid]
         );
 
         if ($courseconfig) {
