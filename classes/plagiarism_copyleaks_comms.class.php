@@ -222,13 +222,15 @@ class plagiarism_copyleaks_comms {
      * @param array $coursemodulename of the activity.
      * @return string $cmid for the settings and access.
      */
-    public function request_access_for_settings($role, $breadcrumbs, $name = '', $coursemodulename = '', $cmid = 0) {
+    public function request_access_for_settings($role, $breadcrumbs, $name = '', $coursemodulename = '', $cmid = 0, $courseid = 0, $coursename = '') {
         if (isset($this->key) && isset($this->secret)) {
             $reqbody = (array)[
                 'breadcrumbs' => $breadcrumbs,
                 'name' => $name,
                 'courseModuleName' => $coursemodulename,
                 'accessRole' => $role,
+                'courseId' => $courseid,
+                'courseName' => $coursename
             ];
             $url = $this->copyleaks_api_url() . "/api/moodle/" . $this->key . "/settings/request-access";
             if (isset($cmid)) {

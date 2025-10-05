@@ -119,8 +119,8 @@ if (!$isnewmodulesettings && !$isadminview && !$clmoduleenabled) {
         } else {
             $moduleclass = "plagiarism_copyleaks_" . $cm->modname;
         }
-          $moduleobject = new $moduleclass;
-          $isinstructor = $moduleobject::is_instructor($context);
+        $moduleobject = new $moduleclass;
+        $isinstructor = $moduleobject::is_instructor($context);
     }
 
     // Incase students not allowed to see the plagiairsm score.
@@ -163,7 +163,9 @@ if (!$isnewmodulesettings && !$isadminview && !$clmoduleenabled) {
                     $breadcrumbs,
                     $isnewmodulesettings ? 'new' : $cm->modname,
                     $isnewmodulesettings ? '' : $cm->name,
-                    $cmid
+                    $cmid,
+                    $courseid,
+                    $course->fullname
                 );
             } else {
                 $role = 1;
