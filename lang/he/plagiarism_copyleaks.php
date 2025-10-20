@@ -111,7 +111,7 @@ $string['cldefaultsettings'] = 'הגדרות ברירת מחדל של Copyleaks'
 
 $string['claicontentscore'] = 'ציון תוכן AI';
 $string['clplagiarismscore'] = 'ציון גניבה ספרותית';
-$string['clwritingfeedbackissues'] = 'תיקוני כתיבה';
+$string['clwritingfeedbackissues'] = 'תיקוני דקדוק';
 $string['clscanfailedbtn'] = 'הסריקה נכשלה';
 $string['cltryagainbtn'] = 'נסה שוב';
 $string['cltryagainmsg'] = 'שלח מחדש לסריקת Copyleaks';
@@ -119,7 +119,7 @@ $string['clscaninprogress'] = 'הסריקה בתהליך...';
 $string['clscheduledintime'] = 'מתוזמן: {$a}';
 $string['claicontentscheduled'] = 'סריקת תוכן מבוסס בינה מלאכותית';
 $string['clplagiarismcontentscheduled'] = 'סריקת גניבה ספרותית';
-$string['clwritingfeedbackcontentscheduled'] = 'תיקוני כתיבה';
+$string['clwritingfeedbackcontentscheduled'] = 'תיקוני דקדוק';
 $string['cldownloadreport'] = 'הורדת דוח PDF';
 $string['clopenreport'] = 'פתיחת עמוד הדוח';
 $string['clcopyreporturl'] = 'העתקת קישור עמוד הדוח ללוח העריכה';

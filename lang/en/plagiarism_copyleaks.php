@@ -110,7 +110,7 @@ $string['cldefaultsettings'] = 'Default Copyleaks settings';
 
 $string['claicontentscore'] = 'AI content score';
 $string['clplagiarismscore'] = 'Plagiarism score';
-$string['clwritingfeedbackissues'] = 'Writing corrections';
+$string['clwritingfeedbackissues'] = 'Grammar corrections';
 $string['clscanfailedbtn'] = 'SCAN FAILED';
 $string['cltryagainbtn'] = 'Try Again';
 $string['cltryagainmsg'] = 'Submit again to Copyleaks scan';
@@ -118,7 +118,7 @@ $string['clscaninprogress'] = 'Scan is in progress...';
 $string['clscheduledintime'] = 'Scheduled: {$a}';
 $string['claicontentscheduled'] = 'AI content scan';
 $string['clplagiarismcontentscheduled'] = 'Plagiarism scan';
-$string['clwritingfeedbackcontentscheduled'] = 'Writing corrections';
+$string['clwritingfeedbackcontentscheduled'] = 'Grammar corrections';
 $string['cldownloadreport'] = 'Download PDF report';
 $string['clopenreport'] = 'Open report page';
 $string['clcopyreporturl'] = 'Copy the report page link to the clipboard';
