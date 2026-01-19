@@ -419,4 +419,30 @@ class plagiarism_copyleaks_dbutils {
             );
         }
     }
+
+    /**
+     * Disconnect Copyleaks API if credentials changed.
+     *
+     * @param stdClass|array $oldconfig Existing admin config
+     * @param stdClass      $newdata   Submitted form data
+     */
+    public static function disconnect_on_credentials_change($oldconfig, stdClass $newdata): void {
+        $old = (object)$oldconfig;
+
+        $newapiurl = $newdata->plagiarism_copyleaks_apiurl ?? null;
+        $newkey    = $newdata->plagiarism_copyleaks_key ?? null;
+        $newsecret = $newdata->plagiarism_copyleaks_secret ?? null;
+
+        $oldapiurl = $old->plagiarism_copyleaks_apiurl ?? null;
+        $oldkey    = $old->plagiarism_copyleaks_key ?? null;
+        $oldsecret = $old->plagiarism_copyleaks_secret ?? null;
+
+        if (
+            $newapiurl !== $oldapiurl ||
+            $newkey    !== $oldkey ||
+            $newsecret !== $oldsecret
+        ) {
+            self::upsert_config_api_connection_status(false);
+        }
+    }
 }

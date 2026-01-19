@@ -411,11 +411,16 @@ class plagiarism_copyleaks_adminform extends moodleform {
     public function save(stdClass $data) {
         global $CFG;
 
+        $oldconfig = plagiarism_copyleaks_pluginconfig::admin_config();
+
         // Save admin settings.
         $configproperties = plagiarism_copyleaks_pluginconfig::admin_config_properties();
         foreach ($configproperties as $property) {
             plagiarism_copyleaks_pluginconfig::set_admin_config($data, $property);
         }
+
+        // If credentials changed, force disconnect.
+        plagiarism_copyleaks_dbutils::disconnect_on_credentials_change($oldconfig, $data);
 
         // Check if plugin is enabled.
         $plagiarismmodules = array_keys(core_component::get_plugin_list('mod'));
