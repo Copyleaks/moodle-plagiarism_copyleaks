@@ -419,9 +419,6 @@ class plagiarism_copyleaks_adminform extends moodleform {
             plagiarism_copyleaks_pluginconfig::set_admin_config($data, $property);
         }
 
-        // If credentials changed, force disconnect.
-        plagiarism_copyleaks_dbutils::disconnect_on_credentials_change($oldconfig, $data);
-
         // Check if plugin is enabled.
         $plagiarismmodules = array_keys(core_component::get_plugin_list('mod'));
         $pluginenabled = 0;
@@ -452,6 +449,10 @@ class plagiarism_copyleaks_adminform extends moodleform {
                 'domain' => $domain,
                 'pluginVersion' => $pluginversion,
             ];
+
+            // If credentials changed, force disconnect.
+            plagiarism_copyleaks_dbutils::disconnect_on_credentials_change($oldconfig, $data);
+
             plagiarism_copyleaks_dbutils::queue_copyleaks_integration_data_sync_request(
                 $plugindata,
                 $config->plagiarism_copyleaks_key
