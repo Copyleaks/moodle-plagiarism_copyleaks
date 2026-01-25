@@ -28,6 +28,8 @@ $string['copyleaks'] = 'Copyleaks';
 $string['messageprovider:copyleaks_notification'] = "הודעת Copyleaks";
 $string['copyleaks:enable'] = 'הפעלת Copyleaks';
 $string['copyleaks:viewfullreport'] = 'הצגת דוח אינטרנט';
+$string['copyleaks:resubmitfailedscans'] = 'שלח מחדש סריקות שנכשלו (רמת מודול)';
+$string['copyleaks:adminresubmitfailedscans'] = 'שלח מחדש סריקות שנכשלו (רמת מערכת)';
 $string['clstudentdisclosure'] = 'גילוי לסטודנטים';
 $string['clstudentdisclosure_help'] = 'טקסט זה יוצג לכל הסטודנטים בעמוד העלאת הקבצים.';
 $string['clstudentdisclosuredefault']  = '<span>על ידי שליחת הקבצים שלך, אתה מסכים לשירות זיהוי גניבה ספרותית </span><a target="_blank" href="https://copyleaks.com/legal/privacypolicy">מדיניות פרטיות</a>';
