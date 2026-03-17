@@ -66,10 +66,6 @@ $observers = [
         'callback'  => 'plagiarism_copyleaks_observer::assign_submission_file_updated',
     ],
     [
-        'eventname' => '\assignsubmission_onlinetext\event\submission_updated',
-        'callback'  => 'plagiarism_copyleaks_observer::assign_submission_text_updated',
-    ],
-    [
         'eventname' => '\assignsubmission_comments\event\comment_created',
         'callback'  => 'plagiarism_copyleaks_observer::assign_submission_comment_created',
     ],
