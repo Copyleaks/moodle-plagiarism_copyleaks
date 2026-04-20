@@ -74,6 +74,14 @@ class provider implements
             'privacy:metadata:plagiarism_copyleaks_files'
         );
 
+        $collection->add_database_table(
+            'plagiarism_copyleaks_users',
+            [
+                'userid' => 'privacy:metadata:plagiarism_copyleaks_users:userid',
+            ],
+            'privacy:metadata:plagiarism_copyleaks_users'
+        );
+
         $collection->add_external_location_link('plagiarism_copyleaks_client', [
             'module_id' => 'privacy:metadata:plagiarism_copyleaks_client:module_id',
             'module_name' => 'privacy:metadata:plagiarism_copyleaks_client:module_name',
