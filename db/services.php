@@ -83,6 +83,13 @@ $functions = [
     'description' => 'Returns student plagiarism report access flags for multiple course modules by their IDs.',
     'type'        => 'read',
   ],
+  'plagiarism_copyleaks_rescan_module_reports_on_settings_change' => [
+    'classname'   => 'plagiarism_copyleaks_rescan',
+    'methodname'  => 'rescan_module_reports_on_settings_change',
+    'classpath'   => 'plagiarism/copyleaks/classes/webservices/plagiarism_copyleaks_rescan.php',
+    'description' => 'Rescan all eligible reports for a course module after scan settings change',
+    'type'        => 'write',
+  ],
 ];
 
 // Pre-built service.
@@ -97,6 +104,7 @@ $services = [
       'plagiarism_copyleaks_get_multiple_scales_values',
       'plagiarism_copyleaks_get_file_info',
       'plagiarism_copyleaks_get_student_report_access_by_cmids',
+      'plagiarism_copyleaks_rescan_module_reports_on_settings_change',
       'mod_assign_save_grade',
       'core_comment_add_comments',
       'core_comment_delete_comments',
