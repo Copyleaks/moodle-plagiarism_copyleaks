@@ -61,7 +61,10 @@ echo html_writer::script(
 );
 
 $cl = new plagiarism_copyleaks_comms();
-$accesstoken = $cl->request_access_for_analytics($cmid, $USER->id);
+// Site administrators may see student results info under the AdminsOnly visibility setting,
+// regardless of their course role (e.g. an admin enrolled as a teacher).
+$issiteadmin = is_siteadmin($USER);
+$accesstoken = $cl->request_access_for_analytics($cmid, $USER->id, $issiteadmin);
 
 $config = plagiarism_copyleaks_pluginconfig::admin_config();
 $actionurl = "$config->plagiarism_copyleaks_apiurl/api/moodle/plugin/$config->plagiarism_copyleaks_key/analytics/$cmid/index";
