@@ -195,18 +195,22 @@ class plagiarism_copyleaks_comms {
      * request access for copyleaks report
      * @param string $scanid Copyleaks report scan id
      * @param boolean $isinstructor Copyleaks report scan id
+     * @param int $userid Moodle user id of the viewer
+     * @param boolean $isadmin Whether the viewer is a Moodle site administrator
      * @return string a JWT to access student report only
      */
-    public function request_access_for_report(string $scanid, $isinstructor, $userid) {
+    public function request_access_for_report(string $scanid, $isinstructor, $userid, $isadmin = false) {
         if ($isinstructor == 0) {
             $isinstructor = -1;
         }
+
+        $isadminflag = $isadmin ? 1 : 0;
 
         if (isset($this->key) && isset($this->secret)) {
             $result = plagiarism_copyleaks_http_client::execute_retry(
                 'POST',
                 $this->copyleaks_api_url() . "/api/moodle/" . $this->key .
-                    "/report/" . $scanid . "/" . $isinstructor . "/request-access" . "/" . $userid,
+                    "/report/" . $scanid . "/" . $isinstructor . "/request-access" . "/" . $userid . "/" . $isadminflag,
                 true
             );
 
@@ -251,9 +255,12 @@ class plagiarism_copyleaks_comms {
 
     /**
      * request access for copyleaks report.
+     * @param int $cmid course module id.
+     * @param int $userid Moodle user id of the viewer.
+     * @param boolean $isadmin Whether the viewer is a Moodle site administrator.
      * @return string $cmid for the settings and access.
      */
-    public function request_access_for_analytics($cmid, $userid) {
+    public function request_access_for_analytics($cmid, $userid, $isadmin = false) {
         if (isset($this->key) && isset($this->secret)) {
             $url = $this->copyleaks_api_url() . "/api/moodle/plugin/" . $this->key . "/analytics/request-access";
             if (isset($cmid)) {
@@ -261,6 +268,7 @@ class plagiarism_copyleaks_comms {
             }
             if (isset($userid)) {
                 $url = $url . "?userId=$userid";
+                $url = $url . "&isAdmin=" . ($isadmin ? "true" : "false");
             }
             $result = plagiarism_copyleaks_http_client::execute(
                 'GET',
