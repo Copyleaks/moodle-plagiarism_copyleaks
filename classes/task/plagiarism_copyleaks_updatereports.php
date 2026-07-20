@@ -124,7 +124,7 @@ class plagiarism_copyleaks_updatereports extends \core\task\scheduled_task {
                             );
                         }
                     }
-                } catch (\Exception $e) {
+                } catch (\Throwable $e) {
                     \plagiarism_copyleaks_logs::add(
                         "Update reports failed - " . $e->getMessage(),
                         "API_ERROR"
