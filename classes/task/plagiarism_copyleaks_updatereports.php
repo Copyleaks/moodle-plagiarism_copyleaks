@@ -59,6 +59,8 @@ class plagiarism_copyleaks_updatereports extends \core\task\scheduled_task {
 
         $canloadmoredata = true;
         $maxdataloadloops = PLAGIARISM_COPYLEAKS_CRON_MAX_DATA_LOOP;
+        $lastid = 0;
+        $consecutivefailures = 0;
 
         while ($canloadmoredata && (--$maxdataloadloops) > 0) {
             $submissionsinstances = [];
@@ -67,15 +69,19 @@ class plagiarism_copyleaks_updatereports extends \core\task\scheduled_task {
 
             $submissions = $DB->get_records_select(
                 "plagiarism_copyleaks_files",
-                "statuscode = ? AND lastmodified < ? AND (similarityscore IS NULL)",
-                ['pending', $expectedfinishtime],
-                '',
+                "statuscode = ? AND lastmodified < ? AND (similarityscore IS NULL) AND id > ?",
+                ['pending', $expectedfinishtime, $lastid],
+                'id ASC',
                 '*',
                 0,
                 PLAGIARISM_COPYLEAKS_CRON_QUERY_LIMIT
             );
 
             $canloadmoredata = count($submissions) == PLAGIARISM_COPYLEAKS_CRON_QUERY_LIMIT;
+
+            if (count($submissions) > 0) {
+                $lastid = max(array_keys($submissions));
+            }
 
             // Add submission ids to the request.
             foreach ($submissions as $clsubmission) {
@@ -91,7 +97,7 @@ class plagiarism_copyleaks_updatereports extends \core\task\scheduled_task {
                     $clsubmission->errormsg = 'course module (cm) was not found for this record';
                     if (!$DB->update_record('plagiarism_copyleaks_files', $clsubmission)) {
                         \plagiarism_copyleaks_logs::add(
-                            "Update record failed (CM: " . $cm->id . ", User: " . $clsubmission->userid . ") - ",
+                            "Update record failed (CM: " . $clsubmission->cm . ", User: " . $clsubmission->userid . ") - ",
                             "UPDATE_RECORD_FAILED"
                         );
                     }
@@ -124,11 +130,16 @@ class plagiarism_copyleaks_updatereports extends \core\task\scheduled_task {
                             );
                         }
                     }
+                    $consecutivefailures = 0;
                 } catch (\Throwable $e) {
                     \plagiarism_copyleaks_logs::add(
                         "Update reports failed - " . $e->getMessage(),
                         "API_ERROR"
                     );
+                    $consecutivefailures = $consecutivefailures + 1;
+                    if ($consecutivefailures >= 3) {
+                        break;
+                    }
                 }
             }
         }
