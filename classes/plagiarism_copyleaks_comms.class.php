@@ -154,6 +154,28 @@ class plagiarism_copyleaks_comms {
     }
 
     /**
+     * Ask the Copyleaks API, from its database, for the results of submissions still pending after the
+     * delivery poll - the recovery path of the report-delivery flow.
+     * @param array $submissionsinstances
+     * @return array a list of Copyleaks scan instances for files
+     */
+    public function recover_plagiarism_scans_instances(array $submissionsinstances) {
+        if (isset($this->key) && isset($this->secret)) {
+
+            $params = (array)[
+                'instances' => $submissionsinstances,
+            ];
+
+            return plagiarism_copyleaks_http_client::execute_retry(
+                'POST',
+                $this->copyleaks_api_url() . "/api/moodle/plugin/" . $this->key . "/task/scan-instances-recovery",
+                true,
+                json_encode($params)
+            );
+        }
+    }
+
+    /**
      * Get resubmit reports ids from lms server
      * @param string $cursor Copyleaks db cursor
      * @return object $result an array of resubmitted ids and new ids that rescanned

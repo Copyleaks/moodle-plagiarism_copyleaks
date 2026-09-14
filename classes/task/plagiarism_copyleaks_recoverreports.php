@@ -15,10 +15,10 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Copyleaks Plagiarism Plugin - Handle plagiairsm check similarity score update
+ * Copyleaks Plagiarism Plugin - Recover scan results for submissions still pending after the delivery poll
  * @package   plagiarism_copyleaks
- * @copyright 2021 Copyleaks
- * @author    Bayan Abuawad <bayana@copyleaks.com>
+ * @copyright 2026 Copyleaks
+ * @author    Shade Amasha <shadea@copyleaks.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -29,14 +29,14 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_logs.class.php');
 
 /**
- * Copyleaks Plagiarism Plugin - Handle plagiairsm check similarity score update
+ * Copyleaks Plagiarism Plugin - Recover scan results for submissions still pending after the delivery poll
  */
-class plagiarism_copyleaks_updatereports extends \core\task\scheduled_task {
+class plagiarism_copyleaks_recoverreports extends \core\task\scheduled_task {
     /**
      * get scheduler name, this will be shown to admins on schedulers dashboard
      */
     public function get_name() {
-        return get_string('clupdatereportscores', 'plagiarism_copyleaks');
+        return get_string('clrecoverreports', 'plagiarism_copyleaks');
     }
 
     /**
@@ -47,14 +47,17 @@ class plagiarism_copyleaks_updatereports extends \core\task\scheduled_task {
         require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_comms.class.php');
         require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_dbutils.class.php');
         require_once($CFG->dirroot . '/plagiarism/copyleaks/classes/plagiarism_copyleaks_submissions.class.php');
-        // Execute only if the API is not connected.
-        $this->update_reports();
+        $this->recover_reports();
     }
 
     /**
-     * sync files with Copyleaks API
+     * Fetch results for rows still pending after the delivery poll should have applied them.
+     *
+     * Runs every 10 minutes and only asks about rows pending for at least
+     * PLAGIARISM_COPYLEAKS_RECOVERY_PENDING_MINUTES - above the scan-duration tail, so a slow scan is not
+     * mistaken for a lost result. The server answers this route from its database for any plugin version.
      */
-    private function update_reports() {
+    private function recover_reports() {
         global $DB;
 
         $canloadmoredata = true;
@@ -65,12 +68,12 @@ class plagiarism_copyleaks_updatereports extends \core\task\scheduled_task {
         while ($canloadmoredata && (--$maxdataloadloops) > 0) {
             $submissionsinstances = [];
 
-            $expectedfinishtime = strtotime('- 1 minutes');
+            $pendingsince = strtotime('- ' . PLAGIARISM_COPYLEAKS_RECOVERY_PENDING_MINUTES . ' minutes');
 
             $submissions = $DB->get_records_select(
                 "plagiarism_copyleaks_files",
                 "statuscode = ? AND lastmodified < ? AND (similarityscore IS NULL) AND id > ?",
-                ['pending', $expectedfinishtime, $lastid],
+                ['pending', $pendingsince, $lastid],
                 'id ASC',
                 '*',
                 0,
@@ -111,8 +114,8 @@ class plagiarism_copyleaks_updatereports extends \core\task\scheduled_task {
                         return;
                     }
                     $copyleakscomms = new \plagiarism_copyleaks_comms();
-                    $scaninstances = $copyleakscomms->get_plagiarism_scans_instances($submissionsinstances);
-                    if (count($scaninstances) > 0) {
+                    $scaninstances = $copyleakscomms->recover_plagiarism_scans_instances($submissionsinstances);
+                    if (is_array($scaninstances)) {
                         foreach ($scaninstances as $clscaninstance) {
 
                             \plagiarism_copyleaks_submissions::update_report(
@@ -133,7 +136,7 @@ class plagiarism_copyleaks_updatereports extends \core\task\scheduled_task {
                     $consecutivefailures = 0;
                 } catch (\Throwable $e) {
                     \plagiarism_copyleaks_logs::add(
-                        "Update reports failed - " . $e->getMessage(),
+                        "Recover reports failed - " . $e->getMessage(),
                         "API_ERROR"
                     );
                     $consecutivefailures = $consecutivefailures + 1;

@@ -26,9 +26,18 @@ defined('MOODLE_INTERNAL') || die();
 
 $tasks = [
     [
-        'classname' => 'plagiarism_copyleaks\task\plagiarism_copyleaks_updatereports',
+        'classname' => 'plagiarism_copyleaks\task\plagiarism_copyleaks_pullreports',
         'blocking' => 0,
         'minute' => '*/1',
+        'hour' => '*',
+        'day' => '*',
+        'dayofweek' => '*',
+        'month' => '*',
+    ],
+    [
+        'classname' => 'plagiarism_copyleaks\task\plagiarism_copyleaks_recoverreports',
+        'blocking' => 0,
+        'minute' => '*/10',
         'hour' => '*',
         'day' => '*',
         'dayofweek' => '*',

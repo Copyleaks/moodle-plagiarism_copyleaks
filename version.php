@@ -23,7 +23,8 @@
  */
 
 defined('MOODLE_INTERNAL') || die();
-$plugin->version = 2026072000;
+// Paired with the LMS server's PUBSUB_DELIVERY_PLUGIN_VERSION - placeholder until the release date is set.
+$plugin->version = 2026100100;
 $plugin->release = "3.5+";
 $plugin->requires = 2018051700;
 $plugin->component = 'plagiarism_copyleaks';
