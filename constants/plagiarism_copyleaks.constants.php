@@ -34,7 +34,7 @@ define('PLAGIARISM_COPYLEAKS_SUPPORTED_SUBMISSION_TYPES', $clsupportedsubmission
 define('PLAGIARISM_COPYLEAKS_MAX_FILE_UPLOAD_SIZE', 52428800);
 define('PLAGIARISM_COPYLEAKS_CRON_QUERY_LIMIT', 100);
 define('PLAGIARISM_COPYLEAKS_CRON_MAX_DATA_LOOP', 256);
-// Rows still pending this long after their last change are fetched again by the recovery task (LMS-6777).
+// Rows still pending this long after their last change are fetched again by the recovery task.
 define('PLAGIARISM_COPYLEAKS_RECOVERY_PENDING_MINUTES', 10);
 define('PLAGIARISM_COPYLEAKS_MAX_FILENAME_LENGTH', 180);
 define('PLAGIARISM_COPYLEAKS_LOGS_PREFIX', 'log_');

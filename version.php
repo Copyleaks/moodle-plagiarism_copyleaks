@@ -23,7 +23,8 @@
  */
 
 defined('MOODLE_INTERNAL') || die();
-// Paired with the LMS server's PUBSUB_DELIVERY_PLUGIN_VERSION - placeholder until the release date is set.
+// Placeholder until the release date is set. Must not be lower than the plugin version the Copyleaks
+// server expects for queue-based result delivery.
 $plugin->version = 2026100100;
 $plugin->release = "3.5+";
 $plugin->requires = 2018051700;

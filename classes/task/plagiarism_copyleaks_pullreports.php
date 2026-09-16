@@ -62,8 +62,8 @@ class plagiarism_copyleaks_pullreports extends \core\task\scheduled_task {
             $copyleakscomms = new \plagiarism_copyleaks_comms();
             $scaninstances = $copyleakscomms->get_plagiarism_scans_instances([]);
 
-            // Null when the plugin key/secret are not configured; not an array when an older server answers
-            // with an empty body. Neither is worth an error log every minute.
+            // Null when the plugin key/secret are not configured; a string or null when the server answers without a
+            // JSON body (204 or a non-JSON content type). Neither is worth an error log every minute.
             if (!is_array($scaninstances)) {
                 return;
             }

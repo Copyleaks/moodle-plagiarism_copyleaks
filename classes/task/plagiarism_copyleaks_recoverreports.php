@@ -17,7 +17,8 @@
 /**
  * Copyleaks Plagiarism Plugin - Recover scan results for submissions still pending after the delivery poll
  * @package   plagiarism_copyleaks
- * @copyright 2026 Copyleaks
+ * @copyright 2021 Copyleaks
+ * @author    Bayan Abuawad <bayana@copyleaks.com>
  * @author    Shade Amasha <shadea@copyleaks.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
