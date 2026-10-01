@@ -224,10 +224,15 @@ class plagiarism_copyleaks_comms {
      * @param array $breadcrumbs Moodle breadcrumbs.
      * @param array $name of the activity type.
      * @param array $coursemodulename of the activity.
+     * @param int $moodleuserid Moodle id of the user opening the settings. Copyleaks resolves the
+     *                         matching LMS identity from it so the settings page can receive that
+     *                         user's notifications (e.g. excluded-templates indexing). Optional:
+     *                         omitting it only means the page shows no notifications.
      * @return string $cmid for the settings and access.
      */
     public function request_access_for_settings(
-        $role, $breadcrumbs, $name = '', $coursemodulename = '', $cmid = 0, $courseid = 0, $coursename = ''
+        $role, $breadcrumbs, $name = '', $coursemodulename = '', $cmid = 0, $courseid = 0, $coursename = '',
+        $moodleuserid = null
     ) {
         if (isset($this->key) && isset($this->secret)) {
             $reqbody = (array)[
@@ -237,6 +242,7 @@ class plagiarism_copyleaks_comms {
                 'accessRole' => $role,
                 'courseId' => $courseid,
                 'courseName' => $coursename,
+                'moodleUserId' => $moodleuserid,
             ];
             $url = $this->copyleaks_api_url() . "/api/moodle/" . $this->key . "/settings/request-access";
             if (isset($cmid)) {

@@ -179,7 +179,7 @@ class plagiarism_copyleaks_http_client {
             } catch (plagiarism_copyleaks_rate_limit_exception $rle) {
                 throw $rle;
             } catch (Exception $e) {
-                if ($retrycnt >= $maxretries) {
+                if ($retrycnt >= $maxretries - 1) {
                     throw $e;
                 } else {
                     $retrycnt = $retrycnt + 1;
