@@ -1,0 +1,31 @@
+# Submits a tagged plugin version to Moodle Marketplace.
+# Uses the official reusable workflow from moodlehq/moodle-plugin-release.
+#
+# Triggers:
+#   - push of a tag matching v*  (e.g. v2026100100)
+#   - manual run (Actions tab -> Run workflow -> enter tag)
+#
+# Required repo secret: MOODLE_MARKETPLACE_TOKEN
+#   Create at https://marketplace.moodle.com/account/security -> API tokens.
+#
+# Release notes are taken from the GitHub Release body for the tag.
+# Submission lands in "in_testing"; publishing is still a manual click in Marketplace.
+name: Release Plugin version to Moodle Marketplace
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to be released (e.g. v2026100100)'
+        required: true
+
+jobs:
+  release-to-marketplace:
+    uses: moodlehq/moodle-plugin-release/.github/workflows/moodle-release.yml@main
+    with:
+      tag: ${{ inputs.tag }}
+    secrets:
+      MOODLE_MARKETPLACE_TOKEN: ${{ secrets.MOODLE_MARKETPLACE_TOKEN }}

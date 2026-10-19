@@ -157,7 +157,10 @@ if (empty($clmoduleenabled) || empty($modulesettings['plagiarism_copyleaks_enabl
             }
 
             $cl = new plagiarism_copyleaks_comms();
-            $scanaccesstoken = $cl->request_access_for_report($plagiarismfiles->externalid, $isinstructor, $USER->id);
+            // Site administrators may see student results info under the AdminsOnly visibility setting,
+            // regardless of their course role (e.g. an admin enrolled as a teacher).
+            $issiteadmin = is_siteadmin($USER);
+            $scanaccesstoken = $cl->request_access_for_report($plagiarismfiles->externalid, $isinstructor, $USER->id, $issiteadmin);
             $lang = plagiarism_copyleaks_utils::get_lang();
             echo html_writer::tag(
                 'iframe',

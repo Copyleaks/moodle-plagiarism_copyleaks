@@ -165,12 +165,22 @@ if (!$isnewmodulesettings && !$isadminview && !$clmoduleenabled) {
                     $isnewmodulesettings ? '' : $cm->name,
                     $cmid,
                     $courseid,
-                    $course->fullname
+                    $course->fullname,
+                    $userid
                 );
             } else {
                 $role = 1;
                 $breadcrumbs = plagiarism_copyleaks_utils::set_copyleaks_page_navbar_breadcrumbs(null, null);
-                $accesstoken = $cl->request_access_for_settings($role, $breadcrumbs, $modulename, null, $cmid);
+                $accesstoken = $cl->request_access_for_settings(
+                    $role,
+                    $breadcrumbs,
+                    $modulename,
+                    null,
+                    $cmid,
+                    0,
+                    '',
+                    $userid
+                );
             }
 
             $lang = plagiarism_copyleaks_utils::get_lang();

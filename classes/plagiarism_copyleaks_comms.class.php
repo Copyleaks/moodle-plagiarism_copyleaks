@@ -217,18 +217,22 @@ class plagiarism_copyleaks_comms {
      * request access for copyleaks report
      * @param string $scanid Copyleaks report scan id
      * @param boolean $isinstructor Copyleaks report scan id
+     * @param int $userid Moodle user id of the viewer
+     * @param boolean $isadmin Whether the viewer is a Moodle site administrator
      * @return string a JWT to access student report only
      */
-    public function request_access_for_report(string $scanid, $isinstructor, $userid) {
+    public function request_access_for_report(string $scanid, $isinstructor, $userid, $isadmin = false) {
         if ($isinstructor == 0) {
             $isinstructor = -1;
         }
+
+        $isadminflag = $isadmin ? 1 : 0;
 
         if (isset($this->key) && isset($this->secret)) {
             $result = plagiarism_copyleaks_http_client::execute_retry(
                 'POST',
                 $this->copyleaks_api_url() . "/api/moodle/" . $this->key .
-                    "/report/" . $scanid . "/" . $isinstructor . "/request-access" . "/" . $userid,
+                    "/report/" . $scanid . "/" . $isinstructor . "/request-access" . "/" . $userid . "/" . $isadminflag,
                 true
             );
 
@@ -242,10 +246,15 @@ class plagiarism_copyleaks_comms {
      * @param array $breadcrumbs Moodle breadcrumbs.
      * @param array $name of the activity type.
      * @param array $coursemodulename of the activity.
+     * @param int $moodleuserid Moodle id of the user opening the settings. Copyleaks resolves the
+     *                         matching LMS identity from it so the settings page can receive that
+     *                         user's notifications (e.g. excluded-templates indexing). Optional:
+     *                         omitting it only means the page shows no notifications.
      * @return string $cmid for the settings and access.
      */
     public function request_access_for_settings(
-        $role, $breadcrumbs, $name = '', $coursemodulename = '', $cmid = 0, $courseid = 0, $coursename = ''
+        $role, $breadcrumbs, $name = '', $coursemodulename = '', $cmid = 0, $courseid = 0, $coursename = '',
+        $moodleuserid = null
     ) {
         if (isset($this->key) && isset($this->secret)) {
             $reqbody = (array)[
@@ -255,6 +264,7 @@ class plagiarism_copyleaks_comms {
                 'accessRole' => $role,
                 'courseId' => $courseid,
                 'courseName' => $coursename,
+                'moodleUserId' => $moodleuserid,
             ];
             $url = $this->copyleaks_api_url() . "/api/moodle/" . $this->key . "/settings/request-access";
             if (isset($cmid)) {
@@ -273,9 +283,12 @@ class plagiarism_copyleaks_comms {
 
     /**
      * request access for copyleaks report.
+     * @param int $cmid course module id.
+     * @param int $userid Moodle user id of the viewer.
+     * @param boolean $isadmin Whether the viewer is a Moodle site administrator.
      * @return string $cmid for the settings and access.
      */
-    public function request_access_for_analytics($cmid, $userid) {
+    public function request_access_for_analytics($cmid, $userid, $isadmin = false) {
         if (isset($this->key) && isset($this->secret)) {
             $url = $this->copyleaks_api_url() . "/api/moodle/plugin/" . $this->key . "/analytics/request-access";
             if (isset($cmid)) {
@@ -283,6 +296,7 @@ class plagiarism_copyleaks_comms {
             }
             if (isset($userid)) {
                 $url = $url . "?userId=$userid";
+                $url = $url . "&isAdmin=" . ($isadmin ? "true" : "false");
             }
             $result = plagiarism_copyleaks_http_client::execute(
                 'GET',

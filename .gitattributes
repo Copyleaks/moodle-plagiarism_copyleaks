@@ -1,0 +1,5 @@
+# Files excluded from release zips built with `git archive` (used by the
+# Moodle Marketplace release workflow). Not shipped to Moodle sites.
+.github/        export-ignore
+.gitattributes  export-ignore
+.gitignore      export-ignore
