@@ -69,19 +69,26 @@ class plagiarism_copyleaks_pullreports extends \core\task\scheduled_task {
             }
 
             foreach ($scaninstances as $clscaninstance) {
-                \plagiarism_copyleaks_submissions::update_report(
-                    $clscaninstance->courseModuleId,
-                    $clscaninstance->moodleUserId,
-                    $clscaninstance->identitfier,
-                    $clscaninstance->scanId,
-                    $clscaninstance->status,
-                    $clscaninstance->plagiarismScore,
-                    $clscaninstance->aiScore,
-                    $clscaninstance->writingFeedbackIssues,
-                    $clscaninstance->isCheatingDetected,
-                    $clscaninstance->errorMessage,
-                    $clscaninstance->errorCode,
-                );
+                try {
+                    \plagiarism_copyleaks_submissions::update_report(
+                        $clscaninstance->courseModuleId,
+                        $clscaninstance->moodleUserId,
+                        $clscaninstance->identitfier,
+                        $clscaninstance->scanId,
+                        $clscaninstance->status,
+                        $clscaninstance->plagiarismScore,
+                        $clscaninstance->aiScore,
+                        $clscaninstance->writingFeedbackIssues,
+                        $clscaninstance->isCheatingDetected,
+                        $clscaninstance->errorMessage,
+                        $clscaninstance->errorCode,
+                    );
+                } catch (\Throwable $e) {
+                    \plagiarism_copyleaks_logs::add(
+                        "Pull reports failed to apply scan " . ($clscaninstance->scanId ?? '') . " - " . $e->getMessage(),
+                        "API_ERROR"
+                    );
+                }
             }
         } catch (\Throwable $e) {
             \plagiarism_copyleaks_logs::add(
