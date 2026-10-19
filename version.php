@@ -23,9 +23,7 @@
  */
 
 defined('MOODLE_INTERNAL') || die();
-// Placeholder until the release date is set. Must not be lower than the plugin version the Copyleaks
-// server expects for queue-based result delivery.
-$plugin->version = 2026100100;
+$plugin->version = 2026101900;
 $plugin->release = "3.5+";
 $plugin->requires = 2018051700;
 $plugin->component = 'plagiarism_copyleaks';

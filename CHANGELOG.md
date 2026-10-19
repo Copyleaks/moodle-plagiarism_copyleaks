@@ -1,4 +1,4 @@
-### [v2026100100] - TBD (set with the release version)
+### [v2026101900] - 2026-Oct-19
 - Scan results are now delivered through Copyleaks' report-delivery queue: a new task pulls them every minute, and a recovery task re-fetches results still pending after 10 minutes. Replaces the similarity-score update task.
 <br>
 
